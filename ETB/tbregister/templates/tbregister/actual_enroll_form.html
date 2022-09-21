@@ -1,0 +1,93 @@
+{% extends 'tbregister/base.html' %} {%block content%}
+<div class="mt-36 ml-4">
+  <div class="p-4 mt-12 ml-6 flex flex-col justify-center">
+    <h1 class="text-[#2D9CDB] font-extrabold text-4xl">Enroll New Patient</h1>
+
+    <form class="flex flex-col p-4">
+      <div class="flex justify-start items-start py-4 space-x-12">
+        <div class="space-y-3 w-1/4">
+          <div class="input-container">
+            <label class="input-label" for="fname">Id Number(s)</label>
+
+            <input class="input" type="text" />
+          </div>
+
+          <div class="input-container group">
+            <label class="input-label" for="DOB">Date of Birth</label>
+
+            <input class="input" type="date" />
+          </div>
+          <div class="input-container">
+            <label class="input-label" for="gender">Country</label>
+
+            <select class="input" name="" id="">
+              <option value="">TJK</option>
+              <option value="">Russia</option>
+            </select>
+          </div>
+        </div>
+        <div class="space-y-3 w-1/4">
+          <div class="input-container">
+            <label class="w-2/5 text-[#9E9E9E]" for="lname">Given Name</label>
+
+            <input class="input cursor-text" type="text" />
+          </div>
+          <div class="input-container">
+            <label class="input-label" for="gender">Gender</label>
+
+            <select class="input flex-1" name="" id="">
+              <option value="">Male</option>
+              <option value="">Female</option>
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="input-label" for="gender">Oblast</label>
+
+            <select class="input" name="" id="">
+              <option value="">ob1</option>
+              <option value="">ob2</option>
+            </select>
+          </div>
+        </div>
+        <div class="space-y-5 w-1/4">
+          <div class="input-container">
+            <label class="input-label" for="lname">Family Name</label>
+
+            <input class="input" type="text" />
+          </div>
+          <div class="flex items-center space-x-6">
+            <div class="flex items-center space-x-4">
+              <label for="">Deceased</label>
+              <input type="radio" />
+            </div>
+            <div class="flex items-center space-x-4">
+              <label for="">Voided</label>
+              <input class="text-[#2D9CDB]" checked type="radio" />
+            </div>
+          </div>
+          <div class="input-container">
+            <label class="input-label" for="age">District</label>
+
+            <input class="input" type="text" />
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-col justify-center space-y-4 w-3/4">
+        <div class="input-container">
+          <label class="w-1/12 text-[#9E9E9E]" for="gender">Address</label>
+
+          <input class="input" type="text" />
+        </div>
+        <div class="input-container">
+          <label class="w-1/12 text-[#9E9E9E]" for="gender">Address 2</label>
+
+          <input class="input" type="text" />
+        </div>
+      </div>
+      <button class="bg-[#2D9CDB] text-white rounded-md p-2 mt-4 w-1/5">
+        Enroll
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,26 +1,89 @@
 {% load static tailwind_tags %}
-<!DOCTYPE html>
+{% load static %}
+<!DOCTYPE html>	
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-  
-    {% tailwind_css %}
-      <!-- CSS only -->
+	<head>
+    <title>Django Tailwind</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<link rel="stylesheet" href="{% static 'myapp/css/main.css' %}">
+		<!-- CSS only -->
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
 		<!-- JavaScript Bundle with Popper -->
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
-</head>
+		{% tailwind_css %}
+		<script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
+	</head>
 <body>
-    <section class="grid grid-cols-2 bg-red-100">
-        <p>2</p>
-        <p>2</p>
-        <p>2</p>
-        <p>2</p>
-    </section>
-    <button class="btn btn-primary btn-small">Submit</button>
+	<header class="p-4	flex items-center justify-between">
+		<div>
+			<img class="w-36 object-contain" src="https://openmrs.org/wp-content/uploads/2021/08/cropped-OpenMRSlogo-transparent.png" alt="OpemMRS logo">
+		</div>
+		<div class="flex items-center space-x-6">
+			<p class="lo">Logged in as Abdul Basit</p>
+			<p class="text-[#2D9CDB] text-bold">My Profile</p>
+			<p class="text-[#2D9CDB] text-bold">Log out</p>
+		</div>
+	</header>
+	<section class="flex items-center justify-center">
+		<div class="flex items-center space-x-8">
+			<div class="dropdown-parent group">
+				<p>Patient List</p>
+				<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+				  </svg>
+				  
+				<div class="dropdown">
+					Patient list
+				</div>
+			</div>
+			<div class="dropdown-parent group">
+				<p>Dots Reports</p>
+				<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+				  </svg>
+				  
+
+				<div class="dropdown">
+					<p>View Closed Reports</p>
+					<p>TB-07</p>
+					<p>TB-08</p>
+				</div>
+			</div>
+			<div class="dropdown-parent group">
+				<p>MDR Reports</p>
+				<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+				  </svg>
+				  
+
+				<div class="dropdown">
+					<p>View Closed Reports</p>
+					<p>TB-07</p>
+					<p>TB-08</p>
+				</div>
+			</div>
+			<div class="dropdown-parent group">
+				<p>Other Reports</p>
+				<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+				  </svg>
+				  
+
+				<div class="dropdown">
+					<p>Form 8</p>
+					<p>Quaterly summary report on AEs</p>
+					<p>TB Drugs Adverse Events Register</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<div>
+		{%block content%}
+		{% endblock %}
+	</div>
 
 </body>
 </html>

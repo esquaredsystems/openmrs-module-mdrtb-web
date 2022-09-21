@@ -1,0 +1,96 @@
+{% extends 'tbregister/base.html' %} {%block content%}
+<div class="mt-36 ml-4">
+  <div
+    class="rounded-md cursor-pointer shadow-sm bg-gray-200 w-1/4 flex items-center justify-between px-2"
+  >
+    <input
+      class="border-none focus:ring-0 bg-transparent"
+      type="text"
+      placeholder="Search for Patients"
+    />
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.5"
+      stroke="currentColor"
+      class="w-6 h-6"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+      />
+    </svg>
+  </div>
+
+  <div class="p-4 mt-12 ml-6 flex flex-col justify-center">
+    <h1 class="text-[#2D9CDB] font-extrabold text-4xl">Enroll New Patient</h1>
+
+    <form class=" flex flex-col  p-4">
+      <div class="flex justify-start items-start py-4  space-x-12  ">
+          <div class="space-y-3 w-1/4">
+                <div
+                  class="input-container"
+                >
+                <label class="w-full text-[#9E9E9E]" for="fname">First Name</label>
+
+                  <input
+                    class="input"
+                    type="text"
+                  />
+
+            </div>
+
+            <div
+              class="input-container group"
+            >
+            <label class="w-full text-[#9E9E9E]" for="DOB">Date of Birth</label>
+
+              <input
+                class="input"
+                type="date"
+              />
+            </div>
+            <div
+              class="input-container"
+            >
+            <label class="w-full text-[#9E9E9E]" for="gender">Gender</label>
+
+          
+              <select class="input"  name="" id="" >
+                  <option value="">Male</option>
+                  <option value="">Female</option>
+              </select>
+            </div>
+          </div>
+          <div class="space-y-3 w-1/4 ">
+            <div
+              class="input-container"
+            >
+            <label class="w-full text-[#9E9E9E]" for="lname">Last Name</label>
+
+              <input
+                class="input"
+                type="text"
+              />
+            </div>
+            <div
+              class="input-container"
+            >
+            <label class="w-full text-[#9E9E9E]" for="age">Age</label>
+
+              <input
+                class="input"
+                type="number"
+              />
+            </div>
+          </div>
+      </div>
+      <button class="bg-[#2D9CDB] text-white rounded-md p-2 w-1/5">Enroll</button>
+
+    </form>
+    
+  </div>
+</div>
+{% endblock %}
