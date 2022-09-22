@@ -27,8 +27,8 @@ def actual_enroll(req):
 def commonlab(req):
     url = 'commonlab/labtesttype'
     response = requests.get(url=BASE_URL+url,params={'v' : 'default'})
-    
+    print(len(response.json()['results']))
     context = {
-        'response' : response.json()['results'] 
+        'response' : response.json()['results']
     }
     return render(req,'tbregister/commonlab.html',context=context)
