@@ -12,14 +12,14 @@
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
 <!--		&lt;!&ndash; JavaScript Bundle with Popper &ndash;&gt;-->
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
-    
+    <script src="{% static 'tbregister/js/commonlab.js'  %}" defer></script>
 </head>
 <body id="modal-parent" class="relative ">
   
-  <section id="modal" class="flex flex-col justify-center  transition-opacity ease-in-out duration-500 opacity-100  backdrop-blur-3xl inset-0 z-50 shadow-2xl  m-10  bg-white w-3/5 mx-auto p-8 absolute top-0 left-0 right-0 bottom-0 h-min my-auto ">
+  <section id="modal" class="flex flex-col justify-center  transition-opacity ease-in-out duration-500 opacity-0  backdrop-blur-3xl inset-0 z-50 shadow-2xl  m-10  bg-white w-3/5 mx-auto p-8 absolute top-0 left-0 right-0 bottom-0 h-min my-auto ">
     <div class="flex items-center justify-between ">
       <h3 id="modal-testType" class="text-3xl">Sort Weight Order</h3>
-      <svg id="close-modal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white bg-red-700 cursor-pointer">
+      <svg id="close-modal" onclick="closeModal()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white bg-red-700 cursor-pointer">
         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
       </svg>
       
@@ -137,8 +137,8 @@
                         <td
                           class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-right"
                         >
-                          <div class="flex items-center space-x-4 justify-end">
-                            <svg id="view" onclick="showModal('{{item.uuid}}')" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 cursor-pointer">
+                          <div class="flex items-center space-x-4 justify-end cursor-pointer">
+                            <svg onclick="showModal('{{item.uuid}}')" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 cursor-pointer">
                               <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                               <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
@@ -161,37 +161,7 @@
     </section>
 
 
-    <script>
-      
-      let viewIcon = document.getElementById('view')
-      let modal = document.getElementById('modal')
-      let modalOpen = false
-      let modalParent = document.getElementById('modal-parent')
-      // viewIcon.addEventListener('click' , function(){
-      //   modal.classList.remove('opacity-0')
-      //   modalOpen = true
-        
-
-      // })
-      function showModal(testTypeId){
-          let modalTestType = document.getElementById('modal-testType')
-          const BASE_URL = 'http://46.20.206.173:18080/openmrs/ws/rest/v1/'
-          fetch()
-          // modal.classList.remove('opacity-0')
-          
-          
-        }
-      let modalClose = document.getElementById('close-modal')
-      modalClose.addEventListener('click' , function(){
-          modal.classList.add('opacity-0')
-          modalOpen = false
-          
-        })
-      
-       
-     
-      
-    </script>
+    
 
 
 </body>
