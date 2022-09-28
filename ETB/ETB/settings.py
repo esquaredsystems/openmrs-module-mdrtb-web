@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'tailwind',
     'theme',
     'tbregister',
+    'commonlab',
     'django_browser_reload'
 ]
 

@@ -5,12 +5,15 @@
     <img class="w-80 object-contain" src="https://openmrs.org/wp-content/uploads/2021/08/cropped-OpenMRSlogo-transparent.png" alt="OpemMRS logo">
     <div class="flex flex-col items-center justify-center space-y-4">
         <p>Welcome to OpenMRS tjk. Please login to proceed</p>
-        <input class="border p-2 rounded-md border-black
-        w-full" type="text" placeholder="Username">
-        <div class="w-full border p-2 rounded-md border-black flex items-center">
-            <input class="w-full rounded-md" type="password border-none" placeholder="Password">
-        </div>
-        <button class="bg-[#2D9CDB] text-white rounded-md p-2 w-2/4">Login</button>
+        <form class="w-full space-y-4 items-center flex flex-col" action="{% url 'login' %}" method="post">
+            {% csrf_token %}
+            <input class="border p-2 rounded-md border-black
+            w-full" type="text" placeholder="Username" name="username">
+            <input class="border p-2 rounded-md border-black
+            w-full focus:ring-0" type="password" placeholder="Password" name="password">
+            
+            <button type="submit" class="bg-[#2D9CDB] text-white rounded-md p-2 w-2/4">Login</button>
+        </form>
     </div>
 </div>
 		{% endblock %}

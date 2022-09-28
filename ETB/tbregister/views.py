@@ -1,19 +1,31 @@
-from inspect import Attribute
-from re import U
-from urllib import response
+from multiprocessing import reduction
 from django.shortcuts import render,redirect
 import requests
 from django.http import JsonResponse
+import base64
 
-
-# Create your views here.
 
 BASE_URL = 'http://46.20.206.173:18080/openmrs/ws/rest/v1/'
+
+
+
+
 
 def index(req):
     return render(req,'tbregister/base.html')
 
 def login(req):
+    if req.method == 'POST':
+        url = BASE_URL+'/session'
+        username = req.POST['username']
+        password = req.POST['password']
+        encoded_credentials = base64.b64encode(f"{username}:{password}".encode('ascii')).decode('ascii')
+        headers = {'Authorization': f'Basic {encoded_credentials}'}
+        response = requests.get(url,headers=headers)
+        if response.status_code == 200:
+            req.session['sessionId'] = response.json()['sessionId']
+            req.session['encodedCredentials'] = encoded_credentials
+            return render(req,'tbregister/base.html')
     return render(req,'tbregister/login.html')
 
 def enroll(req):
@@ -27,68 +39,12 @@ def actual_enroll(req):
     return render(req,'tbregister/actual_enroll_form.html')
 
 
-def managetesttypes(req):
-    url = 'commonlab/labtesttype'
-    response = requests.get(url=BASE_URL+url,params={'v' : 'default'})
-    print(len(response.json()['results']))
-    context = {
-        'response' : response.json()['results']
-    }
-    return render(req,'tbregister/commonlab/managetesttypes.html',context=context)
-
-
-def fetchAttributes(req):
-    url = BASE_URL + 'commonlab/labtestattributetype'
-    params = {'testTypeUuid' : req.GET['uuid'],'v' : 'full'}
-    response = requests.get(url=url,params=params)
-    attributes  = []
-    for attr in response.json()['results']:
-        attributes.append({
-            'attrName' : attr['name'],
-            'sortWeight' : attr['sortWeight'],
-            'groupName' : attr['groupName'],
-            'multisetName' : attr['multisetName']
-        })
-
-
-
-    return JsonResponse({'attributes' : attributes})
-
-
-
-def addtesttypes(req):
-    context = {}
-    # if req.GET['state'] == 'edit'
-    if req.method == 'POST':
-        print(req.POST['testname'])
-    referenceConepts = [
-        'MICROSCOPY TEST CONSTRUCT',
-        'TUBERCULOSIS CULTURE CONSTRUCT',
-        'L-J RESULT TEMPLATE',
-        'HAIN 2 TEST CONSTRUCT',
-        'MGIT RESULT TEMPLATE',
-        'DST2 MGIT CONSTRUCT',
-        'DST1 MGIT CONSTRUCT',
-        'DST1 LJ CONSTRUCT',
-        'CONTAMINATED TUBES RESULT TEMPLATE'
-    ]
-    testGroups = [
-        'SEROLOGY',
-        'CARDIOLOGY',
-        'OPHTHALMOLOGY',
-        'BACTERIOLOGY',
-        'BIOCHEMISTRY',
-        'BLOOD_BANK',
-        'CYTOLOGY',
-        'HEMATOLOGY',
-        'IMMUNOLOGY',
-        'MICROBIOLOGY',
-        'RADIOLOGY',
-        'SONOLOGY',
-        'URINALYSIS',
-        'OTHER'
-    ]
-    context['testGroups'] = testGroups
-    context['referenceConepts'] = referenceConepts
-
-    return render(req,'tbregister/commonlab/addtesttypes.html',context=context)
+def logout(req):
+    encoded_credentials = req.session['encodedCredentials']
+    headers = {'Authorization': f'Basic {encoded_credentials}' , 'Cookie' : f"JSESSIONID={req.session['sessionId']}"}
+    response = requests.delete(f'{BASE_URL}/session', headers=headers)
+    print(response.status_code)
+    if response.status_code == 204:
+        if 'sessionId' in req.session:
+            del req.session['sessionId']
+    return redirect('home')

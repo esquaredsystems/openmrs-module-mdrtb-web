@@ -29,10 +29,10 @@
       }
 
       .input-container{
-          @apply rounded-md cursor-pointer shadow-sm border border-gray-200  flex items-center px-2 w-full;
+          @apply  flex items-center w-full space-x-4;
       }
       .input{
-          @apply border-none focus:ring-0 bg-transparent w-full;
+          @apply border rounded-md shadow-sm border-gray-200 outline-none focus:ring-0 w-full;
       }
       .input-label{
           @apply w-2/5 text-[#9E9E9E];

@@ -21,9 +21,13 @@
 			<img class="w-36 object-contain" src="https://openmrs.org/wp-content/uploads/2021/08/cropped-OpenMRSlogo-transparent.png" alt="OpemMRS logo">
 		</div>
 		<div class="flex items-center space-x-6">
+			{% if request.session.sessionId %}
 			<p class="lo">Logged in as Abdul Basit</p>
-			<p class="text-[#2D9CDB] text-bold">My Profile</p>
-			<p class="text-[#2D9CDB] text-bold">Log out</p>
+			<p class="text-[#2D9CDB] font-bold">My Profile</p>
+			<a class="text-[#2D9CDB] font-bold" href="{% url 'logout' %}">Log out</a>
+			{% else %}
+			<a class="text-[#2D9CDB] font-bold" href="{% url 'login' %}">Log In</a>
+			{% endif %}
 		</div>
 	</header>
 	<section class="flex items-center justify-center">
