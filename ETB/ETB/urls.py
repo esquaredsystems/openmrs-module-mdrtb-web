@@ -20,6 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("__reload__/", include("django_browser_reload.urls")),
     path('', include('tbregister.urls')),
-    path('commonlab',include('commonlab.urls'))
+    path('commonlab/',include('commonlab.urls'))
 
 ]

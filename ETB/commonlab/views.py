@@ -1,24 +1,15 @@
 from email import header
 from urllib import response
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 import requests
 from django.http import JsonResponse
+from . import helpers
 
 
 BASE_URL = 'http://46.20.206.173:18080/openmrs/ws/rest/v1/'
 
 
-referenceConepts = [
-        'MICROSCOPY TEST CONSTRUCT',
-        'TUBERCULOSIS CULTURE CONSTRUCT',
-        'L-J RESULT TEMPLATE',
-        'HAIN 2 TEST CONSTRUCT',
-        'MGIT RESULT TEMPLATE',
-        'DST2 MGIT CONSTRUCT',
-        'DST1 MGIT CONSTRUCT',
-        'DST1 LJ CONSTRUCT',
-        'CONTAMINATED TUBES RESULT TEMPLATE'
-    ]
+
 testGroups = [
         'SEROLOGY',
         'CARDIOLOGY',
@@ -37,12 +28,9 @@ testGroups = [
     ]
 
 
-
-
 def managetesttypes(req):
     url = 'commonlab/labtesttype'
     response = requests.get(url=BASE_URL+url,params={'v' : 'default'})
-    print(len(response.json()['results']))
     context = {
         'response' : response.json()['results']
     }
@@ -71,18 +59,26 @@ def fetchAttributes(req):
 def addTestTypes(req):
     context = {}
     if req.method == 'POST':
-        print(req.POST['testname'])
-    
-    print(req.session["encodedCredentials"])
-    print(req.session['sessionId'])
-    url = BASE_URL + 'commonlab/concept?type=labtesttype'
-    headers = {'Authorization': f'Basic {req.session["encodedCredentials"]}' , 'Cookie' : f"JSESSIONID={req.session['sessionId']}"}
-    print(headers)
-    response = requests.get(url,headers=headers)
-    print(response.json())
+        body = {
+        "name" : req.POST['testname'],
+        "testGroup" : req.POST['testgroup'],
+        "requiresSpecimen": True if req.POST['requirespecimen'] == 'Yes' else False,
+        "referenceConcept" : req.POST['referenceconcept'],
+        "description" :req.POST['description'],
+        "shortName" : None if req.POST['shortname'] == '' else req.POST['shortname'],
+        }
+        url = BASE_URL + 'commonlab/labtesttype'
+        headers = {'Authorization': f'Basic {req.session["encodedCredentials"]}' , 'Cookie' : f"JSESSIONID={req.session['sessionId']}"}
+        response = requests.post(url,data=body,headers=headers)
+        if response.status_code == 201:
+            return redirect('managetesttypes')
+        else:
+            print('Error posting')
+            print(response.status_code)
+            print(response.json()['error']['message'])
+    concepts = helpers.getConceptsByType(req,'labtesttype')
+    context['referenceConcepts'] = concepts
     context['testGroups'] = testGroups
-    context['referenceConepts'] = referenceConepts
-
     return render(req,'commonlab/addtesttypes.html',context=context)
 
 
@@ -90,26 +86,45 @@ def editTestType(req,uuid):
     context = {}
     url = BASE_URL + f'commonlab/labtesttype/{uuid}?v=full'
     response = requests.get(url)
-    data = response.json()
-    context['testType'] = {
-        'uuid' : data['uuid'],
-        'name' : data['name'],
-        'testGroup' : data['testGroup'],
-        'shortName' : data['shortName'],
-        'requiresSpecimen' : data['requiresSpecimen'],
-        'referenceConcept' : {
-            'uuid' : data['referenceConcept']['uuid'],
-            'name' : data['referenceConcept']['display']
-        },
-        'description' : data['description']
-    }
-    context['state'] = 'edit'
-    testGroupsCopy = testGroups.copy()
-    testGroupsCopy.remove(testGroupsCopy[testGroupsCopy.index(data['testGroup'])])
-    referenceConeptsCopy = referenceConepts.copy()
-    referenceConeptsCopy.remove(referenceConeptsCopy[referenceConeptsCopy.index(data['referenceConcept']['display'])])
-    context['testGroups'] = testGroupsCopy
-    context['referenceConepts'] = referenceConeptsCopy
+    if response.status_code == 200:
+        data = response.json()
+        context['testType'] = {
+            'uuid' : data['uuid'],
+            'name' : data['name'],
+            'testGroup' : data['testGroup'],
+            'shortName' : data['shortName'],
+            'requiresSpecimen' : data['requiresSpecimen'],
+            'referenceConcept' : {
+                'uuid' : data['referenceConcept']['uuid'],
+                'name' : data['referenceConcept']['display']
+            },
+            'description' : data['description']
+        }
+        testGroupsCopy = testGroups.copy()
+        testGroupsCopy.remove(testGroupsCopy[testGroupsCopy.index(data['testGroup'])])
+        referenceConeptsCopy = referenceConepts.copy()
+        referenceConeptsCopy.remove(referenceConeptsCopy[referenceConeptsCopy.index(data['referenceConcept']['display'])])
+        context['state'] = 'edit'
+        context['testGroups'] = testGroupsCopy
+        context['referenceConcepts'] = referenceConeptsCopy
+        return render(req,'commonlab/addtesttypes.html',context=context)
+    else:
+        return render(req,'commonlab/managetesttypes.html',context=context)
 
-    
-    return render(req,'commonlab/addtesttypes.html',context=context)
+
+
+def manageAttributes(req):
+    url = BASE_URL + 'commonlab/labtesttype'
+    body={
+        "name" : "Test from API",
+        "testGroup" : testGroups[5],
+        "referenceConcept" : 572,
+        "requiresSpecimen" : True
+
+
+    }
+    response = requests.post(url=url,json=body)
+
+    return render(req,'commonlab/manageattributes.html')
+
+

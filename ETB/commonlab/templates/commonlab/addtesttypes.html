@@ -5,10 +5,16 @@
 <div class="m-16">
   <div class="flex flex-col">
     <div class="flex items-center justify-between">
+      {% if state == 'edit' %}
       <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
-        {% if state == 'edit' %}Edit Test Type{% else %} Add Test Type {% endif %}
+        Edit Test Type 
       </h2>
-      <a href="{% url 'addtesttypes' %}" class="text-[#044062] font-bold underline">Manage Attributes</a>
+       <a href="{% url 'manageattr' uuid=testType.uuid %}" class="text-[#044062] font-bold underline">Manage Attributes</a>
+       {% else %}
+       <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
+        Add Test Type 
+      </h2>
+       {% endif %}
 
     </div>
     
@@ -16,7 +22,7 @@
       
       <form
         method="post"
-        action="{% url 'addtesttypes' %}"
+        action="{% url 'addtesttype' %}"
         class="flex flex-col shadow-lg p-4"
       >
         {% csrf_token %}
@@ -31,8 +37,8 @@
               <select class="input" name="referenceconcept" required>
                 <option value="{{testType.referenceConcept.name}}">{{testType.referenceConcept.name}}</option>
 
-                {% for concept in referenceConepts %}
-                <option value="{{concept}}">{{concept}}</option>
+                {% for concept in referenceConcepts %}
+                <option value="{{concept.uuid}}">{{concept.name}}</option>
 
                 {% endfor %}
               </select>
@@ -124,7 +130,7 @@
           
         </div>
         <div class="flex flex-col justify-center space-y-6">
-          <button class="bg-[#2D9CDB] text-white rounded-md p-2 w-1/5">
+          <button type="submit" class="bg-[#2D9CDB] text-white rounded-md p-2 w-1/5">
             {% if state == 'edit' %}Edit Test Type{% else %} Add Test Type {% endif %}
           </button>
           {% if state == 'edit' %}
