@@ -1,25 +1,25 @@
 {% extends 'tbregister/base_without_dd.html' %} {% block content %}
 
-
-
 <div class="m-16">
   <div class="flex flex-col">
     <div class="flex items-center justify-between">
       {% if state == 'edit' %}
       <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
-        Edit Test Type 
+        Edit Test Type
       </h2>
-       <a href="{% url 'manageattr' uuid=testType.uuid %}" class="text-[#044062] font-bold underline">Manage Attributes</a>
-       {% else %}
-       <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
-        Add Test Type 
+      <a
+        href="{% url 'manageattr'  %}"
+        class="text-[#044062] font-bold underline"
+        >Manage Attributes</a
+      >
+      {% else %}
+      <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
+        Add Test Type
       </h2>
-       {% endif %}
-
+      {% endif %}
     </div>
-    
+
     <div>
-      
       <form
         method="post"
         action="{% url 'addtesttype' %}"
@@ -28,14 +28,12 @@
         {% csrf_token %}
         <div class="flex py-4 space-x-12">
           <div class="space-y-3 w-3/4">
-            
             <div class="input-container">
-              
-              <label class="input-label" for="gender"
-              >Reference concept</label
-            >
+              <label class="input-label" for="gender">Reference concept</label>
               <select class="input" name="referenceconcept" required>
-                <option value="{{testType.referenceConcept.name}}">{{testType.referenceConcept.name}}</option>
+                <option value="{{testType.referenceConcept.name}}">
+                  {{testType.referenceConcept.name}}
+                </option>
 
                 {% for concept in referenceConcepts %}
                 <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -45,38 +43,43 @@
             </div>
 
             <div class="input-container">
-              <label class="input-label" for="testname"
-                >Test name</label
-              >
+              <label class="input-label" for="testname">Test name</label>
               {% if state == 'edit' %}
-              <input required class="input" value="{{testType.name}}" type="text" name="testname" />
+              <input
+                required
+                class="input"
+                value="{{testType.name}}"
+                type="text"
+                name="testname"
+              />
               {% else %}
               <input required class="input" type="text" name="testname" />
               {% endif %}
             </div>
 
             <div class="input-container group">
-              <label class="input-label" for="shortname"
-                >Short name</label
-              >
+              <label class="input-label" for="shortname">Short name</label>
               {% if state == 'edit' %}
-              <input class="input" type="text" value="{{testType.shortName}}" name="shortname" />
+              <input
+                class="input"
+                type="text"
+                value="{{testType.shortName}}"
+                name="shortname"
+              />
               {% else %}
               <input class="input" type="text" name="shortname" />
               {% endif %}
             </div>
-            
           </div>
-          
-          
+
           <div class="space-y-3 w-2/4">
             <div class="input-container">
-              <label class="input-label" for="testgroup"
-                >Test group</label
-              >
+              <label class="input-label" for="testgroup">Test group</label>
 
               <select class="input" name="testgroup">
-                <option selected value="{{testGroup}}">{{testType.testGroup}}</option>
+                <option selected value="{{testGroup}}">
+                  {{testType.testGroup}}
+                </option>
                 {% for item in testGroups %}
                 <option value="{{item}}">{{item}}</option>
                 {% endfor %}
@@ -89,28 +92,40 @@
               <div class="flex items-center justify-around space-x-6">
                 <div class="flex items-center space-x-4">
                   <label class="input-label" for="requirespecimen">Yes</label>
-                  {% if state == 'edit' %}
-                  {% if testType.requiresSpecimen == True   %} 
-                  <input name="requirespecimen" checked type="radio" value="Yes" />
+                  {% if state == 'edit' %} {% if testType.requiresSpecimen ==
+                  True %}
+                  <input
+                    name="requirespecimen"
+                    checked
+                    type="radio"
+                    value="Yes"
+                  />
                   {% else %}
-                  <input name="requirespecimen" checked type="radio" value="Yes" />
-                  {% endif %}
-                  {% else %}
-                  <input name="requirespecimen"  type="radio" value="Yes" />
+                  <input
+                    name="requirespecimen"
+                    checked
+                    type="radio"
+                    value="Yes"
+                  />
+                  {% endif %} {% else %}
+                  <input name="requirespecimen" type="radio" value="Yes" />
 
                   {% endif %}
-
                 </div>
                 <div class="flex items-center space-x-4">
                   <label class="input-label" for="requirespecimen">No</label>
-                  {% if state == 'edit' %}
-                  {% if testType.requiresSpecimen == False  %}
-                  <input name="requirespecimen" checked type="radio" value="No" />
+                  {% if state == 'edit' %} {% if testType.requiresSpecimen ==
+                  False %}
+                  <input
+                    name="requirespecimen"
+                    checked
+                    type="radio"
+                    value="No"
+                  />
                   {% else %}
                   <input name="requirespecimen" type="radio" value="No" />
-                  {% endif %}
-                  {% else %}
-                  <input name="requirespecimen"  type="radio" value="No" />
+                  {% endif %} {% else %}
+                  <input name="requirespecimen" type="radio" value="No" />
 
                   {% endif %}
                 </div>
@@ -119,28 +134,35 @@
           </div>
         </div>
         <div class="input-container space-x-4 -mt-3 mb-4">
-          <label class="w-1/6 text-[#9E9E9E]" for="testname"
-            >Description</label
-          >
+          <label class="w-1/6 text-[#9E9E9E]" for="testname">Description</label>
           {% if state == 'edit' %}
-          <input class="input ml-4" type="text" value="{{testType.description}}" name="description" />
+          <input
+            class="input ml-4"
+            type="text"
+            value="{{testType.description}}"
+            name="description"
+          />
           {% else %}
           <input class="input" type="text" name="description" />
           {% endif %}
-          
         </div>
         <div class="flex flex-col justify-center space-y-6">
-          <button type="submit" class="bg-[#2D9CDB] text-white rounded-md p-2 w-1/5">
-            {% if state == 'edit' %}Edit Test Type{% else %} Add Test Type {% endif %}
+          <button
+            type="submit"
+            class="bg-[#2D9CDB] text-white rounded-md p-2 w-1/5"
+          >
+            {% if state == 'edit' %}Edit Test Type{% else %} Add Test Type {%
+            endif %}
           </button>
           {% if state == 'edit' %}
-          <div class="input-container -mt-3 ">
-            <label class="w-1/6 text-[#9E9E9E]" for="testname"
-              >Retire</label
-            >
-            <input class="input" placeholder="Reason to Retire" type="text" name="Retire" />
-            
-            
+          <div class="input-container -mt-3">
+            <label class="w-1/6 text-[#9E9E9E]" for="testname">Retire</label>
+            <input
+              class="input"
+              placeholder="Reason to Retire"
+              type="text"
+              name="Retire"
+            />
           </div>
           <button class="bg-[#2D9CDB] text-white rounded-md p-2 w-1/5">
             Retire

@@ -1,4 +1,5 @@
 from email import header
+from re import U
 from urllib import response
 from django.shortcuts import render,redirect
 import requests
@@ -83,33 +84,29 @@ def addTestTypes(req):
 
 
 def editTestType(req,uuid):
-    context = {}
     url = BASE_URL + f'commonlab/labtesttype/{uuid}?v=full'
-    response = requests.get(url)
-    if response.status_code == 200:
-        data = response.json()
-        context['testType'] = {
-            'uuid' : data['uuid'],
-            'name' : data['name'],
-            'testGroup' : data['testGroup'],
-            'shortName' : data['shortName'],
-            'requiresSpecimen' : data['requiresSpecimen'],
-            'referenceConcept' : {
-                'uuid' : data['referenceConcept']['uuid'],
-                'name' : data['referenceConcept']['display']
-            },
-            'description' : data['description']
+    headers = {'Authorization': f'Basic {req.session["encodedCredentials"]}' , 'Cookie' : f"JSESSIONID={req.session['sessionId']}"}
+    response = requests.get(url,headers=headers)
+    data = response.json()
+    context = {'state' : 'edit'}
+    context['testType'] = {
+        'uuid'  : data['uuid'],
+        'name' : data['name'],
+        'shortName' : data['shortName'],
+        'testGroup' : data['testGroup'],
+        'requiresSpecimen' : data['requiresSpecimen'],
+        'description' : data['description'],
+        'referenceConcept' : {
+            'uuid' : data['referenceConcept']['uuid'],
+            'name' :  data['referenceConcept']['display'],
         }
-        testGroupsCopy = testGroups.copy()
-        testGroupsCopy.remove(testGroupsCopy[testGroupsCopy.index(data['testGroup'])])
-        referenceConeptsCopy = referenceConepts.copy()
-        referenceConeptsCopy.remove(referenceConeptsCopy[referenceConeptsCopy.index(data['referenceConcept']['display'])])
-        context['state'] = 'edit'
-        context['testGroups'] = testGroupsCopy
-        context['referenceConcepts'] = referenceConeptsCopy
-        return render(req,'commonlab/addtesttypes.html',context=context)
-    else:
-        return render(req,'commonlab/managetesttypes.html',context=context)
+    }
+    print(context['testType'])
+    concepts = helpers.getConceptsByType(req,'labtesttype')
+    context['referenceConcepts'] = concepts
+    context['testGroups'] = testGroups
+    return render(req,'commonlab/addtesttypes.html',context=context)
+    
 
 
 
