@@ -125,3 +125,12 @@ def manageAttributes(req):
     return render(req,'commonlab/manageattributes.html')
 
 
+def addattributes(req):
+    return render(req,'commonlab/addattributes.html')
+
+
+def managetestorders(req):
+    return render(req,'commonlab/managetestorders.html')
+
+def managetestsamples(req):
+    return render(req,'commonlab/managetestsamples.html')

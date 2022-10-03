@@ -35,7 +35,7 @@
           @apply border rounded-md shadow-sm border-gray-200 outline-none focus:ring-0 w-full;
       }
       .input-label{
-          @apply w-2/5 text-[#9E9E9E];
+          @apply text-[#9E9E9E];
       }
 
       .commonlab-actions {

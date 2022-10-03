@@ -6,6 +6,10 @@ urlpatterns = [
     path('testattr' , views.fetchAttributes , name = 'testattr'),
     path('addtesttypes' , views.addTestTypes ,name='addtesttype'),
     path('edittesttype/<str:uuid>',views.editTestType,name='edittesttype'),
-    path('manageattributes',views.manageAttributes,name='manageattr')
+    path('manageattributes',views.manageAttributes,name='manageattr'),
+    path('addattributes' , views.addattributes,name='addattributes'),
+    path('managetestorders' , views.managetestorders,name='managetestorders'),
+    path('managetestsamples' , views.managetestsamples,name='managetestsamples')
+
     
 ]
