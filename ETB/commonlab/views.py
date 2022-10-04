@@ -1,11 +1,8 @@
-from email import header
-from re import U
-from urllib import response
 from django.shortcuts import render,redirect
 import requests
 from django.http import JsonResponse
 from . import helpers
-
+import json
 
 BASE_URL = 'http://46.20.206.173:18080/openmrs/ws/rest/v1/'
 
@@ -38,12 +35,10 @@ def managetesttypes(req):
     return render(req,'commonlab/managetesttypes.html',context=context)
 
 
-def fetchAttributes(req):
-    url = BASE_URL + 'commonlab/labtestattributetype'
-    params = {'testTypeUuid' : req.GET['uuid'],'v' : 'full'}
-    response = requests.get(url=url,params=params)
+def fetchAttributes(req) :
+    response  = helpers.getAttributesByLabTest(req.GET['uuid'])
     attributes  = []
-    for attr in response.json()['results']:
+    for attr in response:
         attributes.append({
             'attrName' : attr['name'],
             'sortWeight' : attr['sortWeight'],
@@ -69,14 +64,15 @@ def addTestTypes(req):
         "shortName" : None if req.POST['shortname'] == '' else req.POST['shortname'],
         }
         url = BASE_URL + 'commonlab/labtesttype'
-        headers = {'Authorization': f'Basic {req.session["encodedCredentials"]}' , 'Cookie' : f"JSESSIONID={req.session['sessionId']}"}
-        response = requests.post(url,data=body,headers=headers)
+        response = helpers.addOrEditTestType(req,body,url)
         if response.status_code == 201:
             return redirect('managetesttypes')
         else:
             print('Error posting')
             print(response.status_code)
             print(response.json()['error']['message'])
+            context['error'] = response.json()['error']['message']
+            return render(req,'commonlab/addtesttypes.html',context=context)
     concepts = helpers.getConceptsByType(req,'labtesttype')
     context['referenceConcepts'] = concepts
     context['testGroups'] = testGroups
@@ -101,28 +97,35 @@ def editTestType(req,uuid):
             'name' :  data['referenceConcept']['display'],
         }
     }
-    print(context['testType'])
-    concepts = helpers.getConceptsByType(req,'labtesttype')
-    context['referenceConcepts'] = concepts
-    context['testGroups'] = testGroups
+    context['referenceConcepts'] = helpers.getConceptsByType(req,'labtesttype')
+    context['testGroups'] = helpers.removeDuplicatesGroup(testGroups,data['testGroup'])
+    if req.method == 'POST':
+        body = {
+        "name" : req.POST['testname'],
+        "testGroup" : req.POST['testgroup'],
+        "requiresSpecimen": True if req.POST['requirespecimen'] == 'Yes' else False,
+        "referenceConcept" : req.POST['referenceconcept'],
+        "description" :req.POST['description'],
+        "shortName" : None if req.POST['shortname'] == '' else req.POST['shortname'],
+        }
+        url = BASE_URL + f'commonlab/labtesttype/{uuid}'
+        response = helpers.addOrEditTestType(req,body,url)
+        if response.status_code == 200:
+            return redirect('managetesttypes')
+
+
     return render(req,'commonlab/addtesttypes.html',context=context)
     
 
 
 
-def manageAttributes(req):
-    url = BASE_URL + 'commonlab/labtesttype'
-    body={
-        "name" : "Test from API",
-        "testGroup" : testGroups[5],
-        "referenceConcept" : 572,
-        "requiresSpecimen" : True
-
-
-    }
-    response = requests.post(url=url,json=body)
-
-    return render(req,'commonlab/manageattributes.html')
+def manageAttributes(req,uuid):
+    context = {}
+    response = helpers.getAttributesByLabTest(uuid)
+    print(response)
+    context['attributes'] = response
+    
+    return render(req,'commonlab/manageattributes.html',context=context)
 
 
 def addattributes(req):
@@ -132,5 +135,5 @@ def addattributes(req):
 def managetestorders(req):
     return render(req,'commonlab/managetestorders.html')
 
-def managetestsamples(req):
+def managetestsamples(req,uuid):
     return render(req,'commonlab/managetestsamples.html')
