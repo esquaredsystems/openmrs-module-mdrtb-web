@@ -1,0 +1,188 @@
+{% extends 'tbregister/base_without_dd.html' %} {% block content %}
+<div class="p-4 flex flex-col justify-center">
+  <h1 class="text-[#2D9CDB] font-bold text-4xl">Reporting</h1>
+
+  <form class="flex flex-col p-4 m-2">
+    <div class="flex flex-col justify-center py-4 space-y-4">
+      <div class="flex items-center space-x-8">
+        <div class="input-container">
+          <label class="w-1/4 text-[#9E9E9E]" for="gender">Oblast</label>
+
+          <select class="input" name="" id="">
+            <option value="">1</option>
+            <option value="">2</option>
+          </select>
+        </div>
+
+        <div class="input-container">
+          <label class="w-1/4 text-[#9E9E9E]" for="gender">Oblast</label>
+
+          <select class="input" name="" id="">
+            <option value="">1</option>
+            <option value="">2</option>
+          </select>
+        </div>
+        <div class="input-container">
+          <label class="w-1/4 text-[#9E9E9E]" for="gender">Oblast</label>
+
+          <select class="input" name="" id="">
+            <option value="">1</option>
+            <option value="">2</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex items-center space-x-8">
+        <div class="input-container">
+          <label class="w-1/4 text-[#9E9E9E]" for="gender">Year</label>
+
+          <select class="input" name="" id="">
+            <option value="">1</option>
+            <option value="">2</option>
+          </select>
+        </div>
+
+        <div class="input-container">
+          <label class="w-1/4 text-[#9E9E9E]" for="gender">Month</label>
+
+          <select class="input" name="" id="">
+            <option value="">1</option>
+            <option value="">2</option>
+          </select>
+        </div>
+
+        <div>OR</div>
+        <div class="input-container">
+          <label class="w-1/4 text-[#9E9E9E]" for="gender">Quater</label>
+
+          <select class="input" name="" id="">
+            <option value="">1</option>
+            <option value="">2</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex items-center space-x-8">
+        <div class="input-container">
+          <label class="w-1/4 text-[#9E9E9E]" for="gender">Custom Year</label>
+          <input id="customyearCB" type="checkbox" />
+        </div>
+        <div id="fromyear" class="input-container opacity-0">
+          <label class="w-1/4 text-[#9E9E9E]" for="gender">From</label>
+          <input type="text" class="input" />
+        </div>
+
+        <div id="toyear" class="input-container opacity-0">
+          <label class="w-1/4 text-[#9E9E9E]" for="gender">To</label>
+          <input type="text" class="input" />
+        </div>
+      </div>
+    </div>
+    <div class="accordion w-4/5" id="accordionExample">
+      <div class="accordion-item bg-white border border-gray-200">
+        <h2 class="accordion-header mb-0" id="headingOne">
+          <button
+            class="accordion-button relative flex items-center w-full py-4 px-5 text-base text-gray-800 text-left bg-white border-0 rounded-none transition focus:outline-none"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseOne"
+            aria-expanded="true"
+            aria-controls="collapseOne"
+          >
+            Custom Filters
+          </button>
+        </h2>
+        <div
+          id="collapseOne"
+          class="accordion-collapse collapse show"
+          aria-labelledby="headingOne"
+          data-bs-parent="#accordionExample"
+        >
+          <div class="accordion-body py-4 px-5">
+            <div class="flex flex-col space-y-6">
+              <div class="flex items-center space-x-8">
+                <div class="input-container">
+                  <label class="w-1/4 text-[#9E9E9E]" for="gender">Age</label>
+                  <input type="checkbox" />
+                </div>
+                <div class="input-container">
+                  <label class="w-1/4 text-[#9E9E9E]" for="gender">From</label>
+                  <input type="text" class="input" />
+                </div>
+
+                <div class="input-container">
+                  <label class="w-1/4 text-[#9E9E9E]" for="gender">To</label>
+                  <input type="text" class="input" />
+                </div>
+              </div>
+              <div class="flex items-center space-x-8">
+                <div class="input-container">
+                  <label class="w-1/4 text-[#9E9E9E]" for="gender"
+                    >Gender</label
+                  >
+                  <input type="checkbox" />
+                </div>
+                <div class="input-container">
+                  <label class="w-1/4 text-[#9E9E9E]" for="gender">Male</label>
+                  <input type="radio" />
+                </div>
+
+                <div class="input-container">
+                  <label class="w-1/4 text-[#9E9E9E]" for="gender"
+                    >Female</label
+                  >
+                  <input type="radio" />
+                </div>
+              </div>
+              <div class="flex items-center space-x-8">
+                <div class="input-container">
+                  <label class="w-1/4 text-[#9E9E9E]" for="gender"
+                    >Address</label
+                  >
+                  <input type="checkbox" />
+                </div>
+                <div class="input-container">
+                  <label class="w-1/4 text-[#9E9E9E]" for="gender"
+                    >Oblast</label
+                  >
+                  <select class="input" name="" id="">
+                    <option value="">1</option>
+                    <option value="">2</option>
+                  </select>
+                </div>
+
+                <div class="input-container">
+                  <label class="w-1/4 text-[#9E9E9E]" for="gender"
+                    >District</label
+                  >
+                  <select class="input" name="" id="">
+                    <option value="">1</option>
+                    <option value="">2</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="bg-[#2D9CDB] text-white rounded-md p-2 w-1/5 mt-12">
+      Generate
+    </button>
+  </form>
+</div>
+
+<script>
+  $("#customyearCB").change(function () {
+    if (
+      $("#fromyear").hasClass("opacity-0") &&
+      $("#toyear").hasClass("opacity-0")
+    ) {
+      $("#fromyear").removeClass("opacity-0");
+      $("#toyear").removeClass("opacity-0");
+    } else {
+      $("#fromyear").addClass("opacity-0");
+      $("#toyear").addClass("opacity-0");
+    }
+  });
+</script>
+
+{% endblock %}

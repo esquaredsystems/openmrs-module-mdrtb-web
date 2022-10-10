@@ -4,54 +4,85 @@
   <div class="flex flex-col">
     <div class="flex items-center justify-between">
       <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
-        Add Attributes
+        {% if state == 'edit' %}Edit Attribute{% else %}Add Attribute{% endif %}
       </h2>
     </div>
 
     <div>
       <form
         method="post"
-        action="{% url 'addtesttype' %}"
+        action="{% if state == 'edit' %} {% url 'editattr' uuid=attribute.uuid %} {% else %} {% url 'addattr' uuid=labTestUuid %} {% endif %}"
         class="grid grid-cols-2 gap-5 shadow-lg p-4 "
       >
         {% csrf_token %}
         <div class="flex flex-col space-y-4 justify-center">
             <div class="input-container">
-                <label class="w-4/5 input-label" for="labtesttype">Lab Test Type</label>
-                <select class="input" name="labtesttype">
-                    <option value="1">1</option>
-                </select>
-            </div>
-            <div class="input-container">
                 <label class="input-label w-4/5">Name</label>
-                <input type="text" class="input w-4/5">
+                {% if state == 'edit' %}
+                <input name="name" required type="text" value="{{attribute.name}}" class="input w-4/5">
+                {% else %}
+                <input name="name" required type="text" class="input w-4/5">
+                {% endif %}
             </div>
             <div class="input-container">
                 <label class="input-label w-4/5">Description</label>
-                <textarea class="input" cols="5" rows="5"></textarea>
-
+                {% if state == 'edit' %}
+                <textarea name="desc" required class="input" cols="5" rows="5">{{attribute.description}}</textarea>
+                {% else %}
+                <textarea name="desc" required class="input" cols="5" rows="5" ></textarea>
+                {% endif %}
             </div>
             <div class="input-container">
                 <label class="input-label w-4/5">Multiset Name</label>
-                <input type="text" class="input w-4/5">
+                {% if state == 'edit' %}
+                <input name="mutname" type="text" value="{{attribute.multisetName}}" class="input w-4/5">
+
+                {% else %}
+                <input name="mutname" type="text" class="input w-4/5">
+
+                {% endif %}
             </div>
             <div class="input-container">
                 <label class="input-label w-4/5">Group Name</label>
-                <input type="text" class="input w-4/5">
+                {% if state == 'edit' %}
+                <input name="grpname" type="text" value="{{attribute.groupName}}" class="input w-4/5">
+
+                {% else %}
+                <input name="grpname" type="text" class="input w-4/5">
+
+                {% endif %}
             </div>
             <div class="input-container">
                 <label class="input-label w-4/5">Min Occurs</label>
-                <input type="text" class="input w-4/5">
+                {% if state == 'edit' %}
+                <input name="minoccur" value="{{attribute.minOccurs}}" disabled type="text" class="input w-4/5">
+
+                {% else %}
+                <input name="minoccur" value="0" disabled type="text" class="input w-4/5">
+
+                {% endif %}
+            </div>
+            <div class="input-container">
+                <label class="input-label w-4/5">Max Occurs</label>
+                {% if state == 'edit' %}
+                <input name="maxoccur" type="number" value="{{attribute.maxOccurs}}" class="input w-4/5">
+                {% else %}
+                <input name="maxoccur" type="number" class="input w-4/5">
+                {% endif %}
+
+                
             </div>
         </div>
         <div class="flex flex-col space-y-4 justify-center">
-            <div class="input-container">
-                <label class="input-label w-4/5">Max Occurs</label>
-                <input type="text" class="input w-4/5">
-            </div>
+            
             <div class="input-container">
                 <label class="input-label w-4/5">Sort Weight</label>
-                <input type="text" class="input w-4/5">
+                {% if state == 'edit' %}
+                <input name="sortweight" type="number" step="0.1" value="{{attribute.sortWeight}}" class="input w-4/5">
+                {% else %}
+                <input name="sortweight" type="number" step="0.1" class="input w-4/5">
+                {% endif %}
+                
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -59,25 +90,94 @@
           
 
             </div>
-            <div class="input-container">
-                <label class="input-label w-4/5">Data Type</label>
-                <select class="input" name="labtesttype">
-                    <option value="1">1</option>
-                </select>
+            
+                <div class="input-container">
+                    <label class="input-label w-4/5">Data Type</label>
+                    <select required onchange="handleDataType()" class="input" id="datatype" name="datatype">
+                        {% if state == 'edit' %}
+                        <option selected value="{{attribute.datatypeClassname.value}}">{{attribute.datatypeClassname.name}}</option>
+                        {% for item in dataTypes %}
+                        <option value="{{item.value}}">{{item.name}}</option>
+                        {% endfor %}
+
+                        {% else %}
+                        {% for item in dataTypes %}
+                        <option value="{{item.value}}">{{item.name}}</option>
+                        {% endfor %}
+                        {% endif %}
+                    </select>
+                    
+                </div>
+                
+            <div id="dataTypeResponse" class="input-container opacity-0">
+                <label class="input-label opacity-0 w-3/5">Config</label>
+                <div class="flex items-center space-x-4">
+                    <label class="input-label" for="config">Length</label>
+                    <input
+                    name="config"
+                    checked
+                    type="radio"
+                    value="Yes"
+                  />
+
+                </div>
+                <div class="flex items-center space-x-4">
+                    <label class="input-label" for="config">Regex</label>
+                    <input
+                    name="config"
+                    type="radio"
+                    value="Yes"
+                  />
+
+                </div>
+                <div     
+                id="range"
+                class="flex items-center space-x-4">
+                    <label class="input-label" for="config">Range</label>
+                    <input
+                    name="config"
+                    type="radio"
+                    value="Yes"
+                  />
+
+                </div>
             </div>
             <div class="input-container">
                 <label class="input-label w-4/5">Data Type Configuration</label>
-                <textarea class="input" cols="5" rows="5"></textarea>
+                {% if state == 'edit' %}
+                <textarea name="datatypeconfig" class="input" cols="5" rows="5">{{attribute.datatypeConfig}}</textarea>
+
+                {% else %}
+                <textarea name="datatypeconfig" class="input" cols="5" rows="5"></textarea>
+
+                {% endif %}
             </div>
             <div class="input-container">
                 <label class="input-label w-4/5">Preferred Handler</label>
-                <select class="input" name="labtesttype">
-                    <option value="1">1</option>
+                <select name="handler" class="input">
+                    {% if state == 'edit' %}
+                    <option selected value="{{attribute.preferredHandlerClassname.value}}">{{attribute.preferredHandlerClassname.name}}</option>
+                    {% for item in prefferedHandlers %}
+                    <option value="{{item.value}}">{{item.name}}</option>
+                    {% endfor %}
+                    {% else %}
+                    <option selected value="Default">Default</option>
+                    {% for item in prefferedHandlers %}
+                    <option value="{{item.value}}">{{item.name}}</option>
+                    {% endfor %}
+                    {% endif %}
+                    
+                    
                 </select>
             </div>
             <div class="input-container">
                 <label class="input-label w-4/5">Handler Configuration</label>
-                <textarea class="input" cols="3" rows="3"></textarea>
+                {% if state == 'edit' %}
+                <textarea class="input" cols="3" rows="3" name="handleconfig">{{attribute.handlerConfig}}</textarea>
+                {% else %}
+                <textarea class="input" cols="3" rows="3" name="handleconfig"></textarea>
+                {% endif %}
+                
             </div>
         </div>
         <button class="bg-[#2D9CDB] text-white rounded-md p-2 w-3/5">Save</button>
@@ -85,5 +185,18 @@
     </div>
   </div>
 </div>
+<script>
+    function handleDataType(){
+        if($('#datatype').val() == 'org.openmrs.customdatatype.datatype.LongFreeTextDatatype.name' ||$('#datatype').val() == 'org.openmrs.customdatatype.datatype.FreeTextDatatype.name'){
+            $('#dataTypeResponse').removeClass('opacity-0')
+            $('#range').addClass('opacity-0')
+        }else if ( $('#datatype').val() == 'org.openmrs.customdatatype.datatype.RegexValidatedTextDatatype.name' ){
+            $('#dataTypeResponse').removeClass('opacity-0')
+            $('#range').removeClass('opacity-0')
+        }else{
+            $('#dataTypeResponse').addClass('opacity-0')
+        }
+    }
+</script>
 
 {% endblock %}

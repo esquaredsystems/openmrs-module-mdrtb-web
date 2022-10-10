@@ -18,11 +18,10 @@
 <body>
 	<header class="p-4	flex items-center justify-between">
 		<div>
-			<img class="w-36 object-contain" src="https://openmrs.org/wp-content/uploads/2021/08/cropped-OpenMRSlogo-transparent.png" alt="OpemMRS logo">
+			<a href="{% url 'home' %}"><img class="w-36 object-contain" src="https://openmrs.org/wp-content/uploads/2021/08/cropped-OpenMRSlogo-transparent.png" alt="OpemMRS logo"></a>
 		</div>
 		<div class="flex items-center space-x-6">
 			{% if request.session.sessionId %}
-			<p class="lo">Logged in as Abdul Basit</p>
 			<p class="text-[#2D9CDB] font-bold">My Profile</p>
 			<a class="text-[#2D9CDB] font-bold" href="{% url 'logout' %}">Log out</a>
 			{% else %}
@@ -39,7 +38,7 @@
 				  </svg>
 				  
 				<div class="dropdown">
-					Patient list
+					<a href="{% url 'patientlist' %}" class="hover:text-black text-black">Patient list</a>
 				</div>
 			</div>
 			<div class="dropdown-parent group">

@@ -19,13 +19,12 @@
 <body>
 	<header class="p-4	 flex items-center justify-between">
 		<div>
-			<img class="w-36 object-contain" src="https://openmrs.org/wp-content/uploads/2021/08/cropped-OpenMRSlogo-transparent.png" alt="OpemMRS logo">
+			<a href="{% url 'home' %}"><img class="w-36 object-contain" src="https://openmrs.org/wp-content/uploads/2021/08/cropped-OpenMRSlogo-transparent.png" alt="OpemMRS logo"></a>
 		</div>
 		<div class="flex items-center space-x-6">
 			{% if request.session.sessionId %}
-			<p>Logged in as Abdul Basit</p>
 			<p class="text-[#2D9CDB] font-bold">My Profile</p>
-			<p><a class="text-[#2D9CDB] hover:text-[#2D9CDB] font-bold" href="{% url 'logout' %}">Log out</a></p>
+			<p class="no-underline"><a href="{% url 'logout' %}" class="no-underline text-[#2D9CDB] hover:text-[#2D9CDB] font-bold ">Log out</a></p>
 			{% else %}
 			<p></p><a class="text-[#2D9CDB] font-bold" href="{% url 'home' %}">Log In</a></p>
 			{% endif %}
