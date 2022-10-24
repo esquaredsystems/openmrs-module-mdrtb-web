@@ -1,8 +1,8 @@
-from multiprocessing import reduction
 from django.shortcuts import render,redirect
 import requests
 from django.http import JsonResponse
 import base64
+from commonlab import helpers
 
 
 BASE_URL = 'http://46.20.206.173:18080/openmrs/ws/rest/v1/'
@@ -37,6 +37,19 @@ def login(req):
         else:
             return render(req,'tbregister/login.html')
 
+def search_patients(req):
+    q= req.GET['q']
+    print(q)
+    context={}
+    url= BASE_URL + f'patient?q={q}&v=full'
+    headers= helpers.getAuthHeaders(req)
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        print(response.json())
+        return JsonResponse(response.json())
+
+
+
 def enroll(req):
     return render(req,'tbregister/enroll_with_form.html')
 
@@ -55,6 +68,10 @@ def patientList(req):
 
     }
     return render(req,'tbregister/patientlist.html',context=context)
+
+def patient_dashboard(req,uuid):
+    print(uuid)
+    return render(req,'tbregister/dashboard.html')
 
 
 def logout(req):

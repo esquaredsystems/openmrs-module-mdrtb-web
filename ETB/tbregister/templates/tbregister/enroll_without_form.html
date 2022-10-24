@@ -4,35 +4,112 @@
 
 
 <div class="flex flex-col  justify-center m-36 flex-grow">
-    <div class="flex flex-col justify-center items-center">
-        <div
-        class="rounded-md cursor-pointer shadow-sm w-3/5 bg-gray-200 flex items-center justify-between px-2"
-      >
-        <input
-          class="border-none focus:ring-0 bg-transparent"
-          type="text"
-          placeholder="Search for Patients"
-        />
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="w-6 h-6"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-          />
-        </svg>
-      </div>
-      <div class="flex items-center space-x-4 mt-6">
-          <p>Can't find the partient ? </p>
-          <a href="{% url 'Enroll3' %}"><button class="bg-[#2D9CDB] text-white rounded-md p-2">Create One</button></a>
-        </div>
+  <div class="flex flex-col justify-center items-center">
+    <div
+      class="rounded-tr-md rounded-tl-md cursor-pointer shadow-sm w-3/5 bg-gray-200 flex items-center justify-between px-2">
+      <input class="border-none focus:ring-0 bg-transparent" type="text" id="search-input" name="search"
+        placeholder="Search for Patients" />
+      <svg id="search-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+      </svg>
     </div>
+    <div id="search-results"
+      class="rounded-br-md rounded-bl-md hidden p-4 m-2 cursor-pointer shadow-sm w-3/5 bg-gray-200 flex-col max-h-52  overflow-scroll">
+      <div id="search-results" class="grid grid-cols-1 ">
+       
+
+
+
+      </div>
+    </div>
+    <div class="flex items-center space-x-4 mt-6">
+      <p>Can't find the partient ? </p>
+      <a href="{% url 'Enroll3' %}"><button class="bg-[#2D9CDB] text-white rounded-md p-2">Create One</button></a>
+    </div>
+  </div>
+  <script src="https://cdn.lordicon.com/qjzruarw.js"></script>
+
+  <script>
+    $('#search-input').keyup(function () {
+      
+
+      if ($('#search-input').val() === '') {
+
+        $('#search-results').addClass('hidden')
+        $('#search-results').removeClass('flex')
+        $('#search-results').html("")
+
+      } else {
+        $('#search-results').html("")
+        $('#search-results').append(`
+        
+        <div class="flex items-center justify-center">
+<lord-icon
+    src="https://cdn.lordicon.com/xjovhxra.json"
+    trigger="loop"
+    colors="primary:#121331,secondary:#2d9cdb"
+    style="width:50px;height:50px">
+</lord-icon>
+          </div>
+        
+        `)
+
+        let val = $('#search-input').val()
+        $.ajax({
+          url: "{% url 'search'%}?q=" + `${val}`,
+          method: 'GET',
+
+          success: function (data) {
+            console.log(data)
+            if (data.results.length === 0) {
+              $('#search-results').html("")
+              $('#search-results').append(
+                `
+              <div class="flex items-center text-center justify-center">
+                <h3>
+                  Could not find any patient according to your search
+                  </h3>
+            </div>
+              `
+              )
+            } else {
+              $('#search-results').html("")
+
+              $('#search-results').append(
+                `<div class="grid grid-cols-5 border-b border-black p-1 gap-4">
+              <p>Identifier</p>
+              <p class="col-span-2">Given Name</p>
+              <p>Age</p>
+              <p>Gender</p>
+            </div>`
+              )
+              for (i = 0; i < data.results.length; i++) {
+                const path = `/patient/${data.results[i].uuid}`
+                $('#search-results').append(
+                  `
+                <a href="${path}">
+                  <div class="grid grid-cols-5 border-b border-black p-1 gap-4">
+                <p>${data.results[i].identifiers[i].identifier}</p>
+                <p class="text-wrap col-span-2">${data.results[i].identifiers[i].identifierType.display}</p>
+                <p>${data.results[i].person.age}</p>
+                <p>${data.results[i].person.gender}</p>
+            </div></a>
+                  
+                  `
+                )
+              }
+            }
+          }
+
+        })
+        $('#search-results').removeClass('hidden')
+        $('#search-results').addClass('flex')
+      }
+    })
+  </script>
+
 </div>
 
 

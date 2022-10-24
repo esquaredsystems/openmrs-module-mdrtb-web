@@ -1,93 +1,134 @@
 {% extends 'tbregister/base.html' %} {%block content%}
-<div class="mt-36 ml-4">
-  <div class="p-4 mt-12 ml-6 flex flex-col justify-center">
-    <h1 class="text-[#2D9CDB] font-extrabold text-4xl">Enroll New Patient</h1>
-
-    <form class="flex flex-col p-4">
-      <div class="flex justify-start items-start py-4 space-x-12">
-        <div class="space-y-3 w-1/4">
-          <div class="input-container">
-            <label class="input-label" for="fname">Id Number(s)</label>
-
-            <input class="input" type="text" />
+<div>
+  <form class="flex flex-col">
+    <div class="m-16 flex flex-col justify-center space-y-8">
+      <h1 class="text-[#2D9CDB] text-3xl font-bold">Register a Patient</h1>
+      <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4">
+        <div class="input-container">
+          <label class="input-label " for="name">Name</label>
+          <input class="input" type="text">
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="input-container space-x-8">
+            <label class="text-[#9E9E9E] font-bold w-4/12" for="name">Date of Birth</label>
+            <input class="border rounded-md shadow-sm border-gray-200 outline-none focus:ring-0 w-full" type="date">
           </div>
-
-          <div class="input-container group">
-            <label class="input-label" for="DOB">Date of Birth</label>
-
-            <input class="input" type="date" />
-          </div>
+          <div class="font-bold">OR</div>
           <div class="input-container">
-            <label class="input-label" for="gender">Country</label>
-
-            <select class="input" name="" id="">
-              <option value="">TJK</option>
-              <option value="">Russia</option>
-            </select>
+            <label class="input-label" for="name">Age</label>
+            <input class="input" type="number">
           </div>
         </div>
-        <div class="space-y-3 w-1/4">
-          <div class="input-container">
-            <label class="w-2/5 text-[#9E9E9E]" for="lname">Given Name</label>
-
-            <input class="input cursor-text" type="text" />
-          </div>
-          <div class="input-container">
-            <label class="input-label" for="gender">Gender</label>
-
-            <select class="input flex-1" name="" id="">
-              <option value="">Male</option>
-              <option value="">Female</option>
-            </select>
-          </div>
-          <div class="input-container">
-            <label class="input-label" for="gender">Oblast</label>
-
-            <select class="input" name="" id="">
-              <option value="">ob1</option>
-              <option value="">ob2</option>
-            </select>
-          </div>
-        </div>
-        <div class="space-y-5 w-1/4">
-          <div class="input-container">
-            <label class="input-label" for="lname">Family Name</label>
-
-            <input class="input" type="text" />
-          </div>
-          <div class="flex items-center space-x-6">
-            <div class="flex items-center space-x-4">
-              <label for="">Deceased</label>
-              <input type="radio" />
+        <div class="input-container">
+          <label class="input-label" for="name">Gender</label>
+          <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2">
+              <label for="Male">Male</label>
+              <input name="gender" type="radio">
             </div>
-            <div class="flex items-center space-x-4">
-              <label for="">Voided</label>
-              <input class="text-[#2D9CDB]" checked type="radio" />
+            <div class="flex items-center space-x-2">
+              <label for="Male">Female</label>
+              <input name="gender" type="radio">
             </div>
-          </div>
-          <div class="input-container">
-            <label class="input-label" for="age">District</label>
-
-            <input class="input" type="text" />
           </div>
         </div>
       </div>
-      <div class="flex flex-col justify-center space-y-4 w-3/4">
+      <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4">
         <div class="input-container">
-          <label class="w-1/12 text-[#9E9E9E]" for="gender">Address</label>
-
-          <input class="input" type="text" />
+          <label class="input-label" for="name">Country</label>
+          <select class="input">
+            <option value="">Tajikistan</option>
+            <option value="">Other</option>
+          </select>
         </div>
         <div class="input-container">
-          <label class="w-1/12 text-[#9E9E9E]" for="gender">Address 2</label>
-
-          <input class="input" type="text" />
+          <label class="input-label" for="name">Oblast</label>
+          <select class="input">
+            <option value="">Dushanbe</option>
+            <option value="">Khatlon</option>
+          </select>
+        </div>
+        <div class="input-container">
+          <label class="input-label" for="name">District</label>
+          <select class="input">
+            <option value="">D1</option>
+            <option value="">D2</option>
+          </select>
+        </div>
+        <div class="input-container">
+          <label class="input-label" for="name">Facility</label>
+          <select class="input">
+            <option value="">F1</option>
+            <option value="">F2</option>
+          </select>
+        </div>
+        <div class="input-container">
+          <label class="input-label" for="name">Address</label>
+          <input class="input" type="text">
+        </div>
+        <div class="input-container">
+          <label class="input-label opacity-0" for="name">Address</label>
+          <input class="input" type="text">
         </div>
       </div>
-      <button class="bg-[#2D9CDB] text-white rounded-md p-2 mt-4 w-1/5">
-        Enroll
+      <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4">
+        <div class="input-container">
+          <label class="input-label" for="deceased">Deceased</label>
+          <input id="deceased" type="checkbox" class="border-none shadow-sm cursor-pointer">
+        </div>
+        <div id="deceased-container" class="hidden items-center space-x-8">
+          <div class="input-container">
+            <label class="text-[#9E9E9E] font-bold" for="deceased">Death Date</label>
+            <input type="date" class="input">
+          </div>
+          <div class="input-container">
+            <label class="text-[#9E9E9E] font-bold" for="deceased">Cause of Date</label>
+            <input type="text" class="input">
+          </div>
+        </div>
+        <div class="input-container">
+          <label class="input-label" for="deceased">Voided</label>
+          <input id="voided" type="checkbox" class="border-none shadow-sm cursor-pointer">
+        </div>
+        <div id="voided-container" class="input-container hidden">
+          <label class="text-[#9E9E9E] font-bold" for="deceased">Reason to Void</label>
+          <input type="text" class="input">
+        </div>
+      </div>
+    </div>
+    <div style="margin-left:4rem; margin-top: -2rem;" class="flex items-center">
+      <button style="margin-bottom: 4rem;" class="bg-[#2D9CDB] p-2 w-1/5 rounded-md text-white">
+        Register
       </button>
-    </form>
-  </div>
+      <button style="margin-bottom: 4rem; margin-left: -4rem;"
+        class="p-2 font-bold w-1/5 rounded-md underline text-[#044062]">
+        Cancel
+      </button>
+    </div>
+
+  </form>
+  <script>
+    $('#deceased').change(function () {
+      if ($('#deceased').prop('checked')) {
+        $('#deceased-container').removeClass('hidden');
+        $('#deceased-container').addClass('flex');
+      } else {
+        $('#deceased-container').addClass('hidden');
+        $('#deceased-container').removeClass('flex');
+
+      }
+    })
+    $('#voided').change(function () {
+      if ($('#voided').prop('checked')) {
+        $('#voided-container').removeClass('hidden');
+        $('#voided-container').addClass('flex');
+      } else {
+        $('#voided-container').addClass('hidden');
+        $('#voided-container').removeClass('flex');
+
+      }
+    })
+  </script>
+
 </div>
 {% endblock %}
