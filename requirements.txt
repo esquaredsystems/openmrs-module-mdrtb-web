@@ -4,3 +4,4 @@ django-browser-reload==1.6.0
 django-tailwind==3.4.0
 sqlparse==0.4.2
 tzdata==2022.2
+requests

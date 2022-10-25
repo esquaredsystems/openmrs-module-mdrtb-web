@@ -7,7 +7,7 @@
   <div class="flex flex-col justify-center items-center">
     <div
       class="rounded-tr-md rounded-tl-md cursor-pointer shadow-sm w-3/5 bg-gray-200 flex items-center justify-between px-2">
-      <input class="border-none focus:ring-0 bg-transparent" type="text" id="search-input" name="search"
+      <input class="border-none focus:ring-0 bg-transparent flex-1" type="text" id="search-input" name="search"
         placeholder="Search for Patients" />
       <svg id="search-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
         class="w-6 h-6">
@@ -78,7 +78,7 @@
               $('#search-results').html("")
 
               $('#search-results').append(
-                `<div class="grid grid-cols-5 border-b border-black p-1 gap-4">
+                `<div class="grid grid-cols-5 font-bold border-b border-black p-1 gap-4">
               <p>Identifier</p>
               <p class="col-span-2">Given Name</p>
               <p>Age</p>
