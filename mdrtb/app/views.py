@@ -5,6 +5,7 @@ from django.http import JsonResponse
 import base64
 import restapi_utils as ru
 import commonlab_util as cu
+import util
 
 
 BASE_URL = 'http://46.20.206.173:18080/openmrs/ws/rest/v1/'
@@ -95,6 +96,7 @@ def index(req):
 
 
 def login(req):
+    print(req)
     if 'sessionId' in req.session:
         return render(req, 'app/tbregister/enroll_without_form.html')
     else:
@@ -154,7 +156,7 @@ def logout(req):
 
 
 def manage_test_types(req):
-    status,response = ru.get(req,'commonlab/labtesttype',{'v' : 'default'})
+    status,response = ru.get(req,'commonlab/labtesttype',{'v' : 'full'})
     context = {'response' :response['results'] if status else []}
     return render(req,'app/commonlab/managetesttypes.html',context=context)
 
@@ -166,17 +168,17 @@ def fetch_attributes(req):
         attributes.append({
             'attrName' : attribute['name'],
             'sortWeight' : attribute['sortWeight'],
-            'groupName' : attribute['groupName'],
-            'multisetName' : attribute['multisetName']
+            'groupName' : 'none' if attribute['groupName'] == None else attribute['groupName'],
+            'multisetName' :'none' if attribute['multisetName'] == None else attribute['multisetName']
         })
 
-
+    print(attributes)
 
     return JsonResponse({'attributes' : attributes})
 
 
 
-def addTestTypes(req):
+def add_test_type(req):
     context = {}
     if req.method == 'POST':
         body = {
@@ -187,42 +189,39 @@ def addTestTypes(req):
         "description" :req.POST['description'],
         "shortName" : None if req.POST['shortname'] == '' else req.POST['shortname'],
         }
-        url = BASE_URL + '/labtesttype'
-        response = ru.addOrEditTestType(req,body,url)
-        if response.status_code == 201:
+        status,response = cu.add_edit_test_type(req,body,"commonlab/labtesttype")
+        if status:
             return redirect('managetesttypes')
         else:
-            print('Error posting')
-            print(response.status_code)
-            print(response.json()['error']['message'])
-            context['error'] = response.json()['error']['message']
+            print(response)
+            context['error'] = response
             return render(req,'app/commonlab/addtesttypes.html',context=context)
-    concepts = ru.getConceptsByType(req,'labtesttype')
+    concepts = cu.get_commonlab_concepts_by_type(req,'labtesttype')
     context['referenceConcepts'] = concepts
     context['testGroups'] = testGroups
     return render(req,'app/commonlab/addtesttypes.html',context=context)
 
 
-def editTestType(req,uuid):
-    url = BASE_URL + f'/labtesttype/{uuid}?v=full'
-    headers = {'Authorization': f'Basic {req.session["encodedCredentials"]}' , 'Cookie' : f"JSESSIONID={req.session['sessionId']}"}
-    response = requests.get(url,headers=headers)
-    data = response.json()
-    context = {'state' : 'edit'}
-    context['testType'] = {
-        'uuid'  : data['uuid'],
-        'name' : data['name'],
-        'shortName' : data['shortName'],
-        'testGroup' : data['testGroup'],
-        'requiresSpecimen' : data['requiresSpecimen'],
-        'description' : data['description'],
-        'referenceConcept' : {
-            'uuid' : data['referenceConcept']['uuid'],
-            'name' :  data['referenceConcept']['display'],
+def edit_test_type(req,uuid):
+    context={}
+    status,response = ru.get(req,f'commonlab/labtesttype/{uuid}',{'v':'full','lang':'en'})
+    if status:
+        data = response
+        context['state'] = 'edit'
+        context['testType'] = {
+            'uuid'  : data['uuid'],
+            'name' : data['name'],
+            'shortName' : data['shortName'],
+            'testGroup' : data['testGroup'],
+            'requiresSpecimen' : data['requiresSpecimen'],
+            'description' : data['description'],
+            'referenceConcept' : {
+                'uuid' : data['referenceConcept']['uuid'],
+                'name' :  data['referenceConcept']['display'],
+            }
         }
-    }
-    context['referenceConcepts'] = ru.getConceptsByType(req,'labtesttype')
-    context['testGroups'] = ru.removeGivenStrFromArr(testGroups,data['testGroup'])
+        context['referenceConcepts'] = cu.get_commonlab_concepts_by_type(req,'labtesttype')
+        context['testGroups'] = util.removeGivenStrFromArr(testGroups,data['testGroup'])
     if req.method == 'POST':
         body = {
         "name" : req.POST['testname'],
@@ -232,27 +231,25 @@ def editTestType(req,uuid):
         "description" :req.POST['description'],
         "shortName" : None if req.POST['shortname'] == '' else req.POST['shortname'],
         }
-        url = BASE_URL + f'/labtesttype/{uuid}'
-        response = ru.addOrEditTestType(req,body,url)
-        if response.status_code == 200:
+        status,response = cu.add_edit_test_type(req,body,f'commonlab/labtesttype/{uuid}')
+        if status: 
             return redirect('managetesttypes')
 
 
     return render(req,'app/commonlab/addtesttypes.html',context=context)
     
 
-def retireTestType(req,uuid):
+def retire_test_type(req,uuid):
     if req.method == 'POST':
-        url = BASE_URL + f'/labtesttype/{uuid}'
-        headers = ru.getAuthHeaders(req)
-        response = requests.delete(url,headers=headers)
-        if response.status_code == 204:
+        status,_ = ru.delete(req,f'commonlab/labtesttype/{uuid}')
+        if status:
+            print(status)
             return redirect('managetesttypes')
     return render(req,'app/commonlab/addtesttypes.html')
 
 def manageAttributes(req,uuid):
     context = {'labTestUuid' : uuid}
-    response = ru.getAttributesByLabTest(uuid)
+    response = cu.get_attributes_of_labtest(req,uuid)
     context['attributes'] = response
     
     
@@ -276,28 +273,25 @@ def addattributes(req,uuid):
             'handlerConfig' : req.POST.get('handleconfig', ''),
 
         }
-        
-        url = BASE_URL + '/labtestattributetype'
-        headers = ru.getAuthHeaders(req)
-        response = requests.post(url,json=body,headers=headers)
-        if response.status_code == 201:
-            return redirect(f'/app/commonlab/manageattributes/{uuid}')
+        status,response = ru.post(req,'commonlab/labtestattributetype',body)
+        if status:
+            return redirect(f'/commonlab/labtest/{uuid}/manageattributes')
         else:
-            print(response.status_code)
-            print(response.json())
+            print(response)
     
         
     return render(req,'app/commonlab/addattributes.html',context=context)
 
 
 def editAttribute(req,uuid):
-    context = {'state' : 'edit' ,}
-    url = BASE_URL + f'/labtestattributetype/{uuid}?v=full'
-    headers =ru.getAuthHeaders(req)
-    response = requests.get(url,headers=headers)
-    context['attribute'] = ru.customAttr(response.json(),attributesDataTypes,response.json()['datatypeClassname'],attributesPrefferedHandler,response.json()['preferredHandlerClassname'])
-    context['dataTypes'] = ru.removeGivenStrFromObjArr(attributesDataTypes,response.json()['datatypeClassname'],'views')
-    context['prefferedHandlers'] = ru.removeGivenStrFromObjArr(attributesPrefferedHandler,response.json()['preferredHandlerClassname'],'views')
+    context = {'state' : 'edit'}
+    status,response = ru.get(req,f'commonlab/labtestattributetype/{uuid}',{'v':"full"})
+    if status:
+        context['attribute'] = cu.custom_attribute(response,attributesDataTypes,response['datatypeClassname'],attributesPrefferedHandler,response['preferredHandlerClassname'])
+        context['dataTypes'] = util.removeGivenStrFromObjArr(attributesDataTypes,response['datatypeClassname'],'views')
+        context['prefferedHandlers'] = util.removeGivenStrFromObjArr(attributesPrefferedHandler,response['preferredHandlerClassname'],'views')
+    else:
+        return redirect(f'/commonlab/manageattributes/{uuid}')
     if req.method == 'POST':
         body= {
             'name' : req.POST['name'],
@@ -312,9 +306,7 @@ def editAttribute(req,uuid):
             'handlerConfig' : req.POST.get('handleconfig', ''),
 
         }
-        url = BASE_URL + f'/labtestattributetype/{uuid}'
-        headers = ru.getAuthHeaders(req)
-        response = requests.post(url,json=body,headers=headers)
+        status,response = ru.post(req,f'commonlab/labtestattributetype/{uuid}',body)
         if response.status_code == 200:
             return redirect(f'/commonlab')
         else:

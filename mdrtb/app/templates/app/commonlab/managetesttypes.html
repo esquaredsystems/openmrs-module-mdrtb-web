@@ -14,7 +14,7 @@
     </div>
     <div class="m-4">
       <div class="accordion" id="attrAccordion">
-    
+        
       </div>
       
 
@@ -130,7 +130,6 @@
   </div>
   <script>
     function showModal(uuid){
-      console.log(uuid)
       let output = ''
       $('#modal').removeClass('opacity-0')
         $.ajax(
@@ -138,8 +137,9 @@
             url : "{% url 'fetchattributes' %}?uuid=" + `${uuid}`,
             method: 'GET',
             success : function(data){
-             
-              for(i=0;i<data.attributes.length;i++){
+             console.log(data)
+             $('#attrAccordion').html('') 
+             for(i=0;i<data.attributes.length;i++){
                 console.log(`heading${i} and collapse${i}`)
                 
                 output += `<div class='accordion-item bg-white border border-gray-200'>
@@ -154,7 +154,7 @@
             <div class="accordion-body py-4 px-5">
              <div>
                <span>
-                <strong>Sort Weight:</strong> 
+                <strong class="text-red">Sort Weight:</strong> 
                </span>
                <span>${data.attributes[i].sortWeight}</span>
              </div>
@@ -180,7 +180,7 @@
                   </div>`
                 $('#attrAccordion').html(
                   output
-                )
+)
               }
             }
           }

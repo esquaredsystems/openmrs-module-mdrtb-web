@@ -1,6 +1,6 @@
-from http.client import HTTPException
+from re import T
+from urllib import response
 import requests
-from django.http import JsonResponse
 from mdrtb.settings import BASE_URL
 import base64
 
@@ -26,6 +26,23 @@ def get(req, endpoint, parameters):
     else:
         return False, response.json()
 
+
+
+def post(req,endpoint,data):
+    response = requests.post(url=BASE_URL+endpoint,headers=get_auth_headers(req),json=data)
+    if response.ok:
+        return True,response.json()
+    return False, response.json()
+
+
+def delete(req,endpoint):
+    response = requests.delete(url=BASE_URL+endpoint,headers=get_auth_headers(req))
+    print(response.status_code)
+    if response.ok:
+
+        return True,response
+    else:
+        return False,response
 
 def get_auth_headers(req):
     headers = {'Authorization': f'Basic {req.session["encodedCredentials"]}',

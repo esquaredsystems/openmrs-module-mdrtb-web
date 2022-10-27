@@ -13,14 +13,14 @@ urlpatterns = [
     path('patientlist', views.patientList, name='patientlist'),
     path('commonlab/managetesttypes' , views.manage_test_types,name='managetesttypes'),
     path('commonlab/fetchattributes' , views.fetch_attributes , name = 'fetchattributes'),
-    path('commonlab/addtesttypes' , views.addTestTypes ,name='addtesttype'),
-    path('commonlab/edittesttype/<str:uuid>',views.editTestType,name='edittesttype'),
-    path('commonlab/manageattributes/<str:uuid>',views.manageAttributes,name='manageattr'),
-    path('commonlab/addattributes/<str:uuid>' , views.addattributes,name='addattr'),
+    path('commonlab/addtesttypes' , views.add_test_type ,name='addtesttype'),
+    path('commonlab/edittesttype/<str:uuid>',views.edit_test_type,name='edittesttype'),
+    path('commonlab/labtest/<str:uuid>/manageattributes',views.manageAttributes,name='manageattr'),
+    path('commonlab/labtest/<str:uuid>/addattributes' , views.addattributes,name='addattr'),
     path('commonlab/editattributes/<str:uuid>' , views.editAttribute,name='editattr'),
     path('commonlab/managetestorders' , views.managetestorders,name='managetestorders'),
     path('commonlab/managetestsamples' , views.managetestsamples,name='managetestsamples'),
-    path('commonlab/retiretesttype/<str:uuid>', views.retireTestType,name='retiretesttype')
+    path('commonlab/retiretesttype/<str:uuid>', views.retire_test_type,name='retiretesttype')
 
 
 

@@ -1,20 +1,17 @@
+from os import stat
 import requests
 from django.http import JsonResponse
 from mdrtb.settings import BASE_URL
 import restapi_utils as ru
 
-def getConceptsByType(req, type):
-    url = BASE_URL + f'commonlab/concept?type={type}&lang=en'
+def get_commonlab_concepts_by_type(req, type):
+    status,response = ru.get(req,'commonlab/concept',{'type' :type})
     concepts = []
-    headers = getAuthHeaders(req)
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        for concept in response.json()['results']:
-            concepts.append({'name': concept['name'], 'uuid': concept['uuid']})
+    if status:
+        for concept in response['results']:
+                concepts.append({'name': concept['name'], 'uuid': concept['uuid']})
     else:
-        print('FROM CONCEPT HELPER')
-        print(response.status_code)
-        print(response.json()['error']['message'])
+        print(response)
     return concepts
 
 
@@ -23,16 +20,17 @@ def get_attributes_of_labtest(req,uuid):
     if status:
         return data['results']
     else:
-        return data['message']
+        return data['error']['message']
 
 
-def addOrEditTestType(req, data, url):
-    headers = getAuthHeaders(req)
-    response = requests.post(url, json=data, headers=headers)
-    return response
+def add_edit_test_type(req, data, url):
+    status,response = ru.post(req,url,data)
+    if status:
+        return status, response
+    return status, response
 
 
-def customAttr(data, dataTypes, removeDT, preferedHandlers, removeHandler):
+def custom_attribute(data, dataTypes, removeDT, preferedHandlers, removeHandler):
     attribute = {
         'uuid': data['uuid'],
         'name': data['name'],
