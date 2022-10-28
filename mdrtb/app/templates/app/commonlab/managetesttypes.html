@@ -141,8 +141,8 @@
              $('#attrAccordion').html('') 
              for(i=0;i<data.attributes.length;i++){
                 console.log(`heading${i} and collapse${i}`)
-                
-                output += `<div class='accordion-item bg-white border border-gray-200'>
+                $('#attrAccordion').html(
+                  `<div class='accordion-item bg-white border border-gray-200'>
                   
                   <h2 class="accordion-header mb-0" id="H${i}">
             <button class="accordion-button py-4 px-5 bg-white text-black" type="button" data-bs-toggle="collapse" data-bs-target="#C${i}" aria-expanded="${i === 0 ? 'true' : 'false'}"
@@ -178,9 +178,7 @@
           </div>
                   
                   </div>`
-                $('#attrAccordion').html(
-                  output
-)
+                )
               }
             }
           }
@@ -189,9 +187,7 @@
 
     function closeModal(){
       $('#modal').addClass('opacity-0')
-      let output = ""
-      
-      $('#attrAccordion').html(output)
+      $('#attrAccordion').html("")
     }
 </script>
 {% endblock %}

@@ -1,0 +1,652 @@
+{
+    "results": [
+        [
+            [
+                {
+                    "uuid": "b769ccb9-6299-4da9-8a99-83fa4d502ca4",
+                    "display": "This is a construct test",
+                    "testGroup": "BLOOD_BANK",
+                    "shortName": "TB",
+                    "requiresSpecimen": true,
+                    "referenceConcept": {
+                        "uuid": "31bf10e0-0370-102d-b0e3-001ec94a0cc1",
+                        "display": "TUBERCULOSIS CULTURE CONSTRUCT",
+                        "name": {
+                            "display": "TUBERCULOSIS CULTURE CONSTRUCT",
+                            "uuid": "83e3141d-2f03-4a0f-a102-5390e8e0a734",
+                            "name": "TUBERCULOSIS CULTURE CONSTRUCT",
+                            "locale": "en",
+                            "localePreferred": true,
+                            "conceptNameType": "FULLY_SPECIFIED",
+                            "links": [
+                                {
+                                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31bf10e0-0370-102d-b0e3-001ec94a0cc1/name/83e3141d-2f03-4a0f-a102-5390e8e0a734",
+                                    "rel": "self"
+                                },
+                                {
+                                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31bf10e0-0370-102d-b0e3-001ec94a0cc1/name/83e3141d-2f03-4a0f-a102-5390e8e0a734?v=full",
+                                    "rel": "full"
+                                }
+                            ],
+                            "resourceVersion": "1.9"
+                        },
+                        "datatype": {
+                            "uuid": "8d4a4c94-c2cc-11de-8d13-0010c6dffd0f",
+                            "display": "N/A",
+                            "links": [
+                                {
+                                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f",
+                                    "rel": "self"
+                                }
+                            ]
+                        },
+                        "conceptClass": {
+                            "uuid": "8d492026-c2cc-11de-8d13-0010c6dffd0f",
+                            "display": "LabSet",
+                            "links": [
+                                {
+                                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/conceptclass/8d492026-c2cc-11de-8d13-0010c6dffd0f",
+                                    "rel": "self"
+                                }
+                            ]
+                        },
+                        "set": true,
+                        "version": "",
+                        "retired": false,
+                        "names": [
+                            {
+                                "uuid": "b1cd585f-0591-4112-b1bd-4e4defadd643",
+                                "display": "\u041a\u041e\u041d\u0421\u0422\u0420\u0423\u041a\u0422 \u041a\u0423\u041b\u042c\u0422\u0423\u0420\u0410\u041b\u042c\u041d\u041e\u0413\u041e \u0418\u0421\u0421\u041b\u0415\u0414\u041e\u0412\u0410\u041d\u0418\u042f \u041d\u0410 \u0422\u0423\u0411\u0415\u0420\u041a\u0423\u041b\u0401\u0417",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31bf10e0-0370-102d-b0e3-001ec94a0cc1/name/b1cd585f-0591-4112-b1bd-4e4defadd643",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "5b9bb349-6e12-495b-a6ee-377b9b3d58ff",
+                                "display": "\u041a\u0423\u041b\u042c\u0422\u0423\u0420\u0410",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31bf10e0-0370-102d-b0e3-001ec94a0cc1/name/5b9bb349-6e12-495b-a6ee-377b9b3d58ff",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "83e3141d-2f03-4a0f-a102-5390e8e0a734",
+                                "display": "TUBERCULOSIS CULTURE CONSTRUCT",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31bf10e0-0370-102d-b0e3-001ec94a0cc1/name/83e3141d-2f03-4a0f-a102-5390e8e0a734",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "fbded63a-d968-43cd-9a50-ca5f6ee86155",
+                                "display": "CULTURE",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31bf10e0-0370-102d-b0e3-001ec94a0cc1/name/fbded63a-d968-43cd-9a50-ca5f6ee86155",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "d03a04ec-4922-42e2-8c31-f6acc6ac411b",
+                                "display": "NOT_ENTERED",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31bf10e0-0370-102d-b0e3-001ec94a0cc1/name/d03a04ec-4922-42e2-8c31-f6acc6ac411b",
+                                        "rel": "self"
+                                    }
+                                ]
+                            }
+                        ],
+                        "descriptions": [],
+                        "mappings": [
+                            {
+                                "uuid": "a935795a-c72a-4071-b89b-4a627d937321",
+                                "display": "ZL/PIH installation in Haiti: 153",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31bf10e0-0370-102d-b0e3-001ec94a0cc1/mapping/a935795a-c72a-4071-b89b-4a627d937321",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "ecaa865a-6f72-40fa-b979-4cac290996d0",
+                                "display": "ETB-Tajikistan: 153",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31bf10e0-0370-102d-b0e3-001ec94a0cc1/mapping/ecaa865a-6f72-40fa-b979-4cac290996d0",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "430fbc5e-0371-102d-b0e3-001ec94a0cc1",
+                                "display": "org.openmrs.module.mdrtb: 153",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31bf10e0-0370-102d-b0e3-001ec94a0cc1/mapping/430fbc5e-0371-102d-b0e3-001ec94a0cc1",
+                                        "rel": "self"
+                                    }
+                                ]
+                            }
+                        ],
+                        "answers": [],
+                        "setMembers": [
+                            {
+                                "uuid": "31bf0f32-0370-102d-b0e3-001ec94a0cc1",
+                                "display": "CULTURE",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31bf0f32-0370-102d-b0e3-001ec94a0cc1",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "31bf065e-0370-102d-b0e3-001ec94a0cc1",
+                                "display": "TUBERCULOSIS SAMPLE SOURCE",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31bf065e-0370-102d-b0e3-001ec94a0cc1",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "31bef4ac-0370-102d-b0e3-001ec94a0cc1",
+                                "display": "COLONIES",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31bef4ac-0370-102d-b0e3-001ec94a0cc1",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "31bf030c-0370-102d-b0e3-001ec94a0cc1",
+                                "display": "START DATE",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31bf030c-0370-102d-b0e3-001ec94a0cc1",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "31bf0e60-0370-102d-b0e3-001ec94a0cc1",
+                                "display": "TUBERCULOSIS TEST RESULT DATE",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31bf0e60-0370-102d-b0e3-001ec94a0cc1",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "31bf073a-0370-102d-b0e3-001ec94a0cc1",
+                                "display": "TUBERCULOSIS TEST DATE RECEIVED",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31bf073a-0370-102d-b0e3-001ec94a0cc1",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "31bf0d84-0370-102d-b0e3-001ec94a0cc1",
+                                "display": "TUBERCULOSIS CULTURE METHOD",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31bf0d84-0370-102d-b0e3-001ec94a0cc1",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "31befc22-0370-102d-b0e3-001ec94a0cc1",
+                                "display": "TYPE OF ORGANISM",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31befc22-0370-102d-b0e3-001ec94a0cc1",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "31bef8d0-0370-102d-b0e3-001ec94a0cc1",
+                                "display": "TYPE OF ORGANISM NON-CODED",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31bef8d0-0370-102d-b0e3-001ec94a0cc1",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "8a91ba44-c926-4bdc-802d-f1defe4f4e0f",
+                                "display": "TUBERCULOSIS TEST DATE ORDERED",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/8a91ba44-c926-4bdc-802d-f1defe4f4e0f",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "fbef36fd-8f0d-4bac-8b2d-0c6141c91382",
+                                "display": "DAYS TO POSITIVITY",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/fbef36fd-8f0d-4bac-8b2d-0c6141c91382",
+                                        "rel": "self"
+                                    }
+                                ]
+                            }
+                        ],
+                        "links": [
+                            {
+                                "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31bf10e0-0370-102d-b0e3-001ec94a0cc1",
+                                "rel": "self"
+                            },
+                            {
+                                "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31bf10e0-0370-102d-b0e3-001ec94a0cc1?v=full",
+                                "rel": "full"
+                            }
+                        ],
+                        "resourceVersion": "1.9"
+                    },
+                    "name": "TB Construct",
+                    "description": "This is a construct test",
+                    "creator": {
+                        "uuid": "09544a0e-14f1-11ed-9181-00155dcead03",
+                        "display": "admin",
+                        "username": null,
+                        "systemId": "admin",
+                        "userProperties": {
+                            "defaultLocale": "ru",
+                            "showRetired": "false",
+                            "defaultLocation": "",
+                            "proficientLocales": "",
+                            "showVerbose": "false",
+                            "loginAttempts": "0"
+                        },
+                        "person": {
+                            "uuid": "d71023cc-05f6-11e1-87b6-00ff18ede40b",
+                            "display": "Super User",
+                            "links": [
+                                {
+                                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/person/d71023cc-05f6-11e1-87b6-00ff18ede40b",
+                                    "rel": "self"
+                                }
+                            ]
+                        },
+                        "privileges": [],
+                        "roles": [
+                            {
+                                "uuid": "8d94f280-c2cc-11de-8d13-0010c6dffd0f",
+                                "display": "Provider",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/role/8d94f280-c2cc-11de-8d13-0010c6dffd0f",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "8d94f852-c2cc-11de-8d13-0010c6dffd0f",
+                                "display": "System Developer",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/role/8d94f852-c2cc-11de-8d13-0010c6dffd0f",
+                                        "rel": "self"
+                                    }
+                                ]
+                            }
+                        ],
+                        "retired": false,
+                        "links": [
+                            {
+                                "uri": "NEED-TO-CONFIGURE/ws/rest/v1/user/09544a0e-14f1-11ed-9181-00155dcead03",
+                                "rel": "self"
+                            },
+                            {
+                                "uri": "NEED-TO-CONFIGURE/ws/rest/v1/user/09544a0e-14f1-11ed-9181-00155dcead03?v=full",
+                                "rel": "full"
+                            }
+                        ],
+                        "resourceVersion": "1.8"
+                    },
+                    "dateCreated": "2022-10-27T13:43:10.000+0000",
+                    "changedBy": {
+                        "uuid": "09544a0e-14f1-11ed-9181-00155dcead03",
+                        "display": "admin",
+                        "username": null,
+                        "systemId": "admin",
+                        "userProperties": {
+                            "defaultLocale": "ru",
+                            "showRetired": "false",
+                            "defaultLocation": "",
+                            "proficientLocales": "",
+                            "showVerbose": "false",
+                            "loginAttempts": "0"
+                        },
+                        "person": {
+                            "uuid": "d71023cc-05f6-11e1-87b6-00ff18ede40b",
+                            "display": "Super User",
+                            "links": [
+                                {
+                                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/person/d71023cc-05f6-11e1-87b6-00ff18ede40b",
+                                    "rel": "self"
+                                }
+                            ]
+                        },
+                        "privileges": [],
+                        "roles": [
+                            {
+                                "uuid": "8d94f280-c2cc-11de-8d13-0010c6dffd0f",
+                                "display": "Provider",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/role/8d94f280-c2cc-11de-8d13-0010c6dffd0f",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "8d94f852-c2cc-11de-8d13-0010c6dffd0f",
+                                "display": "System Developer",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/role/8d94f852-c2cc-11de-8d13-0010c6dffd0f",
+                                        "rel": "self"
+                                    }
+                                ]
+                            }
+                        ],
+                        "retired": false,
+                        "links": [
+                            {
+                                "uri": "NEED-TO-CONFIGURE/ws/rest/v1/user/09544a0e-14f1-11ed-9181-00155dcead03",
+                                "rel": "self"
+                            },
+                            {
+                                "uri": "NEED-TO-CONFIGURE/ws/rest/v1/user/09544a0e-14f1-11ed-9181-00155dcead03?v=full",
+                                "rel": "full"
+                            }
+                        ],
+                        "resourceVersion": "1.8"
+                    },
+                    "dateChanged": "2022-10-27T13:57:38.000+0000",
+                    "retired": false,
+                    "dateRetired": null,
+                    "retiredBy": null,
+                    "retireReason": null,
+                    "links": [
+                        {
+                            "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/labtesttype/b769ccb9-6299-4da9-8a99-83fa4d502ca4",
+                            "rel": "self"
+                        },
+                        {
+                            "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/labtesttype/b769ccb9-6299-4da9-8a99-83fa4d502ca4?v=full",
+                            "rel": "full"
+                        }
+                    ],
+                    "resourceVersion": "1.8"
+                },
+                {
+                    "uuid": "ee9b140e-9a29-11e8-a296-40b034c3cfee",
+                    "display": "Used when Test Type is not known. For example when actual test type is purged",
+                    "testGroup": "OTHER",
+                    "shortName": "UNKNOWN",
+                    "requiresSpecimen": false,
+                    "referenceConcept": {
+                        "uuid": "31b2810e-0370-102d-b0e3-001ec94a0cc1",
+                        "display": "UNKNOWN",
+                        "name": {
+                            "display": "UNKNOWN",
+                            "uuid": "f36e530f-1489-47ee-849f-fc94171d5865",
+                            "name": "UNKNOWN",
+                            "locale": "en",
+                            "localePreferred": true,
+                            "conceptNameType": "FULLY_SPECIFIED",
+                            "links": [
+                                {
+                                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31b2810e-0370-102d-b0e3-001ec94a0cc1/name/f36e530f-1489-47ee-849f-fc94171d5865",
+                                    "rel": "self"
+                                },
+                                {
+                                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31b2810e-0370-102d-b0e3-001ec94a0cc1/name/f36e530f-1489-47ee-849f-fc94171d5865?v=full",
+                                    "rel": "full"
+                                }
+                            ],
+                            "resourceVersion": "1.9"
+                        },
+                        "datatype": {
+                            "uuid": "8d4a4c94-c2cc-11de-8d13-0010c6dffd0f",
+                            "display": "N/A",
+                            "links": [
+                                {
+                                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f",
+                                    "rel": "self"
+                                }
+                            ]
+                        },
+                        "conceptClass": {
+                            "uuid": "8d492774-c2cc-11de-8d13-0010c6dffd0f",
+                            "display": "Misc",
+                            "links": [
+                                {
+                                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f",
+                                    "rel": "self"
+                                }
+                            ]
+                        },
+                        "set": false,
+                        "version": "",
+                        "retired": true,
+                        "names": [
+                            {
+                                "uuid": "7e61d9ea-b400-4435-97f5-cb67459320b9",
+                                "display": "\u041d\u041e\u041c\u0410\u042a\u041b\u0423\u041c",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31b2810e-0370-102d-b0e3-001ec94a0cc1/name/7e61d9ea-b400-4435-97f5-cb67459320b9",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "981f7220-3583-4cc4-99c0-6941645b4840",
+                                "display": "\u0414\u0410\u041d\u041d\u042b\u0425 \u041d\u0415\u0422",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31b2810e-0370-102d-b0e3-001ec94a0cc1/name/981f7220-3583-4cc4-99c0-6941645b4840",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "f36e530f-1489-47ee-849f-fc94171d5865",
+                                "display": "UNKNOWN",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31b2810e-0370-102d-b0e3-001ec94a0cc1/name/f36e530f-1489-47ee-849f-fc94171d5865",
+                                        "rel": "self"
+                                    }
+                                ]
+                            }
+                        ],
+                        "descriptions": [
+                            {
+                                "uuid": "31fd7fce-0370-102d-b0e3-001ec94a0cc1",
+                                "display": "Generic answer to a question.",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31b2810e-0370-102d-b0e3-001ec94a0cc1/description/31fd7fce-0370-102d-b0e3-001ec94a0cc1",
+                                        "rel": "self"
+                                    }
+                                ]
+                            }
+                        ],
+                        "mappings": [
+                            {
+                                "uuid": "55d54265-f1e0-43db-bad3-fafe1693e260",
+                                "display": "ETB-Tajikistan: 1",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31b2810e-0370-102d-b0e3-001ec94a0cc1/mapping/55d54265-f1e0-43db-bad3-fafe1693e260",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "2df18867-7e29-4f02-bf71-b90ff6be761c",
+                                "display": "org.openmrs.module.mdrtb: 1",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31b2810e-0370-102d-b0e3-001ec94a0cc1/mapping/2df18867-7e29-4f02-bf71-b90ff6be761c",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "e5680f7e-7c0f-4b68-8fbc-1ce50bbd6c9b",
+                                "display": "ZL/PIH installation in Haiti: 1",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31b2810e-0370-102d-b0e3-001ec94a0cc1/mapping/e5680f7e-7c0f-4b68-8fbc-1ce50bbd6c9b",
+                                        "rel": "self"
+                                    }
+                                ]
+                            }
+                        ],
+                        "answers": [],
+                        "setMembers": [],
+                        "links": [
+                            {
+                                "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31b2810e-0370-102d-b0e3-001ec94a0cc1",
+                                "rel": "self"
+                            },
+                            {
+                                "uri": "NEED-TO-CONFIGURE/ws/rest/v1/concept/31b2810e-0370-102d-b0e3-001ec94a0cc1?v=full",
+                                "rel": "full"
+                            }
+                        ],
+                        "resourceVersion": "1.9"
+                    },
+                    "name": "Unknown Test Type",
+                    "description": "Used when Test Type is not known. For example when actual test type is purged",
+                    "creator": {
+                        "uuid": "09544a0e-14f1-11ed-9181-00155dcead03",
+                        "display": "admin",
+                        "username": null,
+                        "systemId": "admin",
+                        "userProperties": {
+                            "defaultLocale": "ru",
+                            "showRetired": "false",
+                            "defaultLocation": "",
+                            "proficientLocales": "",
+                            "showVerbose": "false",
+                            "loginAttempts": "0"
+                        },
+                        "person": {
+                            "uuid": "d71023cc-05f6-11e1-87b6-00ff18ede40b",
+                            "display": "Super User",
+                            "links": [
+                                {
+                                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/person/d71023cc-05f6-11e1-87b6-00ff18ede40b",
+                                    "rel": "self"
+                                }
+                            ]
+                        },
+                        "privileges": [],
+                        "roles": [
+                            {
+                                "uuid": "8d94f280-c2cc-11de-8d13-0010c6dffd0f",
+                                "display": "Provider",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/role/8d94f280-c2cc-11de-8d13-0010c6dffd0f",
+                                        "rel": "self"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "8d94f852-c2cc-11de-8d13-0010c6dffd0f",
+                                "display": "System Developer",
+                                "links": [
+                                    {
+                                        "uri": "NEED-TO-CONFIGURE/ws/rest/v1/role/8d94f852-c2cc-11de-8d13-0010c6dffd0f",
+                                        "rel": "self"
+                                    }
+                                ]
+                            }
+                        ],
+                        "retired": false,
+                        "links": [
+                            {
+                                "uri": "NEED-TO-CONFIGURE/ws/rest/v1/user/09544a0e-14f1-11ed-9181-00155dcead03",
+                                "rel": "self"
+                            },
+                            {
+                                "uri": "NEED-TO-CONFIGURE/ws/rest/v1/user/09544a0e-14f1-11ed-9181-00155dcead03?v=full",
+                                "rel": "full"
+                            }
+                        ],
+                        "resourceVersion": "1.8"
+                    },
+                    "dateCreated": "2018-08-07T12:00:00.000+0000",
+                    "changedBy": null,
+                    "dateChanged": null,
+                    "retired": false,
+                    "dateRetired": null,
+                    "retiredBy": null,
+                    "retireReason": null,
+                    "links": [
+                        {
+                            "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/labtesttype/ee9b140e-9a29-11e8-a296-40b034c3cfee",
+                            "rel": "self"
+                        },
+                        {
+                            "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/labtesttype/ee9b140e-9a29-11e8-a296-40b034c3cfee?v=full",
+                            "rel": "full"
+                        }
+                    ],
+                    "resourceVersion": "1.8"
+                },
+                {
+                    "uuid": "746ef7e6-0660-4deb-a19f-52d836e98547",
+                    "name": "Smear Microscopy",
+                    "referenceConcept": {
+                        "uuid": "31bf1518-0370-102d-b0e3-001ec94a0cc1",
+                        "display": "A TB smear result"
+                    },
+                    "shortName": "SM",
+                    "description": "This is smear test",
+                    "testGroup": "Blood Bank",
+                    "requiresSpecimen": true
+                }
+            ],
+            {
+                "uuid": "746ef7e6-0660-4deb-a19f-52d836e98547",
+                "name": "Smear Microscopy",
+                "referenceConcept": {
+                    "uuid": "31bf1518-0370-102d-b0e3-001ec94a0cc1",
+                    "display": "A TB smear result"
+                },
+                "shortName": "SM",
+                "description": "This is smear test",
+                "testGroup": "Blood Bank",
+                "requiresSpecimen": true
+            }
+        ]
+    ]
+}

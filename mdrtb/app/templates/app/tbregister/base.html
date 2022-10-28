@@ -32,13 +32,15 @@
 	<section class="flex items-center justify-center">
 		<div class="flex items-center space-x-8">
 			<div class="dropdown-parent group">
-				<p>Patient List</p>
+				<p>General</p>
 				<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
 					<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
 				  </svg>
 				  
 				<div class="dropdown">
+					<a href="{% url 'patientlist' %}" class="hover:text-black text-black">Merge Patient</a>
 					<a href="{% url 'patientlist' %}" class="hover:text-black text-black">Patient list</a>
+
 				</div>
 			</div>
 			<div class="dropdown-parent group">
@@ -51,6 +53,9 @@
 				<div class="dropdown">
 					<p>View Closed Reports</p>
 					<p>TB-07</p>
+					<p>TB-08</p>
+					<p>TB-03 Export</p>
+					<p>TB-08 Export (Single Line)</p>
 					<p>TB-08</p>
 				</div>
 			</div>
