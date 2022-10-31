@@ -3,9 +3,10 @@ from django.shortcuts import render, redirect
 import requests
 from django.http import JsonResponse
 import base64
-import restapi_utils as ru
-import commonlab_util as cu
-import util
+import utils.restapi_utils as ru
+import utils.commonlab_util as cu
+import utils.util
+
 
 
 BASE_URL = 'http://46.20.206.173:18080/openmrs/ws/rest/v1/'
@@ -130,6 +131,8 @@ def enroll_two(req):
 def actual_enroll(req):
     return render(req, 'app/tbregister/actual_enroll_form.html')
 
+def tb03_form(req):
+    return render(req,'app/tbregister/tb03.html')
 
 def patientList(req):
     context = {

@@ -23,6 +23,6 @@ class TestConfigurationUtil(unittest.TestCase):
         value = mu.get_message('mdrtb.facility', locale='ru')
         self.assertEquals('Учреждений', value)
 
-    def test_get_message_with_invalid_locale(self):
-        value = mu.get_message('mdrtb.facility', locale='zy')
-        # TODO: complete it
+    # def test_get_message_with_invalid_locale(self):
+    #     value = mu.get_message('mdrtb.facility', locale='zy')
+    #     # TODO: complete it

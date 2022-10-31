@@ -128,7 +128,7 @@
           </div>
     </section>
   </div>
-  <script>
+  <script defer>
     function showModal(uuid){
       let output = ''
       $('#modal').removeClass('opacity-0')
@@ -140,17 +140,16 @@
              console.log(data)
              $('#attrAccordion').html('') 
              for(i=0;i<data.attributes.length;i++){
-                console.log(`heading${i} and collapse${i}`)
                 $('#attrAccordion').html(
                   `<div class='accordion-item bg-white border border-gray-200'>
                   
-                  <h2 class="accordion-header mb-0" id="H${i}">
-            <button class="accordion-button py-4 px-5 bg-white text-black" type="button" data-bs-toggle="collapse" data-bs-target="#C${i}" aria-expanded="${i === 0 ? 'true' : 'false'}"
-              aria-controls="C${i}">
+                  <h2 class="accordion-header mb-0" id="heading${i}">
+            <button class="accordion-button py-4 px-5 bg-white text-black" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${i}" aria-expanded="true"
+              aria-controls="collapse${i}">
              ${data.attributes[i].attrName}
             </button>
           </h2>
-          <div id="C${i}" class="accordion-collapse collapse" aria-labelledby="H${i}" "data-bs-parent="attrAccordion">
+          <div id="collapse${i}" class="accordion-collapse collapse" aria-labelledby="heading${i}" "data-bs-parent="attrAccordion">
             <div class="accordion-body py-4 px-5">
              <div>
                <span>

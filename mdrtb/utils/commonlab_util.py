@@ -2,7 +2,7 @@ from os import stat
 import requests
 from django.http import JsonResponse
 from mdrtb.settings import BASE_URL
-import restapi_utils as ru
+import utils.restapi_utils as ru
 
 def get_commonlab_concepts_by_type(req, type):
     status,response = ru.get(req,'commonlab/concept',{'type' :type})
