@@ -6,6 +6,6 @@ def get_item(dict,key):
     return dict.get(key)
 
 @register.filter
-def get_message(dict,message_code):
+def get_message(message_code):
     value = mu.get_message(message_code)
     return value

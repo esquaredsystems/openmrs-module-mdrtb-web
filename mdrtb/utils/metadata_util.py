@@ -48,11 +48,9 @@ def get_message_by_type(message_type,locale=None):
                 messages[split_msg[0]] = split_msg[1]
     else:
         raise Exception("Please provide a valid message type")
-    print(len(messages))
     return messages
 
 
-print(get_message_by_type('tb03'))
 
 
 def get_concept():
