@@ -3,7 +3,8 @@ import requests
 from django.http import JsonResponse
 from mdrtb.settings import BASE_URL
 import utils.restapi_utils as ru
-
+import utils.util as u
+ 
 def get_commonlab_concepts_by_type(req, type):
     status,response = ru.get(req,'commonlab/concept',{'type' :type})
     concepts = []
@@ -41,12 +42,12 @@ def custom_attribute(data, dataTypes, removeDT, preferedHandlers, removeHandler)
         'minOccurs': data['minOccurs'],
         'sortWeight': data['sortWeight'],
         'datatypeClassname': {
-            'name': removeGivenStrFromObjArr(dataTypes, removeDT, 'helpers'),
+            'name': u.remove_given_str_from_obj_arr(dataTypes, removeDT, 'helpers'),
             'value': data['datatypeClassname']
         },
         'datatypeConfig': '' if data['datatypeConfig'] == None else data['datatypeConfig'],
         'preferredHandlerClassname': {
-            'name': removeGivenStrFromObjArr(preferedHandlers, removeHandler, 'helpers'),
+            'name': u.remove_given_str_from_obj_arr(preferedHandlers, removeHandler, 'helpers'),
             'value': data['preferredHandlerClassname']
         },
         'handlerConfig': '' if data['handlerConfig'] == None else data['handlerConfig']

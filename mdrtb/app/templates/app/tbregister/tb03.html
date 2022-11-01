@@ -1,125 +1,256 @@
 {% extends 'app/tbregister/base.html' %} {%block content%}
+
 <div>
   <form class="flex flex-col">
     <div class="m-16 flex flex-col justify-center space-y-8">
-      <h1 class="text-[#2D9CDB] text-3xl font-bold">TB03 Form</h1>
+      <h1 class="text-[#2D9CDB] text-3xl font-bold">
+        {{messages|get_message:'mdrtb.tb03'}} Form
+      </h1>
       <div
         class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4"
       >
-        <div class="grid grid-cols-4">
-            <div class="space-x-3">
-                <span>
-                    <strong>Registration Date:</strong>
-                </span>
-                <span class="text-[#9a9a9a]">
-                    11/10/2022
-                </span>
-            </div>
-            <div class="space-x-3">
-                <span>
-                    <strong>Oblast:</strong>
-                </span>
-                <span class="text-[#9a9a9a]">
-                    11/10/2022
-                </span>
-            </div>
-            <div class="space-x-3">
-                <span>
-                    <strong>District:</strong>
-                </span>
-                <span class="text-[#9a9a9a]">
-                    11/10/2022
-                </span>
-            </div>
-            <div class="space-x-3">
-                <span>
-                    <strong>Facility:</strong>
-                </span>
-                <span class="text-[#9a9a9a]">
-                    11/10/2022
-                </span>
-            </div>
+        <div class="flex items-center space-x-12">
+          <div class="space-x-3">
+            <span class="font-bold">
+              {{messages|get_message:'mdrtb.tb03.dateOfRegistration'}}:
+            </span>
+            <span class="tb03-form-label"> 01/11/2022 </span>
+          </div>
+          <div class="space-x-3">
+            <span class="font-bold">
+              {{messages|get_message:'mdrtb.oblast'}}:
+            </span>
+            <span class="tb03-form-label"> Dushanbe </span>
+          </div>
+          <div class="space-x-3">
+            <span class="font-bold">
+              {{messages|get_message:'mdrtb.district'}}:
+            </span>
+            <span class="tb03-form-label"> Firdavsi </span>
+          </div>
+          <div class="space-x-3">
+            <span class="font-bold">
+              {{messages|get_message:'mdrtb.facility'}}:
+            </span>
+            <span class="tb03-form-label"> Facility 1 </span>
+          </div>
         </div>
-
+        <div class="flex items-center space-x-12">
+          <div class="space-x-3">
+            <span class="font-bold">
+              {{messages|get_message:'mdrtb.name'}}:
+            </span>
+            <span class="tb03-form-label"> Basit, Abdul </span>
+          </div>
+          <div class="space-x-3">
+            <span class="font-bold">
+              {{messages|get_message:'mdrtb.tb03.registrationNumber'}}:
+            </span>
+            <span class="tb03-form-label"> 24190001 </span>
+          </div>
+          <div class="space-x-3">
+            <span class="font-bold">
+              {{messages|get_message:'mdrtb.tb03.gender'}}:
+            </span>
+            <span class="tb03-form-label"> M </span>
+          </div>
+          <div class="space-x-3">
+            <span class="font-bold">
+              {{messages|get_message:'mdrtb.tb03.ageAtRegistration'}}:
+            </span>
+            <span class="tb03-form-label"> 20 </span>
+          </div>
+        </div>
+        <div class="flex items-center space-x-12">
+          <div class="space-x-3">
+            <span class="font-bold">
+              {{messages|get_message:'mdrtb.tb03.dateOfBirth'}}:
+            </span>
+            <span class="tb03-form-label"> 03/05/2022 </span>
+          </div>
+          <div class="space-x-3">
+            <span class="font-bold">
+              {{messages|get_message:'mdrtb.tb03.address'}}:
+            </span>
+            <span class="tb03-form-label"> A-90, Block 17, FB area </span>
+          </div>
+        </div>
+        <div class="flex items-center space-x-12">
+          <div class="space-x-3">
+            <span class="font-bold">
+              {{messages|get_message:'mdrtb.tb03.registrationGroup'}}:
+            </span>
+            <span class="tb03-form-label"> NEW </span>
+          </div>
+          <div class="space-x-3">
+            <span class="font-bold">
+              Registration Group previous drug use
+            </span>
+            <span class="tb03-form-label"> NEW </span>
+          </div>
+        </div>
       </div>
-      <div
-        class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4"
-      >
-        <div class="input-container">
-          <label class="input-label" for="name">Country</label>
-          <select class="input">
-            <option value="">Tajikistan</option>
-            <option value="">Other</option>
-          </select>
-        </div>
-        <div class="input-container">
-          <label class="input-label" for="name">Oblast</label>
-          <select class="input">
-            <option value="">Dushanbe</option>
-            <option value="">Khatlon</option>
-          </select>
-        </div>
-        <div class="input-container">
-          <label class="input-label" for="name">District</label>
-          <select class="input">
-            <option value="">D1</option>
-            <option value="">D2</option>
-          </select>
-        </div>
-        <div class="input-container">
-          <label class="input-label" for="name">Facility</label>
-          <select class="input">
-            <option value="">F1</option>
-            <option value="">F2</option>
-          </select>
-        </div>
-        <div class="input-container">
-          <label class="input-label" for="name">Address</label>
-          <input class="input" type="text" />
-        </div>
-        <div class="input-container">
-          <label class="input-label opacity-0" for="name">Address</label>
-          <input class="input" type="text" />
-        </div>
-      </div>
-      <div
-        class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4"
-      >
-        <div class="input-container">
-          <label class="input-label" for="deceased">Deceased</label>
-          <input
-            id="deceased"
-            type="checkbox"
-            class="border-none shadow-sm cursor-pointer"
-          />
-        </div>
-        <div id="deceased-container" class="hidden items-center space-x-8">
+      <div class="p-4 flex flex-col justify-center space-y-4">
+        <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="text-[#9E9E9E] font-bold" for="deceased"
-              >Death Date</label
+            <label class="tb03-form-label" for="name"
+              >{{messages|get_message:'mdrtb.tb03.treatmentSiteIP'}}</label
+            >
+            <select class="input">
+              <option value="">Tajikistan</option>
+              <option value="">Other</option>
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label" for="name"
+              >{{messages|get_message:'mdrtb.tb03.nameOfIPFacility'}}</label
+            >
+            <select class="input">
+              <option value="">Tajikistan</option>
+              <option value="">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label" for="name"
+              >{{messages|get_message:'mdrtb.tb03.treatmentSiteCP'}}</label
+            >
+            <select class="input">
+              <option value="">Tajikistan</option>
+              <option value="">Other</option>
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label" for="name"
+              >{{messages|get_message:'mdrtb.tb03.nameOfCPFacility'}}</label
+            >
+            <select class="input">
+              <option value="">Tajikistan</option>
+              <option value="">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label" for="name"
+              >{{messages|get_message:'mdrtb.tb03.patientCategory'}}</label
+            >
+            <select class="input">
+              <option value="">Tajikistan</option>
+              <option value="">Other</option>
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label" for="name"
+              >{{messages|get_message:'mdrtb.tb03.treatmentStartDate'}}</label
+            >
+            <input type="date" class="input" />
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label" for="name"
+              >{{messages|get_message:'mdrtb.tb03.siteOfDisease'}}</label
+            >
+            <select class="input">
+              <option value="">Tajikistan</option>
+              <option value="">Other</option>
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label" for="name"
+              >{{messages|get_message:'mdrtb.tb03.hivTestDate'}}</label
+            >
+            <input type="date" class="input" />
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label" for="name"
+              >{{messages|get_message:'mdrtb.tb03.hivStatus'}}</label
+            >
+            <select class="input">
+              <option value="">Tajikistan</option>
+              <option value="">Other</option>
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label" for="name"
+              >{{messages|get_message:'mdrtb.tb03.artStartDate'}}</label
+            >
+            <input type="date" class="input" />
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label" for="name"
+              >{{messages|get_message:'mdrtb.tb03.pctStartDate'}}</label
             >
             <input type="date" class="input" />
           </div>
           <div class="input-container">
-            <label class="text-[#9E9E9E] font-bold" for="deceased"
-              >Cause of Date</label
+            <label class="tb03-form-label" for="name"
+              >{{messages|get_message:'mdrtb.tb03.xrayDate'}}</label
             >
-            <input type="text" class="input" />
+            <input type="date" class="input" />
           </div>
         </div>
-        <div class="input-container">
-          <label class="input-label" for="deceased">Voided</label>
-          <input
-            id="voided"
-            type="checkbox"
-            class="border-none shadow-sm cursor-pointer"
-          />
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label" for="name"
+              >{{messages|get_message:'mdrtb.tb03.resistanceType'}}</label
+            >
+            <select class="input">
+              <option value="">Tajikistan</option>
+              <option value="">Other</option>
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label" for="name"
+              >{{messages|get_message:'mdrtb.tb03.treatmentOutcome'}}</label
+            >
+            <select class="input">
+              <option value="">Tajikistan</option>
+              <option value="">Other</option>
+            </select>
+          </div>
         </div>
-        <div id="voided-container" class="input-container hidden">
-          <label class="text-[#9E9E9E] font-bold" for="deceased"
-            >Reason to Void</label
-          >
-          <input type="text" class="input" />
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label" for="name"
+              >{{messages|get_message:'mdrtb.tb03.treatmentOutcomeDateOnly'}}</label
+            >
+            <select class="input">
+              <option value="">Tajikistan</option>
+              <option value="">Other</option>
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label" for="name"
+              >{{messages|get_message:'mdrtb.causeOfDeath'}}</label
+            >
+            <select class="input">
+              <option value="">Tajikistan</option>
+              <option value="">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label" for="name"
+              >{{messages|get_message:'mdrtb.tb03.afterOutcomeDeathDate'}}</label
+            >
+            <input type="date" class="input" />
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label" for="name"
+              >{{messages|get_message:'mdrtb.tb03.clinicalNotes'}}</label
+            >
+            <textarea class="input" cols="10" rows="5"></textarea>
+          </div>
         </div>
       </div>
     </div>
@@ -128,7 +259,7 @@
         style="margin-bottom: 4rem"
         class="bg-[#2D9CDB] p-2 w-1/5 rounded-md text-white"
       >
-        Register
+        Save
       </button>
       <button
         style="margin-bottom: 4rem; margin-left: -4rem"
@@ -139,4 +270,5 @@
     </div>
   </form>
 </div>
+
 {% endblock %}

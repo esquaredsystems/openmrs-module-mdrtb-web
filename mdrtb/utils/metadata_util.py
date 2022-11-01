@@ -1,5 +1,4 @@
-import configobj
-import util
+from utils import util as u
 
 
 
@@ -15,30 +14,45 @@ import util
 #     return value
 
 
-def get_message(message_code, locale=None, default=None):
-    dir = f'{util.get_project_root()}/resources'
-    if locale:
-        file = open(f'{dir}/messages_{locale}.properties' , 'r' , encoding='utf-8')
+def get_message(message_code,locale=None,default=None):
+    value = ''
+    dir = f'{u.get_project_root()}/resources'
+    if not locale:
+        data = u.read_properties_file(f'{dir}/messages.properties' , 'r' , encoding='utf-8')
     else:
-        file = open(f'{dir}/messages.properties', 'r', encoding='utf-8')
+        data = u.read_properties_file(f'{dir}/messages_{locale}.properties' , 'r' , encoding='utf-8')
     if message_code:
-        try:
-            for message in file.readlines():
-                split_message = message.split('=')
-                if split_message[0] == message_code:
-                    return split_message[1]
-                elif default:
-                    return default
-                else:
-                    raise Exception("Please provide a valid key")
+        for message in data:
+            split_msg = message.split('=')
+            if split_msg[0] == message_code:
+                value = split_msg[1]
+            elif default:
+                value = default
+    else:
+        raise Exception("Please provide a valid message code")
 
-        except Exception as e:
-            print(e)
+    return value
 
 
+def get_message_by_type(message_type,locale=None):
+    messages = {}
+    dir = f'{u.get_project_root()}/resources'
+    if not locale:
+        data = u.read_properties_file(f'{dir}/messages.properties' , 'r' , encoding='utf-8')
+    else:
+        data = u.read_properties_file(f'{dir}/messages_{locale}.properties' , 'r' , encoding='utf-8')
+    if message_type:
+        for message in data:
+            split_msg = message.split('=')
+            if split_msg[0].__contains__(message_type):
+                messages[split_msg[0]] = split_msg[1]
+    else:
+        raise Exception("Please provide a valid message type")
+    print(len(messages))
+    return messages
 
 
-print(get_message('tb'))
+print(get_message_by_type('tb03'))
 
 
 def get_concept():
