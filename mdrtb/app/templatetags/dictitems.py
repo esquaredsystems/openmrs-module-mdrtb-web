@@ -1,11 +1,11 @@
 from django.template.defaulttags import register
-import utils.metadata_util as mu
+from utilities import metadata_util as mu
+
 
 @register.filter
-def get_item(dict,key):
-    return dict.get(key)
-
-@register.filter
-def get_message(message_code):
-    value = mu.get_message(message_code)
+def get_message(message_code, locale):
+    if locale == 'en':
+        value = mu.get_message(message_code)
+    else:
+        value = mu.get_message(message_code, locale=locale)
     return value

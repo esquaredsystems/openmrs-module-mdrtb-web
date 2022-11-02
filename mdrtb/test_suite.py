@@ -1,6 +1,6 @@
 import unittest
-import utils.test_restapi_utils as rest_test
-import utils.test_metadata_util as metadata_test
+import utilities.test_restapi_utils as rest_test
+import utilities.test_metadata_util as metadata_test
 
 loader = unittest.TestLoader()
 suite = unittest.TestSuite()

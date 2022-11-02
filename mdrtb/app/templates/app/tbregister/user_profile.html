@@ -1,0 +1,22 @@
+{% extends 'app/tbregister/base_without_dd.html' %}
+
+{% block content %}
+
+<div class="w-3/5 mx-auto">
+    <form action="{% url 'profile' %}" method="post">
+        {% csrf_token %}
+        <div class="input-container">
+            <label class="text-gray-500 font-bold" for="">Change Locale</label>
+            <select required class="input" name="locale">
+                <option value="en">en</option>
+                <option value="ru">ru</option>
+            </select>
+        </div>
+        <input type="submit" class="bg-[#2D9CDB] p-2 w-1/5 rounded-md mt-4 text-white" />
+    </form>
+</div>
+
+
+
+
+{% endblock %}

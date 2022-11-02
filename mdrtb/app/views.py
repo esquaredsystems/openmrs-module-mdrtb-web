@@ -1,10 +1,9 @@
 from django.shortcuts import render, redirect
-import requests
 from django.http import JsonResponse
-import base64
-from utils import restapi_utils as ru , commonlab_util as cu , metadata_util as mu , util as u
-
-
+import utilities.restapi_utils as ru
+import utilities.metadata_util as mu
+import utilities.commonlab_util as cu
+import utilities.util 
 
 
 testGroups = [
@@ -94,14 +93,13 @@ def index(req):
 
 
 def login(req):
-    print(req)
     if 'sessionId' in req.session:
         return render(req, 'app/tbregister/enroll_without_form.html')
     else:
         if req.method == 'POST':
             username = req.POST['username']
             password = req.POST['password']
-            response = ru.initiate_session(req,f"{username}:{password}")
+            response = ru.initiate_session(req,username,password)
             if response:
                 return render(req, 'app/tbregister/enroll_without_form.html')
             else:
@@ -146,14 +144,16 @@ def patientList(req):
 def patient_dashboard(req, uuid):
     return render(req, 'app/tbregister/dashboard.html')
 
+def user_profile(req):
+    if req.method == 'POST':
+        req.session['locale'] = req.POST['locale']
+        return redirect('tb03')
+    return render(req,'app/tbregister/user_profile.html')
 
 def logout(req):
-    encoded_credentials = req.session['encodedCredentials']
-    headers = {'Authorization': f'Basic {encoded_credentials}', 'Cookie': f"JSESSIONID={req.session['sessionId']}"}
-    response = requests.delete(f'{BASE_URL}/session', headers=headers)
-    if response.status_code == 204:
-        if 'sessionId' in req.session:
-            del req.session['sessionId']
+    status,response = ru.delete(req,'session')
+    if status:
+        ru.clear_session(req)
     return redirect('home')
 
 
