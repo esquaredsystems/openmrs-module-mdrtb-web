@@ -2,32 +2,32 @@
 <div>
   <form class="flex flex-col">
     <div class="m-16 flex flex-col justify-center space-y-8">
-      <h1 class="text-[#2D9CDB] text-3xl font-bold">Register a Patient</h1>
+      <h1 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.enrollNewPatient'|get_message:request.session.locale}}</h1>
       <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4">
         <div class="input-container">
-          <label class="input-label " for="name">Name</label>
+          <label class="input-label " for="name">{{'mdrtb.name'|get_message:request.session.locale}}</label>
           <input class="input" type="text">
         </div>
         <div class="flex items-center space-x-4">
           <div class="input-container space-x-8">
-            <label class="text-[#9E9E9E] font-bold w-4/12" for="name">Date of Birth</label>
+            <label class="text-[#9E9E9E] font-bold w-4/12" for="name">{{'mdrtb.birthdate'|get_message:request.session.locale}}</label>
             <input class="border rounded-md shadow-sm border-gray-200 outline-none focus:ring-0 w-full" type="date">
           </div>
           <div class="font-bold">OR</div>
           <div class="input-container">
-            <label class="input-label" for="name">Age</label>
+            <label class="input-label" for="name">{{'mdrtb.age'|get_message:request.session.locale}}</label>
             <input class="input" type="number">
           </div>
         </div>
         <div class="input-container">
-          <label class="input-label" for="name">Gender</label>
+          <label class="input-label" for="name">{{'mdrtb.gender'|get_message:request.session.locale}}</label>
           <div class="flex items-center space-x-4">
             <div class="flex items-center space-x-2">
-              <label for="Male">Male</label>
+              <label for="Male">{{'mdrtb.male'|get_message:request.session.locale}}</label>
               <input name="gender" type="radio">
             </div>
             <div class="flex items-center space-x-2">
-              <label for="Male">Female</label>
+              <label for="Male">{{'mdrtb.female'|get_message:request.session.locale}}</label>
               <input name="gender" type="radio">
             </div>
           </div>
@@ -42,47 +42,47 @@
           </select>
         </div>
         <div class="input-container">
-          <label class="input-label" for="name">Oblast</label>
+          <label class="input-label" for="name">{{'mdrtb.oblast'|get_message:request.session.locale}}</label>
           <select class="input">
             <option value="">Dushanbe</option>
             <option value="">Khatlon</option>
           </select>
         </div>
         <div class="input-container">
-          <label class="input-label" for="name">District</label>
+          <label class="input-label" for="name">{{'mdrtb.district'|get_message:request.session.locale}}</label>
           <select class="input">
             <option value="">D1</option>
             <option value="">D2</option>
           </select>
         </div>
         <div class="input-container">
-          <label class="input-label" for="name">Facility</label>
+          <label class="input-label" for="name">{{'mdrtb.facility'|get_message:request.session.locale}}</label>
           <select class="input">
             <option value="">F1</option>
             <option value="">F2</option>
           </select>
         </div>
         <div class="input-container">
-          <label class="input-label" for="name">Address</label>
+          <label class="input-label" for="name">{{'mdrtb.address'|get_message:request.session.locale}}</label>
           <input class="input" type="text">
         </div>
         <div class="input-container">
-          <label class="input-label opacity-0" for="name">Address</label>
+          <label class="input-label opacity-0" for="name">{{'mdrtb.address'|get_message:request.session.locale}}</label>
           <input class="input" type="text">
         </div>
       </div>
       <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4">
         <div class="input-container">
-          <label class="input-label" for="deceased">Deceased</label>
+          <label class="input-label" for="deceased">{{'mdrtb.deceased'|get_message:request.session.locale}}</label>
           <input id="deceased" type="checkbox" class="border-none shadow-sm cursor-pointer">
         </div>
         <div id="deceased-container" class="hidden items-center space-x-8">
           <div class="input-container">
-            <label class="text-[#9E9E9E] font-bold" for="deceased">Death Date</label>
+            <label class="text-[#9E9E9E] font-bold" for="deceased">{{'mdrtb.deathDate'|get_message:request.session.locale}}</label>
             <input type="date" class="input">
           </div>
           <div class="input-container">
-            <label class="text-[#9E9E9E] font-bold" for="deceased">Cause of Date</label>
+            <label class="text-[#9E9E9E] font-bold" for="deceased">{{'mdrtb.causeOfDeath'|get_message:request.session.locale}}</label>
             <input type="text" class="input">
           </div>
         </div>

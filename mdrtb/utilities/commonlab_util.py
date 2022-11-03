@@ -15,6 +15,16 @@ def get_commonlab_concepts_by_type(req, type):
     return concepts
 
 
+def get_test_types_by_search(req,query):
+    status,response = ru.get(req,'commonlab/labtesttype',{'v' : 'full'})
+    labtests = []
+    if status:
+        for labtest in response['results']:
+            if labtest['name'].startswith(query) or labtest['name'] == query or labtest['name'].__contains__(query):
+                labtests.append(labtest)
+    print(labtests)
+    return labtests
+
 def get_attributes_of_labtest(req,uuid):
     status,data = ru.get(req,'commonlab/labtestattributetype',{'testTypeUuid': uuid, 'v': 'full'})
     if status:

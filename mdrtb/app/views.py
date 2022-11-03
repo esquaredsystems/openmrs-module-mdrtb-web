@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse , HttpResponseRedirect
 import utilities.restapi_utils as ru
 import utilities.metadata_util as mu
 import utilities.commonlab_util as cu
@@ -93,7 +93,7 @@ def index(req):
 
 
 def login(req):
-    if 'sessionId' in req.session:
+    if 'session_id' in req.session:
         return render(req, 'app/tbregister/enroll_without_form.html')
     else:
         if req.method == 'POST':
@@ -147,7 +147,7 @@ def patient_dashboard(req, uuid):
 def user_profile(req):
     if req.method == 'POST':
         req.session['locale'] = req.POST['locale']
-        return redirect('tb03')
+        return redirect('home')
     return render(req,'app/tbregister/user_profile.html')
 
 def logout(req):
@@ -158,8 +158,18 @@ def logout(req):
 
 
 def manage_test_types(req):
+    context={}
+    if req.method == 'POST':
+        search_results = cu.get_test_types_by_search(req,req.POST['search'])
+        if len(search_results) > 0:
+            context['response'] = search_results
+            return render(req,'app/commonlab/managetesttypes.html',context=context)
+        else:
+            status,response = ru.get(req,'commonlab/labtesttype',{'v' : 'full'})
+            context['response'] = response['results']
+            return render(req,'app/commonlab/managetesttypes.html',context=context)
     status,response = ru.get(req,'commonlab/labtesttype',{'v' : 'full'})
-    context = {'response' :response['results'] if status else []}
+    context['response'] =response['results'] if status else []
     return render(req,'app/commonlab/managetesttypes.html',context=context)
 
 

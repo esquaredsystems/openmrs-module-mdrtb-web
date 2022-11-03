@@ -32,57 +32,72 @@
 	<section class="flex items-center justify-center">
 		<div class="flex items-center space-x-8">
 			<div class="dropdown-parent group">
-				<p>General</p>
+				<p>{{'mdrtb.general'|get_message:request.session.locale}}</p>
 				<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
 					<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
 				  </svg>
 				  
 				<div class="dropdown">
-					<a href="{% url 'patientlist' %}" class="hover:text-black text-black">Merge Patient</a>
-					<a href="{% url 'patientlist' %}" class="hover:text-black text-black">Patient list</a>
+					<a href="{% url 'patientlist' %}" class="hover:text-black text-black">
+						{{'mdrtb.mergePatients'|get_message:request.session.locale}}
+					</a>
+					<a href="{% url 'patientlist' %}" class="hover:text-black text-black">
+						{{'mdrtb.patientLists'|get_message:request.session.locale}}</a>
 
 				</div>
 			</div>
 			<div class="dropdown-parent group">
-				<p>Dots Reports</p>
+				<p>{{'mdrtb.dotsreports'|get_message:request.session.locale}}</p>
 				<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
 					<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
 				  </svg>
 				  
 
 				<div class="dropdown">
-					<p>View Closed Reports</p>
-					<p>TB-07</p>
-					<p>TB-08</p>
-					<p>TB-03 Export</p>
-					<p>TB-08 Export (Single Line)</p>
-					<p>TB-08</p>
+					<p>{{'mdrtb.viewClosedReports'|get_message:request.session.locale}}</p>
+					<p>{{'mdrtb.dotsreport07'|get_message:request.session.locale}}</p>
+					<p>{{'mdrtb.dotsreport08'|get_message:request.session.locale}}</p>
+					<p>{{'mdrtb.tb03Export'|get_message:request.session.locale}}</p>
+					<p>{{'mdrtb.tb03ExportSingleLine'|get_message:request.session.locale}}</p>
+					<p>{{'mdrtb.f89ExportSingleLine'|get_message:request.session.locale}}</p>
+					<p>{{'mdrtb.dotsdq.title'|get_message:request.session.locale}}</p>
+					<p>{{'mdrtb.dq.missingtb03'|get_message:request.session.locale}}</p>
+
 				</div>
 			</div>
 			<div class="dropdown-parent group">
-				<p>MDR Reports</p>
+				<p>{{'mdrtb.mdrreports'|get_message:request.session.locale}}</p>
 				<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
 					<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
 				  </svg>
 				  
 
 				<div class="dropdown">
-					<p>View Closed Reports</p>
-					<p>TB-07</p>
-					<p>TB-08</p>
+					<p>{{'mdrtb.viewClosedReports'|get_message:request.session.locale}}</p>
+					<p>{{'mdrtb.tb07u'|get_message:request.session.locale}}</p>
+					<p>{{'mdrtb.tb08u'|get_message:request.session.locale}}</p>
+					<p>{{'mdrtb.tb03uExport'|get_message:request.session.locale}}</p>
+					<p>{{'mdrtb.tb03uExportSingleLine'|get_message:request.session.locale}}</p>
+					<p>{{'mdrtb.dq.title'|get_message:request.session.locale}}</p>
+
+					<p>{{'mdrtb.sldreport'|get_message:request.session.locale}}</p>
+					<p>{{'mdrtb.sldreport'|get_message:request.session.locale}}</p>
+					<p>Missing TB03 u -- Not coming from messages</p>
+
+
 				</div>
 			</div>
 			<div class="dropdown-parent group">
-				<p>Other Reports</p>
+				<p>{{'mdrtb.otherreports'|get_message:request.session.locale}}</p>
 				<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
 					<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
 				  </svg>
 				  
 
 				<div class="dropdown">
-					<p>Form 8</p>
-					<p>Quaterly summary report on AEs</p>
-					<p>TB Drugs Adverse Events Register</p>
+					<p>{{'mdrtb.form8.title'|get_message:request.session.locale}}</p>
+					<p>{{'mdrtb.pv.qtrReportTitle'|get_message:request.session.locale}}</p>
+					<p>{{'mdrtb.pv.register.title'|get_message:request.session.locale}}</p>
 				</div>
 			</div>
 		</div>

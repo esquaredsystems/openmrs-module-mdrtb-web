@@ -2,169 +2,159 @@
 
 {% block content %}
 <div class="p-4 m-6 flex flex-col justify-center">
-    <h1 class="text-[#2D9CDB] font-bold text-4xl">Patient List</h1>
+  <h1 class="text-[#2D9CDB] font-bold text-4xl">{{'mdrtb.patientLists'|get_message:request.session.locale}}</h1>
 
-    <form class=" flex flex-col  p-4">
-      <div class="flex justify-start items-start py-4  space-x-12  ">
-          <div class="space-y-3 w-1/4">
-            <div
-            class="input-container"
-          >
-          <label class="w-full text-[#9E9E9E]" for="gender">Oblast</label>
+  <form class=" flex flex-col  p-4">
+    <div class="flex justify-start items-start py-4  space-x-12  ">
+      <div class="space-y-3 w-1/4">
+        <div class="input-container">
+          <label class="w-full text-[#9E9E9E]"
+            for="gender">{{'mdrtb.oblast'|get_message:request.session.locale}}</label>
 
-        
-            <select class="input"  name="" id="" >
-                <option value="">1</option>
-                <option value="">2</option>
-            </select>
-          </div>
 
-            <div
-              class="input-container group"
-            >
-            <label class="w-full text-[#9E9E9E]" for="DOB">Year</label>
-
-              <input
-                class="input"
-                type="text"
-              />
-            </div>
-            
-          </div>
-          <div class="space-y-3 w-1/4 ">
-            <div
-              class="input-container"
-            >
-            <label class="w-full text-[#9E9E9E]" for="gender">District</label>
-
-          
-              <select class="input"  name="" id="" >
-                  <option value="">1</option>
-                  <option value="">2</option>
-              </select>
-            </div>
-            <div
-              class="input-container"
-            >
-            <label class="w-full text-[#9E9E9E]" for="gender">Month</label>
-
-          
-              <select class="input"  name="" id="" >
-                  {% for month in months %}
-                  <option value="{{month}}">{{month}}</option>
-                  {% endfor %}
-              </select>
-            </div>
-          </div>
-          <div class="space-y-3 w-1/4 ">
-            <div
-            class="input-container"
-          >
-          <label class="w-full text-[#9E9E9E]" for="gender">Facility</label>
-
-        
-            <select class="input"  name="" id="" >
-                <option value="">1</option>
-                <option value="">2</option>
-            </select>
-          </div>
-          <div
-          class="input-container"
-        >
-        <label class="w-full text-[#9E9E9E]" for="gender">Quater</label>
-
-      
-          <select class="input"  name="" id="" >
-              {% for quater in quaters %}
-              <option value="{{quater}}">{{quater}}</option>
-              {% endfor %}
+          <select class="input" name="" id="">
+            <option value="">1</option>
+            <option value="">2</option>
           </select>
         </div>
-          </div>
-      </div>
-      <button class="bg-[#2D9CDB] text-white rounded-md p-2 w-1/5">Generate</button>
-      <div class="m-5 flex flex-col space-y-4">
-        <div class="flex items-center space-x-4">
-            <input required type="radio" name="plist-report-options">
-            <label for="">All Cases Registered</label>
-        </div> 
-        <div class="flex items-center space-x-4">
-            <input required type="radio" name="plist-report-options">
-            <label for="">Cases by Registration Group</label>
-        </div> 
-        <div class="flex items-center space-x-4">
-            <input required type="radio" name="plist-report-options">
-            <label for="">Cases by Drug Resistance</label>
-        </div> 
-        <div class="flex items-center space-x-4">
-            <input required type="radio" name="plist-report-options">
-            <label for="">Cases by Site of TB</label>
-        </div> 
-        <div class="flex items-center space-x-4">
-            <input required type="radio" name="plist-report-options">
-            <label for="">Pulmonary Cases by Registration Group and Bacteriology Status</label>
-        </div> 
-        <div class="flex items-center space-x-4">
-            <input required type="radio" name="plist-report-options">
-            <label for="">Patients with Drug Resistant TB</label>
-        </div> 
-        <div class="flex items-center space-x-4">
-            <input required type="radio" name="plist-report-options">
-            <label for="">DR TB Patients with Successful Treatment Outcome</label>
-        </div> 
-        <div class="flex items-center space-x-4">
-            <input required type="radio" name="plist-report-options">
-            <label for="">DR TB Patients Not Started on Treatment</label>
-        </div> 
-        <div class="flex items-center space-x-4">
-            <input required type="radio" name="plist-report-options">
-            <label for="">Women of Childbearing Age (15-49)</label>
-        </div> 
-        <div class="flex items-center space-x-4">
-            <input required type="radio" name="plist-report-options">
-            <label for="">Men of Conscription Age (18-27)</label>
-        </div> 
-        <div class="flex items-center space-x-4">
-            <input required type="radio" name="plist-report-options">
-            <label for="">Patients with Concomitant Diseases</label>
-        </div> 
-        <div class="flex items-center space-x-4">
-            <input required type="radio" name="plist-report-options">
-            <label for="">Cases by Rural/Urban</label>
-        </div> 
-        <div class="flex items-center space-x-4">
-            <input required type="radio" name="plist-report-options">
-            <label for="">Cases by Social and Professional Status</label>
-        </div> 
-        <div class="flex items-center space-x-4">
-            <input required type="radio" name="plist-report-options">
-            <label for="">Cases by Population Category</label>
-        </div> 
-        <div class="flex items-center space-x-4">
-            <input required type="radio" name="plist-report-options">
-            <label for="">Cases by Place of Detection</label>
-        </div> 
-        <div class="flex items-center space-x-4">
-            <input required type="radio" name="plist-report-options">
-            <label for="">Cases by Circumstances of Detection</label>
-        </div> 
-        <div class="flex items-center space-x-4">
-            <input required type="radio" name="plist-report-options">
-            <label for="">Cases by Method of Detection</label>
-        </div>
-        <div class="flex items-center space-x-4">
-            <input required type="radio" name="plist-report-options">
-            <label for="">Cases by Localization of Pulmonary TB</label>
-        </div>
-        <div class="flex items-center space-x-4">
-            <input required type="radio" name="plist-report-options">
-            <label for="">Cases by Localization of ExtraPulmonary TB</label>
+
+        <div class="input-container group">
+          <label class="w-full text-[#9E9E9E]" for="DOB">{{'mdrtb.year'|get_message:request.session.locale}}</label>
+
+          <input class="input" type="text" />
         </div>
 
       </div>
+      <div class="space-y-3 w-1/4 ">
+        <div class="input-container">
+          <label class="w-full text-[#9E9E9E]"
+            for="gender">{{'mdrtb.district'|get_message:request.session.locale}}</label>
 
-    </form>
-    
-  </div>
+
+          <select class="input" name="" id="">
+            <option value="">1</option>
+            <option value="">2</option>
+          </select>
+        </div>
+        <div class="input-container">
+          <label class="w-full text-[#9E9E9E]" for="gender">{{'mdrtb.month'|get_message:request.session.locale}}</label>
+
+
+          <select class="input" name="" id="">
+            {% for month in months %}
+            <option value="{{month}}">{{month}}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="space-y-3 w-1/4 ">
+        <div class="input-container">
+          <label class="w-full text-[#9E9E9E]"
+            for="gender">{{'mdrtb.facility'|get_message:request.session.locale}}</label>
+
+
+          <select class="input" name="" id="">
+            <option value="">1</option>
+            <option value="">2</option>
+          </select>
+        </div>
+        <div class="input-container">
+          <label class="w-full text-[#9E9E9E]"
+            for="gender">{{'mdrtb.quarter'|get_message:request.session.locale}}</label>
+
+
+          <select class="input" name="" id="">
+            {% for quater in quaters %}
+            <option value="{{quater}}">{{quater}}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    </div>
+    <button
+      class="bg-[#2D9CDB] text-white rounded-md p-2 w-1/5">{{'mdrtb.generate'|get_message:request.session.locale}}</button>
+    <div class="m-5 flex flex-col space-y-4">
+      <div class="flex items-center space-x-4">
+        <input required type="radio" name="plist-report-options">
+        <label for="">{{'mdrtb.allCasesEnrolled'|get_message:request.session.locale}}</label>
+      </div>
+      <div class="flex items-center space-x-4">
+        <input required type="radio" name="plist-report-options">
+        <label for="">{{'mdrtb.dotsCasesByRegistrationGroup'|get_message:request.session.locale}}</label>
+      </div>
+      <div class="flex items-center space-x-4">
+        <input required type="radio" name="plist-report-options">
+        <label for="">{{'mdrtb.byDrugResistance'|get_message:request.session.locale}}</label>
+      </div>
+      <div class="flex items-center space-x-4">
+        <input required type="radio" name="plist-report-options">
+        <label for="">{{'mdrtb.dotsCasesByAnatomicalSite'|get_message:request.session.locale}}</label>
+      </div>
+      <div class="flex items-center space-x-4">
+        <input required type="radio" name="plist-report-options">
+        <label for="">{{'dotsPulmonaryCasesByRegisrationGroupAndBacStatus'|get_message:request.session.locale}}</label>
+      </div>
+      <div class="flex items-center space-x-4">
+        <input required type="radio" name="plist-report-options">
+        <label for="">{{'mdrtb.drTbPatients'|get_message:request.session.locale}}</label>
+      </div>
+      <div class="flex items-center space-x-4">
+        <input required type="radio" name="plist-report-options">
+        <label for="">{{'mdrtb.drTbPatientsSuccessfulTreatment'|get_message:request.session.locale}}</label>
+      </div>
+      <div class="flex items-center space-x-4">
+        <input required type="radio" name="plist-report-options">
+        <label for="">{{'mdrtb.drTbPatientsNoTreatment'|get_message:request.session.locale}}</label>
+      </div>
+      <div class="flex items-center space-x-4">
+        <input required type="radio" name="plist-report-options">
+        <label for="">{{'mdrtb.womenOfChildbearingAge'|get_message:request.session.locale}}</label>
+      </div>
+      <div class="flex items-center space-x-4">
+        <input required type="radio" name="plist-report-options">
+        <label for="">{{'mdrtb.menOfConscriptAge'|get_message:request.session.locale}}</label>
+      </div>
+      <div class="flex items-center space-x-4">
+        <input required type="radio" name="plist-report-options">
+        <label for="">{{'mdrtb.withConcomitantDisease'|get_message:request.session.locale}}</label>
+      </div>
+      <div class="flex items-center space-x-4">
+        <input required type="radio" name="plist-report-options">
+        <label for="">{{'mdrtb.byDwelling'|get_message:request.session.locale}}</label>
+      </div>
+      <div class="flex items-center space-x-4">
+        <input required type="radio" name="plist-report-options">
+        <label for="">{{'mdrtb.bySocProfStatus'|get_message:request.session.locale}}</label>
+      </div>
+      <div class="flex items-center space-x-4">
+        <input required type="radio" name="plist-report-options">
+        <label for="">{{'mdrtb.byPopCategory'|get_message:request.session.locale}}</label>
+      </div>
+      <div class="flex items-center space-x-4">
+        <input required type="radio" name="plist-report-options">
+        <label for="">{{'mdrtb.byPlaceOfDetection'|get_message:request.session.locale}}</label>
+      </div>
+      <div class="flex items-center space-x-4">
+        <input required type="radio" name="plist-report-options">
+        <label for="">{{'mdrtb.byPlaceOfDetection'|get_message:request.session.locale}}</label>
+      </div>
+      <div class="flex items-center space-x-4">
+        <input required type="radio" name="plist-report-options">
+        <label for="">{{'mdrtb.byCircumstancesOfDetection'|get_message:request.session.locale}}</label>
+      </div>
+      <div class="flex items-center space-x-4">
+        <input required type="radio" name="plist-report-options">
+        <label for="">{{'mdrtb.byPulmonaryLocation'|get_message:request.session.locale}}</label>
+      </div>
+      <div class="flex items-center space-x-4">
+        <input required type="radio" name="plist-report-options">
+        <label for="">{{'mdrtb.byExtraPulmonaryLocation'|get_message:request.session.locale}}</label>
+      </div>
+
+    </div>
+
+  </form>
+
+</div>
 
 {% endblock %}
