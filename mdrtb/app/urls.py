@@ -9,6 +9,7 @@ urlpatterns = [
     path('enroll', views.enroll, name='Enroll'),
     path('enroll2', views.enroll_two, name='Enroll2'),
     path('enroll3', views.actual_enroll, name='Enroll3'),
+    path('programenroll' , views.enroll_in_dots_program,name="dotsEnroll"),
     path('profile',views.user_profile,name='profile'),
     path('tb03' , views.tb03_form,name='tb03'),
     path('logout', views.logout, name='logout'),

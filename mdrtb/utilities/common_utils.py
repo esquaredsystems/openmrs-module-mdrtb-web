@@ -17,8 +17,9 @@ def read_properties_file(filepath,mode,encoding):
             configdata.append(line)
         return configdata  
     except Exception as e:
-        pass
-
+        print(e)
+    finally:
+        file.close()
 
 
 

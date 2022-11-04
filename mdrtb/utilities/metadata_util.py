@@ -1,5 +1,6 @@
 import re
-from . import util as u , restapi_utils as ru
+from utilities import common_utils as u
+from utilities import restapi_utils as ru
 
 
 
@@ -33,8 +34,10 @@ def get_message(message_code,locale=None,default=None):
     else:
         raise Exception("Please provide a valid message code")
 
+    if len(value) < 1:
+        value = message_code
     cleaner = re.compile('<.*?>')
-    return re.sub(cleaner,' ',value)
+    return re.sub(cleaner,' ',value.strip())
 
 
 

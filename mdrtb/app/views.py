@@ -3,7 +3,7 @@ from django.http import JsonResponse , HttpResponseRedirect
 import utilities.restapi_utils as ru
 import utilities.metadata_util as mu
 import utilities.commonlab_util as cu
-import utilities.util 
+import utilities.common_utils as util 
 
 
 testGroups = [
@@ -125,6 +125,10 @@ def enroll_two(req):
 
 def actual_enroll(req):
     return render(req, 'app/tbregister/actual_enroll_form.html')
+
+
+def enroll_in_dots_program(req):
+    return render(req,'app/tbregister/enroll_program.html')
 
 def tb03_form(req):
     context = {}

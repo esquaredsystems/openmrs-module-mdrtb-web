@@ -1,6 +1,6 @@
 import requests
 import base64
-from  . import metadata_util as mu
+from utilities import metadata_util as mu
 from mdrtb.settings import BASE_URL
 
 def initiate_session(req,username,password):

@@ -1,0 +1,50 @@
+{% extends 'app/tbregister/base_without_dd.html' %}
+
+{% block content %}
+
+<div class="m-16">
+    <h1 class="text-[#2D9CDB] text-3xl font-bold">
+        {{'mdrtb.enrollment.enroll'|get_message:request.session.locale}}
+      </h1>
+    <form>
+        <div class="p-4 flex flex-col justify-center space-y-4">
+            <div class="input-container">
+                <label class="font-bold text-[#9E9E9E] w-2/5" for="">{{'mdrtb.enrollment.date'|get_message:request.session.locale}}</label>
+                <input class="input w-3/5" type="date" name="" id="">
+            </div>
+            <div class="input-container">
+                <label class="font-bold text-[#9E9E9E] w-2/5" for="">{{'mdrtb.oblast'|get_message:request.session.locale}}</label>
+                <select class="input w-3/5" name="" id="">
+                    <option value="">Dushanbe</option>
+                </select>
+            </div>
+            <div class="input-container">
+                <label class="font-bold text-[#9E9E9E] w-2/5 " for="">{{'mdrtb.district'|get_message:request.session.locale}}</label>
+                <select class="input w-3/5" name="" id="">
+                    <option value="">Dushanbe</option>
+                </select>
+            </div>
+            <div class="input-container">
+                <label class="font-bold text-[#9E9E9E] w-2/5" for="">{{'mdrtb.facility'|get_message:request.session.locale}}</label>
+                <select class="input w-3/5" name="" id="">
+                    <option value="">Dushanbe</option>
+                </select>
+            </div>
+            <div class="input-container">
+                <label class="font-bold text-[#9E9E9E] w-2/5" for="">{{'mdrtb.previousTreatmentClassification'|get_message:request.session.locale}}</label>
+                <select class="input w-3/5" name="" id="">
+                    <option value="">Dushanbe</option>
+                </select>
+            </div>
+            <div class="input-container">
+                <label class="font-bold text-[#9E9E9E] w-2/5" for="">{{'mdrtb.previousDrugClassification'|get_message:request.session.locale}}</label>
+                <select class="input w-3/5" name="" id="">
+                    <option value="">Dushanbe</option>
+                </select>
+            </div>
+        </div>
+    
+    </form>
+</div>
+
+{% endblock %}

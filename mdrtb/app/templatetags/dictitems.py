@@ -5,7 +5,9 @@ from utilities import metadata_util as mu
 @register.filter
 def get_message(message_code, locale,default=None):
     if locale == 'en':
-        value = mu.get_message(message_code)
+        value = mu.get_message(message_code,default=default)
     else:
-        value = mu.get_message(message_code, locale=locale)
+        value = mu.get_message(message_code, locale=locale,default=default)
     return value
+
+
