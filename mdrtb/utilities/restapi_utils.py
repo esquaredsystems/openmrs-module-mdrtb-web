@@ -3,6 +3,9 @@ import base64
 from utilities import metadata_util as mu
 from mdrtb.settings import BASE_URL
 
+
+
+
 def initiate_session(req,username,password):
     encoded_credentials = base64.b64encode(f"{username}:{password}".encode('ascii')).decode('ascii')
     url = BASE_URL + '/session'

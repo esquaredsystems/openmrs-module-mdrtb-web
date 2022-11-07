@@ -6,6 +6,7 @@ urlpatterns = [
     path('search', views.search_patients, name='search'),
     path('patient/<str:uuid>', views.patient_dashboard, name='dashboard'),
     path('concepts' , views.concepts,name='concepts'),
+    path('conceptsearch', views.concepts, name='concept_search'),
     path('report', views.index, name='report'),
     path('enroll', views.enroll, name='Enroll'),
     path('enroll2', views.enroll_two, name='Enroll2'),

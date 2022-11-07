@@ -37,10 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app',
+    'app.apps.AppConfig',
     'django_browser_reload',
     'tailwind',
-    'theme',
+    'theme.apps.ThemeConfig',
 
 ]
 
@@ -77,16 +77,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mdrtb.wsgi.application'
 
+
 CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'mdrtb-cache',
     }
 }
-
 
 
 # Database

@@ -161,8 +161,9 @@ def logout(req):
     return redirect('home')
 
 def concepts(req):
-    
-    return render(req, 'app/tbregister/dashboard.html')
+    mu.get_concept(req)
+    mu.get_concept_by_uuid('31b4a16e-0370-102d-b0e3-001ec94a0cc1')
+    return render(req,'app/tbregister/dashboard.html') 
 
 
 def manage_test_types(req):

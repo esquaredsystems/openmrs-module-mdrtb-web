@@ -1,7 +1,14 @@
 import re
+import os
 from utilities import common_utils as u
 from utilities import restapi_utils as ru
+import django
+from django.core.cache import cache
 
+import os
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'mdrtb.settings'
+django.setup()
 
 
 
@@ -42,32 +49,32 @@ def get_message(message_code,locale=None,default=None):
 
 
 
-# def get_message_by_type(message_type,locale=None):
-#     messages = {}
-#     dir = f'{u.get_project_root()}/resources'
-#     if not locale:
-#         data = u.read_properties_file(f'{dir}/messages.properties' , 'r' , encoding='utf-8')
-#     else:
-#         data = u.read_properties_file(f'{dir}/messages_{locale}.properties' , 'r' , encoding='utf-8')
-#     if message_type:
-#         for message in data:
-#             split_msg = message.split('=')
-#             if split_msg[0].__contains__(message_type):
-#                 messages[split_msg[0]] = split_msg[1]
-#     else:
-#         raise Exception("Please provide a valid message type")
-#     return messages
 
 
+def get_concept(req):
+    concepts =  cache.get('concepts')
+    if concepts is None:
+        print("COMING FROM REST")
+        status,response = ru.get(req, 'concept',{'v' : 'full'})
+        print("SETTING CACHE")
+        try:
+            cache.set('concepts',response,86400)
+        except Exception as e:
+            print(e)
+        
+    else:
+        print("COMING FROM CACHE")
+        concept_dict=dict(concepts)
 
 
-def get_concept():
-    # First lookup into cache
-
-    # If found in cache, then return from cache
-
-    # Otherwise make REST call
-    pass
+def get_concept_by_uuid(uuid):
+    concept = cache.get('concepts')
+    for concept in concept['results']:
+        if concept['uuid']==uuid:
+            print("FOUND")
+            print(concept)
+    
+    
 
 
 def get_locations():
