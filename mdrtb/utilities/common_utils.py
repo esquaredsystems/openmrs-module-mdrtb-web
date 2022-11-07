@@ -15,11 +15,10 @@ def read_properties_file(filepath,mode,encoding):
         file = open(filepath,mode,encoding=encoding)
         for line in file.readlines():
             configdata.append(line)
+        file.close()
         return configdata  
     except Exception as e:
         print(e)
-    finally:
-        file.close()
 
 
 

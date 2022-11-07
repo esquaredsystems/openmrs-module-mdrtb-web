@@ -1,5 +1,5 @@
 import unittest
-from utilities import metadata_util as mu
+import metadata_util as mu
 
 class TestMetaDataUtil(unittest.TestCase):
 
@@ -17,8 +17,12 @@ class TestMetaDataUtil(unittest.TestCase):
 
     def test_get_message_with_locale(self):
         value = mu.get_message('mdrtb.facility', locale='ru')
-        self.assertEquals('Учреждений', value)
+        self.assertEqual('Учреждений', value)
 
     def test_get_message_with_invalid_locale(self):
-        value = mu.get_message('mdrtb.facility', locale='zy')
-        self.fail("Invalid locale")
+        try:
+            value = mu.get_message('mdrtb.facility', locale='zy')
+        except Exception :
+            pass
+        else:
+            self.fail("Cant open the file")

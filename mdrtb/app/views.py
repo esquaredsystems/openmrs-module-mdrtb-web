@@ -160,6 +160,10 @@ def logout(req):
         ru.clear_session(req)
     return redirect('home')
 
+def concepts(req):
+    
+    return render(req, 'app/tbregister/dashboard.html')
+
 
 def manage_test_types(req):
     context={}
