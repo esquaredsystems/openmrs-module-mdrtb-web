@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from datetime import datetime , date
 
 
 
@@ -8,7 +8,6 @@ from pathlib import Path
 def get_project_root() -> Path:
     return Path(__file__).parent.parent
 
-print(get_project_root())
 
 
 def read_properties_file(filepath,mode,encoding):
@@ -21,6 +20,17 @@ def read_properties_file(filepath,mode,encoding):
         return configdata  
     except Exception as e:
         print(e)
+
+
+
+def calculate_age(dob):
+    age = 0
+    converted_date  = datetime.strptime(dob, '%d/%m/%Y %H:%M:%S').strftime("%d-%m-%Y")
+    today_date= date.today()
+    return today_date.year-int(converted_date[6:])
+    
+
+
 
 
 

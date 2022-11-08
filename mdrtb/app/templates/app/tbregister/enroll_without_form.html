@@ -6,7 +6,7 @@
 <div class="flex flex-col  justify-center m-36 flex-grow">
   <div class="flex flex-col justify-center items-center">
     <div
-      class="rounded-tr-md rounded-tl-md cursor-pointer shadow-sm w-3/5 bg-gray-200 flex items-center justify-between px-2">
+      class="rounded-tr-md rounded-tl-md cursor-pointer shadow-sm w-4/5 bg-gray-200 flex items-center justify-between px-2">
       <input class="border-none focus:ring-0 bg-transparent flex-1" type="text" id="search-input" name="search"
         placeholder="Search for Patients" />
       <svg id="search-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -16,7 +16,7 @@
       </svg>
     </div>
     <div id="search-results"
-      class="rounded-br-md rounded-bl-md hidden p-4 m-2 cursor-pointer shadow-sm w-3/5 bg-gray-200 flex-col max-h-52  overflow-scroll">
+      class="rounded-br-md rounded-bl-md hidden p-4 m-2 cursor-pointer shadow-sm w-4/5 bg-gray-200 flex-col max-h-52  overflow-scroll">
       <div id="search-results" class="grid grid-cols-1 ">
        
 
@@ -91,8 +91,8 @@
                   `
                 <a href="${path}">
                   <div class="grid grid-cols-5 border-b border-black p-1 gap-4">
-                <p>${data.results[i].identifiers[i].identifier}</p>
-                <p class="text-wrap col-span-2">${data.results[i].identifiers[i].identifierType.display}</p>
+                <p>${data.results[i].identifiers[0].identifier}</p>
+                <p class="text-wrap col-span-2">${data.results[i].person.display}</p>
                 <p>${data.results[i].person.age}</p>
                 <p>${data.results[i].person.gender}</p>
             </div></a>
