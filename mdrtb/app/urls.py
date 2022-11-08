@@ -3,14 +3,13 @@ from . import views
 
 urlpatterns = [
     path('', views.login, name='home'),
-    path('search', views.search_patients, name='search'),
+    path('search', views.search_patients_query, name='search'),
     path('patient/<str:uuid>', views.patient_dashboard, name='dashboard'),
     path('concepts' , views.concepts,name='concepts'),
     path('conceptsearch', views.concepts, name='concept_search'),
     path('report', views.index, name='report'),
-    path('enroll', views.enroll, name='Enroll'),
-    path('enroll2', views.enroll_two, name='Enroll2'),
-    path('enroll3', views.actual_enroll, name='Enroll3'),
+    path('searchpatients', views.search_patients_view, name='searchPatientsView'),
+    path('enrollpatient', views.enroll_patient, name='enrollPatient'),
     path('programenroll' , views.enroll_in_dots_program,name="dotsEnroll"),
     path('profile',views.user_profile,name='profile'),
     path('tb03' , views.tb03_form,name='tb03'),

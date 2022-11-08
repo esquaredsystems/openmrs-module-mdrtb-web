@@ -92,7 +92,7 @@ def index(req):
 
 def login(req):
     if 'session_id' in req.session:
-        return render(req, 'app/tbregister/enroll_without_form.html')
+        return render(req, 'app/tbregister/search_patients.html')
     else:
         if req.method == 'POST':
             username = req.POST['username']
@@ -107,21 +107,19 @@ def login(req):
             return render(req, 'app/tbregister/login.html')
 
 
-def search_patients(req):
+def search_patients_query(req):
     q = req.GET['q']
     _, response = ru.get(req, 'patient', {'q': q, 'v': 'full'})
     return JsonResponse(response)
 
 
-def enroll(req):
-    return render(req, 'app/tbregister/enroll_with_form.html')
 
 
-def enroll_two(req):
-    return render(req, 'app/tbregister/enroll_without_form.html')
+def search_patients_view(req):
+    return render(req, 'app/tbregister/search_patients.html')
 
 
-def actual_enroll(req):
+def enroll_patient(req):
     if req.method == 'POST':
         person_info = {
             "names": [{
@@ -135,14 +133,36 @@ def actual_enroll(req):
                 "country": req.POST['country'],
             }]
         }
-        if req.POST['dob'] is not None:
+        if 'dob'in req.POST:
             person_info['birthDate'] = req.POST['dob']
         else:
-            person_info['age'] = util.calculate_age(req.POST['dob'])
-    
-        print(person_info)
-        return render(req, 'app/tbregister/actual_enroll_form.html')
-    return render(req, 'app/tbregister/actual_enroll_form.html')
+            person_info['age'] = req.POST['age']
+
+        status , response = ru.post(req, 'person', person_info)
+        if status:
+            print(response['uuid'])
+            patient_info = {
+                "person" : response['uuid'],
+                "identifiers" : [
+                    {
+                        "identifier" : "00003",
+                        "identifierType" : "8d79403a-c2cc-11de-8d13-0010c6dffd0f",
+                        "location" : req.POST['district'],
+                        "preferred" : False
+                    }
+                ]
+            }
+            print(patient_info)
+        
+            status,patient_res = ru.post(req,'patient',patient_info)
+            if status:
+                return render(req,'app/tbregister/enroll_program.html')
+            else:
+                print(patient_res)
+                return render(req, 'app/tbregister/enroll_patients.html',context={'error' : patient_res['error']['message']})
+        else:
+            print(response)
+    return render(req, 'app/tbregister/enroll_patients.html')
 
 
 def enroll_in_dots_program(req):
