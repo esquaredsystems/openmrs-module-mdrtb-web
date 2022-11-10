@@ -4,7 +4,7 @@ import utilities.restapi_utils as ru
 import utilities.metadata_util as mu
 import utilities.commonlab_util as cu
 import utilities.common_utils as util
-
+import json
 
 testGroups = [
     'SEROLOGY',
@@ -138,6 +138,12 @@ def enroll_patient(req):
         else:
             person_info['age'] = req.POST['age']
 
+        if 'deceased' in req.POST:
+            person_info['deathDate'] = req.POST['deathdate']
+            person_info['causeOfDeath'] = req.POST['causeofdeath']
+        elif 'voided' in req.POST:
+            person_info['reasonToVoid']= req.POST['reasontovoid']
+
         status , response = ru.post(req, 'person', person_info)
         if status:
             print(response['uuid'])
@@ -152,17 +158,16 @@ def enroll_patient(req):
                     }
                 ]
             }
-            print(patient_info)
-        
             status,patient_res = ru.post(req,'patient',patient_info)
             if status:
                 return render(req,'app/tbregister/enroll_program.html')
             else:
-                print(patient_res)
                 return render(req, 'app/tbregister/enroll_patients.html',context={'error' : patient_res['error']['message']})
         else:
             print(response)
-    return render(req, 'app/tbregister/enroll_patients.html')
+    
+    locations = json.dumps(mu.get_locations())
+    return render(req, 'app/tbregister/enroll_patients.html' , context={'locations' : locations })
 
 
 def enroll_in_dots_program(req):
@@ -170,9 +175,7 @@ def enroll_in_dots_program(req):
 
 
 def tb03_form(req):
-    context = {}
-    context['messages'] = ''
-    return render(req, 'app/tbregister/tb03.html', context=context)
+    return render(req, 'app/tbregister/tb03.html')
 
 
 def patientList(req):

@@ -1,148 +1,309 @@
 {% extends 'app/tbregister/base.html' %} {%block content%}
 <div>
-  {% if error %}
-  {{error}}
-  {% endif %}
+  {% if error %} {{error}} {% endif %}
   <form action="{% url 'enrollPatient' %}" method="post" class="flex flex-col">
     {% csrf_token %}
     <div class="m-16 flex flex-col justify-center space-y-8">
       <h1 class="text-[#2D9CDB] text-3xl font-bold">
         {{'mdrtb.enrollNewPatient'|get_message:request.session.locale}}
       </h1>
-      <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4">
+      <div
+        class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4"
+      >
         <div class="flex items-center space-x-4">
           <div class="input-container">
-            <label class="input-label" for="name">{{'mdrtb.givenname'|get_message:request.session.locale}}</label>
+            <label class="input-label md:w-1/5" for="name"
+              >{{'mdrtb.givenname'|get_message:request.session.locale}}</label
+            >
             <input required class="input" type="text" name="givenname" />
           </div>
           <div class="input-container">
-            <label class="input-label" for="name">{{'mdrtb.familyname'|get_message:request.session.locale}}</label>
+            <label class="input-label md:w-1/5" for="name"
+              >{{'mdrtb.familyname'|get_message:request.session.locale}}</label
+            >
             <input required class="input" type="text" name="familyname" />
           </div>
         </div>
         <div class="flex items-center space-x-4">
           <div class="input-container space-x-8">
-            <label class="text-[#9E9E9E] font-bold w-4/12"
-              for="name">{{'mdrtb.birthdate'|get_message:request.session.locale}}</label>
-            <input required
+            <label class="text-[#9E9E9E] font-bold w-4/12" for="name"
+              >{{'mdrtb.birthdate'|get_message:request.session.locale}}</label
+            >
+            <input
+              required
               class="border disabled:pointer-events-none rounded-md shadow-sm border-gray-200 outline-none focus:ring-0 w-full"
-              type="date" name="dob" id="dob" />
+              type="date"
+              max="2022-12-31"
+              name="dob"
+              id="dob"
+              
+            />
           </div>
           <div class="font-bold">OR</div>
           <div class="input-container">
-            <label class="input-label" for="name">{{'mdrtb.age'|get_message:request.session.locale}}</label>
-            <input required class="input disabled:pointer-events-none" type="number" name="age" id="age" />
+            <label class="input-label" for="name"
+              >{{'mdrtb.age'|get_message:request.session.locale}}</label
+            >
+            <input
+              required
+              class="input disabled:pointer-events-none"
+              type="number"
+              name="age"
+              id="age"
+              min="1"
+            />
           </div>
         </div>
         <div class="input-container">
-          <label class="input-label" for="name">{{'mdrtb.gender'|get_message:request.session.locale}}</label>
+          <label class="input-label" for="name"
+            >{{'mdrtb.gender'|get_message:request.session.locale}}</label
+          >
           <div class="flex items-center space-x-4">
             <div class="flex items-center space-x-2">
-              <label for="Male">{{'mdrtb.male'|get_message:request.session.locale}}</label>
+              <label for="Male"
+                >{{'mdrtb.male'|get_message:request.session.locale}}</label
+              >
               <input required name="gender" type="radio" value="M" />
             </div>
             <div class="flex items-center space-x-2">
-              <label for="Female">{{'mdrtb.female'|get_message:request.session.locale}}</label>
+              <label for="Female"
+                >{{'mdrtb.female'|get_message:request.session.locale}}</label
+              >
               <input required name="gender" type="radio" value="F" />
             </div>
           </div>
         </div>
       </div>
-      <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4">
+      <div
+        class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4"
+      >
         <div class="input-container">
           <label class="input-label" for="name">Country</label>
-          <select required class="input" name="country">
-            <option selected value="Tajikistan">Tajikistan</option>
-            <option value="">Other</option>
+          <select required class="input" name="country" id="country-select">
+            <option selected value="None">Select</option>
           </select>
         </div>
         <div class="input-container">
-          <label class="input-label" for="name">{{'mdrtb.oblast'|get_message:request.session.locale}}</label>
-          <select required class="input" name="oblast">
-            <option selected value="Душанбе">Душанбе</option>
-            <option value="">Khatlon</option>
+          <label class="input-label" for="name"
+            >{{'mdrtb.oblast'|get_message:request.session.locale}}</label
+          >
+          <select
+            required
+            class="input"
+            name="oblast"
+            id="oblast-select"
+          >
+            <option value="None">Select</option>
           </select>
         </div>
         <div class="input-container">
-          <label class="input-label" for="name">{{'mdrtb.district'|get_message:request.session.locale}}</label>
-          <select required class="input" name="district">
-            <option selected value="81d267f7-0603-4bbb-a2a2-cd0f176d0911">
-              Бохтар
-            </option>
-            <option value="">D2</option>
+          <label class="input-label" for="name"
+            >{{'mdrtb.district'|get_message:request.session.locale}}</label
+          >
+          <select required class="input" name="district" id="district-select">
+            <option value="None">Select</option>
           </select>
         </div>
         <div class="input-container">
-          <label class="input-label" for="name">{{'mdrtb.facility'|get_message:request.session.locale}}</label>
+          <label class="input-label" for="name"
+            >{{'mdrtb.facility'|get_message:request.session.locale}}</label
+          >
           <select required class="input" name="facility">
             <option selected value="F1">F1</option>
             <option value="">F2</option>
           </select>
         </div>
         <div class="input-container">
-          <label class="input-label" for="name">{{'mdrtb.address'|get_message:request.session.locale}}</label>
+          <label class="input-label" for="name"
+            >{{'mdrtb.address'|get_message:request.session.locale}}</label
+          >
           <input required class="input" type="text" name="address" />
         </div>
         <div class="input-container">
-          <label class="input-label opacity-0" for="name">{{'mdrtb.address'|get_message:request.session.locale}}</label>
+          <label class="input-label opacity-0" for="name"
+            >{{'mdrtb.address'|get_message:request.session.locale}}</label
+          >
           <input class="input" type="text" name="address2" />
         </div>
       </div>
-      <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4">
+      <div
+        class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4"
+      >
         <div class="input-container">
-          <label class="input-label" for="deceased">{{'mdrtb.deceased'|get_message:request.session.locale}}</label>
-          <input id="deceased" type="checkbox" class="border-none shadow-sm cursor-pointer" name="deceased" />
+          <label class="input-label md:w-16" for="deceased"
+            >{{'mdrtb.deceased'|get_message:request.session.locale}}</label
+          >
+          <input
+            id="deceased"
+            type="checkbox"
+            class="border-none shadow-sm cursor-pointer"
+            name="deceased"
+          />
         </div>
         <div id="deceased-container" class="hidden items-center space-x-8">
           <div class="input-container">
-            <label class="text-[#9E9E9E] font-bold"
-              for="deceased">{{'mdrtb.deathDate'|get_message:request.session.locale}}</label>
-            <input type="date" class="input" name="deathdate" />
+            <label class="text-[#9E9E9E] font-bold" for="deceased"
+              >{{'mdrtb.deathDate'|get_message:request.session.locale}}</label
+            >
+            <input type="date" class="input" name="deathdate" id="deathdate" />
           </div>
           <div class="input-container">
-            <label class="text-[#9E9E9E] font-bold"
-              for="deceased">{{'mdrtb.causeOfDeath'|get_message:request.session.locale}}</label>
+            <label class="text-[#9E9E9E] font-bold" for="deceased"
+              >{{'mdrtb.causeOfDeath'|get_message:request.session.locale}}</label
+            >
             <input type="text" class="input" name="causeofdeath" />
           </div>
         </div>
         <div class="input-container">
-          <label class="input-label" for="deceased">Voided</label>
-          <input id="voided" type="checkbox" class="border-none shadow-sm cursor-pointer" name="voided" />
+          <label class="input-label md:w-16" for="deceased">Voided</label>
+          <input
+            id="voided"
+            type="checkbox"
+            class="border-none shadow-sm cursor-pointer"
+            name="voided"
+          />
         </div>
         <div id="voided-container" class="input-container hidden">
-          <label class="text-[#9E9E9E] font-bold" for="Reason to void">Reason to Void</label>
+          <label class="text-[#9E9E9E] font-bold" for="Reason to void"
+            >Reason to Void</label
+          >
           <input type="text" class="input" name="reasontovoid" />
         </div>
       </div>
     </div>
     <div style="margin-left: 4rem; margin-top: -2rem" class="flex items-center">
-      <button style="margin-bottom: 4rem" class="bg-[#2D9CDB] p-2 w-1/5 rounded-md text-white">
+      <button
+        style="margin-bottom: 4rem"
+        class="bg-[#2D9CDB] p-2 w-1/5 rounded-md text-white"
+      >
         Register
       </button>
-      <button style="margin-bottom: 4rem; margin-left: -4rem"
-        class="p-2 font-bold w-1/5 rounded-md underline text-[#044062]">
+      <button
+        style="margin-bottom: 4rem; margin-left: -4rem"
+        class="p-2 font-bold w-1/5 rounded-md underline text-[#044062]"
+      >
         Cancel
       </button>
     </div>
   </form>
   <script>
+    var locations = JSON.parse("{{locations | escapejs }}");
 
+    const setMaxDate = () => {
+      let date = new Date();
+      maxDate = date.toISOString().substring(0, 10);
+      $("#dob").prop("max", maxDate);
+      $("#deathdate").prop("max", maxDate);
+    };
+
+    setMaxDate();
+    function setLocations(locations) {
+      for (let location of locations) {
+        if (location.level === "country") {
+          setCountry(location.name);
+        }
+      }
+    }
+    setLocations(locations);
+
+    function setCountry(country) {
+      console.log(`adding ${country} as country`);
+      // $('country-select').append(`
+      // <option value="${country}">${country}</option>
+
+      // `)
+      if (country != "Other") {
+        $("#country-select").append(
+          $("<option>", {
+            value: country,
+            text: country,
+          })
+        );
+      } else {
+        $("#country-select").append(
+          $("<option>", {
+            value: country,
+            text: country,
+          })
+        );
+      }
+    }
+
+    $("#country-select").change(function () {
+      $("#oblast-select").prop("disabled", false);
+
+      let selectedCountry = $("#country-select").val();
+      for (let location of locations) {
+        if (location.name === selectedCountry) {
+          if (location.children != undefined) {
+            for (child of location.children) {
+              if (child.level === "region") {
+                console.log(child);
+                $("#oblast-select").append(
+                  $("<option>", {
+                    value: child.name,
+                    text: child.name,
+                  })
+                );
+              }
+            }
+          }
+        }
+      }
+    });
+
+    $("#oblast-select").change(function () {
+      $("#district-select").prop("disabled", false);
+      let selectedCountry = $("#country-select").val();
+      let selectedOblast = $("#oblast-select").val();
+      for (let location of locations) {
+        if (location.name === selectedCountry) {
+          if (location.children != undefined) {
+            for (child of location.children) {
+              if (child.name === selectedOblast) {
+                console.log("yes");
+                if (child.children != undefined) {
+                  console.log("not");
+                  for (kid of child.children) {
+                    console.log(kid);
+                    if (kid.level === "district") {
+                      console.log("not 2");
+                      $("#district-select").append(
+                        $("<option>", {
+                          value: "81d267f7-0603-4bbb-a2a2-cd0f176d0911",
+                          text: kid.name,
+                        })
+                      );
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+
+    const disableLocationsInput = () => {
+      $("#oblast-select").prop("disabled", true);
+      $("#district-select").prop("disabled", true);
+    };
+    disableLocationsInput();
     $("#dob").change(function () {
       if ($("#dob").val() != "") {
         $("#age").prop("disabled", true);
+        $("#age").prop("title", "You can either enter age or date of birth");
       } else {
         $("#age").prop("disabled", false);
       }
-    })
+    });
     $("#age").change(function () {
       if ($("#age").val() != "") {
         $("#dob").prop("disabled", true);
       } else {
         $("#dob").prop("disabled", false);
       }
-    })
-
-
+    });
 
     $("#deceased").change(function () {
       if ($("#deceased").prop("checked")) {
