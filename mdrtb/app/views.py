@@ -5,6 +5,7 @@ import utilities.metadata_util as mu
 import utilities.commonlab_util as cu
 import utilities.common_utils as util
 import json
+import datetime
 
 testGroups = [
     'SEROLOGY',
@@ -189,7 +190,13 @@ def patientList(req):
 
 
 def patient_dashboard(req, uuid):
-    return render(req, 'app/tbregister/dashboard.html')
+    status,response = ru.get(req,f'patient/{uuid}',{'v' : 'full'})
+    if status:
+        response['person']['birthdate'] = util.iso_to_normal(response['person']['birthdate'])
+        return render(req, 'app/tbregister/dashboard.html' , context={'patient' : response})
+    return render(req, 'app/tbregister/dashboard.html' , context={
+        'error' : 'dont have patient'
+    })
 
 
 def user_profile(req):

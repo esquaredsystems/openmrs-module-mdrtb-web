@@ -30,6 +30,8 @@ def calculate_age(dob):
     return today_date.year-int(converted_date[6:])
     
 
+def iso_to_normal(date):
+    return date[:date.find('T')].replace('-' , '.')
 
 
 
