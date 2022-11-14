@@ -11,6 +11,7 @@ urlpatterns = [
     path('searchpatients', views.search_patients_view, name='searchPatientsView'),
     path('enrollpatient', views.enroll_patient, name='enrollPatient'),
     path('programenroll' , views.enroll_in_dots_program,name="dotsEnroll"),
+    path('transfer' , views.transfer,name='transfer'),
     path('profile',views.user_profile,name='profile'),
     path('tb03' , views.tb03_form,name='tb03'),
     path('logout', views.logout, name='logout'),

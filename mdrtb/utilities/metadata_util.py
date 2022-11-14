@@ -23,6 +23,7 @@ django.setup()
 
 
 def get_message(message_code, locale=None, default=None):
+    # TODO: extend this function to search messages in OpenMRS's files if not found in MDR-TB
     value = ''
     dir = f'{u.get_project_root()}/resources'
     if not locale:

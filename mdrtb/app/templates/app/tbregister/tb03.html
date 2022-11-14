@@ -14,25 +14,25 @@
             <span class="font-bold">
               {{'mdrtb.tb03.dateOfRegistration'|get_message:request.session.locale}}:
             </span>
-            <span class="tb03-form-label"> 01/11/2022 </span>
+            <span class="tb03-form-label"> {{enrollment_info.enroll_date}} </span>
           </div>
           <div class="space-x-3">
             <span class="font-bold">
               {{'mdrtb.oblast'|get_message:request.session.locale}}:
             </span>
-            <span class="tb03-form-label"> Dushanbe </span>
+            <span class="tb03-form-label"> {{enrollment_info.oblast}} </span>
           </div>
           <div class="space-x-3">
             <span class="font-bold">
               {{'mdrtb.district'|get_message:request.session.locale}}:
             </span>
-            <span class="tb03-form-label"> Firdavsi </span>
+            <span class="tb03-form-label"> {{enrollment_info.district}} </span>
           </div>
           <div class="space-x-3">
             <span class="font-bold">
               {{'mdrtb.facility'|get_message:request.session.locale}}:
             </span>
-            <span class="tb03-form-label"> Facility 1 </span>
+            <span class="tb03-form-label"> {{enrollment_info.facility}} </span>
           </div>
         </div>
         <div class="flex items-center space-x-12">
@@ -40,25 +40,25 @@
             <span class="font-bold">
               {{'mdrtb.name'|get_message:request.session.locale}}:
             </span>
-            <span class="tb03-form-label"> Basit, Abdul </span>
+            <span class="tb03-form-label"> {{created_patient.names.0.familyName}},{{created_patient.names.0.givenName}} </span>
           </div>
           <div class="space-x-3">
             <span class="font-bold">
               {{'mdrtb.tb03.registrationNumber'|get_message:request.session.locale}}:
             </span>
-            <span class="tb03-form-label"> 24190001 </span>
+            <span class="tb03-form-label"> {{created_patient.identifiers.0.identifier}} </span>
           </div>
           <div class="space-x-3">
             <span class="font-bold">
               {{'mdrtb.tb03.gender'|get_message:request.session.locale}}:
             </span>
-            <span class="tb03-form-label"> M </span>
+            <span class="tb03-form-label"> {{created_patient.gender}} </span>
           </div>
           <div class="space-x-3">
             <span class="font-bold">
               {{'mdrtb.tb03.ageAtRegistration'|get_message:request.session.locale}}:
             </span>
-            <span class="tb03-form-label"> 20 </span>
+            <span class="tb03-form-label"> {{created_patient.age}} </span>
           </div>
         </div>
         <div class="flex items-center space-x-12">
@@ -66,13 +66,13 @@
             <span class="font-bold">
               {{'mdrtb.tb03.dateOfBirth'|get_message:request.session.locale}}:
             </span>
-            <span class="tb03-form-label"> 03/05/2022 </span>
+            <span class="tb03-form-label"> {{created_patient.age}} </span>
           </div>
           <div class="space-x-3">
             <span class="font-bold">
               {{'mdrtb.tb03.address'|get_message:request.session.locale}}:
             </span>
-            <span class="tb03-form-label"> A-90, Block 17, FB area </span>
+            <span class="tb03-form-label"> {{created_patient.addresses.0.address1}} </span>
           </div>
         </div>
         <div class="flex items-center space-x-12">
@@ -80,13 +80,13 @@
             <span class="font-bold">
               {{'mdrtb.tb03.registrationGroup'|get_message:request.session.locale}}:
             </span>
-            <span class="tb03-form-label"> NEW </span>
+            <span class="tb03-form-label"> {{enrollment_info.registration_group_prev_treatment}} </span>
           </div>
           <div class="space-x-3">
             <span class="font-bold">
               Registration Group previous drug use
             </span>
-            <span class="tb03-form-label"> NEW </span>
+            <span class="tb03-form-label"> {{enrollment_info.registration_group_prev_drug}} </span>
           </div>
         </div>
       </div>

@@ -6,6 +6,9 @@ import utilities.commonlab_util as cu
 import utilities.common_utils as util
 import json
 import datetime
+from uuid import uuid4
+from django.core.cache import cache
+
 
 testGroups = [
     'SEROLOGY',
@@ -100,7 +103,7 @@ def login(req):
             password = req.POST['password']
             response = ru.initiate_session(req, username, password)
             if response:
-                return render(req, 'app/tbregister/enroll_without_form.html')
+                return render(req, 'app/tbregister/search_patients.html')
             else:
                 context = {'error': response.status_code}
                 return render(req, 'app/tbregister/login.html', context=context)
@@ -109,24 +112,34 @@ def login(req):
 
 
 def search_patients_query(req):
+
     q = req.GET['q']
     _, response = ru.get(req, 'patient', {'q': q, 'v': 'full'})
     return JsonResponse(response)
 
 
-
-
 def search_patients_view(req):
+    #TODO: search for global property 'minSearchCharacters' to specify at least how many keystrokes are required to invoke search
+
     return render(req, 'app/tbregister/search_patients.html')
 
 
 def enroll_patient(req):
     if req.method == 'POST':
         person_info = {
+            "uuid": uuid4(),
             "names": [{
                 "givenName": req.POST['givenname'],
                 "familyName":req.POST['familyname']
             }],
+            "identifiers": [
+                {
+                    "identifier": "00003",
+                    "identifierType": "8d79403a-c2cc-11de-8d13-0010c6dffd0f",
+                    "location": req.POST['district'],
+                    "preferred": False
+                }
+            ],
             "gender": req.POST['gender'],
             "addresses": [{
                 "address1": req.POST['address'],
@@ -134,7 +147,7 @@ def enroll_patient(req):
                 "country": req.POST['country'],
             }]
         }
-        if 'dob'in req.POST:
+        if 'dob' in req.POST:
             person_info['birthDate'] = req.POST['dob']
         else:
             person_info['age'] = req.POST['age']
@@ -143,40 +156,83 @@ def enroll_patient(req):
             person_info['deathDate'] = req.POST['deathdate']
             person_info['causeOfDeath'] = req.POST['causeofdeath']
         elif 'voided' in req.POST:
-            person_info['reasonToVoid']= req.POST['reasontovoid']
+            person_info['reasonToVoid'] = req.POST['reasontovoid']
 
-        status , response = ru.post(req, 'person', person_info)
-        if status:
-            print(response['uuid'])
-            patient_info = {
-                "person" : response['uuid'],
-                "identifiers" : [
-                    {
-                        "identifier" : "00003",
-                        "identifierType" : "8d79403a-c2cc-11de-8d13-0010c6dffd0f",
-                        "location" : req.POST['district'],
-                        "preferred" : False
-                    }
-                ]
-            }
-            status,patient_res = ru.post(req,'patient',patient_info)
-            if status:
-                return render(req,'app/tbregister/enroll_program.html')
-            else:
-                return render(req, 'app/tbregister/enroll_patients.html',context={'error' : patient_res['error']['message']})
-        else:
-            print(response)
-    
+        # status , response = ru.post(req, 'person', person_info)
+        # if status:
+        #     patient_info = {
+        #         "person" : response['uuid'],
+        #         "identifiers" : [
+        #             {
+        #                 "identifier" : "00003",
+        #                 "identifierType" : "8d79403a-c2cc-11de-8d13-0010c6dffd0f",
+        #                 "location" : req.POST['district'],
+        #                 "preferred" : False
+        #             }
+        #         ]
+        #     }
+        #     status,patient_res = ru.post(req,'patient',patient_info)
+        #     if status:
+        #         return render(req,'app/tbregister/enroll_program.html')
+        #     else:
+        #         return render(req, 'app/tbregister/enroll_patients.html',context={'error' : patient_res['error']['message']})
+        # else:
+        #     print(response)
+
+        # MOCK:
+        try:
+            cache.set('created_patient', person_info, 5000)
+            print('set cache')
+            print(cache.get('created_patient'))
+            return redirect('dotsEnroll')
+        except Exception as e:
+            print(e)
+            return redirect('home')
+
     locations = json.dumps(mu.get_locations())
-    return render(req, 'app/tbregister/enroll_patients.html' , context={'locations' : locations })
+    return render(req, 'app/tbregister/enroll_patients.html', context={'locations': locations})
 
 
 def enroll_in_dots_program(req):
-    return render(req, 'app/tbregister/enroll_program.html')
+    locations = json.dumps(mu.get_locations())
+    if req.method == 'POST':
+        enrollment_info = {
+            "enroll_date": req.POST['enrollmentdate'],
+            "oblast": req.POST['oblast'],
+            "district": req.POST['district'],
+            "facility": "F1",
+            "registration_group_prev_treatment": req.POST['reggrpprevtreatment'],
+            "registration_group_prev_drug": req.POST['reggrpprevdrug'],
+        }
+        try:
+            cache.set('enrollment_info', enrollment_info, 5000)
+            print('set cache')
+        except Exception as e:
+            print(e)
+        return redirect('tb03')
+    return render(req, 'app/tbregister/enroll_program.html', context={'locations': locations})
 
 
 def tb03_form(req):
-    return render(req, 'app/tbregister/tb03.html')
+    context = {
+        "enrollment_info" : cache.get('enrollment_info'),
+        "created_patient" :cache.get('created_patient')
+    }
+    print(context)
+    return render(req, 'app/tbregister/tb03.html',context=context)
+
+
+def transfer(req):
+    return render(req,'app/tbregister/transfer.html')
+
+def tb03u_form(req):
+    return render(req,'app/tbregister/tb03u.html')
+
+def adverse_events_form(req):
+    return render(req,'app/tbregister/adverse_events.html')
+
+def drug_resistence_form(req):
+    return render(req,'app/tbregister/drug_resistence.html')
 
 
 def patientList(req):
@@ -190,12 +246,13 @@ def patientList(req):
 
 
 def patient_dashboard(req, uuid):
-    status,response = ru.get(req,f'patient/{uuid}',{'v' : 'full'})
+    status, response = ru.get(req, f'patient/{uuid}', {'v': 'full'})
     if status:
-        response['person']['birthdate'] = util.iso_to_normal(response['person']['birthdate'])
-        return render(req, 'app/tbregister/dashboard.html' , context={'patient' : response})
-    return render(req, 'app/tbregister/dashboard.html' , context={
-        'error' : 'dont have patient'
+        response['person']['birthdate'] = util.iso_to_normal(
+            response['person']['birthdate'])
+        return render(req, 'app/tbregister/dashboard.html', context={'patient': response})
+    return render(req, 'app/tbregister/dashboard.html', context={
+        'error': 'dont have patient'
     })
 
 
@@ -246,8 +303,6 @@ def fetch_attributes(req):
             'groupName': 'none' if attribute['groupName'] == None else attribute['groupName'],
             'multisetName': 'none' if attribute['multisetName'] == None else attribute['multisetName']
         })
-
-    print(attributes)
 
     return JsonResponse({'attributes': attributes})
 
