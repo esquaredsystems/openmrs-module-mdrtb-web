@@ -95,8 +95,9 @@ def index(req):
 
 
 def login(req):
+    context = {'minSearchCharacters' : '2'}
     if 'session_id' in req.session:
-        return render(req, 'app/tbregister/search_patients.html')
+        return render(req, 'app/tbregister/search_patients.html',context=context)
     else:
         if req.method == 'POST':
             username = req.POST['username']
@@ -112,7 +113,6 @@ def login(req):
 
 
 def search_patients_query(req):
-
     q = req.GET['q']
     _, response = ru.get(req, 'patient', {'q': q, 'v': 'full'})
     return JsonResponse(response)
@@ -120,7 +120,8 @@ def search_patients_query(req):
 
 def search_patients_view(req):
     #TODO: search for global property 'minSearchCharacters' to specify at least how many keystrokes are required to invoke search
-
+    #no resourse as systemsetting
+    
     return render(req, 'app/tbregister/search_patients.html')
 
 
@@ -195,6 +196,8 @@ def enroll_patient(req):
 
 def enroll_in_dots_program(req):
     locations = json.dumps(mu.get_locations())
+    registration_group_concepts = mu.get_concept_by_uuid('ae16bb6e-3d82-4e14-ab07-2018ee10d311',req)['answers']
+    registration_group_prev_drug_concepts = mu.get_concept_by_uuid('31c2d590-0370-102d-b0e3-001ec94a0cc1',req)['answers']
     if req.method == 'POST':
         enrollment_info = {
             "enroll_date": req.POST['enrollmentdate'],
@@ -210,7 +213,7 @@ def enroll_in_dots_program(req):
         except Exception as e:
             print(e)
         return redirect('tb03')
-    return render(req, 'app/tbregister/enroll_program.html', context={'locations': locations})
+    return render(req, 'app/tbregister/enroll_program.html', context={'locations': locations,'reggrp' : registration_group_concepts,'reggrpprev' : registration_group_prev_drug_concepts})
 
 
 def tb03_form(req):

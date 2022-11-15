@@ -54,16 +54,10 @@
           >{{'mdrtb.previousTreatmentClassification'|get_message:request.session.locale}}</label
         >
         <select class="input w-3/5" name="reggrpprevtreatment" required>
-
-          <option value="DEFAULT AFTER REGIMEN 1">DEFAULT AFTER REGIMEN 1</option>
-          <option value="RELAPSE AFTER REGIMEN 1">RELAPSE AFTER REGIMEN 1</option>
-          <option value="AFTER REGIMEN 1 FAILURE">AFTER REGIMEN 1 FAILURE</option>
-          <option value="AFTER REGIMEN 2 FAILURE">AFTER REGIMEN 2 FAILURE</option>
-          <option value="DEFAULT AFTER REGIMEN 2">DEFAULT AFTER REGIMEN 2</option>
-          <option value="RELAPSE AFTER REGIMEN 2">RELAPSE AFTER REGIMEN 2</option>
-          <option value="NEW">
-            {{'mdrtb.new'|get_message:request.session.locale}}
-          </option>
+          {% for concept in reggrp %}
+          <option value="{{concept.uuid}}">{{concept.display}}</option>
+          {% endfor %}
+          
         </select>
       </div>
       <div class="input-container">
@@ -71,11 +65,9 @@
           >{{'mdrtb.previousDrugClassification'|get_message:request.session.locale}}</label
         >
         <select class="input w-3/5" name="reggrpprevdrug" required>
-          <option value="NEW">
-            {{'mdrtb.new'|get_message:request.session.locale}}
-          </option>
-          <option value="PREVIOUSLY ON SECOND-LINE DRUGS">PREVIOUSLY ON SECOND-LINE DRUGS</option>
-          <option value="PREVIOUSLY ON FIRST-LINE DRUGS">PREVIOUSLY ON FIRST-LINE DRUGS</option>
+          {% for concept in reggrpprev %}
+          <option value="{{concept.uuid}}">{{concept.display}}</option>
+          {% endfor %}
         </select>
       </div>
     </div>

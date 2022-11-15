@@ -11,3 +11,11 @@ def get_message(message_code, locale,default=None):
     return value
 
 
+@register.filter
+def get_message_openMRS(message_code, locale,default=None):
+    if locale == 'en':
+        value = mu.get_message_openMRS_lib(message_code,default=default)
+    else:
+        value = mu.get_message_openMRS_lib(message_code, locale=locale,default=default)
+    return value
+

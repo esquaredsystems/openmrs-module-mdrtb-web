@@ -81,7 +81,6 @@ WSGI_APPLICATION = 'mdrtb.wsgi.application'
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'mdrtb-cache',
     }
 }
 

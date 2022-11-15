@@ -23,7 +23,6 @@ django.setup()
 
 
 def get_message(message_code, locale=None, default=None):
-    # TODO: extend this function to search messages in OpenMRS's files if not found in MDR-TB
     value = ''
     dir = f'{u.get_project_root()}/resources'
     if not locale:
@@ -48,28 +47,56 @@ def get_message(message_code, locale=None, default=None):
     return re.sub(cleaner, ' ', value.strip())
 
 
-def get_concept(req):
+
+def get_message_openMRS_lib(message_code, locale=None, default=None):
+    value = ''
+    dir = f'{u.get_project_root()}/resources'
+    if not locale:
+        data = u.read_properties_file(
+            f'{dir}/openMRS_messages.properties', 'r', encoding='utf-8')
+    else:
+        data = u.read_properties_file(
+            f'{dir}/openMRS_messages_{locale}.properties', 'r', encoding='utf-8')
+    if message_code:
+        for message in data:
+            split_msg = message.split('=')
+            if split_msg[0] == message_code:
+                value = split_msg[1]
+            elif default:
+                value = default
+    else:
+        raise Exception("Please provide a valid message code")
+
+    if len(value) < 1:
+        value = message_code
+    cleaner = re.compile('<.*?>')
+    return re.sub(cleaner, ' ', value.strip())
+
+
+
+def get_concepts_and_set_cache(req):
     concepts = cache.get('concepts')
     if concepts is None:
-        print("COMING FROM REST")
         status, response = ru.get(req, 'concept', {'v': 'full'})
-        print("SETTING CACHE")
-        try:
-            cache.set('concepts', response, 86400)
-        except Exception as e:
-            print(e)
-
+        if status:
+            try:
+                print('setting cache')
+                cache.set('concepts', response['results'], 86400)
+            except Exception as e:
+                print(e)
     else:
-        print("COMING FROM CACHE")
         concept_dict = dict(concepts)
+        return concept_dict
 
 
-def get_concept_by_uuid(uuid):
-    concept = cache.get('concepts')
-    for concept in concept['results']:
-        if concept['uuid'] == uuid:
-            print("FOUND")
-            print(concept)
+def get_concept_by_uuid(uuid,req):
+    status, response = ru.get(req, f'concept/{uuid}', {'v': 'full','lang' : req.session['locale']})
+    if status:
+        return response
+
+
+
+    
 
 
 def get_locations():
