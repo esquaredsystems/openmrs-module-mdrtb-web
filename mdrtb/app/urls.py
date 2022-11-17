@@ -14,6 +14,7 @@ urlpatterns = [
     path('transfer' , views.transfer,name='transfer'),
     path('profile',views.user_profile,name='profile'),
     path('tb03' , views.tb03_form,name='tb03'),
+    path('tb03u' , views.tb03u_form,name='tb03u'),
     path('logout', views.logout, name='logout'),
     path('patientlist', views.patientList, name='patientlist'),
     path('commonlab/managetesttypes' , views.manage_test_types,name='managetesttypes'),

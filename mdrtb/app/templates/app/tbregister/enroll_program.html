@@ -46,7 +46,8 @@
           >{{'mdrtb.facility'|get_message:request.session.locale}}</label
         >
         <select class="input w-3/5" name="facility" id="facility-select">
-          
+          <option value="None">Select</option>
+
         </select>
       </div>
       <div class="input-container">
@@ -55,7 +56,7 @@
         >
         <select class="input w-3/5" name="reggrpprevtreatment" required>
           {% for concept in reggrp %}
-          <option value="{{concept.uuid}}">{{concept.display}}</option>
+          <option value="{{concept.display}}">{{concept.display}}</option>
           {% endfor %}
           
         </select>
@@ -66,7 +67,7 @@
         >
         <select class="input w-3/5" name="reggrpprevdrug" required>
           {% for concept in reggrpprev %}
-          <option value="{{concept.uuid}}">{{concept.display}}</option>
+          <option value="{{concept.display}}">{{concept.display}}</option>
           {% endfor %}
         </select>
       </div>
@@ -131,7 +132,34 @@
       }
     });
 
-
+    $("#district-select").change(function () {
+      console.log('FIRE')
+      $("#facility-select").prop("disabled", false);
+      let selectedCountry = $("#oblast-select").val();
+      let selectedOblast = $("#district-select").val();
+      for (let location of tjkRegions) {
+        if (location.name === selectedCountry) {
+          if (location.children != undefined) {
+            for (child of location.children) {
+              if (child.name === selectedOblast) {
+                if (child.children != undefined) {
+                  for (kid of child.children) {
+                    if (kid.level === "facility") {
+                      $("#facility-select").append(
+                        $("<option>", {
+                          value:  kid.name,
+                          text: kid.name,
+                        })
+                      );
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    });
 
 
 
@@ -139,6 +167,8 @@
     function disableLocationsInput(){
         $('#district-select').prop('disabled' , true)
         $('#facility-select').prop('disabled' , true)
+        
+
     }
     disableLocationsInput()
     setLocations(tjkRegions);

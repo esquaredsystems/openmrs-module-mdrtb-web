@@ -203,7 +203,7 @@ def enroll_in_dots_program(req):
             "enroll_date": req.POST['enrollmentdate'],
             "oblast": req.POST['oblast'],
             "district": req.POST['district'],
-            "facility": "F1",
+            "facility": req.POST['facility'],
             "registration_group_prev_treatment": req.POST['reggrpprevtreatment'],
             "registration_group_prev_drug": req.POST['reggrpprevdrug'],
         }

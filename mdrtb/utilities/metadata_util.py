@@ -112,18 +112,130 @@ def get_locations():
                         {
                             "level": "district",
                             "name": "Сино",
-                        },
+                            "children" : [
+                                {
+                                    "level" : "facility",
+                                    "name" : "МСШ (01)"
+                               
+                                },
+                                {
+                                    "level" : "facility",
+                                    "name" : "МСШ 1 (95)"
+                               
+                                },
+                                 {
+                                    
+                                    "level" : "facility",
+                                    "name" : "МСШ 10 (60)"
+                               
+                                },
+                                {
+                                    "level" : "facility",
+                                    "name" : "МСШ 11 (11)"
+                               
+                                },
+                                 {
+                                    "level" : "facility",
+                                    "name" : "МСШ 12 (12)"
+                               
+                                },
+                            ]
+                         },
                         {
                             "level": "district",
                             "name": "Фирдавсӣ",
+                            "children" : [
+                                {
+                                    "level" : "facility",
+                                    "name" : "МСШ (01)"
+                               
+                                },
+                                {
+                                    "level" : "facility",
+                                    "name" : "МСШ 1 (95)"
+                               
+                                },
+                                 {
+                                    
+                                    "level" : "facility",
+                                    "name" : "МСШ 10 (60)"
+                               
+                                },
+                                {
+                                    "level" : "facility",
+                                    "name" : "МСШ 11 (11)"
+                               
+                                },
+                                 {
+                                    "level" : "facility",
+                                    "name" : "МСШ 12 (12)"
+                               
+                                },
+                            ]
                         },
                         {
                             "level": "district",
                             "name": "Исмоили Сомонӣ",
+                            "children" : [
+                                {
+                                    "level" : "facility",
+                                    "name" : "МСШ (01)"
+                               
+                                },
+                                {
+                                    "level" : "facility",
+                                    "name" : "МСШ 1 (95)"
+                               
+                                },
+                                 {
+                                    
+                                    "level" : "facility",
+                                    "name" : "МСШ 10 (60)"
+                               
+                                },
+                                {
+                                    "level" : "facility",
+                                    "name" : "МСШ 11 (11)"
+                               
+                                },
+                                 {
+                                    "level" : "facility",
+                                    "name" : "МСШ 12 (12)"
+                               
+                                },
+                            ]
                         },
                         {
                             "level": "district",
                             "name": "Шоҳмансур",
+                            "children" : [
+                                {
+                                    "level" : "facility",
+                                    "name" : "МСШ (01)"
+                               
+                                },
+                                {
+                                    "level" : "facility",
+                                    "name" : "МСШ 1 (95)"
+                               
+                                },
+                                 {
+                                    
+                                    "level" : "facility",
+                                    "name" : "МСШ 10 (60)"
+                               
+                                },
+                                {
+                                    "level" : "facility",
+                                    "name" : "МСШ 11 (11)"
+                               
+                                },
+                                 {
+                                    "level" : "facility",
+                                    "name" : "МСШ 12 (12)"
+                               
+                                },
+                            ]
                         }
                     ]
 
