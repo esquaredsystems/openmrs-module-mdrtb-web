@@ -1,8 +1,12 @@
-{% extends 'app/tbregister/base.html' %} {%block content%}
+{% extends 'app/tbregister/base.html' %} 
+
+{% block title %}
+  {{title}}
+{% endblock %}
 
 
 
-
+{%block content%}
 <div class="flex-column-center m-36 flex-grow">
   <div class="flex-column-center items-center">
     <div
@@ -112,9 +116,4 @@
   </script>
 
 </div>
-
-
-
-
-
 {% endblock %}

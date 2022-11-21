@@ -1,8 +1,15 @@
-{% extends 'app/tbregister/base_without_dd.html' %} {% block content %}
+{% extends 'app/tbregister/base_without_dd.html' %} 
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+
+{% block content %}
 
 <div class="m-16">
   <h1 class="text-[#2D9CDB] text-3xl font-bold">
-    {{'mdrtb.enrollment.enroll'|get_message:request.session.locale}}
+    {{'mdrtb.transferIn'|get_message:request.session.locale}}
   </h1>
   <form action="{% url 'dotsEnroll' %}" method="post" class="flex flex-col">
     {% csrf_token %}
@@ -10,7 +17,7 @@
     <div class="p-4 flex flex-col justify-center space-y-4">
       <div class="input-container">
         <label class="font-bold text-[#9E9E9E] w-2/5" for=""
-          >{{'mdrtb.enrollment.date'|get_message:request.session.locale}}</label
+          >{{'mdrtb.date'|get_message:request.session.locale}}</label
         >
         <input
           class="input w-3/5"
@@ -47,35 +54,6 @@
         >
         <select class="input w-3/5" name="facility" id="facility-select">
           
-        </select>
-      </div>
-      <div class="input-container">
-        <label class="font-bold text-[#9E9E9E] w-2/5"
-          >{{'mdrtb.previousTreatmentClassification'|get_message:request.session.locale}}</label
-        >
-        <select class="input w-3/5" name="reggrpprevtreatment" required>
-
-          <option value="DEFAULT AFTER REGIMEN 1">DEFAULT AFTER REGIMEN 1</option>
-          <option value="RELAPSE AFTER REGIMEN 1">RELAPSE AFTER REGIMEN 1</option>
-          <option value="AFTER REGIMEN 1 FAILURE">AFTER REGIMEN 1 FAILURE</option>
-          <option value="AFTER REGIMEN 2 FAILURE">AFTER REGIMEN 2 FAILURE</option>
-          <option value="DEFAULT AFTER REGIMEN 2">DEFAULT AFTER REGIMEN 2</option>
-          <option value="RELAPSE AFTER REGIMEN 2">RELAPSE AFTER REGIMEN 2</option>
-          <option value="NEW">
-            {{'mdrtb.new'|get_message:request.session.locale}}
-          </option>
-        </select>
-      </div>
-      <div class="input-container">
-        <label class="font-bold text-[#9E9E9E] w-2/5"
-          >{{'mdrtb.previousDrugClassification'|get_message:request.session.locale}}</label
-        >
-        <select class="input w-3/5" name="reggrpprevdrug" required>
-          <option value="NEW">
-            {{'mdrtb.new'|get_message:request.session.locale}}
-          </option>
-          <option value="PREVIOUSLY ON SECOND-LINE DRUGS">PREVIOUSLY ON SECOND-LINE DRUGS</option>
-          <option value="PREVIOUSLY ON FIRST-LINE DRUGS">PREVIOUSLY ON FIRST-LINE DRUGS</option>
         </select>
       </div>
     </div>

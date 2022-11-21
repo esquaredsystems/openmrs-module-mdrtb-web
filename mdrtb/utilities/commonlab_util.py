@@ -15,6 +15,75 @@ def get_commonlab_concepts_by_type(req, type):
     return concepts
 
 
+def get_commonlab_test_groups():
+    testGroups = [
+    'SEROLOGY',
+    'CARDIOLOGY',
+    'OPHTHALMOLOGY',
+    'BACTERIOLOGY',
+    'BIOCHEMISTRY',
+    'BLOOD_BANK',
+    'CYTOLOGY',
+    'HEMATOLOGY',
+    'IMMUNOLOGY',
+    'MICROBIOLOGY',
+    'RADIOLOGY',
+    'SONOLOGY',
+    'URINALYSIS',
+    'OTHER'
+]
+    return testGroups
+
+def get_preffered_handler():
+    attributesPrefferedHandler = [
+        {
+            'value': 'org.openmrs.web.attribute.handler.DateFieldGenDatatypeHandler',
+            'name': 'DateFieldGenDatatype'
+        },
+        {
+            'value': 'org.openmrs.web.attribute.handler.LongFreeTextFileUploadHandler',
+            'name': 'LongFreeTextFileUpload'
+        },
+        {
+            'value': 'org.openmrs.web.attribute.handler.BooleanFieldGenDatatypeHandler',
+            'name': 'BooleanFieldGenDatatype'
+        },
+        {
+            'value': 'org.openmrs.web.attribute.handler.LongFreeTextTextareaHandler',
+            'name': 'LongFreeTextTextarea'
+        },
+    ]
+    return attributesPrefferedHandler
+
+def get_attributes_data_types():
+    attributesDataTypes = [
+    {
+        'value': 'org.openmrs.customdatatype.datatype.DateDatatype.name',
+        'name': 'Date'
+    },
+    {
+        'value': 'org.openmrs.customdatatype.datatype.BooleanDatatype.name',
+        'name': 'Boolean'
+    },
+    {
+        'value': 'org.openmrs.customdatatype.datatype.LongFreeTextDatatype.name',
+        'name': 'LongFreeText'
+    },
+    {
+        'value': 'org.openmrs.customdatatype.datatype.FreeTextDatatype.name',
+        'name': 'FreeText'
+    },
+    {
+        'value': 'org.openmrs.customdatatype.datatype.RegexValidatedTextDatatype.name',
+        'name': 'RegexValidatedText'
+    },
+    {
+        'value': 'org.openmrs.customdatatype.datatype.ConceptDatatype.name',
+        'name': 'Concept'
+    },
+]
+    return attributesDataTypes
+
 def get_test_types_by_search(req,query):
     status,response = ru.get(req,'commonlab/labtesttype',{'v' : 'full'})
     labtests = []
@@ -40,7 +109,7 @@ def add_edit_test_type(req, data, url):
     return status, response
 
 
-def custom_attribute(data, dataTypes, removeDT, preferedHandlers, removeHandler):
+def custom_attribute(data,removeDT, removeHandler):
     attribute = {
         'uuid': data['uuid'],
         'name': data['name'],
@@ -51,12 +120,12 @@ def custom_attribute(data, dataTypes, removeDT, preferedHandlers, removeHandler)
         'minOccurs': data['minOccurs'],
         'sortWeight': data['sortWeight'],
         'datatypeClassname': {
-            'name': u.remove_given_str_from_obj_arr(dataTypes, removeDT, 'helpers'),
+            'name': u.remove_given_str_from_obj_arr(get_attributes_data_types(), removeDT, 'helpers'),
             'value': data['datatypeClassname']
         },
         'datatypeConfig': '' if data['datatypeConfig'] == None else data['datatypeConfig'],
         'preferredHandlerClassname': {
-            'name': u.remove_given_str_from_obj_arr(preferedHandlers, removeHandler, 'helpers'),
+            'name': u.remove_given_str_from_obj_arr(get_preffered_handler(), removeHandler, 'helpers'),
             'value': data['preferredHandlerClassname']
         },
         'handlerConfig': '' if data['handlerConfig'] == None else data['handlerConfig']

@@ -3,6 +3,7 @@ from django.http import JsonResponse, HttpResponseRedirect
 import utilities.restapi_utils as ru
 import utilities.metadata_util as mu
 import utilities.commonlab_util as cu
+import utilities.formsutil as fu
 import utilities.common_utils as util
 import json
 import datetime
@@ -10,94 +11,14 @@ from uuid import uuid4
 from django.core.cache import cache
 
 
-testGroups = [
-    'SEROLOGY',
-    'CARDIOLOGY',
-    'OPHTHALMOLOGY',
-    'BACTERIOLOGY',
-    'BIOCHEMISTRY',
-    'BLOOD_BANK',
-    'CYTOLOGY',
-    'HEMATOLOGY',
-    'IMMUNOLOGY',
-    'MICROBIOLOGY',
-    'RADIOLOGY',
-    'SONOLOGY',
-    'URINALYSIS',
-    'OTHER'
-]
-
-attributesDataTypes = [
-    {
-        'value': 'org.openmrs.customdatatype.datatype.DateDatatype.name',
-        'name': 'Date'
-    },
-    {
-        'value': 'org.openmrs.customdatatype.datatype.BooleanDatatype.name',
-        'name': 'Boolean'
-    },
-    {
-        'value': 'org.openmrs.customdatatype.datatype.LongFreeTextDatatype.name',
-        'name': 'LongFreeText'
-    },
-    {
-        'value': 'org.openmrs.customdatatype.datatype.FreeTextDatatype.name',
-        'name': 'FreeText'
-    },
-    {
-        'value': 'org.openmrs.customdatatype.datatype.RegexValidatedTextDatatype.name',
-        'name': 'RegexValidatedText'
-    },
-    {
-        'value': 'org.openmrs.customdatatype.datatype.ConceptDatatype.name',
-        'name': 'Concept'
-    },
-
-
-
-
-
-
-
-
-]
-
-attributesPrefferedHandler = [
-    {
-        'value': 'org.openmrs.web.attribute.handler.DateFieldGenDatatypeHandler',
-        'name': 'DateFieldGenDatatype'
-    },
-    {
-        'value': 'org.openmrs.web.attribute.handler.LongFreeTextFileUploadHandler',
-        'name': 'LongFreeTextFileUpload'
-    },
-    {
-        'value': 'org.openmrs.web.attribute.handler.BooleanFieldGenDatatypeHandler',
-        'name': 'BooleanFieldGenDatatype'
-    },
-    {
-        'value': 'org.openmrs.web.attribute.handler.LongFreeTextTextareaHandler',
-        'name': 'LongFreeTextTextarea'
-    },
-
-
-
-
-
-
-
-
-]
-
-
 def index(req):
     return render(req, 'app/app/tbregister/reportmockup.html')
 
 
 def login(req):
-    context = {'minSearchCharacters' : '2'}
+    context = {'minSearchCharacters': '2', 'title': "Search Patients"}
     if 'session_id' in req.session:
-        return render(req, 'app/tbregister/search_patients.html',context=context)
+        return render(req, 'app/tbregister/search_patients.html', context=context)
     else:
         if req.method == 'POST':
             username = req.POST['username']
@@ -106,7 +27,8 @@ def login(req):
             if response:
                 return render(req, 'app/tbregister/search_patients.html')
             else:
-                context = {'error': response.status_code}
+                context['error'] = response.status_code
+                context['title'] = 'Login'
                 return render(req, 'app/tbregister/login.html', context=context)
         else:
             return render(req, 'app/tbregister/login.html')
@@ -119,10 +41,10 @@ def search_patients_query(req):
 
 
 def search_patients_view(req):
-    #TODO: search for global property 'minSearchCharacters' to specify at least how many keystrokes are required to invoke search
-    #no resourse as systemsetting
-    
-    return render(req, 'app/tbregister/search_patients.html')
+    # TODO: search for global property 'minSearchCharacters' to specify at least how many keystrokes are required to invoke search
+    # no resourse as systemsetting
+
+    return render(req, 'app/tbregister/search_patients.html', context={'title': "Search Patients"})
 
 
 def enroll_patient(req):
@@ -191,13 +113,15 @@ def enroll_patient(req):
             return redirect('home')
 
     locations = json.dumps(mu.get_locations())
-    return render(req, 'app/tbregister/enroll_patients.html', context={'locations': locations})
+    return render(req, 'app/tbregister/enroll_patients.html', context={'locations': locations, 'title': "Enroll new Patient"})
 
 
 def enroll_in_dots_program(req):
     locations = json.dumps(mu.get_locations())
-    registration_group_concepts = mu.get_concept_by_uuid('ae16bb6e-3d82-4e14-ab07-2018ee10d311',req)['answers']
-    registration_group_prev_drug_concepts = mu.get_concept_by_uuid('31c2d590-0370-102d-b0e3-001ec94a0cc1',req)['answers']
+    registration_group_concepts = mu.get_concept_by_uuid(
+        'ae16bb6e-3d82-4e14-ab07-2018ee10d311', req)['answers']
+    registration_group_prev_drug_concepts = mu.get_concept_by_uuid(
+        '31c2d590-0370-102d-b0e3-001ec94a0cc1', req)['answers']
     if req.method == 'POST':
         enrollment_info = {
             "enroll_date": req.POST['enrollmentdate'],
@@ -213,29 +137,48 @@ def enroll_in_dots_program(req):
         except Exception as e:
             print(e)
         return redirect('tb03')
-    return render(req, 'app/tbregister/enroll_program.html', context={'locations': locations,'reggrp' : registration_group_concepts,'reggrpprev' : registration_group_prev_drug_concepts})
+    return render(req, 'app/tbregister/enroll_program.html', context={'locations': locations, 'reggrp': registration_group_concepts, 'reggrpprev': registration_group_prev_drug_concepts, 'title': "Enroll in Dots Progam"})
 
 
 def tb03_form(req):
+    # TODO: Concepts required IDs = [255,287,261,158,186,435,275,290]
     context = {
-        "enrollment_info" : cache.get('enrollment_info'),
-        "created_patient" :cache.get('created_patient')
+        "enrollment_info": cache.get('enrollment_info'),
+        "created_patient": cache.get('created_patient'),
+        "title": "TB03"
     }
-    print(context)
-    return render(req, 'app/tbregister/tb03.html',context=context)
+    return render(req, 'app/tbregister/tb03.html', context=context)
 
 
 def transfer(req):
-    return render(req,'app/tbregister/transfer.html')
+    return render(req, 'app/tbregister/transfer.html', context={'title': "Transfer"})
+
 
 def tb03u_form(req):
-    return render(req,'app/tbregister/tb03u.html')
+    # TODO: Concepts required IDs = [453,261,279,]
+
+    return render(req, 'app/tbregister/tb03u.html', context={
+        'title': "TB03u"
+    })
+
 
 def adverse_events_form(req):
-    return render(req,'app/tbregister/adverse_events.html')
+    # TODO: Concepts required IDs = [244,709,744,745,741,742,743,713,738,739,719,758,759,760,762,726,696,733]
+    concepts = fu.get_ae_form_concepts(req)
+    return render(req, 'app/tbregister/adverse_events.html', context={'title': 'Adverse Events', 'concepts': concepts})
+
 
 def drug_resistence_form(req):
-    return render(req,'app/tbregister/drug_resistence.html')
+    return render(req, 'app/tbregister/drug_resistence.html', context={'title': "Drug Resistense"})
+
+
+def regimen_form(req):
+    # TODO: concept ids = [483e6ca8-293d-4d00-b71b-4464c093a71d,31c2d09a-0370-102d-b0e3-001ec94a0cc1,e56514ed-1b3b-4d2e-89f1-564fd6265ebe,cd9e240f-7860-4e37-a0d2-b922cbcc62d3,]
+    return render(req, 'app/tbregister/regimen.html')
+
+
+def form_89(req):
+    return render(req, 'app/tbregister/form89.html', context={'title': 'Form 89'})
 
 
 def patientList(req):
@@ -331,7 +274,7 @@ def add_test_type(req):
             return render(req, 'app/commonlab/addtesttypes.html', context=context)
     concepts = cu.get_commonlab_concepts_by_type(req, 'labtesttype')
     context['referenceConcepts'] = concepts
-    context['testGroups'] = testGroups
+    context['testGroups'] = cu.get_commonlab_test_groups()
     return render(req, 'app/commonlab/addtesttypes.html', context=context)
 
 
@@ -357,7 +300,7 @@ def edit_test_type(req, uuid):
         context['referenceConcepts'] = cu.get_commonlab_concepts_by_type(
             req, 'labtesttype')
         context['testGroups'] = util.removeGivenStrFromArr(
-            testGroups, data['testGroup'])
+            cu.get_commonlab_test_groups(), data['testGroup'])
     if req.method == 'POST':
         body = {
             "name": req.POST['testname'],
@@ -393,8 +336,8 @@ def manageAttributes(req, uuid):
 
 
 def addattributes(req, uuid):
-    context = {'labTestUuid': uuid, 'prefferedHandlers': attributesPrefferedHandler,
-               'dataTypes': attributesDataTypes}
+    context = {'labTestUuid': uuid, 'prefferedHandlers': cu.get_preffered_handler(),
+               'dataTypes': cu.get_attributes_data_types()}
     if req.method == 'POST':
         body = {
             'labTestType': uuid,
@@ -425,11 +368,11 @@ def editAttribute(req, uuid):
         req, f'commonlab/labtestattributetype/{uuid}', {'v': "full"})
     if status:
         context['attribute'] = cu.custom_attribute(
-            response, attributesDataTypes, response['datatypeClassname'], attributesPrefferedHandler, response['preferredHandlerClassname'])
+            response, response['datatypeClassname'], response['preferredHandlerClassname'])
         context['dataTypes'] = util.removeGivenStrFromObjArr(
-            attributesDataTypes, response['datatypeClassname'], 'views')
+            cu.get_attributes_data_types(), response['datatypeClassname'], 'views')
         context['prefferedHandlers'] = util.removeGivenStrFromObjArr(
-            attributesPrefferedHandler, response['preferredHandlerClassname'], 'views')
+            cu.get_preffered_handler(), response['preferredHandlerClassname'], 'views')
     else:
         return redirect(f'/commonlab/manageattributes/{uuid}')
     if req.method == 'POST':

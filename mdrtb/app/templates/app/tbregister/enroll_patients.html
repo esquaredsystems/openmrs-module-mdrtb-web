@@ -1,4 +1,11 @@
-{% extends 'app/tbregister/base.html' %} {%block content%}
+{% extends 'app/tbregister/base.html' %}
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+
+{%block content%}
 <div>
   {% if error %} {{error}} {% endif %}
   <form action="{% url 'enrollPatient' %}" method="post" class="flex-column-center">
