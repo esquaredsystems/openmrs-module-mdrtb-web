@@ -141,10 +141,19 @@ def enroll_in_dots_program(req):
 
 
 def tb03_form(req):
-    # TODO: Concepts required IDs = [255,287,261,158,186,435,275,290]
+    concept_ids = ["ddf6e09c-f018-4048-a69f-436ff22308b5",
+                   "2cd70c1e-955d-428e-86cd-3efc5ecbcabd",
+                   "ebde5ed8-4717-472d-9172-599af069e94d",
+                   "31b4c61c-0370-102d-b0e3-001ec94a0cc1",
+                   "31b94ef8-0370-102d-b0e3-001ec94a0cc1",
+                   "3f5a6930-5ead-4880-80ce-6ab79f4f6cb1",
+                   "a690e0c4-3371-49b3-9d52-b390fca3dd90",
+                   "0f7abf6d-e0bb-46ce-aa69-5214b0d2a295"
+                   ]
     context = {
         "enrollment_info": cache.get('enrollment_info'),
         "created_patient": cache.get('created_patient'),
+        "concepts": fu.get_form_concepts(concept_ids, req),
         "title": "TB03"
     }
     return render(req, 'app/tbregister/tb03.html', context=context)
@@ -155,30 +164,58 @@ def transfer(req):
 
 
 def tb03u_form(req):
-    # TODO: Concepts required IDs = [453,261,279,]
+    concept_ids = [
+    "31b4c61c-0370-102d-b0e3-001ec94a0cc1",
+    "69abc246-13a9-4cbf-92be-83ac59a8938c",
+    "4ce4d85b-a5f7-4e0a-ab42-24ebb8778086",
+    "37b2cf33-aa3d-4638-95e1-2f886d7eb06c",
+    "3f5a6930-5ead-4880-80ce-6ab79f4f6cb1",
+    "207a0630-f0af-4208-9a81-326b8c37ebe2",
+    "31b94ef8-0370-102d-b0e3-001ec94a0cc1",
+    "a690e0c4-3371-49b3-9d52-b390fca3dd90",
+    "0f7abf6d-e0bb-46ce-aa69-5214b0d2a295",
+]
 
     return render(req, 'app/tbregister/tb03u.html', context={
-        'title': "TB03u"
+        'title': "TB03u",
+        "concepts" : fu.get_form_concepts(concept_ids,req)
     })
 
 
 def adverse_events_form(req):
-    # TODO: Concepts required IDs = [244,709,744,745,741,742,743,713,738,739,719,758,759,760,762,726,696,733]
-    concepts = fu.get_ae_form_concepts(req)
-    return render(req, 'app/tbregister/adverse_events.html', context={'title': 'Adverse Events', 'concepts': concepts})
+    concept_ids = ["7047f880-b929-42fc-81f7-b9dbba2d1b15", "1051a25f-5609-40d1-9801-10c3b6fd74ab", "e31fb77b-3623-4c65-ac86-760a2248fc1b", "aa9cb2d0-a6d6-4fb7-bb02-9298235128b2", "aaeb7e1e-e2ea-445d-8c86-6d5eff7d45ad", "d5383d2c-ad69-489e-983d-938bc5356ecf", "34c3a6f2-adf4-4c1a-9e47-7fd9dc4f093d", "	0d5228b4-5891-4740-9b13-1b8898ba4957", "dfad56a0-6f69-437b-bc50-28195039a9e2",
+                   "a04a5e94-a584-4f03-b0c5-ea7acf0a28d7", "d9cabe01-9c29-45b0-a071-0cd8d80fcb41", "7e97054b-cf92-49ec-9f68-54b095f5436e", "caa95b8f-86c3-4ec4-9397-933d880aba3e", "1d70fdcd-915d-4524-9ab5-1bdda1790508", "c0592626-62a8-48f6-93b0-1e4f8ff671f3", "adbed9a8-29a6-4adb-8a5b-60619fa02c19", "c213828e-3d30-46a4-9245-485c9f78c233", "dead117a-53c3-40f8-879b-40c170b68037"]
+    context = {
+        'title': 'Adverse Events', 
+        'concepts': fu.get_form_concepts(concept_ids, req)
+    }
+    return render(req, 'app/tbregister/adverse_events.html', context=context)
 
 
 def drug_resistence_form(req):
-    return render(req, 'app/tbregister/drug_resistence.html', context={'title': "Drug Resistense"})
+    context = {
+        'title' : "Drug Resistense",
+        "concepts" : fu.get_form_concepts(["ccd094e6-ac27-418f-a30e-54e9a1bac362"] , req)
+    }
+    return render(req, 'app/tbregister/drug_resistence.html', context=context)
 
 
 def regimen_form(req):
-    # TODO: concept ids = [483e6ca8-293d-4d00-b71b-4464c093a71d,31c2d09a-0370-102d-b0e3-001ec94a0cc1,e56514ed-1b3b-4d2e-89f1-564fd6265ebe,cd9e240f-7860-4e37-a0d2-b922cbcc62d3,]
-    return render(req, 'app/tbregister/regimen.html')
+    concept_ids = ["483e6ca8-293d-4d00-b71b-4464c093a71d","31c2d09a-0370-102d-b0e3-001ec94a0cc1","e56514ed-1b3b-4d2e-89f1-564fd6265ebe","cd9e240f-7860-4e37-a0d2-b922cbcc62d3"]
+    context = {
+        "title" : "Regimen Form",
+        "concepts" : fu.get_form_concepts(concept_ids,req)
+    }
+    return render(req, 'app/tbregister/regimen.html',context=context)
 
 
 def form_89(req):
-    return render(req, 'app/tbregister/form89.html', context={'title': 'Form 89'})
+    concept_ids = ["1304ac7c-7acb-4df9-864d-fc911fc00028","955fa978-f0a6-4252-bd6d-22b16fba3c1e","e2a0dc12-9af9-4b2d-9b4f-d89463021560","e2a0dc12-9af9-4b2d-9b4f-d89463021560","207a0630-f0af-4208-9a81-326b8c37ebe2","31b4c61c-0370-102d-b0e3-001ec94a0cc1","31b4c61c-0370-102d-b0e3-001ec94a0cc1","483e6ca8-293d-4d00-b71b-4464c093a71d"]
+    context={
+        'title': 'Form 89',
+        "concepts" : fu.get_form_concepts(concept_ids,req)
+    }
+    return render(req, 'app/tbregister/form89.html', context=context)
 
 
 def patientList(req):

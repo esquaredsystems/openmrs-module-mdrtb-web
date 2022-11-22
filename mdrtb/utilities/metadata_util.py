@@ -78,21 +78,40 @@ def get_concepts_and_set_cache(req):
     concepts = cache.get('concepts')
     if concepts is None:
         status, response = ru.get(req, 'concept', {'v': 'full'})
+        print(status)
         if status:
             try:
-                print('setting cache')
-                cache.set('concepts', response['results'], 86400)
+                cache.set('concepts', response['results'], 1000000)
+                concepts = cache.get('concepts')
             except Exception as e:
                 print(e)
-    else:
-        concept_dict = dict(concepts)
-        return concept_dict
+        else:
+            print(response)
+    
+    
+    return concepts
 
 
 def get_concept_by_uuid(uuid,req):
-    status, response = ru.get(req, f'concept/{uuid}', {'v': 'full','lang' : req.session['locale']})
-    if status:
-        return response
+    concepts = cache.get('concepts')
+    if concepts is None:
+        concepts = get_concepts_and_set_cache(req)
+        print('after getting from above')
+        print(type(concepts))
+    else:
+        for concept in concepts:
+            print(concept['uuid'])
+            if concept['uuid'] == uuid:
+                print(concept)
+                return True , concept
+            else:
+                status, response = ru.get(req, f'concept/{uuid}', {'v': 'full','lang' : 'en'})
+                if status:
+                    print(response)
+                    return status,response
+                return None
+        
+        
 
 
 
