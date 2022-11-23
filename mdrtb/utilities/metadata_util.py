@@ -75,41 +75,44 @@ def get_message_openMRS_lib(message_code, locale=None, default=None):
 
 
 def get_concepts_and_set_cache(req):
+
     concepts = cache.get('concepts')
     if concepts is None:
-        status, response = ru.get(req, 'concept', {'v': 'full'})
-        print(status)
+        status, response = ru.get(req, 'concept', {'v': 'full','limit':'100'})
         if status:
             try:
                 cache.set('concepts', response['results'], 1000000)
                 concepts = cache.get('concepts')
+                return concepts
             except Exception as e:
                 print(e)
         else:
             print(response)
+    else:
+        return concepts
     
     
-    return concepts
 
 
 def get_concept_by_uuid(uuid,req):
-    concepts = cache.get('concepts')
-    if concepts is None:
-        concepts = get_concepts_and_set_cache(req)
-        print('after getting from above')
-        print(type(concepts))
+    if 'concepts' in cache:
+        concepts = cache.get('concepts')
     else:
-        for concept in concepts:
-            print(concept['uuid'])
-            if concept['uuid'] == uuid:
-                print(concept)
-                return True , concept
-            else:
-                status, response = ru.get(req, f'concept/{uuid}', {'v': 'full','lang' : 'en'})
-                if status:
-                    print(response)
-                    return status,response
-                return None
+        concepts = get_concepts_and_set_cache(req)
+    concept_found = False
+    for concept in concepts:
+        if concept['uuid'] == uuid:
+            concept_found = True
+            return True , concept
+    if not concept_found:
+        status,response = ru.get(req,f'concept/{uuid}' , {'v' : "full" , 'lang' : req.session['locale']})
+        if status:
+            return status,response
+        else:
+            print(concept_found)
+            return False,"cant find"
+
+
         
         
 

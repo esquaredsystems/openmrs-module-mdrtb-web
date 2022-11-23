@@ -8,9 +8,10 @@ from mdrtb.settings import BASE_URL
 
 def initiate_session(req,username,password):
     encoded_credentials = base64.b64encode(f"{username}:{password}".encode('ascii')).decode('ascii')
-    url = BASE_URL + '/session'
+    url = BASE_URL + 'session'
     headers = {'Authorization': f'Basic {encoded_credentials}'}
     response = requests.get(url, headers=headers)
+    
     if response.status_code == 200:
         req.session['session_id'] = response.json()['sessionId']
         req.session['encoded_credentials'] = encoded_credentials
@@ -28,7 +29,8 @@ def clear_session(req):
     del req.session['session_id']
     del req.session['encoded_credentials']
     del req.session['locale']
-    pass
+    print(req.session['session_id'])
+    return
 
 def get(req, endpoint, parameters):
     response = requests.get(url=BASE_URL + endpoint,headers=get_auth_headers(req),params=parameters)
@@ -48,8 +50,8 @@ def post(req,endpoint,data):
 
 def delete(req,endpoint):
     response = requests.delete(url=BASE_URL+endpoint,headers=get_auth_headers(req))
+    print(BASE_URL+endpoint)
     if response.ok:
-
         return True,response
     else:
         return False,response

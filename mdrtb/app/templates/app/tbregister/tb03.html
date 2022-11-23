@@ -101,40 +101,37 @@
           <div class="input-container">
             <label class="tb03-form-label" for="name">{{'mdrtb.tb03.treatmentSiteIP'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.treatmentcenterforip %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="input-container">
             <label class="tb03-form-label" for="name">{{'mdrtb.tb03.nameOfIPFacility'|get_message:request.session.locale}}</label>
-            <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
-            </select>
+            <input type="text" class="input">
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label" for="name">{{'mdrtb.tb03.treatmentSiteCP'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.treatmentcenterforcp %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="input-container">
             <label class="tb03-form-label" for="name">{{'mdrtb.tb03.nameOfCPFacility'|get_message:request.session.locale}}</label>
-            <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
-            </select>
+            <input type="text" class="input">
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label" for="name">{{'mdrtb.tb03.patientCategory'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.tuberculosispatientcategory %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="input-container">
@@ -146,8 +143,9 @@
           <div class="input-container">
             <label class="tb03-form-label" for="name">{{'mdrtb.tb03.siteOfDisease'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.siteoftbdisease %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="input-container">
@@ -159,8 +157,9 @@
           <div class="input-container">
             <label class="tb03-form-label" for="name">{{'mdrtb.tb03.hivStatus'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.resultofhivtest %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="input-container">
@@ -182,31 +181,31 @@
           <div class="input-container">
             <label class="tb03-form-label" for="name">{{'mdrtb.tb03.resistanceType'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.resistancetype %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="input-container">
             <label class="tb03-form-label" for="name">{{'mdrtb.tb03.treatmentOutcome'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.tuberculosistreatmentoutcome %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label" for="name">{{'mdrtb.tb03.treatmentOutcomeDateOnly'|get_message:request.session.locale}}</label>
-            <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
-            </select>
+            <input type="date" class="input">
           </div>
           <div class="input-container">
             <label class="tb03-form-label" for="name">{{'mdrtb.causeOfDeath'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.causeofdeath %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
         </div>
