@@ -9,8 +9,9 @@
 {%block content%}
 
 <div>
-  <form class="flex flex-col">
-    <div class="m-16 flex flex-col justify-center space-y-8">
+  <form action="{% url 'tb03' %}" method="post" class="flex flex-col">
+    {% csrf_token %}
+    <div class="m-16 flex flex-col justify-center space-y-4">
       <h1 class="text-[#2D9CDB] text-3xl font-bold">
         {{'mdrtb.tb03'|get_message:request.session.locale}} Form
       </h1>
@@ -99,96 +100,96 @@
       <div class="p-4 flex flex-col justify-center space-y-4">
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.tb03.treatmentSiteIP'|get_message:request.session.locale}}</label>
-            <select class="input">
+            <label class="tb03-form-label" for="ipCenter">{{'mdrtb.tb03.treatmentSiteIP'|get_message:request.session.locale}}</label>
+            <select required class="input" name="ipCenter">
               {% for concept in concepts.treatmentcenterforip %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.tb03.nameOfIPFacility'|get_message:request.session.locale}}</label>
-            <input type="text" class="input">
+            <label class="tb03-form-label" for="ipCenterName">{{'mdrtb.tb03.nameOfIPFacility'|get_message:request.session.locale}}</label>
+            <input required type="text" class="input" name="ipCenterName">
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.tb03.treatmentSiteCP'|get_message:request.session.locale}}</label>
-            <select class="input">
+            <label class="tb03-form-label" for="cpCenter">{{'mdrtb.tb03.treatmentSiteCP'|get_message:request.session.locale}}</label>
+            <select required class="input" name="cpCenter">
               {% for concept in concepts.treatmentcenterforcp %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.tb03.nameOfCPFacility'|get_message:request.session.locale}}</label>
-            <input type="text" class="input">
+            <label class="tb03-form-label" for="cpCenterName">{{'mdrtb.tb03.nameOfCPFacility'|get_message:request.session.locale}}</label>
+            <input required type="text" class="input" name="cpCenterName">
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.tb03.patientCategory'|get_message:request.session.locale}}</label>
-            <select class="input">
+            <label class="tb03-form-label" for="regimenType">{{'mdrtb.tb03.patientCategory'|get_message:request.session.locale}}</label>
+            <select required class="input" name="regimenType">
               {% for concept in concepts.tuberculosispatientcategory %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.tb03.treatmentStartDate'|get_message:request.session.locale}}</label>
-            <input type="date" class="input" />
+            <label class="tb03-form-label" for="treatmentStartDate">{{'mdrtb.tb03.treatmentStartDate'|get_message:request.session.locale}}</label>
+            <input required type="date" class="input" name="treatmentStartDate" />
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.tb03.siteOfDisease'|get_message:request.session.locale}}</label>
-            <select class="input">
+            <label class="tb03-form-label" for="siteOfTb">{{'mdrtb.tb03.siteOfDisease'|get_message:request.session.locale}}</label>
+            <select required class="input" name="siteOfTb">
               {% for concept in concepts.siteoftbdisease %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.tb03.hivTestDate'|get_message:request.session.locale}}</label>
-            <input type="date" class="input" />
+            <label class="tb03-form-label" for="hivDate">{{'mdrtb.tb03.hivTestDate'|get_message:request.session.locale}}</label>
+            <input required type="date" class="input" name="hivDate"/>
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.tb03.hivStatus'|get_message:request.session.locale}}</label>
-            <select class="input">
+            <label class="tb03-form-label" for="hivStatus">{{'mdrtb.tb03.hivStatus'|get_message:request.session.locale}}</label>
+            <select required class="input" name="hivStatus">
               {% for concept in concepts.resultofhivtest %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.tb03.artStartDate'|get_message:request.session.locale}}</label>
-            <input type="date" class="input" />
+            <label class="tb03-form-label" for="artDate">{{'mdrtb.tb03.artStartDate'|get_message:request.session.locale}}</label>
+            <input required type="date" class="input" name="artDate" />
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.tb03.pctStartDate'|get_message:request.session.locale}}</label>
-            <input type="date" class="input" />
+            <label class="tb03-form-label" for="pctDate">{{'mdrtb.tb03.pctStartDate'|get_message:request.session.locale}}</label>
+            <input required type="date" class="input" name="pctDate" />
           </div>
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.tb03.xrayDate'|get_message:request.session.locale}}</label>
-            <input type="date" class="input" />
+            <label class="tb03-form-label" for="xrayDate">{{'mdrtb.tb03.xrayDate'|get_message:request.session.locale}}</label>
+            <input required type="date" class="input" name="xrayDate" />
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.tb03.resistanceType'|get_message:request.session.locale}}</label>
-            <select class="input">
+            <label class="tb03-form-label" for="resistanceType">{{'mdrtb.tb03.resistanceType'|get_message:request.session.locale}}</label>
+            <select required class="input" name="resistanceType">
               {% for concept in concepts.resistancetype %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.tb03.treatmentOutcome'|get_message:request.session.locale}}</label>
-            <select class="input">
+            <label class="tb03-form-label" for="treatmentOutcome">{{'mdrtb.tb03.treatmentOutcome'|get_message:request.session.locale}}</label>
+            <select required class="input" name="treatmentOutcome">
               {% for concept in concepts.tuberculosistreatmentoutcome %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
@@ -197,12 +198,12 @@
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.tb03.treatmentOutcomeDateOnly'|get_message:request.session.locale}}</label>
-            <input type="date" class="input">
+            <label class="tb03-form-label" for="treatmentOutcomeDate">{{'mdrtb.tb03.treatmentOutcomeDateOnly'|get_message:request.session.locale}}</label>
+            <input required type="date" class="input" name="treatmentOutcomeDate">
           </div>
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.causeOfDeath'|get_message:request.session.locale}}</label>
-            <select class="input">
+            <label class="tb03-form-label" for="causeOfDeath">{{'mdrtb.causeOfDeath'|get_message:request.session.locale}}</label>
+            <select class="input" name="causeOfDeath">
               {% for concept in concepts.causeofdeath %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
@@ -211,27 +212,33 @@
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.tb03.afterOutcomeDeathDate'|get_message:request.session.locale}}</label>
-            <input type="date" class="input" />
+            <label class="tb03-form-label" for="deathDate">{{'mdrtb.tb03.afterOutcomeDeathDate'|get_message:request.session.locale}}</label>
+            <input type="date" class="input" name="deathDate"/>
+          </div>
+          <div class="input-container opacity-0">
+            <label class="tb03-form-label" for="forSpace">Hidden</label>
+            <input disabled type="date" class="input" name="forSpace"/>
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.tb03.clinicalNotes'|get_message:request.session.locale}}</label>
-            <textarea class="input" cols="10" rows="5"></textarea>
+            <label class="tb03-form-label" for="clinicalNotes">{{'mdrtb.tb03.clinicalNotes'|get_message:request.session.locale}}</label>
+            <textarea required class="input" name="clinicalNotes"></textarea>
           </div>
         </div>
       </div>
+      <div class="p-4 flex items-center">
+        <button class="button-primary w-1/5">
+          Save
+        </button>
+        
+        <button 
+          class="cancel-button">
+          Cancel
+        </button>
+      </div>
     </div>
-    <div style="margin-left: 4rem; margin-top: -2rem" class="flex items-center">
-      <button style="margin-bottom: 4rem" class="bg-[#2D9CDB] p-2 w-1/5 rounded-md text-white">
-        Save
-      </button>
-      <button style="margin-bottom: 4rem; margin-left: -4rem"
-        class="p-2 font-bold w-1/5 rounded-md underline text-[#044062]">
-        Cancel
-      </button>
-    </div>
+    
   </form>
 </div>
 

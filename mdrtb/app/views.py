@@ -1,6 +1,5 @@
-
 from django.shortcuts import render, redirect
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse
 import utilities.restapi_utils as ru
 import utilities.metadata_util as mu
 import utilities.commonlab_util as cu
@@ -76,7 +75,11 @@ def enroll_patient(req):
         if 'dob' in req.POST:
             person_info['birthDate'] = req.POST['dob']
         else:
+            today = datetime.date.today()
             person_info['age'] = req.POST['age']
+            person_info['birthDate'] = f"01.01.{today.year - int(person_info['age'])}"
+            
+
 
         if 'deceased' in req.POST:
             person_info['deathDate'] = req.POST['deathdate']
@@ -107,9 +110,7 @@ def enroll_patient(req):
 
         # MOCK:
         try:
-            cache.set('created_patient', person_info, 5000)
-            print('set cache')
-            print(cache.get('created_patient'))
+            cache.set('created_patient', person_info, None)
             return redirect('dotsEnroll')
         except Exception as e:
             print(e)
@@ -120,14 +121,13 @@ def enroll_patient(req):
 
 
 def enroll_in_dots_program(req):
-    if 'created_patient' not in cache:
-        return redirect('enrollPatient')
+    # if 'created_patient' not in cache:
+    #     return redirect('enrollPatient')
 
     locations = json.dumps(mu.get_locations())
-    registration_group_concepts = mu.get_concept_by_uuid(
-        'ae16bb6e-3d82-4e14-ab07-2018ee10d311', req)['answers']
-    registration_group_prev_drug_concepts = mu.get_concept_by_uuid(
-        '31c2d590-0370-102d-b0e3-001ec94a0cc1', req)['answers']
+    status , registration_group_concepts = mu.get_concept_by_uuid('ae16bb6e-3d82-4e14-ab07-2018ee10d311', req)
+    status ,registration_group_prev_drug_concepts = mu.get_concept_by_uuid(
+        '31c2d590-0370-102d-b0e3-001ec94a0cc1', req)
     if req.method == 'POST':
         enrollment_info = {
             "enroll_date": req.POST['enrollmentdate'],
@@ -138,17 +138,45 @@ def enroll_in_dots_program(req):
             "registration_group_prev_drug": req.POST['reggrpprevdrug'],
         }
         try:
-            cache.set('enrollment_info', enrollment_info, 5000)
-            print('set cache')
+            cache.set('enrollment_info', enrollment_info, None)
         except Exception as e:
             print(e)
         return redirect('tb03')
-    return render(req, 'app/tbregister/enroll_program.html', context={'locations': locations, 'reggrp': registration_group_concepts, 'reggrpprev': registration_group_prev_drug_concepts, 'title': "Enroll in Dots Progam"})
+    return render(req, 'app/tbregister/enroll_program.html', context={'locations': locations,'reggrp': registration_group_concepts['answers'], 'reggrpprev': registration_group_prev_drug_concepts['answers'], 'title': "Enroll in Dots Progam"})
 
 
 def tb03_form(req):
-    if 'enrollment_info' not in cache:
-        return redirect('dotsEnroll')
+    # if 'enrollment_info' not in cache:
+    #     return redirect('dotsEnroll')
+    if req.method == 'POST':
+        tb03_info={
+            "ipCenter" : req.POST['ipCenter'],
+            "ipCenterName" : req.POST['ipCenterName'],
+            "cpCenter" : req.POST['cpCenter'],
+            "cpCenterName" : req.POST['cpCenterName'],
+            "regimenType" : req.POST['regimenType'],
+            "treatmentStartDate" : req.POST['treatmentStartDate'],
+            "siteOfTb" : req.POST['siteOfTb'],
+            "hivDate" : req.POST['hivDate'],
+            "hivStatus" : req.POST['hivStatus'],
+            "artDate" : req.POST['artDate'],
+            "pctDate" : req.POST['pctDate'],
+            "xrayDate" : req.POST['xrayDate'],
+            "resistanceType" : req.POST['resistanceType'],
+            "treatmentOutcome" : req.POST['treatmentOutcome'],
+            "treatmentOutcomeDate" : req.POST['treatmentOutcomeDate'],
+            'causeOfDeath' : req.POST['causeOfDeath'] if 'causeOfDeath' in req.POST else None,
+            'deathDate' : req.POST['deathDate'] if 'deathDate' in req.POST else None,
+            "clinicalNotes": req.POST['clinicalNotes'],
+
+
+        }
+        print(tb03_info)
+
+        cache.set('tb03_info' , tb03_info,None)
+        patient = cache.get('created_patient')
+        return redirect(f'patient/{patient["uuid"]}')
+            
 
     if 'tb03_concepts' in cache:
         concepts = cache.get('tb03_concepts')
@@ -163,7 +191,7 @@ def tb03_form(req):
                        "0f7abf6d-e0bb-46ce-aa69-5214b0d2a295"
                        ]
         concepts = fu.get_form_concepts(concept_ids, req)
-        cache.set('tb03_concepts', concepts, 86400)
+        cache.set('tb03_concepts', concepts, None)
     context = {
         "enrollment_info": cache.get('enrollment_info'),
         "created_patient": cache.get('created_patient'),

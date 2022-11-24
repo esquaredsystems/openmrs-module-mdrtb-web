@@ -29,7 +29,6 @@ def clear_session(req):
     del req.session['session_id']
     del req.session['encoded_credentials']
     del req.session['locale']
-    print(req.session['session_id'])
     return
 
 def get(req, endpoint, parameters):
