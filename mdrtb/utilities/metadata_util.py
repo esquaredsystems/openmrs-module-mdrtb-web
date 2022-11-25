@@ -4,6 +4,9 @@ from utilities import common_utils as u
 from utilities import restapi_utils as ru
 import django
 from django.core.cache import cache
+from django.utils.safestring import SafeString  as ss
+
+
 
 import os
 
@@ -51,6 +54,7 @@ def get_message(message_code, locale=None, default=None):
 def get_message_openMRS_lib(message_code, locale=None, default=None):
     value = ''
     dir = f'{u.get_project_root()}/resources'
+    file = open(f'{dir}/test.txt' , 'w' , encoding='utf-8')
     if not locale:
         data = u.read_properties_file(
             f'{dir}/openMRS_messages.properties', 'r', encoding='utf-8')
@@ -60,7 +64,7 @@ def get_message_openMRS_lib(message_code, locale=None, default=None):
     if message_code:
         for message in data:
             split_msg = message.split('=')
-            if split_msg[0] == message_code:
+            if split_msg[0].strip() == message_code.strip():
                 value = split_msg[1]
             elif default:
                 value = default

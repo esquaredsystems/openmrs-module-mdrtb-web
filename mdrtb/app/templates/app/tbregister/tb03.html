@@ -241,5 +241,10 @@
     
   </form>
 </div>
+<script>
+  let date = new Date();
+  maxDate = date.toISOString().substring(0, 10);
+  $('input[type="date"]').prop("max" , maxDate)
+</script>
 
 {% endblock %}

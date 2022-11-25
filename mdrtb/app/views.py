@@ -380,7 +380,7 @@ def edit_test_type(req, uuid):
         }
         context['referenceConcepts'] = cu.get_commonlab_concepts_by_type(
             req, 'labtesttype')
-        context['testGroups'] = util.removeGivenStrFromArr(
+        context['testGroups'] = util.remove_given_str_from_arr(
             cu.get_commonlab_test_groups(), data['testGroup'])
     if req.method == 'POST':
         body = {
@@ -450,9 +450,9 @@ def editAttribute(req, uuid):
     if status:
         context['attribute'] = cu.custom_attribute(
             response, response['datatypeClassname'], response['preferredHandlerClassname'])
-        context['dataTypes'] = util.removeGivenStrFromObjArr(
+        context['dataTypes'] = util.remove_given_str_from_obj_arr(
             cu.get_attributes_data_types(), response['datatypeClassname'], 'views')
-        context['prefferedHandlers'] = util.removeGivenStrFromObjArr(
+        context['prefferedHandlers'] = util.remove_given_str_from_obj_arr(
             cu.get_preffered_handler(), response['preferredHandlerClassname'], 'views')
     else:
         return redirect(f'/commonlab/manageattributes/{uuid}')

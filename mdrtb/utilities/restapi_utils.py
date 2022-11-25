@@ -15,7 +15,7 @@ def initiate_session(req,username,password):
     if response.status_code == 200:
         req.session['session_id'] = response.json()['sessionId']
         req.session['encoded_credentials'] = encoded_credentials
-        req.session['locale'] = 'ru'
+        req.session['locale'] = 'en'
         try:
             req.session['logged_user'] = mu.get_user(req,username)
         except Exception as e:
