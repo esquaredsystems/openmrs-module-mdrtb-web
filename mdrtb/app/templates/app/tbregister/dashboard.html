@@ -16,8 +16,8 @@
         
       </div>
       <div class="font-bold">
-        <div >{{patient.person.display}}</div>
-        <div>{{patient.person.age}} yrs ({{patient.person.birthdate}})</div>
+        <div >{{patient.names.0.givenName}} {{patient.names.0.familyName}}</div>
+        <div>{{patient.age}} yrs ({{patient.birthDate}})</div>
       </div>
     </div>
     <div class="space-x-2 font-bold">
@@ -36,19 +36,20 @@
     </div>
       <div class="ml-4 grid grid-cols-2 gap-3">
         <div class="space-x-3">
-          <span class="font-bold">{{'mdrtb.enrollment.date'|get_message:request.session.locale}}: </span><span class="tb03-form-label">22/22/2022</span>
+          <span class="font-bold">{{'mdrtb.enrollment.date'|get_message:request.session.locale}}: </span><span class="tb03-form-label">{{enroll.enroll_date}}</span>
         </div>
         <div class="space-x-3">
-          <span class="font-bold">{{'mdrtb.enrollment.location'|get_message:request.session.locale}}: </span><span class="tb03-form-label">22/22/2022</span>
+          <span class="font-bold">{{'mdrtb.enrollment.location'|get_message:request.session.locale}}: </span><span class="tb03-form-label">{{enroll.facility}}</span>
         </div>
         <div class="space-x-3">
-          <span class="font-bold">{{'mdrtb.previousTreatmentClassification'|get_message:request.session.locale}}: </span><span class="tb03-form-label">22/22/2022</span>
+          <span class="font-bold">{{'mdrtb.previousTreatmentClassification'|get_message:request.session.locale}}: </span><span class="tb03-form-label">{{enroll.registration_group_prev_treatment}}</span>
         </div>
         <div class="space-x-3">
-          <span class="font-bold">{{'mdrtb.previousDrugClassification'|get_message:request.session.locale}}: </span><span class="tb03-form-label">22/22/2022</span>
+          <span class="font-bold">{{'mdrtb.previousDrugClassification'|get_message:request.session.locale}}: </span><span class="tb03-form-label">
+            {{enroll.registration_group_prev_drug}}</span>
         </div>
         <div class="space-x-3">
-          <span class="font-bold">{{'mdrtb.completionDate'|get_message:request.session.locale}}: </span><span class="tb03-form-label">22/22/2022</span>
+          <span class="font-bold">{{'mdrtb.completionDate'|get_message:request.session.locale}}: </span><span class="tb03-form-label"></span>
         </div>
         <div class="space-x-3">
           <span class="font-bold">{{'mdrtb.outcome'|get_message:request.session.locale}}: </span><span class="tb03-form-label">22/22/2022</span>
@@ -75,7 +76,7 @@
     </div>
       <div class="ml-4 grid grid-cols-2 gap-3">
         <div class="space-x-3">
-          <span class="font-bold">{{'mdrtb.tb03'|get_message:request.session.locale}}: </span><span class="tb03-form-label">22/22/2022</span>
+          <span class="font-bold">{{'mdrtb.tb03'|get_message:request.session.locale}}: </span><a class="tb03-form-label underline" href="{% url 'tb03' %}">{{enroll.enroll_date}}</a>
         </div>
         <div class="space-x-3">
           <span class="font-bold">{{'mdrtb.form89'|get_message:request.session.locale}}: </span><span class="tb03-form-label">22/22/2022</span>

@@ -52,7 +52,7 @@ def enroll_patient(req):
 
     if req.method == 'POST':
         person_info = {
-            "uuid": uuid4(),
+            "uuid": "8d79403a-c2cc-11de-8d13-0010c6dffd8u",
             "names": [{
                 "givenName": req.POST['givenname'],
                 "familyName":req.POST['familyname']
@@ -110,7 +110,7 @@ def enroll_patient(req):
 
         # MOCK:
         try:
-            cache.set('created_patient', person_info, None)
+            req.session['created_patient']= person_info
             return redirect('dotsEnroll')
         except Exception as e:
             print(e)
@@ -138,7 +138,7 @@ def enroll_in_dots_program(req):
             "registration_group_prev_drug": req.POST['reggrpprevdrug'],
         }
         try:
-            cache.set('enrollment_info', enrollment_info, None)
+            req.session['enrollment_info']= enrollment_info
         except Exception as e:
             print(e)
         return redirect('tb03')
@@ -173,13 +173,12 @@ def tb03_form(req):
         }
         print(tb03_info)
 
-        cache.set('tb03_info' , tb03_info,None)
-        patient = cache.get('created_patient')
-        return redirect(f'patient/{patient["uuid"]}')
+        req.session['tb03_info'] = tb03_info
+        return redirect(f'dashboard' , req.session['created_patient']['uuid'])
             
 
-    if 'tb03_concepts' in cache:
-        concepts = cache.get('tb03_concepts')
+    if 'tb03_concepts' in req.session:
+        concepts = req.session['tb03_concepts']
     else:
         concept_ids = ["ddf6e09c-f018-4048-a69f-436ff22308b5",
                        "2cd70c1e-955d-428e-86cd-3efc5ecbcabd",
@@ -191,10 +190,10 @@ def tb03_form(req):
                        "0f7abf6d-e0bb-46ce-aa69-5214b0d2a295"
                        ]
         concepts = fu.get_form_concepts(concept_ids, req)
-        cache.set('tb03_concepts', concepts, None)
+        req.session['tb03_concepts']= concepts
     context = {
-        "enrollment_info": cache.get('enrollment_info'),
-        "created_patient": cache.get('created_patient'),
+        "enrollment_info": req.session['enrollment_info'],
+        "created_patient": req.session['created_patient'],
         "concepts": concepts,
         "title": "TB03"
     }
@@ -274,14 +273,14 @@ def patientList(req):
 
 
 def patient_dashboard(req, uuid):
-    status, response = ru.get(req, f'patient/{uuid}', {'v': 'full'})
-    if status:
-        response['person']['birthdate'] = util.iso_to_normal(
-            response['person']['birthdate'])
-        return render(req, 'app/tbregister/dashboard.html', context={'patient': response})
-    return render(req, 'app/tbregister/dashboard.html', context={
-        'error': 'dont have patient'
-    })
+    patient = req.session['created_patient']
+    enroll_info = req.session['enrollment_info']
+    print(patient)
+    # status, response = ru.get(req, f'patient/{uuid}', {'v': 'full'})
+    # if status:
+    patient['birthDate'] = util.iso_to_normal(patient['birthDate'])
+    return render(req, 'app/tbregister/dashboard.html', context={'patient': patient, 'enroll' : enroll_info})
+    
 
 
 def user_profile(req):
