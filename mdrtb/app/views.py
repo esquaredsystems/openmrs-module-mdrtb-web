@@ -115,19 +115,14 @@ def enroll_patient(req):
         except Exception as e:
             print(e)
             return redirect('home')
-
-    locations = json.dumps(mu.get_locations())
-    return render(req, 'app/tbregister/enroll_patients.html', context={'locations': locations, 'title': "Enroll new Patient"})
+    if 'session_id' in req.session:
+        locations = json.dumps(mu.get_locations())
+        return render(req, 'app/tbregister/enroll_patients.html', context={'locations': locations, 'title': "Enroll new Patient"})
+    else:
+        return redirect('home')
 
 
 def enroll_in_dots_program(req):
-    # if 'created_patient' not in cache:
-    #     return redirect('enrollPatient')
-
-    locations = json.dumps(mu.get_locations())
-    status , registration_group_concepts = mu.get_concept_by_uuid('ae16bb6e-3d82-4e14-ab07-2018ee10d311', req)
-    status ,registration_group_prev_drug_concepts = mu.get_concept_by_uuid(
-        '31c2d590-0370-102d-b0e3-001ec94a0cc1', req)
     if req.method == 'POST':
         enrollment_info = {
             "enroll_date": req.POST['enrollmentdate'],
@@ -142,12 +137,20 @@ def enroll_in_dots_program(req):
         except Exception as e:
             print(e)
         return redirect('tb03')
-    return render(req, 'app/tbregister/enroll_program.html', context={'locations': locations,'reggrp': registration_group_concepts['answers'], 'reggrpprev': registration_group_prev_drug_concepts['answers'], 'title': "Enroll in Dots Progam"})
+    
+    if 'session_id' in req.session:
+        if 'created_patient' not in req.session:
+            return redirect('enrollPatient')
+        locations = json.dumps(mu.get_locations())
+        status , registration_group_concepts = mu.get_concept_by_uuid('ae16bb6e-3d82-4e14-ab07-2018ee10d311', req)
+        status ,registration_group_prev_drug_concepts = mu.get_concept_by_uuid(
+            '31c2d590-0370-102d-b0e3-001ec94a0cc1', req)
+        return render(req, 'app/tbregister/dots/enroll_program.html', context={'locations': locations,'reggrp': registration_group_concepts['answers'], 'reggrpprev': registration_group_prev_drug_concepts['answers'], 'title': "Enroll in Dots Progam"})
+    else:
+        return redirect('home')
 
 
 def tb03_form(req):
-    # if 'enrollment_info' not in cache:
-    #     return redirect('dotsEnroll')
     if req.method == 'POST':
         tb03_info={
             "ipCenter" : req.POST['ipCenter'],
@@ -171,37 +174,40 @@ def tb03_form(req):
 
 
         }
-        print(tb03_info)
-
         req.session['tb03_info'] = tb03_info
         return redirect(f'dashboard' , req.session['created_patient']['uuid'])
             
 
-    if 'tb03_concepts' in req.session:
-        concepts = req.session['tb03_concepts']
+    if 'session_id' in req.session:
+        if 'enrollment_info' not in req.session:
+            return redirect('dotsEnroll')
+        if 'tb03_concepts' in req.session:
+            concepts = req.session['tb03_concepts']
+        else:
+            concept_ids = ["ddf6e09c-f018-4048-a69f-436ff22308b5",
+                        "2cd70c1e-955d-428e-86cd-3efc5ecbcabd",
+                        "ebde5ed8-4717-472d-9172-599af069e94d",
+                        "31b4c61c-0370-102d-b0e3-001ec94a0cc1",
+                        "31b94ef8-0370-102d-b0e3-001ec94a0cc1",
+                        "3f5a6930-5ead-4880-80ce-6ab79f4f6cb1",
+                        "a690e0c4-3371-49b3-9d52-b390fca3dd90",
+                        "0f7abf6d-e0bb-46ce-aa69-5214b0d2a295"
+                        ]
+            concepts = fu.get_form_concepts(concept_ids, req)
+            req.session['tb03_concepts']= concepts
+        context = {
+            "enrollment_info": req.session['enrollment_info'],
+            "created_patient": req.session['created_patient'],
+            "concepts": concepts,
+            "title": "TB03"
+        }
+        return render(req, 'app/tbregister/dots/tb03.html', context=context)
     else:
-        concept_ids = ["ddf6e09c-f018-4048-a69f-436ff22308b5",
-                       "2cd70c1e-955d-428e-86cd-3efc5ecbcabd",
-                       "ebde5ed8-4717-472d-9172-599af069e94d",
-                       "31b4c61c-0370-102d-b0e3-001ec94a0cc1",
-                       "31b94ef8-0370-102d-b0e3-001ec94a0cc1",
-                       "3f5a6930-5ead-4880-80ce-6ab79f4f6cb1",
-                       "a690e0c4-3371-49b3-9d52-b390fca3dd90",
-                       "0f7abf6d-e0bb-46ce-aa69-5214b0d2a295"
-                       ]
-        concepts = fu.get_form_concepts(concept_ids, req)
-        req.session['tb03_concepts']= concepts
-    context = {
-        "enrollment_info": req.session['enrollment_info'],
-        "created_patient": req.session['created_patient'],
-        "concepts": concepts,
-        "title": "TB03"
-    }
-    return render(req, 'app/tbregister/tb03.html', context=context)
+        return redirect('home')
 
 
 def transfer(req):
-    return render(req, 'app/tbregister/transfer.html', context={'title': "Transfer"})
+    return render(req, 'app/tbregister/dots/transfer.html', context={'title': "Transfer"})
 
 
 def tb03u_form(req):
@@ -217,11 +223,13 @@ def tb03u_form(req):
         "0f7abf6d-e0bb-46ce-aa69-5214b0d2a295",
     ]
 
-    return render(req, 'app/tbregister/tb03u.html', context={
+    return render(req, 'app/tbregister/mdr/tb03u.html', context={
         'title': "TB03u",
         "concepts": fu.get_form_concepts(concept_ids, req)
     })
 
+def manage_adverse_events(req):
+    return render(req,'app/tbregister/mdr/manage_ae.html')
 
 def adverse_events_form(req):
     concept_ids = ["7047f880-b929-42fc-81f7-b9dbba2d1b15", "1051a25f-5609-40d1-9801-10c3b6fd74ab", "e31fb77b-3623-4c65-ac86-760a2248fc1b", "aa9cb2d0-a6d6-4fb7-bb02-9298235128b2", "aaeb7e1e-e2ea-445d-8c86-6d5eff7d45ad", "d5383d2c-ad69-489e-983d-938bc5356ecf", "34c3a6f2-adf4-4c1a-9e47-7fd9dc4f093d", "	0d5228b4-5891-4740-9b13-1b8898ba4957", "dfad56a0-6f69-437b-bc50-28195039a9e2",
@@ -230,7 +238,7 @@ def adverse_events_form(req):
         'title': 'Adverse Events',
         'concepts': fu.get_form_concepts(concept_ids, req)
     }
-    return render(req, 'app/tbregister/adverse_events.html', context=context)
+    return render(req, 'app/tbregister/mdr/adverse_events.html', context=context)
 
 
 def drug_resistence_form(req):
@@ -239,7 +247,7 @@ def drug_resistence_form(req):
         'concepts': fu.get_form_concepts(["ccd094e6-ac27-418f-a30e-54e9a1bac362"], req)
 
     }
-    return render(req, 'app/tbregister/drug_resistence.html', context=context)
+    return render(req, 'app/tbregister/mdr/drug_resistence.html', context=context)
 
 
 def regimen_form(req):
@@ -249,7 +257,7 @@ def regimen_form(req):
         "title": "Regimen Form",
         "concepts": fu.get_form_concepts(concept_ids, req)
     }
-    return render(req, 'app/tbregister/regimen.html', context=context)
+    return render(req, 'app/tbregister/mdr/regimen.html', context=context)
 
 
 def form_89(req):
@@ -259,7 +267,7 @@ def form_89(req):
         'title': 'Form 89',
         "concepts": fu.get_form_concepts(concept_ids, req)
     }
-    return render(req, 'app/tbregister/form89.html', context=context)
+    return render(req, 'app/tbregister/dots/form89.html', context=context)
 
 
 def patientList(req):

@@ -15,7 +15,7 @@
     }
 
     .cancel-button{
-        @apply p-2 font-bold w-1/5 rounded-md underline text-[#044062];
+        @apply p-2 font-bold underline text-[#044062];
     }
 
     .flex-column-center{
@@ -101,6 +101,10 @@
           @apply flex items-center space-x-2 cursor-pointer  relative;
         }
     /* End Commonlab global styles */
-      
+        
+
+    .aeDetails{
+        @apply flex-center p-2 border-b border-gray-500;
+    }
 
 }

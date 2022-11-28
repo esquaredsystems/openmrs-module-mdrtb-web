@@ -1,4 +1,6 @@
-{% extends 'app/tbregister/base_without_dd.html' %} {%block content%}
+{% extends 'app/base/base_without_menu.html' %} 
+
+{%block content%}
 
 {% if error %}
 {{error}}
@@ -90,7 +92,7 @@
       <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.labResults'|get_message:request.session.locale}}
       </h2>
       <button
-        class="font-bold underline text-[#044062]"
+        class="cancel-button"
       >
         View All Lab Results
       </button>
@@ -212,6 +214,11 @@
     <div class="flex items-center space-x-4">
       <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.pv.regimens'|get_message:request.session.locale}}
       </h2>
+      <button
+        class="text-[#044062] font-bold underline p-2"
+      >
+        Regimens
+      </button>
     </div>
       
   </div>
@@ -219,6 +226,11 @@
     <div class="flex items-center space-x-4">
       <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.pv.pv'|get_message:request.session.locale}}
       </h2>
+      <a href="{% url 'manageae' %}"
+        class="text-[#044062] font-bold underline p-2"
+      >
+        Manage AE's
+      </a>
     </div>
       
   </div>

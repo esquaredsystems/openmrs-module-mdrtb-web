@@ -17,6 +17,7 @@ urlpatterns = [
     path('tb03' , views.tb03_form,name='tb03'),
     path('form89' , views.form_89,name='form89'),
     path('regimen' ,views.regimen_form,name='regimen'),
+    path('manageadverseevents' , views.manage_adverse_events,name='manageae'),
     path('adverseevents' , views.adverse_events_form,name='adverseevents'),
     path('tb03u' , views.tb03u_form,name='tb03u'),
     path('logout', views.logout, name='logout'),
