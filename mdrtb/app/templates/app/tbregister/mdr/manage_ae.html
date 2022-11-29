@@ -1,106 +1,180 @@
 {% extends 'app/base/base_without_menu.html' %} {% block content %}
 
 <div id="modal-parent" style="margin: 3rem">
-  <section
-    id="modal"
-    class="flex flex-col justify-center space-y-8 h-min transition-opacity ease-in-out duration-500 opacity-0 backdrop-blur-3xl inset-0 z-50 shadow-2xl m-10 bg-white w-3/5 mx-auto p-8 absolute top-0 left-0 right-0 bottom-0 my-auto"
-  >
+  <section id="modal"
+    class="flex flex-col justify-center space-y-8 h-4/5 transition-opacity ease-in-out duration-500 opacity-0 backdrop-blur-3xl inset-0 z-50 shadow-2xl m-10 bg-white w-3/5 mx-auto p-8 fixed top-0 left-0 right-0 bottom-0 my-auto">
     <div class="flex items-center justify-between">
       <h3 id="modal-testType" class="text-3xl">ALLERGIC REACTION</h3>
-      <svg
-        id="close-modal"
-        onclick="closeModal()"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="1.5"
-        stroke="currentColor"
-        class="w-6 h-6 text-white bg-red-700 cursor-pointer"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M6 18L18 6M6 6l12 12"
-        />
+      <svg id="close-modal" onclick="closeModal()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+        stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white bg-red-700 cursor-pointer">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
       </svg>
     </div>
-    <div class="flex flex-nowrap overflow-x-auto gap-5 p-3">
-      <div
-        class="flex-column-center space-y-4 flex-none h-min w-fit bg-gray-200 p-4 rounded-md shadow-md"
-      >
-        <div class="flex-center justify-between border-b border-gray-500">
-          <span class="font-bold w-fit">
+    <div class="flex flex-col flex-nowrap overflow-y-auto gap-5 p-3">
+      <div class="flex-column-center space-y-4 flex-none h-min w-fit bg-gray-200 p-4 rounded-md shadow-md">
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
             Result of lab test/ diagnostic investigation confirming AE:
           </span>
-          <span class="w-fit">
+          <span class="w-3/5">
             Clinical screen, Simple hearing test, Audiogram, Neuro & psychiatric
             investigations, AST (SGOT), Alkaline phosphatase, Lipase, Amylase,
             Potassium, Blood glucose
           </span>
         </div>
-        <div class="flex-center p-2 border-b border-gray-500">
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
             Suspected drug(s) including all TB drugs & any other drug:
           </span>
-          <span class="w-3/5"> esq </span>
+          <span class="w-3/5">
+            ESQ
+          </span>
         </div>
-        <div class="flex-center p-2 border-b border-gray-500">
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
             Treatment regimen during the event onset:
           </span>
-          <span class="w-3/5"> </span>
+          <span class="w-3/5">
+
+          </span>
         </div>
-        <div class="flex-center p-2 border-b border-gray-500">
-          <span class="font-bold w-2/5"> Type of Event: </span>
-          <span class="w-3/5"> SERIOUS </span>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            Type of Event:
+          </span>
+          <span class="w-3/5">
+            SERIOUS
+          </span>
         </div>
-        <div class="flex-center p-2 border-b border-gray-500">
-          <span class="font-bold w-2/5">Date of Yellow Card Submission:</span>
-          <span class="w-3/5">12.10.2022</span>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            Date of Yellow Card Submission:
+          </span>
+          <span class="w-3/5">
+            12.10.2022
+          </span>
         </div>
-        
-      </div>
-      <div
-        class="flex-column-center space-y-4 flex-none h-min w-fit bg-gray-200 p-4 rounded-md shadow-md"
-      >
-        <div class="flex-center justify-between border-b border-gray-500">
-          <span class="font-bold w-fit">
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
             Drug 1:
           </span>
-          <span class="w-fit">
+          <span class="w-3/5">
             AMK
           </span>
         </div>
-        <div class="flex-center p-2 border-b border-gray-500">
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
             Causality Assessment Result 1:
           </span>
-          <span class="w-3/5">PROBABLE</span>
+          <span class="w-3/5">
+            PROBABLE
+          </span>
         </div>
-        <div class="flex-center p-2 border-b border-gray-500">
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
             Drug 2:
           </span>
-          <span class="w-3/5">STREPTOMYCIN (S)</span>
+          <span class="w-3/5">
+            STREPTOMYCIN (S)
+          </span>
         </div>
-        <div class="flex-center p-2 border-b border-gray-500">
-          <span class="font-bold w-2/5"> Causality Assessment Result 2:</span>
-          <span class="w-3/5"> PROBABLE</span>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            Causality Assessment Result 2:
+          </span>
+          <span class="w-3/5">
+            PROBABLE
+          </span>
         </div>
-        <div class="flex-center p-2 border-b border-gray-500">
-          <span class="font-bold w-2/5"> Type of Event: </span>
-          <span class="w-3/5"> SERIOUS </span>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            Drug 3:
+          </span>
+          <span class="w-3/5">
+            AMX/CLV
+          </span>
         </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            Causality Assessment Result 3:
+          </span>
+          <span class="w-3/5">
+            SUSPECTED
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            Action Taken in Response to the Event:
+          </span>
+          <span class="w-3/5">
+            DOSE NOT CHANGED, DRUG INTERRUPTED, DOSE NOT CHANGED, DOSE NOT CHANGED, DOSE REDUCED
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            Outcome of the Action Taken in Response to the Event:
+          </span>
+          <span class="w-3/5">
+            FATAL
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            Date of Outcome:
+          </span>
+          <span class="w-3/5">
+            07.11.2022
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            Event Onset Place (Facility):
+          </span>
+          <span class="w-3/5">
+            Душанбе/И.Сомони
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            MedDRA Code:
+          </span>
+          <span class="w-3/5">
+            ENDOCRINE DISORDER
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            Drug Rechallenge:
+          </span>
+          <span class="w-3/5">
+            RECURRENCE OF EVENT
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            Comments:
+          </span>
+          <span class="w-3/5">
+            no
+          </span>
+        </div>
+
+
       </div>
+
     </div>
   </section>
 
-  <div class="flex items-center space-x-4">
-    <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
-      Adverse Events
+  <div class="flex-center space-x-4">
+    <h2 class="text-[#2D9CDB] text-2xl font-bold ">Adverse Events
     </h2>
-    <a class="cancel-button" href="{% url 'adverseevents' %}">Add new</a>
+    <a href="{% url 'adverseevents' %}"
+      class="text-[#044062] font-bold underline text-sm"
+    >
+      Add new
+    </a>
   </div>
+
 
   <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
     <div class="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
@@ -108,24 +182,20 @@
         <thead>
           <tr>
             <th
-              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
-            >
+              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
               No.
             </th>
             <th
-              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
-            >
+              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
               Adverse Event (Symptom)
             </th>
             <th
-              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
-            >
+              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
               Adverse Event Onset Date
             </th>
 
             <th
-              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
-            >
+              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
               Actions
             </th>
           </tr>
@@ -143,40 +213,17 @@
             </td>
             <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
               <div class="flex items-center space-x-4 cursor-pointer">
-                <svg
-                  onclick="showModal()"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="w-5 h-5 cursor-pointer"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-                  />
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
+                <svg onclick="showModal()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                  stroke-width="1.5" stroke="currentColor" class="w-5 h-5 cursor-pointer">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 <a href="#">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="w-5 h-5 cursor-pointer text-black"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"
-                    />
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
                   </svg>
                 </a>
               </div>

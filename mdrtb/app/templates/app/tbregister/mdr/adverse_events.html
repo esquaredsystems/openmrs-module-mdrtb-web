@@ -41,10 +41,7 @@
           <div class="input-container">
             <label class="tb03-form-label" for="name">
               {{'mdrtb.pv.onsetDate'|get_message:request.session.locale}}</label>
-            <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
-            </select>
+            <input type="date" class="input" name="aeonsetdate">
           </div>
           <div class="input-container">
             <label class="tb03-form-label"
@@ -418,18 +415,13 @@
           <div class="input-container">
             <label class="tb03-form-label" for="name">
               {{'mdrtb.pv.treatmentRegimenAtOnset'|get_message:request.session.locale}}</label>
-            <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
-            </select>
+              <input type="text" class="input">
+
           </div>
           <div class="input-container">
             <label class="tb03-form-label"
               for="name">{{'mdrtb.pv.suspectedDrug'|get_message:request.session.locale}}</label>
-            <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
-            </select>
+            <input type="text" class="input">
           </div>
         </div>
         <div class="flex-center justify-between space-x-6">
@@ -437,16 +429,18 @@
             <label class="tb03-form-label" for="name">
               {{'mdrtb.pv.typeOfEvent'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.adverseeventtype  %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="input-container">
             <label class="tb03-form-label"
               for="name">{{'mdrtb.pv.typeOfSAE'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.saetype  %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
         </div>
@@ -455,35 +449,47 @@
             <label class="tb03-form-label" for="name">
               {{'mdrtb.pv.typeOfSpecialEvent'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.specialinteresteventtype  %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
-          <div class="input-container">
+          <div class="input-container space-x-14">
             <label class="tb03-form-label"
               for="name">{{'mdrtb.pv.requiresAncillaryDrugs'|get_message:request.session.locale}}</label>
-            <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
-            </select>
+            <div style="margin-left: 4rem;" class="flex-center space-x-4">
+              <div class="flex-center space-x-2">
+                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input required name="gender" type="radio" value="M" />
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input required name="gender" type="radio" value="F" />
+              </div>
+            </div>
           </div>
+
         </div>
         <div class="flex-center justify-between space-x-6">
-          <div class="input-container">
-            <label class="tb03-form-label" for="name">
-              {{'mdrtb.pv.requiresDoseChange'|get_message:request.session.locale}}</label>
-            <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
-            </select>
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label"
+              for="name">{{'mdrtb.pv.requiresDoseChange'|get_message:request.session.locale}}</label>
+            <div style="margin-left: 4rem;" class="flex-center space-x-4">
+              <div class="flex-center space-x-2">
+                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input required name="gender" type="radio" value="M" />
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input required name="gender" type="radio" value="F" />
+              </div>
+            </div>
           </div>
+
           <div class="input-container">
             <label class="tb03-form-label"
               for="name">{{'mdrtb.pv.yellowCardDate'|get_message:request.session.locale}}</label>
-            <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
-            </select>
+            <input type="date" class="input">
           </div>
         </div>
         <div class="flex-center justify-between space-x-6">
@@ -491,16 +497,18 @@
             <label class="tb03-form-label" for="name">
               {{'mdrtb.pv.causalityDrug1'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.causalitydrug1  %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="input-container">
             <label class="tb03-form-label"
               for="name">{{'mdrtb.pv.causalityAssessmentResult1'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.causalityassessmentresult1  %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
         </div>
@@ -509,16 +517,18 @@
             <label class="tb03-form-label" for="name">
               {{'mdrtb.pv.causalityDrug2'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.causalitydrug2  %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="input-container">
             <label class="tb03-form-label"
               for="name">{{'mdrtb.pv.causalityAssessmentResult2'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.causalityassessmentresult2  %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
         </div>
@@ -527,16 +537,18 @@
             <label class="tb03-form-label" for="name">
               {{'mdrtb.pv.causalityDrug3'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.causalitydrug3  %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="input-container">
             <label class="tb03-form-label"
               for="name">{{'mdrtb.pv.causalityAssessmentResult3'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.causalityassessmentresult3  %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
         </div>
@@ -545,16 +557,18 @@
             <label class="tb03-form-label" for="name">
               {{'mdrtb.pv.actionTaken'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.actiontakeninresponsetotheevent  %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="input-container">
             <label class="tb03-form-label"
               for="name">{{'mdrtb.pv.actionTaken'|get_message:request.session.locale}} 2</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.actiontakeninresponsetotheevent  %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
         </div>
@@ -563,16 +577,18 @@
             <label class="tb03-form-label" for="name">
               {{'mdrtb.pv.actionTaken'|get_message:request.session.locale}} 3</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.actiontakeninresponsetotheevent  %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="input-container">
             <label class="tb03-form-label"
               for="name">{{'mdrtb.pv.actionTaken'|get_message:request.session.locale}} 4</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.actiontakeninresponsetotheevent  %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
         </div>
@@ -581,34 +597,18 @@
             <label class="tb03-form-label" for="name">
               {{'mdrtb.pv.actionTaken'|get_message:request.session.locale}} 5</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.actiontakeninresponsetotheevent  %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="input-container">
             <label class="tb03-form-label"
               for="name">{{'mdrtb.pv.actionOutcome'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
-            </select>
-          </div>
-        </div>
-        <div class="flex-center justify-between space-x-6">
-          <div class="input-container">
-            <label class="tb03-form-label" for="name">
-              {{'mdrtb.pv.onsetDate'|get_message:request.session.locale}}</label>
-            <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
-            </select>
-          </div>
-          <div class="input-container">
-            <label class="tb03-form-label"
-              for="name">{{'mdrtb.pv.adverseEvent'|get_message:request.session.locale}}</label>
-            <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.adverseeventoutcome  %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
         </div>
@@ -616,17 +616,15 @@
           <div class="input-container">
             <label class="tb03-form-label" for="name">
               {{'mdrtb.pv.outcomeDate'|get_message:request.session.locale}}</label>
-            <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
-            </select>
+            <input type="date" class="input">
           </div>
           <div class="input-container">
             <label class="tb03-form-label"
               for="name">{{'mdrtb.pv.meddraCode'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.meddracode  %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
         </div>
@@ -635,8 +633,9 @@
             <label class="tb03-form-label" for="name">
               {{'mdrtb.pv.drugRechallenge'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.drugrechallenge  %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
         </div>

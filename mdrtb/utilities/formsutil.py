@@ -10,6 +10,7 @@ def get_form_concepts(concept_ids,req):
             for answer in response['answers']:
                 answers.append({'uuid' : answer['uuid'] , 'name' : answer['display']})
                 concept_dict[response['display'].lower().replace(' ' , '')] = answers
+                print(response['display'].lower().replace(' ' , ''))
 
     return concept_dict
                 
