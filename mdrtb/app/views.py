@@ -266,12 +266,23 @@ def regimen_form(req):
 
 
 def form_89(req):
-    concept_ids = ["1304ac7c-7acb-4df9-864d-fc911fc00028", "955fa978-f0a6-4252-bd6d-22b16fba3c1e", "e2a0dc12-9af9-4b2d-9b4f-d89463021560", "e2a0dc12-9af9-4b2d-9b4f-d89463021560",
-                   "207a0630-f0af-4208-9a81-326b8c37ebe2", "31b4c61c-0370-102d-b0e3-001ec94a0cc1", "31b4c61c-0370-102d-b0e3-001ec94a0cc1", "483e6ca8-293d-4d00-b71b-4464c093a71d"]
-    context = {
-        'title': 'Form 89',
-        "concepts": fu.get_form_concepts(concept_ids, req)
-    }
+    context = {'title': 'Form 89'}
+    if 'form89_concepts' in req.session:
+        context['concepts'] = req.session['form89_concepts']
+        return render(req, 'app/tbregister/dots/form89.html', context=context)
+    concept_ids = [
+        "1304ac7c-7acb-4df9-864d-fc911fc00028",
+        "955fa978-f0a6-4252-bd6d-22b16fba3c1e",
+        "e2a0dc12-9af9-4b2d-9b4f-d89463021560",
+        "3d16500c-87be-431a-93e6-d517906bd20a",
+        "207a0630-f0af-4208-9a81-326b8c37ebe2",
+        "06cd622c-ba03-45ec-a65f-96536a14aece",
+        "4ce4d85b-a5f7-4e0a-ab42-24ebb8778086",
+        "483e6ca8-293d-4d00-b71b-4464c093a71d",
+    ]
+    concepts = fu.get_form_concepts(concept_ids, req)
+    req.session['form89_concepts'] = concepts
+    context['concepts'] = concepts
     return render(req, 'app/tbregister/dots/form89.html', context=context)
 
 
