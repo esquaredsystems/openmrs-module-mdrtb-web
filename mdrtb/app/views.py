@@ -78,8 +78,6 @@ def enroll_patient(req):
             today = datetime.date.today()
             person_info['age'] = req.POST['age']
             person_info['birthDate'] = f"01.01.{today.year - int(person_info['age'])}"
-            
-
 
         if 'deceased' in req.POST:
             person_info['deathDate'] = req.POST['deathdate']
@@ -110,7 +108,7 @@ def enroll_patient(req):
 
         # MOCK:
         try:
-            req.session['created_patient']= person_info
+            req.session['created_patient'] = person_info
             return redirect('dotsEnroll')
         except Exception as e:
             print(e)
@@ -133,50 +131,54 @@ def enroll_in_dots_program(req):
             "registration_group_prev_drug": req.POST['reggrpprevdrug'],
         }
         try:
-            req.session['enrollment_info']= enrollment_info
+            req.session['enrollment_info'] = enrollment_info
         except Exception as e:
             print(e)
         return redirect('tb03')
-    
+
     if 'session_id' in req.session:
         if 'created_patient' not in req.session:
             return redirect('enrollPatient')
         locations = json.dumps(mu.get_locations())
-        status , registration_group_concepts = mu.get_concept_by_uuid('ae16bb6e-3d82-4e14-ab07-2018ee10d311', req)
-        status ,registration_group_prev_drug_concepts = mu.get_concept_by_uuid(
+        status, registration_group_concepts = mu.get_concept_by_uuid(
+            'ae16bb6e-3d82-4e14-ab07-2018ee10d311', req)
+        status, registration_group_prev_drug_concepts = mu.get_concept_by_uuid(
             '31c2d590-0370-102d-b0e3-001ec94a0cc1', req)
-        return render(req, 'app/tbregister/dots/enroll_program.html', context={'locations': locations,'reggrp': registration_group_concepts['answers'], 'reggrpprev': registration_group_prev_drug_concepts['answers'], 'title': "Enroll in Dots Progam"})
+        return render(req, 'app/tbregister/dots/enroll_program.html', context={'locations': locations, 'reggrp': registration_group_concepts['answers'], 'reggrpprev': registration_group_prev_drug_concepts['answers'], 'title': "Enroll in Dots Progam"})
     else:
         return redirect('home')
 
 
+def enrolled_programs(req):
+    return render(req, 'app/tbregister/enrolled_programs.html')
+
+
 def tb03_form(req):
     if req.method == 'POST':
-        tb03_info={
-            "ipCenter" : req.POST['ipCenter'],
-            "ipCenterName" : req.POST['ipCenterName'],
-            "cpCenter" : req.POST['cpCenter'],
-            "cpCenterName" : req.POST['cpCenterName'],
-            "regimenType" : req.POST['regimenType'],
-            "treatmentStartDate" : req.POST['treatmentStartDate'],
-            "siteOfTb" : req.POST['siteOfTb'],
-            "hivDate" : req.POST['hivDate'],
-            "hivStatus" : req.POST['hivStatus'],
-            "artDate" : req.POST['artDate'],
-            "pctDate" : req.POST['pctDate'],
-            "xrayDate" : req.POST['xrayDate'],
-            "resistanceType" : req.POST['resistanceType'],
-            "treatmentOutcome" : req.POST['treatmentOutcome'],
-            "treatmentOutcomeDate" : req.POST['treatmentOutcomeDate'],
-            'causeOfDeath' : req.POST['causeOfDeath'] if 'causeOfDeath' in req.POST else None,
-            'deathDate' : req.POST['deathDate'] if 'deathDate' in req.POST else None,
+        tb03_info = {
+            "ipCenter": req.POST['ipCenter'],
+            "ipCenterName": req.POST['ipCenterName'],
+            "cpCenter": req.POST['cpCenter'],
+            "cpCenterName": req.POST['cpCenterName'],
+            "regimenType": req.POST['regimenType'],
+            "treatmentStartDate": req.POST['treatmentStartDate'],
+            "siteOfTb": req.POST['siteOfTb'],
+            "hivDate": req.POST['hivDate'],
+            "hivStatus": req.POST['hivStatus'],
+            "artDate": req.POST['artDate'],
+            "pctDate": req.POST['pctDate'],
+            "xrayDate": req.POST['xrayDate'],
+            "resistanceType": req.POST['resistanceType'],
+            "treatmentOutcome": req.POST['treatmentOutcome'],
+            "treatmentOutcomeDate": req.POST['treatmentOutcomeDate'],
+            'causeOfDeath': req.POST['causeOfDeath'] if 'causeOfDeath' in req.POST else None,
+            'deathDate': req.POST['deathDate'] if 'deathDate' in req.POST else None,
             "clinicalNotes": req.POST['clinicalNotes'],
 
 
         }
         req.session['tb03_info'] = tb03_info
-        return redirect(f'dashboard' , req.session['created_patient']['uuid'])
-            
+        return redirect('enrolledprograms')
 
     if 'session_id' in req.session:
         if 'enrollment_info' not in req.session:
@@ -185,16 +187,16 @@ def tb03_form(req):
             concepts = req.session['tb03_concepts']
         else:
             concept_ids = ["ddf6e09c-f018-4048-a69f-436ff22308b5",
-                        "2cd70c1e-955d-428e-86cd-3efc5ecbcabd",
-                        "ebde5ed8-4717-472d-9172-599af069e94d",
-                        "31b4c61c-0370-102d-b0e3-001ec94a0cc1",
-                        "31b94ef8-0370-102d-b0e3-001ec94a0cc1",
-                        "3f5a6930-5ead-4880-80ce-6ab79f4f6cb1",
-                        "a690e0c4-3371-49b3-9d52-b390fca3dd90",
-                        "0f7abf6d-e0bb-46ce-aa69-5214b0d2a295"
-                        ]
+                           "2cd70c1e-955d-428e-86cd-3efc5ecbcabd",
+                           "ebde5ed8-4717-472d-9172-599af069e94d",
+                           "31b4c61c-0370-102d-b0e3-001ec94a0cc1",
+                           "31b94ef8-0370-102d-b0e3-001ec94a0cc1",
+                           "3f5a6930-5ead-4880-80ce-6ab79f4f6cb1",
+                           "a690e0c4-3371-49b3-9d52-b390fca3dd90",
+                           "0f7abf6d-e0bb-46ce-aa69-5214b0d2a295"
+                           ]
             concepts = fu.get_form_concepts(concept_ids, req)
-            req.session['tb03_concepts']= concepts
+            req.session['tb03_concepts'] = concepts
         context = {
             "enrollment_info": req.session['enrollment_info'],
             "created_patient": req.session['created_patient'],
@@ -228,21 +230,23 @@ def tb03u_form(req):
         "concepts": fu.get_form_concepts(concept_ids, req)
     })
 
+
 def manage_adverse_events(req):
-    return render(req,'app/tbregister/mdr/manage_ae.html')
+    return render(req, 'app/tbregister/mdr/manage_ae.html')
+
 
 def adverse_events_form(req):
     context = {'title': 'Adverse Events'}
     if 'ae_concepts' in req.session:
-        context['concepts']= req.session['ae_concepts']
-    
+        context['concepts'] = req.session['ae_concepts']
+
         return render(req, 'app/tbregister/mdr/adverse_events.html', context=context)
     else:
         concept_ids = ["7047f880-b929-42fc-81f7-b9dbba2d1b15", "1051a25f-5609-40d1-9801-10c3b6fd74ab", "e31fb77b-3623-4c65-ac86-760a2248fc1b", "aa9cb2d0-a6d6-4fb7-bb02-9298235128b2", "aaeb7e1e-e2ea-445d-8c86-6d5eff7d45ad", "d5383d2c-ad69-489e-983d-938bc5356ecf", "34c3a6f2-adf4-4c1a-9e47-7fd9dc4f093d", "	0d5228b4-5891-4740-9b13-1b8898ba4957", "dfad56a0-6f69-437b-bc50-28195039a9e2",
-                    "a04a5e94-a584-4f03-b0c5-ea7acf0a28d7", "d9cabe01-9c29-45b0-a071-0cd8d80fcb41", "7e97054b-cf92-49ec-9f68-54b095f5436e", "caa95b8f-86c3-4ec4-9397-933d880aba3e", "1d70fdcd-915d-4524-9ab5-1bdda1790508", "c0592626-62a8-48f6-93b0-1e4f8ff671f3", "adbed9a8-29a6-4adb-8a5b-60619fa02c19", "c213828e-3d30-46a4-9245-485c9f78c233", "dead117a-53c3-40f8-879b-40c170b68037"]
+                       "a04a5e94-a584-4f03-b0c5-ea7acf0a28d7", "d9cabe01-9c29-45b0-a071-0cd8d80fcb41", "7e97054b-cf92-49ec-9f68-54b095f5436e", "caa95b8f-86c3-4ec4-9397-933d880aba3e", "1d70fdcd-915d-4524-9ab5-1bdda1790508", "c0592626-62a8-48f6-93b0-1e4f8ff671f3", "adbed9a8-29a6-4adb-8a5b-60619fa02c19", "c213828e-3d30-46a4-9245-485c9f78c233", "dead117a-53c3-40f8-879b-40c170b68037"]
         concepts = fu.get_form_concepts(concept_ids, req)
         req.session['ae_concepts'] = concepts
-        context['concepts']= concepts
+        context['concepts'] = concepts
         return render(req, 'app/tbregister/mdr/adverse_events.html', context=context)
 
 
@@ -254,9 +258,12 @@ def drug_resistence_form(req):
     }
     return render(req, 'app/tbregister/mdr/drug_resistence.html', context=context)
 
+def manage_regimens(req):
+    return render(req, 'app/tbregister/mdr/manage_regimens.html')
+
 
 def regimen_form(req):
-    concept_ids = ["483e6ca8-293d-4d00-b71b-4464c093a71d", "31c2d09a-0370-102d-b0e3-001ec94a0cc1",
+    concept_ids = ["483e6ca8-293d-4d00-b71b-4464c093a71d", "3f5a6930-5ead-4880-80ce-6ab79f4f6cb1",
                    "e56514ed-1b3b-4d2e-89f1-564fd6265ebe", "cd9e240f-7860-4e37-a0d2-b922cbcc62d3"]
     context = {
         "title": "Regimen Form",
@@ -296,15 +303,16 @@ def patientList(req):
     return render(req, 'app/tbregister/patientlist.html', context=context)
 
 
-def patient_dashboard(req, uuid):
+def patient_dashboard(req, uuid, mdrtb=None):
     patient = req.session['created_patient']
     enroll_info = req.session['enrollment_info']
     print(patient)
     # status, response = ru.get(req, f'patient/{uuid}', {'v': 'full'})
     # if status:
     patient['birthDate'] = util.iso_to_normal(patient['birthDate'])
-    return render(req, 'app/tbregister/dashboard.html', context={'patient': patient, 'enroll' : enroll_info})
-    
+    if mdrtb:
+        return render(req, 'app/tbregister/dashboard.html', context={'patient': patient, 'enroll': enroll_info, 'mdrtb': True})
+    return render(req, 'app/tbregister/dashboard.html', context={'patient': patient, 'enroll': enroll_info})
 
 
 def user_profile(req):

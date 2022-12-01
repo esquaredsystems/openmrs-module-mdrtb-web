@@ -12,7 +12,7 @@
   <form class="flex flex-col">
     <div class="m-16 flex flex-col justify-center space-y-8">
       <h1 class="text-[#2D9CDB] text-3xl font-bold">
-        {{'mdrtb.tb03'|get_message:request.session.locale}} Form
+        {{'mdrtb.pv.regimenForm'|get_message:request.session.locale}} Form
       </h1>
       <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4">
         <div class="flex items-center space-x-12">
@@ -65,8 +65,9 @@
           <div class="input-container">
             <label class="tb03-form-label" for="name">{{'mdrtb.form89.placeOfCommission'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.cmacplace %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
         </div>
@@ -74,21 +75,27 @@
           <div class="input-container">
             <label class="tb03-form-label" for="name">{{'mdrtb.resistanceType'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.resistancetype %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="input-container">
             <label class="tb03-form-label" for="name">{{'mdrtb.pv.fundingSource'|get_message:request.session.locale}}</label>
-            <input type="date" class="input" />
+            <select class="input">
+              {% for concept in concepts.fundingsource %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label" for="name">{{'mdrtb.pv.sldRegimenType'|get_message:request.session.locale}}</label>
             <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
+              {% for concept in concepts.sldregimentype %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="input-container">

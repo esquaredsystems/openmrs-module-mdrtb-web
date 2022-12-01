@@ -14,6 +14,9 @@
         @apply bg-[#2D9CDB] text-white rounded-md p-2;
     }
 
+    .primary-heading{
+        @apply text-[#2D9CDB] text-3xl font-bold;
+    }
     .cancel-button{
         @apply p-2 font-bold underline text-[#044062];
     }

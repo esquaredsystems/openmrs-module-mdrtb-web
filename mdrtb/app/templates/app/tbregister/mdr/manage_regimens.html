@@ -4,161 +4,191 @@
   <section id="modal"
     class="flex flex-col justify-center space-y-8 h-4/5 transition-opacity ease-in-out duration-500 opacity-0 backdrop-blur-3xl inset-0 z-50 shadow-2xl m-10 bg-white w-3/5 mx-auto p-8 fixed top-0 left-0 right-0 bottom-0 my-auto">
     <div class="flex items-center justify-between">
-      <h3 id="modal-testType" class="text-3xl">ALLERGIC REACTION</h3>
+      <h3 id="modal-testType" class="text-3xl">Regimen 1</h3>
       <svg id="close-modal" onclick="closeModal()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
         stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white bg-red-700 cursor-pointer">
         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
       </svg>
     </div>
     <div class="flex flex-col flex-nowrap overflow-y-auto gap-5 p-3">
-      <div class="flex-column-center space-y-4 flex-none h-min w-fit bg-gray-200 p-4 rounded-md shadow-md">
+      <div class="flex-column-center space-y-4 flex-none h-min w-full bg-gray-200 p-4 rounded-md shadow-md">
         <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
-            {{'mdrtb.pv.diagnosticInvestigation'|get_message:request.session.locale}}</label>
+            {{'mdrtb.resistanceType'|get_message:request.session.locale}}</label>
 
           </span>
           <span class="w-3/5">
-            Clinical screen, Simple hearing test, Audiogram, Neuro & psychiatric
-            investigations, AST (SGOT), Alkaline phosphatase, Lipase, Amylase,
-            Potassium, Blood glucose
+            XDR-TB
           </span>
         </div>
         <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
-            {{'mdrtb.pv.suspectedDrug'|get_message:request.session.locale}}
+            {{'mdrtb.pv.sldRegimenType'|get_message:request.session.locale}}
           </span>
           <span class="w-3/5">
-            ESQ
+            INDIVIDUAL WITH CLOFAZIMIN AND LINEZOLID
           </span>
         </div>
         <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
-            {{'mdrtb.pv.treatmentRegimenAtOnset'|get_message:request.session.locale}}:
+            {{'mdrtb.pv.cmDose'|get_message:request.session.locale}}:
 
           </span>
           <span class="w-3/5">
-
+            1.0
           </span>
         </div>
         <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
-            {{'mdrtb.pv.typeOfEvent'|get_message:request.session.locale}}:
+            {{'mdrtb.pv.amDose'|get_message:request.session.locale}}:
           </span>
           <span class="w-3/5">
-            SERIOUS
+            5.0
           </span>
         </div>
         <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
-            {{'mdrtb.pv.yellowCardDate'|get_message:request.session.locale}}:
+            {{'mdrtb.pv.mfxDose'|get_message:request.session.locale}}:
             
           </span>
           <span class="w-3/5">
-            12.10.2022
+            24.0
           </span>
         </div>
         <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
-            {{'mdrtb.pv.causalityDrug1'|get_message:request.session.locale}}:
+            {{'mdrtb.pv.lfxDose'|get_message:request.session.locale}}:
           </span>
           <span class="w-3/5">
-            AMK
+            52.0
           </span>
         </div>
         <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
-            {{'mdrtb.pv.causalityAssessmentResult1'|get_message:request.session.locale}}:          </span>
+            {{'mdrtb.pv.ptoDose'|get_message:request.session.locale}}:          </span>
           <span class="w-3/5">
-            PROBABLE
+            2.0
           </span>
         </div>
         <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
-            {{'mdrtb.pv.causalityDrug2'|get_message:request.session.locale}}:
+            {{'mdrtb.pv.csDose'|get_message:request.session.locale}}:
           </span>
           <span class="w-3/5">
-            STREPTOMYCIN (S)
+            215.0
           </span>
         </div>
         <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
-            {{'mdrtb.pv.causalityAssessmentResult2'|get_message:request.session.locale}}:
+            {{'mdrtb.pv.zDose'|get_message:request.session.locale}}:
           </span>
           <span class="w-3/5">
-            PROBABLE
+            1.0
           </span>
         </div>
         <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
-            {{'mdrtb.pv.causalityDrug3'|get_message:request.session.locale}}:
+            {{'mdrtb.pv.eDose'|get_message:request.session.locale}}:
           </span>
           <span class="w-3/5">
-            AMX/CLV
+            11.0
           </span>
         </div>
         <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
-            {{'mdrtb.pv.causalityAssessmentResult3'|get_message:request.session.locale}}:          </span>
+            {{'mdrtb.pv.hDose'|get_message:request.session.locale}}:          </span>
           <span class="w-3/5">
-            SUSPECTED
+            55.0
           </span>
         </div>
         <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
-            {{'mdrtb.pv.actionTaken'|get_message:request.session.locale}}:
+            {{'mdrtb.pv.lzdDose'|get_message:request.session.locale}}:
           </span>
           <span class="w-3/5">
-            DOSE NOT CHANGED, DRUG INTERRUPTED, DOSE NOT CHANGED, DOSE NOT CHANGED, DOSE REDUCED
+            58.0
           </span>
         </div>
         <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
-            {{'mdrtb.pv.actionOutcome'|get_message:request.session.locale}}:
+            {{'mdrtb.pv.cfzDose'|get_message:request.session.locale}}:
           </span>
           <span class="w-3/5">
-            FATAL
+            554.0
           </span>
         </div>
         <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
-            {{'mdrtb.pv.outcomeDate'|get_message:request.session.locale}}:
+            {{'mdrtb.pv.bdqDose'|get_message:request.session.locale}}:
           </span>
           <span class="w-3/5">
-            07.11.2022
+            51.0
           </span>
         </div>
         <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
-            {{'mdrtb.pv.eventOnsetLocation'|get_message:request.session.locale}}
+            {{'mdrtb.pv.dlmDose'|get_message:request.session.locale}}
           </span>
           <span class="w-3/5">
-            Душанбе/И.Сомони
+            2.0
           </span>
         </div>
         <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
-            {{'mdrtb.pv.meddraCode'|get_message:request.session.locale}}:
+            {{'mdrtb.pv.impDose'|get_message:request.session.locale}}:
           </span>
           <span class="w-3/5">
-            ENDOCRINE DISORDER
+            4.0
           </span>
         </div>
         <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
-            {{'mdrtb.pv.drugRechallenge'|get_message:request.session.locale}}:
+            {{'mdrtb.pv.amxDose'|get_message:request.session.locale}}:
           </span>
           <span class="w-3/5">
-            RECURRENCE OF EVENT
+            2.0
           </span>
         </div>
         <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
-            {{'mdrtb.pv.comments'|get_message:request.session.locale}}:
+            {{'mdrtb.pv.hrDose'|get_message:request.session.locale}}:
           </span>
           <span class="w-3/5">
-            no
+            2.0
           </span>
         </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+            <span class="font-bold w-2/5">
+              {{'mdrtb.pv.hrzeDose'|get_message:request.session.locale}}:
+            </span>
+            <span class="w-3/5">
+              2.0
+            </span>
+          </div>
+          <div class="flex-center border-b space-x-4  w-full border-gray-500">
+            <span class="font-bold w-2/5">
+              {{'mdrtb.pv.sDose'|get_message:request.session.locale}}:
+            </span>
+            <span class="w-3/5">
+              3.0
+            </span>
+          </div>
+          <div class="flex-center border-b space-x-4  w-full border-gray-500">
+            <span class="font-bold w-2/5">
+              {{'mdrtb.pv.otherDose'|get_message:request.session.locale}}:
+            </span>
+            <span class="w-3/5">
+              3.0
+            </span>
+          </div>
+          <div class="flex-center border-b space-x-4  w-full border-gray-500">
+            <span class="font-bold w-2/5">
+              {{'mdrtb.pv.fundingSource'|get_message:request.session.locale}}:
+            </span>
+            <span class="w-3/5">
+                PROJECT HOPE
+            </span>
+          </div>
 
 
       </div>
@@ -167,9 +197,11 @@
   </section>
 
   <div class="flex-center space-x-4">
-    <h2 class="text-[#2D9CDB] text-2xl font-bold ">Adverse Events
+    <h2 class="text-[#2D9CDB] text-3xl font-bold ">
+        {{'mdrtb.pv.regimen'|get_message:request.session.locale}}</label>
+
     </h2>
-    <a href="{% url 'adverseevents' %}"
+    <a href="{% url 'regimen' %}"
       class="text-[#044062] font-bold underline text-sm"
     >
       Add new
@@ -183,54 +215,49 @@
         <thead>
           <tr>
             <th
-              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
               {{'mdrtb.serialNumber'|get_message:request.session.locale}}</label>
 
             </th>
             <th
-              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-              {{'mdrtb.pv.adverseEvent'|get_message:request.session.locale}}</label>
+              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
+              {{'mdrtb.pv.cmacDate'|get_message:request.session.locale}}</label>
 
             </th>
             <th
-              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-              {{'mdrtb.pv.onsetDate'|get_message:request.session.locale}}</label>
+              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
+              {{'mdrtb.form89.cmacNumber'|get_message:request.session.locale}}</label>
 
-            </th>
+            </th>   
+            
 
             <th
-              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
               {{'ActiveLists.actions'|get_message_openMRS:request.session.locale}}
             </th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+            <td class="px-5 py-5 border-b border-gray-200  text-sm">
               1
             </td>
-            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-              ALLERGIC REACTION
+            <td class="px-5 py-5 border-b border-gray-200   text-sm">
+                09.11.2022
             </td>
-            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-              09.11.2022
+            <td class="px-5 py-5 border-b border-gray-200 text-sm">
+                09.11.2022
             </td>
-            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-              <div class="flex items-center space-x-4 cursor-pointer">
-                <svg onclick="showModal()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                  stroke-width="1.5" stroke="currentColor" class="w-5 h-5 cursor-pointer">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <a href="#">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-                  </svg>
-                </a>
-              </div>
+            
+            <td style="padding-left: 4rem;" class="py-5 border-b border-gray-200 text-sm">
+                <div class="cursor-pointer px-1 w-fit" onclick="showModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                      stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </div>
             </td>
           </tr>
         </tbody>
