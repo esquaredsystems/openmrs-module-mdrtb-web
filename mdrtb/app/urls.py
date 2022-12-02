@@ -29,10 +29,11 @@ urlpatterns = [
     path('commonlab/fetchattributes' , views.fetch_attributes , name = 'fetchattributes'),
     path('commonlab/addtesttypes' , views.add_test_type ,name='addtesttype'),
     path('commonlab/edittesttype/<str:uuid>',views.edit_test_type,name='edittesttype'),
+    path('commonlab/patient/<str:uuid>/addlabtest' , views.add_lab_test ,name='addlabtest'),
     path('commonlab/labtest/<str:uuid>/manageattributes',views.manageAttributes,name='manageattr'),
     path('commonlab/labtest/<str:uuid>/addattributes' , views.addattributes,name='addattr'),
     path('commonlab/editattributes/<str:uuid>' , views.editAttribute,name='editattr'),
-    path('commonlab/managetestorders' , views.managetestorders,name='managetestorders'),
+    path('commonlab/patient/<str:uuid>/managetestorders' , views.managetestorders,name='managetestorders'),
     path('commonlab/managetestsamples' , views.managetestsamples,name='managetestsamples'),
     path('commonlab/retiretesttype/<str:uuid>', views.retire_test_type,name='retiretesttype')
 

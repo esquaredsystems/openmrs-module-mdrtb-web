@@ -306,9 +306,9 @@ def patientList(req):
 def patient_dashboard(req, uuid, mdrtb=None):
     patient = req.session['created_patient']
     enroll_info = req.session['enrollment_info']
-    print(patient)
     # status, response = ru.get(req, f'patient/{uuid}', {'v': 'full'})
     # if status:
+    patient['uuid'] = '9ef5044d-129a-4232-b9c5-24538006c119'
     patient['birthDate'] = util.iso_to_normal(patient['birthDate'])
     if mdrtb:
         return render(req, 'app/tbregister/dashboard.html', context={'patient': patient, 'enroll': enroll_info, 'mdrtb': True})
@@ -513,9 +513,13 @@ def editAttribute(req, uuid):
     return render(req, 'app/commonlab/addattributes.html', context=context)
 
 
-def managetestorders(req):
-    return render(req, 'app/commonlab/managetestorders.html')
+def managetestorders(req,uuid):
+    context={'title' : 'Add Lab Test','patient':uuid}
+    return render(req, 'app/commonlab/managetestorders.html' ,context=context)
 
+def add_lab_test(req,uuid):
+    cu.get_patient_encounters(req,uuid)
+    return render(req,'app/commonlab/addlabtest.html')
 
 def managetestsamples(req, uuid):
     return render(req, 'app/commonlab/managetestsamples.html')

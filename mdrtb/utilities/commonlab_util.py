@@ -131,3 +131,8 @@ def custom_attribute(data,removeDT, removeHandler):
         'handlerConfig': '' if data['handlerConfig'] == None else data['handlerConfig']
     }
     return attribute
+
+def get_patient_encounters(req,uuid):
+    status,response = ru.get(req,'encounter',{'patient' : uuid,'v' : 'full'})
+    if status:
+        print(response)
