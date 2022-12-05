@@ -1,4 +1,10 @@
-{% extends 'app/base/base_without_menu.html' %} {% block content %}
+{% extends 'app/base/base_without_menu.html' %} 
+
+{% block title %}
+  {{title}}
+{% endblock %}
+
+{% block content %}
 
 <div id="modal-parent" style="margin: 3rem">
   <section id="modal"

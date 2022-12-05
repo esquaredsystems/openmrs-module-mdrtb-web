@@ -13,7 +13,7 @@ from django.core.handlers.wsgi import WSGIRequest as wi
 
 
 def index(req):
-    return render(req, 'app/app/tbregister/reportmockup.html')
+    return render(req, 'app/tbregister/reportmockup.html')
 
 
 def login(req):
@@ -232,7 +232,8 @@ def tb03u_form(req):
 
 
 def manage_adverse_events(req):
-    return render(req, 'app/tbregister/mdr/manage_ae.html')
+    context = {'title' : 'Manage Adverse Events'}
+    return render(req, 'app/tbregister/mdr/manage_ae.html' )
 
 
 def adverse_events_form(req):
@@ -311,8 +312,11 @@ def patient_dashboard(req, uuid, mdrtb=None):
     patient['uuid'] = '9ef5044d-129a-4232-b9c5-24538006c119'
     patient['birthDate'] = util.iso_to_normal(patient['birthDate'])
     if mdrtb:
-        return render(req, 'app/tbregister/dashboard.html', context={'patient': patient, 'enroll': enroll_info, 'mdrtb': True})
-    return render(req, 'app/tbregister/dashboard.html', context={'patient': patient, 'enroll': enroll_info})
+        return render(req, 'app/tbregister/dashboard.html', context={
+            'title': 'MDR Dashboard',
+            'patient': patient, 'enroll': enroll_info, 'mdrtb': True})
+    return render(req, 'app/tbregister/dashboard.html', context={'title': 'TB Dashboard',
+'patient': patient, 'enroll': enroll_info})
 
 
 def user_profile(req):
@@ -518,7 +522,7 @@ def managetestorders(req,uuid):
     return render(req, 'app/commonlab/managetestorders.html' ,context=context)
 
 def add_lab_test(req,uuid):
-    cu.get_patient_encounters(req,uuid)
+    # cu.get_patient_encounters(req,uuid)
     return render(req,'app/commonlab/addlabtest.html')
 
 def managetestsamples(req, uuid):
