@@ -232,8 +232,8 @@ def tb03u_form(req):
 
 
 def manage_adverse_events(req):
-    context = {'title' : 'Manage Adverse Events'}
-    return render(req, 'app/tbregister/mdr/manage_ae.html' )
+    context = {'title': 'Manage Adverse Events'}
+    return render(req, 'app/tbregister/mdr/manage_ae.html')
 
 
 def adverse_events_form(req):
@@ -258,6 +258,7 @@ def drug_resistence_form(req):
 
     }
     return render(req, 'app/tbregister/mdr/drug_resistence.html', context=context)
+
 
 def manage_regimens(req):
     return render(req, 'app/tbregister/mdr/manage_regimens.html')
@@ -316,7 +317,7 @@ def patient_dashboard(req, uuid, mdrtb=None):
             'title': 'MDR Dashboard',
             'patient': patient, 'enroll': enroll_info, 'mdrtb': True})
     return render(req, 'app/tbregister/dashboard.html', context={'title': 'TB Dashboard',
-'patient': patient, 'enroll': enroll_info})
+                                                                 'patient': patient, 'enroll': enroll_info})
 
 
 def user_profile(req):
@@ -517,13 +518,21 @@ def editAttribute(req, uuid):
     return render(req, 'app/commonlab/addattributes.html', context=context)
 
 
-def managetestorders(req,uuid):
-    context={'title' : 'Add Lab Test','patient':uuid}
-    return render(req, 'app/commonlab/managetestorders.html' ,context=context)
+def managetestorders(req, uuid):
+    context = {'title': 'Manage Lab Test Orders', 'patient': uuid}
+    return render(req, 'app/commonlab/managetestorders.html', context=context)
 
-def add_lab_test(req,uuid):
-    # cu.get_patient_encounters(req,uuid)
-    return render(req,'app/commonlab/addlabtest.html')
+
+def add_lab_test(req, uuid):
+    context = {'title': 'Add Lab Test'}
+    encounters = cu.get_patient_encounters(req, uuid)
+    labtests, testgroups = cu.get_test_groups_and_tests(req)
+    if encounters:
+        context['encounters'] = encounters['results']
+        context['testgroups'] = testgroups
+        context['labtests'] = json.dumps(labtests)
+    return render(req, 'app/commonlab/addlabtest.html', context=context)
+
 
 def managetestsamples(req, uuid):
     return render(req, 'app/commonlab/managetestsamples.html')

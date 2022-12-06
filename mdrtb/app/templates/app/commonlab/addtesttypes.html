@@ -1,4 +1,4 @@
-{% extends 'app/tbregister/base_without_dd.html' %}
+{% extends 'app/base/base_without_menu.html' %}
  {% block content %}
 
 
@@ -21,11 +21,11 @@
       {% endif %}
     </div>
 
-    <div>
+    <div class="m-4">
       <form
         method="post"
         action="{% if state == 'edit' %} {% url 'edittesttype' uuid=testType.uuid %} {% else %} {% url 'addtesttype' %} {% endif %}"
-        class="flex flex-col shadow-lg p-4"
+        class="flex flex-col shadow-md p-4"
       >
         {% csrf_token %}
         <div class="flex py-4 space-x-12">

@@ -2,63 +2,92 @@
 
 
 {% block title %}
-  {{title}}
+{{title}}
 {% endblock %}
 
 
 {% block content %}
 
 
-    <div class="m-4">
-        <h1 class="primary-heading">Add Test Request</h1>
-        <form class="m-10 flex-column-center space-y-6" action="">
-            <div class="input-container">
-                <label class="input-label" for="">
-                    {{'ConceptProposal.encounter'|get_message_openMRS:request.session.locale}}
+<div class="m-4">
+    <h1 class="primary-heading">Add Test Request</h1>
+    <form class="m-10 flex-column-center space-y-6" action="">
+        <div class="input-container">
+            <label class="input-label" for="">
+                {{'ConceptProposal.encounter'|get_message_openMRS:request.session.locale}}
 
-                </label>
-                <select name="" id="" class="input">
-                    <option value="1">1</option>
-                </select>
-            </div>
-            <div class="input-container">
-                <label class="input-label" for="">
-                    Test Group
+            </label>
+            <select name="" id="" class="input">
+                {% for encounter in encounters %}
+                <option value="{{ encounter.uuid }}">{{ encounter.display }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="input-container">
+            <label class="input-label" for="">
+                Test Group
 
-                </label>
-                <select name="" id="" class="input">
-                    <option value="1">1</option>
-                </select>
-            </div>
-            <div class="input-container">
-                <label class="input-label" for="">
-                    Test Type
+            </label>
+            <select name="" id="group-select" class="input">
+                <option selected value="None">Select</option>
+                {% for group in testgroups %}
+                <option value="{{ group }}">{{ group }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="input-container">
+            <label class="input-label" for="">
+                Test Type
 
-                </label>
-                <select disabled name="" id="" class="input">
-                    <option value="1">1</option>
-                </select>
-            </div>
-            <div class="input-container">
-                <label class="input-label" for="">
-                    Lab Reference
+            </label>
+            <select disabled name="" id="test-select" class="input">
+            </select>
+        </div>
+        <div class="input-container">
+            <label class="input-label" for="">
+                Lab Reference
 
-                </label>
-                <input class="input" type="text">
-            </div>
-            <div class="input-container">
-                <label class="input-label" for="">
-                    Instructions
+            </label>
+            <input class="input" type="text">
+        </div>
+        <div class="input-container">
+            <label class="input-label" for="">
+                Instructions
 
-                </label>
-               <textarea name="" id="" class="input"></textarea>
-            </div>
-            <div class="flex-center space-x-4">
-                <button class="button-primary w-1/5">Save</button><button class="cancel-button">Cancel</button>
-            </div>
-            
-        </form>
-    </div>
+            </label>
+            <textarea name="" id="" class="input"></textarea>
+        </div>
+        <div class="flex-center space-x-4">
+            <button class="button-primary w-1/5">Save</button><button class="cancel-button">Cancel</button>
+        </div>
 
+    </form>
+</div>
+
+<script>
+    let labtests = JSON.parse("{{labtests | escapejs}}")
+    console.log(labtests)
+    $('#group-select').change(function () {
+        $('#test-select').html('')
+        let group = $('#group-select').val()
+        if (group != 'None') {
+            $('#test-select').prop('disabled', false)
+            for (test of labtests) {
+                if (test.testGroup === group) {
+                    $('#test-select').append(
+                        $("<option>", {
+                            value: test.uuid,
+                            text: test.display,
+                        })
+                    )
+                }
+            }
+        }else{
+            $('#test-select').prop('disabled', true)
+
+        }
+
+    })
+</script>
 
 {% endblock %}

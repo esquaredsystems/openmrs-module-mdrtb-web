@@ -133,6 +133,14 @@ def custom_attribute(data,removeDT, removeHandler):
     return attribute
 
 def get_patient_encounters(req,uuid):
-    status,response = ru.get(req,'encounter',{'patient' : uuid,'v' : 'full'})
+    status,response = ru.get(req,'encounter',{'patient' : uuid})
     if status:
-        print(response)
+        return response
+    else: return None
+
+def get_test_groups_and_tests(req):
+    status,response = ru.get(req,'commonlab/labtesttype',{})
+    if status:
+        test_groups=[test['testGroup'] for test in response['results']]
+        lab_tests = response['results']
+    return lab_tests,test_groups
