@@ -48,7 +48,7 @@
                 Lab Reference
 
             </label>
-            <input class="input" type="text">
+            <input id="labref" class="input" type="text" value="{{'placeholder' | get_datenow}}">
         </div>
         <div class="input-container">
             <label class="input-label" for="">
@@ -66,28 +66,38 @@
 
 <script>
     let labtests = JSON.parse("{{labtests | escapejs}}")
-    console.log(labtests)
     $('#group-select').change(function () {
         $('#test-select').html('')
         let group = $('#group-select').val()
         if (group != 'None') {
+            let testsByGroup = labtests.filter(test => test.testGroup === group)
             $('#test-select').prop('disabled', false)
-            for (test of labtests) {
-                if (test.testGroup === group) {
+            if (testsByGroup.length === 1) {
+                $('#test-select').append(
+                    $("<option>", {
+                        value: testsByGroup[0].uuid,
+                        text: testsByGroup[0].name,
+                        selected: true
+                    })
+                )
+            } else {
+                testsByGroup.forEach(item => {
                     $('#test-select').append(
                         $("<option>", {
-                            value: test.uuid,
-                            text: test.display,
+                            value: item.uuid,
+                            text: item.name,
                         })
                     )
-                }
+                })
             }
-        }else{
+        } else {
             $('#test-select').prop('disabled', true)
 
         }
 
     })
+
+    
 </script>
 
 {% endblock %}

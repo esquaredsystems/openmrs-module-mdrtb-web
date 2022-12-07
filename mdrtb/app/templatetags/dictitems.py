@@ -1,5 +1,7 @@
 from django.template.defaulttags import register
 from utilities import metadata_util as mu
+from datetime import datetime
+
 
 
 @register.filter

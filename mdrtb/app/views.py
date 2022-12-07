@@ -534,5 +534,12 @@ def add_lab_test(req, uuid):
     return render(req, 'app/commonlab/addlabtest.html', context=context)
 
 
-def managetestsamples(req, uuid):
+def managetestsamples(req, orderid):
     return render(req, 'app/commonlab/managetestsamples.html')
+
+
+def add_test_sample(req, orderid):
+    context = {'title': 'Add Sample', 'specimentype': cu.get_commonlab_concepts_by_type(
+        req, 'specimentype'), 'specimensite': cu.get_commonlab_concepts_by_type(req, 'specimensite')}
+
+    return render(req, 'app/commonlab/addsample.html', context=context)

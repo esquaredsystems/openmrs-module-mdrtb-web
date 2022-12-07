@@ -1,0 +1,77 @@
+{% extends 'app/base/base_without_menu.html' %}
+
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+
+{% block content %}
+
+
+<div class="m-4">
+    <h1 class="primary-heading">Add Test Request</h1>
+    <form class="m-10 flex-column-center space-y-6" action="">
+        <div class="input-container">
+            <label class="input-label" for="">
+                Specimen Type
+
+            </label>
+            <select name="" id="" class="input">
+                {% for type in specimentype %}
+                <option value="{{ type.uuid }}">{{ type.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="input-container">
+            <label class="input-label" for="">
+                Specimen Site
+
+            </label>
+            <select name="" id="group-select" class="input">
+                {% for site in specimensite %}
+                <option value="{{ site.uuid }}">{{ site.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="input-container">
+            <label class="input-label" for="">
+                Quantity
+
+            </label>
+            <input class="input" type="number" name="" id="">
+        </div>
+        <div class="input-container">
+            <label class="input-label" for="">
+                Units
+
+            </label>
+            <select name="" class="input" id="">
+                <option value="ML">Mililitre</option>
+            </select>
+
+        </div>
+        <div class="input-container">
+            <label class="input-label" for="">
+                Specimen Identifier
+
+            </label>
+            <input id="labref" class="input" type="text" value="{{'placeholder' | get_datenow}}">
+
+        </div>
+        <div class="input-container">
+            <label class="input-label" for="">
+                Collected On
+
+            </label>
+            <input class="input" type="date">
+        </div>
+        <div class="flex-center space-x-4">
+            <button class="button-primary w-1/5">Save</button><button class="cancel-button">Cancel</button>
+        </div>
+
+    </form>
+</div>
+
+
+{% endblock %}

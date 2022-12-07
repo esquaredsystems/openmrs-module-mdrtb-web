@@ -34,7 +34,8 @@ urlpatterns = [
     path('commonlab/labtest/<str:uuid>/addattributes' , views.addattributes,name='addattr'),
     path('commonlab/editattributes/<str:uuid>' , views.editAttribute,name='editattr'),
     path('commonlab/patient/<str:uuid>/managetestorders' , views.managetestorders,name='managetestorders'),
-    path('commonlab/managetestsamples' , views.managetestsamples,name='managetestsamples'),
+    path('commonlab/order/<str:orderid>/managesamples' , views.managetestsamples,name='managetestsamples'),
+    path('commonlab/order/<str:orderid>/addsample' , views.add_test_sample ,name='addtestsample'),
     path('commonlab/retiretesttype/<str:uuid>', views.retire_test_type,name='retiretesttype')
 
 
