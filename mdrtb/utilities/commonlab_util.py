@@ -5,7 +5,7 @@ from . import restapi_utils as ru
 from . import common_utils as u
  
 def get_commonlab_concepts_by_type(req, type):
-    status,response = ru.get(req,'commonlab/concept',{'type' :type})
+    status,response = ru.get(req,'commonlab/concept',{'type' :type , 'lang' : req.session['locale']})
     concepts = []
     if status:
         for concept in response['results']:
@@ -97,7 +97,8 @@ def get_test_types_by_search(req,query):
 def get_attributes_of_labtest(req,uuid):
     status,data = ru.get(req,'commonlab/labtestattributetype',{'testTypeUuid': uuid, 'v': 'full'})
     if status:
-        return data['results']
+        sortedAttr = sorted(data['results'] , key=lambda x: x['sortWeight'])
+        return sortedAttr
     else:
         return data['error']['message']
 
@@ -144,3 +145,15 @@ def get_test_groups_and_tests(req):
         test_groups=[test['testGroup'] for test in response['results']]
         lab_tests = response['results']
     return lab_tests,test_groups
+
+def get_sample_units(req):
+    uuid = "5f21ab43-ec32-44b2-88e5-bc4ed2b93fba"
+    status,response = ru.get(req,f'concept/{uuid}',{'v' : 'custom:(setMembers)'})
+    units=[]
+    if status:
+        for unit in response['setMembers']:
+            units.append({
+                'uuid': unit['uuid'],
+                'name': unit['display'],
+            })
+    return units

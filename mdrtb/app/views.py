@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect , HttpResponseRedirect
 from django.http import JsonResponse
 import utilities.restapi_utils as ru
 import utilities.metadata_util as mu
@@ -341,7 +341,7 @@ def concepts(req):
 
 
 def manage_test_types(req):
-    context = {}
+    context = {'title' : 'Manage Test Types'}
     if req.method == 'POST':
         search_results = cu.get_test_types_by_search(req, req.POST['search'])
         if len(search_results) > 0:
@@ -367,12 +367,13 @@ def fetch_attributes(req):
             'groupName': 'none' if attribute['groupName'] == None else attribute['groupName'],
             'multisetName': 'none' if attribute['multisetName'] == None else attribute['multisetName']
         })
+    print(attributes)
 
     return JsonResponse({'attributes': attributes})
 
 
 def add_test_type(req):
-    context = {}
+    context = {'title' : 'Add Test Type'}
     if req.method == 'POST':
         body = {
             "name": req.POST['testname'],
@@ -397,7 +398,7 @@ def add_test_type(req):
 
 
 def edit_test_type(req, uuid):
-    context = {}
+    context = {'title' : 'Edit Test Type'}
     status, response = ru.get(
         req, f'commonlab/labtesttype/{uuid}', {'v': 'full', 'lang': 'en'})
     if status:
@@ -446,7 +447,7 @@ def retire_test_type(req, uuid):
 
 
 def manageAttributes(req, uuid):
-    context = {'labTestUuid': uuid}
+    context = {'labTestUuid': uuid, 'title': 'Manage Attributes'}
     response = cu.get_attributes_of_labtest(req, uuid)
     context['attributes'] = response
 
@@ -455,7 +456,7 @@ def manageAttributes(req, uuid):
 
 def addattributes(req, uuid):
     context = {'labTestUuid': uuid, 'prefferedHandlers': cu.get_preffered_handler(),
-               'dataTypes': cu.get_attributes_data_types()}
+               'dataTypes': cu.get_attributes_data_types() , 'title' : 'Add attributes'}
     if req.method == 'POST':
         body = {
             'labTestType': uuid,
@@ -480,10 +481,10 @@ def addattributes(req, uuid):
     return render(req, 'app/commonlab/addattributes.html', context=context)
 
 
-def editAttribute(req, uuid):
-    context = {'state': 'edit'}
+def editAttribute(req, testid, attrid):
+    context = {'state': 'edit','testid': testid , 'title' : 'Edit Attribute'}
     status, response = ru.get(
-        req, f'commonlab/labtestattributetype/{uuid}', {'v': "full"})
+        req, f'commonlab/labtestattributetype/{attrid}', {'v': "full"})
     if status:
         context['attribute'] = cu.custom_attribute(
             response, response['datatypeClassname'], response['preferredHandlerClassname'])
@@ -492,8 +493,9 @@ def editAttribute(req, uuid):
         context['prefferedHandlers'] = util.remove_given_str_from_obj_arr(
             cu.get_preffered_handler(), response['preferredHandlerClassname'], 'views')
     else:
-        return redirect(f'/commonlab/manageattributes/{uuid}')
+        redirect(f'/commonlab/labtest/{testid}/manageattributes')
     if req.method == 'POST':
+        print(req.POST.get('next', '/'))
         body = {
             'name': req.POST['name'],
             'description': req.POST['desc'],
@@ -508,9 +510,10 @@ def editAttribute(req, uuid):
 
         }
         status, response = ru.post(
-            req, f'commonlab/labtestattributetype/{uuid}', body)
-        if response.status_code == 200:
-            return redirect(f'/commonlab')
+            req, f'commonlab/labtestattributetype/{attrid}', body)
+        if status:
+            
+            return redirect(f'/commonlab/labtest/{testid}/manageattributes')
         else:
             print(response.status_code)
             print(response.json())
@@ -535,11 +538,15 @@ def add_lab_test(req, uuid):
 
 
 def managetestsamples(req, orderid):
+    context={'title': 'Manage Test Samples'}
     return render(req, 'app/commonlab/managetestsamples.html')
 
 
 def add_test_sample(req, orderid):
     context = {'title': 'Add Sample', 'specimentype': cu.get_commonlab_concepts_by_type(
-        req, 'specimentype'), 'specimensite': cu.get_commonlab_concepts_by_type(req, 'specimensite')}
+        req, 'specimentype'), 'specimensite': cu.get_commonlab_concepts_by_type(req, 'specimensite'),
+        'units': cu.get_sample_units(req)
+
+    }
 
     return render(req, 'app/commonlab/addsample.html', context=context)
