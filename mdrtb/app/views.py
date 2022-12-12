@@ -233,11 +233,11 @@ def tb03u_form(req):
 
 def manage_adverse_events(req):
     context = {'title': 'Manage Adverse Events'}
-    return render(req, 'app/tbregister/mdr/manage_ae.html')
+    return render(req, 'app/tbregister/mdr/manage_ae.html',context=context)
 
 
 def adverse_events_form(req):
-    context = {'title': 'Adverse Events'}
+    context = {'title': 'Add Adverse Event'}
     if 'ae_concepts' in req.session:
         context['concepts'] = req.session['ae_concepts']
 
@@ -322,8 +322,10 @@ def patient_dashboard(req, uuid, mdrtb=None):
 
 def user_profile(req):
     if req.method == 'POST':
+        print(req.session['redirect'])
         req.session['locale'] = req.POST['locale']
-        return redirect('home')
+        return redirect(req.session['redirect'])
+    req.session['redirect'] = req.META['HTTP_REFERER']
     return render(req, 'app/tbregister/user_profile.html')
 
 

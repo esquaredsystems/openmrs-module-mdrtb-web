@@ -76,7 +76,29 @@ def get_message_openMRS_lib(message_code, locale=None, default=None):
     cleaner = re.compile('<.*?>')
     return re.sub(cleaner, ' ', value.strip())
 
+def get_commonlab_message(message_code, locale=None, default=None):
+    value = ''
+    dir = f'{u.get_project_root()}/resources'
+    if not locale:
+        data = u.read_properties_file(
+            f'{dir}/commonlab_messages.properties', 'r', encoding='utf-8')
+    else:
+        data = u.read_properties_file(
+            f'{dir}/commonlab_messages_{locale}.properties', 'r', encoding='utf-8')
+    if message_code:
+        for message in data:
+            split_msg = message.split('=')
+            if split_msg[0] == message_code:
+                value = split_msg[1]
+            elif default:
+                value = default
+    else:
+        raise Exception("Please provide a valid message code")
 
+    if len(value) < 1:
+        value = message_code
+    cleaner = re.compile('<.*?>')
+    return re.sub(cleaner, ' ', value.strip())
 
 def get_concepts_and_set_cache(req):
 

@@ -230,11 +230,12 @@
     <div class="flex items-center space-x-4">
       <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.pv.regimens'|get_message:request.session.locale}}
       </h2>
-      <button
+      <a
+      href="{% url 'manageregimens' %}"
         class="text-[#044062] font-bold underline p-2"
       >
         Regimens
-      </button>
+      </a>
     </div>
       
   </div>

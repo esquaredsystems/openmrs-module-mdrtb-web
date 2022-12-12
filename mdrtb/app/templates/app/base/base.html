@@ -43,10 +43,10 @@
 				  </svg>
 				  
 				<div class="dropdown">
-					<a href="{% url 'patientlist' %}" class="hover:text-black text-black">
+					<a href="{% url 'patientlist' %}" class="hover:text-[#044062] text-black">
 						{{'mdrtb.mergePatients'|get_message:request.session.locale}}
 					</a>
-					<a href="{% url 'patientlist' %}" class="hover:text-black text-black">
+					<a href="{% url 'patientlist' %}" class="dropdown-item">
 						{{'mdrtb.patientLists'|get_message:request.session.locale}}</a>
 
 				</div>
@@ -59,7 +59,7 @@
 				  
 
 				<div class="dropdown">
-					<p>{{'mdrtb.viewClosedReports'|get_message:request.session.locale}}</p>
+					<p class="dropdown-item">{{'mdrtb.viewClosedReports'|get_message:request.session.locale}}</p>
 					<p>{{'mdrtb.dotsreport07'|get_message:request.session.locale}}</p>
 					<p>{{'mdrtb.dotsreport08'|get_message:request.session.locale}}</p>
 					<p>{{'mdrtb.tb03Export'|get_message:request.session.locale}}</p>
