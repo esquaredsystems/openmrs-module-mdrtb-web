@@ -1,6 +1,6 @@
 {% extends 'app/base/base_without_menu.html' %}
 {% block title %}
-  {{title}}
+{{title}}
 {% endblock %}
 {% block content %}
 <div id="modal-parent" class="relative ">
@@ -18,7 +18,7 @@
     </div>
     <div class="m-4">
       <div id="attrbox" class="grid grid-cols-1 space-y-4 h-min w-full bg-gray-200 p-4 rounded-md shadow-md">
-       <div class="search_result_items font-bold">
+        <div class="search_result_items font-bold">
           <p class="col-span-2">Name</p>
           <p>Sort Weight</p>
           <p>Group Name</p>
@@ -35,9 +35,12 @@
       <div class="py-8">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-4">
-            <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">{{'commonlabtest.labtesttype.manage'|get_message_commonlab:request.session.locale}}</label>
+            <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
+              {{'commonlabtest.labtesttype.manage'|get_message_commonlab:request.session.locale}}</label>
             </h2>
-            <a href="{% url 'addtesttype' %}" class="text-[#044062] font-bold underline">Add new</a>
+            <a href="{% url 'addtesttype' %}"
+              class="text-[#044062] font-bold underline">{{'general.add'|get_message_openMRS:request.session.locale}}
+              {{'general.new'|get_message_openMRS:request.session.locale}}</a>
 
           </div>
           <form action="{% url 'managetesttypes' %}" method="post">
@@ -63,20 +66,19 @@
               <tr>
                 <th
                   class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Name
+                  {{'general.testName'|get_message_commonlab:request.session.locale}}
                 </th>
                 <th
                   class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Short Name
+                  {{'general.shortName'|get_message_commonlab:request.session.locale}}
                 </th>
                 <th
                   class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Description
-                </th>
+                  {{'general.description'|get_message_commonlab:request.session.locale}} </th>
 
                 <th
                   class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Actions
+                  {{'ActiveLists.actions'|get_message_openMRS:request.session.locale}}
                 </th>
               </tr>
             </thead>
@@ -125,7 +127,7 @@
                   </div>
                 </td>
 
-               
+
               </tr>
               {% endfor %}
               {% endif %}

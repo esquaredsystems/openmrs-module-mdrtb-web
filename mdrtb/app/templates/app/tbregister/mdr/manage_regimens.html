@@ -1,4 +1,9 @@
-{% extends 'app/base/base_without_menu.html' %} {% block content %}
+{% extends 'app/base/base_without_menu.html' %} 
+{% block title %}
+{{title}}
+{% endblock %}
+
+{% block content %}
 
 <div id="modal-parent" style="margin: 3rem">
   <section id="modal"
@@ -12,23 +17,6 @@
     </div>
     <div class="flex flex-col flex-nowrap overflow-y-auto gap-5 p-3">
       <div class="flex-column-center space-y-4 flex-none h-min w-full bg-gray-200 p-4 rounded-md shadow-md">
-        <!-- <div class="flex-center border-b space-x-4  w-full border-gray-500">
-          <span class="font-bold w-2/5">
-            {{'mdrtb.resistanceType'|get_message:request.session.locale}}</label>
-
-          </span>
-          <span class="w-3/5">
-            XDR-TB
-          </span>
-        </div>
-        <div class="flex-center border-b space-x-4  w-full border-gray-500">
-          <span class="font-bold w-2/5">
-            {{'mdrtb.pv.sldRegimenType'|get_message:request.session.locale}}
-          </span>
-          <span class="w-3/5">
-            INDIVIDUAL WITH CLOFAZIMIN AND LINEZOLID
-          </span>
-        </div> -->
         <div class="flex-center border-b space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
             {{'mdrtb.pv.cmDose'|get_message:request.session.locale}}:
@@ -181,15 +169,7 @@
             3.0
           </span>
         </div>
-        <!-- <div class="flex-center border-b space-x-4  w-full border-gray-500">
-          <span class="font-bold w-2/5">
-            {{'mdrtb.pv.fundingSource'|get_message:request.session.locale}}:
-          </span>
-          <span class="w-3/5">
-            PROJECT HOPE
-          </span>
-        </div> -->
-
+        
 
       </div>
 

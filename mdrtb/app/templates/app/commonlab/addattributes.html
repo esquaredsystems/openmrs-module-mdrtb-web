@@ -11,18 +11,22 @@
     <div class="flex flex-col">
         <div class="flex items-center justify-between">
             <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
-                {% if state == 'edit' %}Edit Attribute{% else %}Add Attribute{% endif %}
+                {% if state == 'edit' %}
+                {{'commonlabtest.labtestattributetype.edit'|get_message_commonlab:request.session.locale}}
+                {% else %}
+                {{'commonlabtest.labtestattributetype.add'|get_message_commonlab:request.session.locale}}{% endif %}
             </h2>
         </div>
 
         <div class="mt-4">
             <form method="post"
                 action="{% if state == 'edit' %} {% url 'editattr' testid=testid attrid=attribute.uuid %} {% else %} {% url 'addattr' uuid=labTestUuid %} {% endif %}"
-                class="grid grid-cols-2 gap-5 shadow-md p-4 ">
+                class="grid grid-cols-2 gap-5 p-4 ">
                 {% csrf_token %}
                 <div class="flex flex-col space-y-4 justify-center">
                     <div class="input-container">
-                        <label class="input-label w-4/5">Name</label>
+                        <label
+                            class="input-label w-4/5">{{'general.name'|get_message_commonlab:request.session.locale}}</label>
                         {% if state == 'edit' %}
                         <input name="name" required type="text" value="{{attribute.name}}" class="input w-4/5">
                         {% else %}
@@ -30,7 +34,8 @@
                         {% endif %}
                     </div>
                     <div class="input-container">
-                        <label class="input-label w-4/5">Description</label>
+                        <label
+                            class="input-label w-4/5">{{'general.description'|get_message_commonlab:request.session.locale}}</label>
                         {% if state == 'edit' %}
                         <textarea name="desc" required class="input" cols="5"
                             rows="5">{{attribute.description}}</textarea>
@@ -39,7 +44,8 @@
                         {% endif %}
                     </div>
                     <div class="input-container">
-                        <label class="input-label w-4/5">Multiset Name</label>
+                        <label
+                            class="input-label w-4/5">{{'commonlabtest.labtestattributetype.multisetName'|get_message_commonlab:request.session.locale}}</label>
                         {% if state == 'edit' %}
                         <input name="mutname" type="text" value="{{attribute.multisetName}}" class="input w-4/5">
 
@@ -49,7 +55,8 @@
                         {% endif %}
                     </div>
                     <div class="input-container">
-                        <label class="input-label w-4/5">Group Name</label>
+                        <label
+                            class="input-label w-4/5">{{'commonlabtest.labtestattributetype.groupName'|get_message_commonlab:request.session.locale}}</label>
                         {% if state == 'edit' %}
                         <input name="grpname" type="text" value="{{attribute.groupName}}" class="input w-4/5">
 
@@ -59,7 +66,8 @@
                         {% endif %}
                     </div>
                     <div class="input-container">
-                        <label class="input-label w-4/5">Min Occurs</label>
+                        <label
+                            class="input-label w-4/5">{{'general.minOccurs'|get_message_commonlab:request.session.locale}}</label>
                         {% if state == 'edit' %}
                         <input name="minoccur" value="{{attribute.minOccurs}}" disabled type="text" class="input w-4/5">
 
@@ -69,7 +77,8 @@
                         {% endif %}
                     </div>
                     <div class="input-container">
-                        <label class="input-label w-4/5">Max Occurs</label>
+                        <label
+                            class="input-label w-4/5">{{'general.maxOccurs'|get_message_commonlab:request.session.locale}}</label>
                         {% if state == 'edit' %}
                         <input name="maxoccur" type="number" value="{{attribute.maxOccurs}}" class="input w-4/5">
                         {% else %}
@@ -82,7 +91,8 @@
                 <div class="flex flex-col space-y-4 justify-center">
 
                     <div class="input-container">
-                        <label class="input-label w-4/5">Sort Weight</label>
+                        <label
+                            class="input-label w-4/5">{{'general.sortWeight'|get_message_commonlab:request.session.locale}}</label>
                         {% if state == 'edit' %}
                         <input name="sortweight" type="number" step="0.1" value="{{attribute.sortWeight}}"
                             class="input w-4/5">
@@ -101,7 +111,8 @@
                     </div>
 
                     <div class="input-container">
-                        <label class="input-label w-4/5">Data Type</label>
+                        <label
+                            class="input-label w-4/5">{{'general.dataType'|get_message_commonlab:request.session.locale}}</label>
                         <select required onchange="handleDataType()" class="input" id="datatype" name="datatype">
                             {% if state == 'edit' %}
                             <option selected value="{{attribute.datatypeClassname.value}}">
@@ -138,7 +149,8 @@
                         </div>
                     </div>
                     <div class="input-container">
-                        <label class="input-label w-4/5">Data Type Configuration</label>
+                        <label
+                            class="input-label w-4/5">{{'general.datatypeConfiguration'|get_message_commonlab:request.session.locale}}</label>
                         {% if state == 'edit' %}
                         <textarea name="datatypeconfig" class="input" cols="5"
                             rows="5">{{attribute.datatypeConfig}}</textarea>
@@ -149,7 +161,8 @@
                         {% endif %}
                     </div>
                     <div class="input-container">
-                        <label class="input-label w-4/5">Preferred Handler</label>
+                        <label
+                            class="input-label w-4/5">{{'general.preferredHandler'|get_message_commonlab:request.session.locale}}</label>
                         <select name="handler" class="input">
                             {% if state == 'edit' %}
                             <option selected value="{{attribute.preferredHandlerClassname.value}}">
@@ -168,7 +181,8 @@
                         </select>
                     </div>
                     <div class="input-container">
-                        <label class="input-label w-4/5">Handler Configuration</label>
+                        <label
+                            class="input-label w-4/5">{{'general.handlerConfiguration'|get_message_commonlab:request.session.locale}}</label>
                         {% if state == 'edit' %}
                         <textarea class="input" cols="3" rows="3"
                             name="handleconfig">{{attribute.handlerConfig}}</textarea>
@@ -181,9 +195,10 @@
 
                 </div>
                 <div class="flex-center space-x-4">
-                    <button class="bg-[#2D9CDB] text-white rounded-md p-2 w-2/5">Save</button>
-                    <a href="{% if state == 'edit' %} {% url 'manageattr' uuid=testid %} {% else %} {% url 'manageattr' uuid=labTestUuid %} {% endif %}"
-                        class="cancel-button">Cancel</a>
+                    <button
+                        class="bg-[#2D9CDB] text-white rounded-md p-2 w-2/5">{{'general.save'|get_message_openMRS:request.session.locale}}</button>
+                    <a href="javascript:history.go(-1)"
+                        class="cancel-button">{{'general.cancel'|get_message_openMRS:request.session.locale}}</a>
                 </div>
 
             </form>

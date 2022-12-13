@@ -24,10 +24,10 @@
 		</div>
 		<div class="flex items-center space-x-6">
 			{% if request.session.session_id %}
-			<a class="text-[#2D9CDB] font-bold cursor-pointer" href="{% url 'profile' %}">My Profile</a>  
-			<a class="text-[#2D9CDB] font-bold" href="{% url 'logout' %}">Log out</a>
+			<a class="text-[#2D9CDB] font-bold cursor-pointer" href="{% url 'profile' %}">{{'Navigation.options'|get_message_openMRS:request.session.locale}}</a>  
+			<a class="text-[#2D9CDB] font-bold" href="{% url 'logout' %}">{{'header.logout'|get_message_openMRS:request.session.locale}}</a>
 			{% else %}
-			<a class="text-[#2D9CDB] font-bold" href="{% url 'home' %}">Log In</a>
+			<a class="text-[#2D9CDB] font-bold" href="{% url 'home' %}">{{'header.login'|get_message_openMRS:request.session.locale}}</a>
 			{% endif %}
 		</div>
 	</header>

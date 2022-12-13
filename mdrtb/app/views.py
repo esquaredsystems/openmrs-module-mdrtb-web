@@ -19,6 +19,7 @@ def index(req):
 def login(req):
     context = {'minSearchCharacters': '2', 'title': "Search Patients"}
     if 'session_id' in req.session:
+        
         return render(req, 'app/tbregister/search_patients.html', context=context)
     else:
         if req.method == 'POST':
@@ -261,7 +262,8 @@ def drug_resistence_form(req):
 
 
 def manage_regimens(req):
-    return render(req, 'app/tbregister/mdr/manage_regimens.html')
+    context={'title': 'Manage Regimens'}
+    return render(req, 'app/tbregister/mdr/manage_regimens.html' , context=context)
 
 
 def regimen_form(req):
@@ -308,10 +310,10 @@ def patientList(req):
 def patient_dashboard(req, uuid, mdrtb=None):
     patient = req.session['created_patient']
     enroll_info = req.session['enrollment_info']
+    
     # status, response = ru.get(req, f'patient/{uuid}', {'v': 'full'})
     # if status:
     patient['uuid'] = '9ef5044d-129a-4232-b9c5-24538006c119'
-    patient['birthDate'] = util.iso_to_normal(patient['birthDate'])
     if mdrtb:
         return render(req, 'app/tbregister/dashboard.html', context={
             'title': 'MDR Dashboard',
@@ -525,7 +527,15 @@ def editAttribute(req, testid, attrid):
 
 def managetestorders(req, uuid):
     context = {'title': 'Manage Lab Test Orders', 'patient': uuid}
+    status, response = ru.get(req, f'commonlab/labtestorder', {'patient' : uuid , 'v' : 'custom:(uuid,labTestType,labReferenceNumber,order)'})
+    if status:
+        context['orders'] = response['results']
+        context['json_orders'] = json.dumps(response['results'])
     return render(req, 'app/commonlab/managetestorders.html', context=context)
+
+
+
+
 
 
 def add_lab_test(req, uuid):
