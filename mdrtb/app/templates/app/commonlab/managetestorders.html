@@ -157,6 +157,8 @@
     function showModal(uuid) {
       for (order of orders) {
         if (order.uuid === uuid) {
+          let samplesUrl = "{% url 'managetestsamples' orderid=122 %}".replace('122' , uuid)
+          console.log(samplesUrl)
           $("#modal").append(
             `
             <div class="flex items-center justify-between">
@@ -191,7 +193,7 @@
 
           </span>
           <span class="w-3/5">
-            <a href="{% url 'managetestsamples' orderid=12344 %}">
+            <a href=${samplesUrl}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -206,7 +208,7 @@
             Test Result:
           </span>
           <span class="w-3/5">
-            <a href="{% url 'managetestsamples' orderid=12344 %}">
+            <a href={% url 'managetestsamples' orderid=12344 %}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -221,7 +223,7 @@
             Result Date:
 
           </span>
-          <span class="w-3/5">
+          <span id="test-results" class="w-3/5">
             12.10.2022
           </span>
         </div>

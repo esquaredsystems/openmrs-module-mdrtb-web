@@ -17,6 +17,7 @@ def index(req):
 
 
 def login(req):
+    print(req.session['logged_user'])
     context = {'minSearchCharacters': '2', 'title': "Search Patients"}
     if 'session_id' in req.session:
         
@@ -313,7 +314,7 @@ def patient_dashboard(req, uuid, mdrtb=None):
     
     # status, response = ru.get(req, f'patient/{uuid}', {'v': 'full'})
     # if status:
-    patient['uuid'] = '9ef5044d-129a-4232-b9c5-24538006c119'
+    patient['uuid'] = 'c344bb3a-3078-4725-9c42-78fee5f30120'
     if mdrtb:
         return render(req, 'app/tbregister/dashboard.html', context={
             'title': 'MDR Dashboard',
@@ -539,7 +540,17 @@ def managetestorders(req, uuid):
 
 
 def add_lab_test(req, uuid):
-    context = {'title': 'Add Lab Test'}
+    context = {'title': 'Add Lab Test' , 'labtestid' : uuid}
+    if req.method == 'POST':
+        body={
+            'encounter' : req.POST['encounter'],
+            'testgroup' : req.POST['testGroup'],
+            'labtesttype' : req.POST['testType'],
+            'labreferencenumber' : req.POST['labref'],
+            'instructions' : req.POST['instructions'],
+        }
+        
+
     encounters = cu.get_patient_encounters(req, uuid)
     labtests, testgroups = cu.get_test_groups_and_tests(req)
     if encounters:
@@ -551,7 +562,10 @@ def add_lab_test(req, uuid):
 
 def managetestsamples(req, orderid):
     context={'title': 'Manage Test Samples'}
-    return render(req, 'app/commonlab/managetestsamples.html')
+    status, response = ru.get(req, f'commonlab/labtestorder/{orderid}' , {'v': 'custom:(labTestSamples)'})
+    if status:
+        context['samples'] = response['labTestSamples']
+    return render(req, 'app/commonlab/managetestsamples.html' , context=context)
 
 
 def add_test_sample(req, orderid):

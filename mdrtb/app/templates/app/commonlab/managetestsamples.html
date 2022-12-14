@@ -49,10 +49,15 @@
                     {{'general.status'|get_message_commonlab:request.session.locale}}
                   </th>
                   <th
+                  class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
+                  Actions
+                </th>
+                {% if sample.status == 'COLLECTED' %}
+                  <th
                     class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
                     
                   </th>
-
+                  {% endif %}
 
 
 
@@ -64,21 +69,48 @@
                 </tr>
               </thead>
               <tbody>
+                {% for sample in samples %}
                 <tr>
-                  <td class="px-5 py-3 border-b border-gray-200  text-sm">
+                  <td class="px-5 py-5 border-b border-gray-200  text-sm">
                     <p class="text-gray-900 whitespace-no-wrap">
-                      Induced Sputum
+                      {{sample.specimenType.display}}
                     </p>
                   </td>
-                  <td class="px-5 py-3 border-b border-gray-200 text-sm">
-                    <p class="text-gray-900 whitespace-no-wrap">Induced Sputum</p>
+                  <td class="px-5 py-5 border-b border-gray-200 text-sm">
+                    <p class="text-gray-900 whitespace-no-wrap">{{sample.specimenSite.display}}</p>
                   </td>
-                  <td class=" px-5 py-3 border-b border-gray-200  text-sm">
-                    <p class="text-gray-900 whitespace-no-wrap">2022/12/2</p>
+                  <td class=" px-5 py-5 border-b border-gray-200  text-sm">
+                    <p class="text-gray-900 whitespace-no-wrap">
+                      {{sample.collectionDate |iso_to_normal_date}}
+                    </p>
                   </td>
-                  <td class="px-5 py-3 border-b border-gray-200  text-sm">
-                    <p class="text-gray-900 whitespace-no-wrap">Collected</p>
+                  <td class="px-5 py-5 border-b border-gray-200  text-sm">
+                    <p class="text-gray-900 whitespace-no-wrap">
+                      {{sample.status}}
+                    </p>
                   </td>
+                  <td
+                    class="px-5 py-5 border-b w-1/5 border-gray-200 bg-white text-sm"
+                  >
+                    <div class="flex space-x-4">
+                     
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="w-5 h-5 cursor-pointer text-black"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"
+                        />
+                      </svg>
+                    </div>
+                  </td>
+                  {% if sample.status == 'COLLECTED' %}
                   <td class="px-5 py-5 border-b w-1/6 border-gray-200  text-sm">
                     <div class="flex-center justify-center space-x-2">
                       <button 
@@ -87,9 +119,10 @@
                         class="p-2 underline text-md w-full rounded-md font-bold cursor-pointer">Reject</button>
                     </div>
                   </td>
-
+                  {% endif %}
 
                 </tr>
+                {% endfor %}
 
 
               </tbody>

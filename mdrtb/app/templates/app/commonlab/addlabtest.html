@@ -11,13 +11,15 @@
 
 <div class="m-4">
     <h1 class="primary-heading">{{'commonlabtest.request.add'|get_message_commonlab:request.session.locale}}</h1>
-    <form class="m-10 flex-column-center space-y-6" action="">
+    <form action="{% url 'addlabtest' uuid=labtestid %}" method="post" class="m-10 flex-column-center space-y-6" action="">
+        {% csrf_token %}
+
         <div class="input-container">
-            <label class="input-label" for="">
+            <label class="input-label">
                 {{'ConceptProposal.encounter'|get_message_openMRS:request.session.locale}}
 
             </label>
-            <select name="" id="" class="input">
+            <select name="encounter" class="input">
                 {% for encounter in encounters %}
                 <option value="{{ encounter.uuid }}">{{ encounter.display }}</option>
                 {% endfor %}
@@ -28,7 +30,7 @@
                 {{'general.testGroup'|get_message_commonlab:request.session.locale}}
 
             </label>
-            <select name="" id="group-select" class="input">
+            <select name="testGroup" id="group-select" class="input">
                 <option selected value="None">Select</option>
                 {% for group in testgroups %}
                 <option value="{{ group }}">{{ group }}</option>
@@ -40,7 +42,7 @@
                 {{'general.testType'|get_message_commonlab:request.session.locale}}
 
             </label>
-            <select disabled name="" id="test-select" class="input">
+            <select disabled name="testType" id="test-select" class="input">
             </select>
         </div>
         <div class="input-container">
@@ -48,17 +50,17 @@
                 {{'commonlabtest.order.labReferenceNo'|get_message_commonlab:request.session.locale}}
 
             </label>
-            <input id="labref" class="input" type="text" value="{{'placeholder' | get_datenow}}">
+            <input name="labref" id="labref" class="input" type="text" value="{{'placeholder' | get_datenow}}">
         </div>
         <div class="input-container">
             <label class="input-label" for="">
                 {{'general.instructions'|get_message_commonlab:request.session.locale}}
 
             </label>
-            <textarea name="" id="" class="input"></textarea>
+            <textarea name="instructions" id="" class="input"></textarea>
         </div>
         <div class="flex-center space-x-4">
-            <button class="button-primary w-1/5">{{'general.save'|get_message_openMRS:request.session.locale}}</button>
+            <button type="submit" class="button-primary w-1/5">{{'general.save'|get_message_openMRS:request.session.locale}}</button>
             <a href="javascript:history.go(-1)"
                 class="cancel-button">{{'general.cancel'|get_message_openMRS:request.session.locale}}</a>
         </div>
