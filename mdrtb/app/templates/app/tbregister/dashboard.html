@@ -98,19 +98,14 @@
       <div class="flex-center space-x-4">
         <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.labResults'|get_message:request.session.locale}}
         </h2>
-        <button
+        <a
+        href="{% url 'managetestorders' uuid=patient.uuid %}"
           class="cancel-button"
         >
-          View All Lab Results
-        </button>
+          View All Lab Tests
+        </a>
       </div>
-      <a
-      href="{% url 'managetestorders' uuid=patient.uuid %}"
-
-        class="cancel-button"
-      >
-        Add new
-      </a>
+      
     </div>
     <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
       <div

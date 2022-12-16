@@ -1,23 +1,124 @@
-{% extends 'app/base/base_without_menu.html' %} 
+{% extends 'app/base/base_without_menu.html' %}
 
-{% block content %}
+{% block title %}
+{{title}}
+{% endblock %}
 
-<div class="w-3/5 mx-auto">
-    <form action="{% url 'profile' %}" method="post">
+
+{%block content%}
+<div>
+    {% if error %} {{error}} {% endif %}
+    <form action="{% url 'profile' %}" method="post" class="flex-column-center">
         {% csrf_token %}
-        <div class="input-container">
-            <label class="text-gray-500 font-bold" for="">Change Locale</label>
-            <select required class="input" name="locale">
-                <option value="en">en</option>
-                <option value="ru">ru</option>
-                <option value="tj">tj</option>
-            </select>
+        <div class="m-16 flex-column-center space-y-8">
+            <h1 class="page-title">
+                {{'options.title'|get_message_openMRS:request.session.locale}}
+            </h1>
+            <div class="enroll_form_bg">
+                <h3 class="text-xl font-bold">{{'options.default.legend'|get_message_openMRS:request.session.locale}}
+                </h3>
+                <div class="input-container">
+                    <label class="input-label"
+                        for="name">{{'options.default.location'|get_message_openMRS:request.session.locale}}</label>
+                    <input  class="input" type="text" name="givenname" />
+                </div>
+                <div class="input-container">
+                    <label class="input-label" for="">{{'options.default.locale'|get_message_openMRS:request.session.locale}}</label>
+                    <select required class="input" name="locale">
+                        <option value="en">en</option>
+                        <option value="ru">ru</option>
+                        <option value="tj">tj</option>
+                    </select>
+                </div>
+                <div class="input-container">
+                    <label class="input-label"
+                        for="name">{{'options.proficient.locales'|get_message_openMRS:request.session.locale}}</label>
+                    <input  class="input" type="text" />
+                </div>
+                <div class="input-container">
+                    <label class="input-label"
+                        for="name">{{'options.showRetiredMessage'|get_message_openMRS:request.session.locale}}</label>
+                    <input  name="gender" type="checkbox" value="M" />
+                </div>
+                <div class="input-container">
+                    <label class="input-label"
+                        for="name">{{'options.default.verbose'|get_message_openMRS:request.session.locale}}</label>
+                    <input  name="gender" type="checkbox" value="M" />
+                </div>
+
+            </div>
+            <div class="enroll_form_bg">
+                <h3 class="font-bold text-xl">{{'options.login.legend'|get_message_openMRS:request.session.locale}}</h3>
+                <div class="input-container">
+                    <label class="input-label"
+                        for="country">{{'options.login.username'|get_message_openMRS:request.session.locale}}</label>
+                        <input  class="input" type="text" name="address" />
+
+                </div>
+                <div class="input-container">
+                    <label class="input-label" for="name">{{'PersonName.givenName'|get_message_openMRS:request.session.locale}}</label>
+                    <input  class="input" type="text" name="address" />
+
+                </div>
+                <div class="input-container">
+                    <label class="input-label"
+                        for="name">{{'PersonName.middleName'|get_message_openMRS:request.session.locale}}</label>
+                        <input  class="input" type="text" name="address" />
+
+                </div>
+                <div class="input-container">
+                    <label class="input-label"
+                        for="name">{{'PersonName.familyName'|get_message_openMRS:request.session.locale}}</label>
+                        <input  class="input" type="text" name="address" />
+
+                </div>
+                <br>
+                <div class="input-container">
+                    <label class="input-label"
+                        for="country">{{'options.login.password.old'|get_message_openMRS:request.session.locale}}</label>
+                        <input  class="input" type="text" name="address" />
+
+                </div>
+                <div class="input-container">
+                    <label class="input-label" for="name">{{'options.login.password.new'|get_message_openMRS:request.session.locale}}</label>
+                    <input title="{{'options.login.password.minCharacterCount'|get_message_openMRS:request.session.locale}},{{'options.login.password.containUpperCase'|get_message_openMRS:request.session.locale}} and {{'options.login.password.containNumber'|get_message_openMRS:request.session.locale}}"  class="input" type="text" name="address" />
+                    
+
+                </div>
+                <div class="input-container">
+                    <label class="input-label"
+                        for="name">{{'options.login.password.confirm'|get_message_openMRS:request.session.locale}}</label>
+                        <input  class="input" type="text" name="address" />
+
+                </div>
+                <br>
+                <h4 class="font-bold text-lg">{{'options.login.secretQuestion.about'|get_message_openMRS:request.session.locale}}</h4>
+                <div class="input-container">
+                    <label class="input-label"
+                        for="name">{{'options.login.password.old'|get_message_openMRS:request.session.locale}}</label>
+                        <input  class="input" type="text" name="address" />
+
+                </div>
+                <div class="input-container">
+                    <label class="input-label" for="name">{{'options.login.secretQuestionNew'|get_message_openMRS:request.session.locale}}</label>
+                    <input  class="input" type="text" name="address" />
+                </div>
+                <div class="input-container">
+                    <label class="input-label"
+                        for="name">{{'options.login.secretAnswerNew'|get_message_openMRS:request.session.locale}}</label>
+                    <input class="input" type="text" name="address2" />
+                </div>
+                <div class="input-container">
+                    <label class="input-label" for="name">{{'options.login.secretAnswerConfirm'|get_message_openMRS:request.session.locale}}</label>
+                    <input  class="input" type="text" name="address" />
+                </div>
+            </div>
+            <div class="flex-center">
+                <input type="submit" class="button-primary w-1/5" value="Save" />
+
+                <a href="javascript:history.go(-1)" class="cancel-button"> Cancel </a>
+            </div>
         </div>
-        <input type="submit" class="bg-[#2D9CDB] p-2 w-1/5 rounded-md mt-4 text-white" />
     </form>
 </div>
-
-
-
-
 {% endblock %}

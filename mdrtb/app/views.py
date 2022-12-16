@@ -9,7 +9,6 @@ import json
 import datetime
 from uuid import uuid4
 from django.core.cache import cache
-from django.core.handlers.wsgi import WSGIRequest as wi
 
 
 def index(req):
@@ -17,7 +16,6 @@ def index(req):
 
 
 def login(req):
-    print(req.session['logged_user'])
     context = {'minSearchCharacters': '2', 'title': "Search Patients"}
     if 'session_id' in req.session:
         
