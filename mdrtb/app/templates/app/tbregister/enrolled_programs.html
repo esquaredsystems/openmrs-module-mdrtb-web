@@ -6,96 +6,108 @@
 
 {%block content%}
 
-<div class="flex flex-col m-2">
-    <div class="bg-[#9DC6DE] flex items-center justify-between p-4  text-xl">
-        <div class="flex items-center space-x-6">
-          <div>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
-              <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
-            </svg>
-            
-          </div>
-          <div class="font-bold">
-            <div >{{patient.names.0.givenName}} {{patient.names.0.familyName}}</div>
-            <div>{{patient.age}} yrs ({{patient.birthDate}})</div>
-          </div>
-        </div>
-        <div class="space-x-2 font-bold">
-          <span>Patient Id:</span><span>{{patient.identifiers.0.identifier}}</span>
-        </div>
+<div class="enrolled-programs-page">
+  <div class="patient-banner-container">
+    <div class="patient-info-container">
+      <div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
+          <path fill-rule="evenodd"
+            d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
+            clip-rule="evenodd" />
+        </svg>
       </div>
-    <h1 class="primary-heading mt-12 ml-4">Enrolled Programs</h1>
+      <div class="font-bold">
+        <div>{{patient.names.0.givenName}} {{patient.names.0.familyName}}</div>
+        <div>{{patient.age}} yrs ({{patient.birthDate}})</div>
+      </div>
+    </div>
+    <div class="patient-id-container">
+      <span>Patient Id:</span><span>{{patient.identifiers.0.identifier}}</span>
+    </div>
+  </div>
+  <h1 class="primary-heading mt-12 ml-4">Enrolled Programs</h1>
+  <div>
+    <div class="program-container">
+      <div class="program-name">
+        <h2 class="text-[#2D9CDB] text-3xl font-bold">
+          {{'mdrtb.enrollment.tbPrograms'|get_message:request.session.locale}}
+        </h2>
+        <a href="{% url 'dashboard' uuid='bc3e2d3b-cc0c-4f6d-bec8-fc0264c68ba6' %}"
+          class="font-bold underline text-[#044062]">
+          Edit program
+        </a>
+      </div>
+      <div class="program-info">
+        <div class="space-x-3">
+          <span class="font-bold">{{'mdrtb.tb03.dateOfRegistration'|get_message:request.session.locale}}: </span><span
+            class="programs-form-label">01.05.2022</span>
+        </div>
+        <div class="space-x-3">
+          <span class="font-bold">{{'mdrtb.enrollment.location'|get_message:request.session.locale}}: </span><span
+            class="programs-form-label">MCW 11</span>
+        </div>
+        <div class="space-x-3">
+          <span class="font-bold">{{'mdrtb.tb03.registrationNumber'|get_message:request.session.locale}}: </span><span
+            class="programs-form-label">00001</span>
+        </div>
+        <div class="space-x-3">
+          <span class="font-bold">{{'mdrtb.completionDate'|get_message:request.session.locale}}: </span><span
+            class="programs-form-label">
+            {{enroll.registration_group_prev_drug}}</span>
+        </div>
+        <div class="space-x-3">
+          <span class="font-bold">{{'mdrtb.tb03'|get_message:request.session.locale}}: </span><span
+            class="programs-form-label"><a
+              href="{% url 'tb03' %}">{{'mdrtb.tb03'|get_message:request.session.locale}}</a></span>
+          <span class="font-bold">{{'mdrtb.form89'|get_message:request.session.locale}}: </span><span
+            class="programs-form-label"><a
+              href="{% url 'form89' %}">{{'mdrtb.form89'|get_message:request.session.locale}}</a></span>
+        </div>
 
-    <div>
-        <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
-            <div class="flex items-center space-x-4">
-              <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.enrollment.tbPrograms'|get_message:request.session.locale}}
-              </h2>
-              <a
-              href="{% url 'dashboard' uuid='bc3e2d3b-cc0c-4f6d-bec8-fc0264c68ba6' %}"
-                class="font-bold underline text-[#044062]"
-              >
-                Edit program
-              </a>
-            </div>
-              <div class="ml-4 grid grid-cols-2 gap-3">
-                <div class="space-x-3">
-                  <span class="font-bold">{{'mdrtb.tb03.dateOfRegistration'|get_message:request.session.locale}}: </span><span class="tb03-form-label">01.05.2022</span>
-                </div>
-                <div class="space-x-3">
-                  <span class="font-bold">{{'mdrtb.enrollment.location'|get_message:request.session.locale}}: </span><span class="tb03-form-label">MCW 11</span>
-                </div>
-                <div class="space-x-3">
-                  <span class="font-bold">{{'mdrtb.tb03.registrationNumber'|get_message:request.session.locale}}: </span><span class="tb03-form-label">00001</span>
-                </div>
-                <div class="space-x-3">
-                  <span class="font-bold">{{'mdrtb.completionDate'|get_message:request.session.locale}}: </span><span class="tb03-form-label">
-                    {{enroll.registration_group_prev_drug}}</span>
-                </div>
-                <div class="space-x-3">
-                  <span class="font-bold">{{'mdrtb.tb03'|get_message:request.session.locale}}: </span><span class="tb03-form-label"><a href="{% url 'tb03' %}">{{'mdrtb.tb03'|get_message:request.session.locale}}</a></span>
-                  <span class="font-bold">{{'mdrtb.form89'|get_message:request.session.locale}}: </span><span class="tb03-form-label"><a href="{% url 'form89' %}">{{'mdrtb.form89'|get_message:request.session.locale}}</a></span>
-                </div>
-                
-              </div>
-          </div>
-        
+      </div>
     </div>
-    <div>
-        <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
-            <div class="flex items-center space-x-4">
-              <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.enrollment.mdrtbPrograms'|get_message:request.session.locale}}
-              </h2>
-              <a
-              href="{% url 'mdrdashboard' mdrtb='mdrtb' uuid='bc3e2d3b-cc0c-4f6d-bec8-fc0264c68ba6' %}"
-                class="font-bold underline text-[#044062]"
-              >
-                Edit program
-              </a>
-            </div>
-              <div class="ml-4 grid grid-cols-2 gap-3">
-                <div class="space-x-3">
-                  <span class="font-bold">{{'mdrtb.tb03.dateOfRegistration'|get_message:request.session.locale}}: </span><span class="tb03-form-label">01.05.2022</span>
-                </div>
-                <div class="space-x-3">
-                  <span class="font-bold">{{'mdrtb.enrollment.location'|get_message:request.session.locale}}: </span><span class="tb03-form-label">MCW 11</span>
-                </div>
-                <div class="space-x-3">
-                  <span class="font-bold">{{'mdrtb.tb03.registrationNumber'|get_message:request.session.locale}}: </span><span class="tb03-form-label">00001</span>
-                </div>
-                <div class="space-x-3">
-                  <span class="font-bold">{{'mdrtb.completionDate'|get_message:request.session.locale}}: </span><span class="tb03-form-label">
-                    {{enroll.registration_group_prev_drug}}</span>
-                </div>
-                <div class="space-x-3">
-                  <span class="font-bold">{{'mdrtb.tb03u'|get_message:request.session.locale}}: </span><span class="tb03-form-label"><a href="{% url 'tb03u' %}">{{'mdrtb.tb03'|get_message:request.session.locale}}</a></span>
-                </div>
-                
-              </div>
-          </div>
-        
+
+  </div>
+  <div>
+    <div class="program-container">
+      <div class="program-name">
+        <h2 class="text-[#2D9CDB] text-3xl font-bold">
+          {{'mdrtb.enrollment.mdrtbPrograms'|get_message:request.session.locale}}
+        </h2>
+        <a href="{% url 'mdrdashboard' mdrtb='mdrtb' uuid='bc3e2d3b-cc0c-4f6d-bec8-fc0264c68ba6' %}"
+          class="font-bold underline text-[#044062]">
+          Edit program
+        </a>
+      </div>
+      <div class="program-info">
+        <div class="space-x-3">
+          <span class="font-bold">{{'mdrtb.tb03.dateOfRegistration'|get_message:request.session.locale}}: </span><span
+            class="programs-form-label">01.05.2022</span>
+        </div>
+        <div class="space-x-3">
+          <span class="font-bold">{{'mdrtb.enrollment.location'|get_message:request.session.locale}}: </span><span
+            class="programs-form-label">MCW 11</span>
+        </div>
+        <div class="space-x-3">
+          <span class="font-bold">{{'mdrtb.tb03.registrationNumber'|get_message:request.session.locale}}: </span><span
+            class="programs-form-label">00001</span>
+        </div>
+        <div class="space-x-3">
+          <span class="font-bold">{{'mdrtb.completionDate'|get_message:request.session.locale}}: </span><span
+            class="programs-form-label">
+            {{enroll.registration_group_prev_drug}}</span>
+        </div>
+        <div class="space-x-3">
+          <span class="font-bold">{{'mdrtb.tb03u'|get_message:request.session.locale}}: </span><span
+            class="programs-form-label"><a
+              href="{% url 'tb03u' %}">{{'mdrtb.tb03'|get_message:request.session.locale}}</a></span>
+        </div>
+
+      </div>
     </div>
-    
+
+  </div>
+
 </div>
 
 {% endblock %}

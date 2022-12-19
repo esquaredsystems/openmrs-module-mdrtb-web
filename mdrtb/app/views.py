@@ -149,7 +149,7 @@ def enroll_in_dots_program(req):
         return redirect('home')
 
 
-def enrolled_programs(req):
+def enrolled_programs(req,uuid):
     return render(req, 'app/tbregister/enrolled_programs.html')
 
 
@@ -531,10 +531,6 @@ def managetestorders(req, uuid):
         context['orders'] = response['results']
         context['json_orders'] = json.dumps(response['results'])
     return render(req, 'app/commonlab/managetestorders.html', context=context)
-
-
-
-
 
 
 def add_lab_test(req, uuid):

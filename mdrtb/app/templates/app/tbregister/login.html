@@ -4,40 +4,36 @@
 {% if error %}
 <h1>{{error}}</h1>
 {% endif %}
-<div class="flex flex-col items-center justify-center mt-12 space-y-6">
-    <img class="w-80 object-contain" src="https://openmrs.org/wp-content/uploads/2021/08/cropped-OpenMRSlogo-transparent.png" alt="OpemMRS logo">
-    <div class="flex flex-col items-center justify-center space-y-4">
+<div class="login-page-container">
+    <img class="openmrs-login-logo"
+        src="https://openmrs.org/wp-content/uploads/2021/08/cropped-OpenMRSlogo-transparent.png" alt="OpemMRS logo">
+    <div class="login-form-container">
         <p>Welcome to OpenMRS tjk. Please login to proceed</p>
-        <form class="w-full space-y-4 items-center flex flex-col" action="{% url 'home' %}" method="post">
+        <form class="login-form" action="{% url 'home' %}" method="post">
             {% csrf_token %}
-            <input class="border  rounded-md border-black
-            w-full" type="text" placeholder="Username" name="username">
-            <div class="w-full flex items-center justify-between border  rounded-md border-black">
-                <input id="password-input" class="w-full bg-transparent focus:ring-0 border-none" type="password" placeholder="Password" name="password">
-            <svg id="togglePass" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 cursor-pointer">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              
+            <div class="loginform-input-container">
+                <label class="input-label" for="username">Username</label>
+                <input type="text" name="username" class="input w-full">
             </div>
-            
-            <button type="submit" class="bg-[#2D9CDB] text-white rounded-md p-2 w-2/4">Login</button>
+            <div class="loginform-input-container">
+                <label class="input-label" for="password">Password</label>
+                <input type="password" name="password" class="input w-full">
+            </div>
+
+
+            <button type="submit" class="button-primary w-3/5">Login</button>
         </form>
     </div>
 </div>
 
 <script>
-$('#togglePass').click(function(){
+    $('#togglePass').click(function () {
         let passInput = $('#password-input')
-        if (passInput.prop('type') === 'password'){
-            passInput.attr('type' , 'text')
-        }else{
-            passInput.attr('type' , 'password')
+        if (passInput.prop('type') === 'password') {
+            passInput.attr('type', 'text')
+        } else {
+            passInput.attr('type', 'password')
         }
     })
 </script>
-		{% endblock %}
-
-    
-
-    
+{% endblock %}

@@ -1,33 +1,42 @@
 {% load static tailwind_tags %}
 {% load static %}
-<!DOCTYPE html>	
+<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>{% block title %}{% endblock %}</title>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta http-equiv="X-UA-Compatible" content="ie=edge">
-		<!-- CSS only -->
-		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
-		<!-- JavaScript Bundle with Popper -->
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
-		{% tailwind_css %}
-		<script src="{% static 'app/js/jquery.js' %}"></script>
-		<link rel="icon" type="image/png" href="{% static 'openmrs-favicon.png' %}">
 
-		
-	</head>
+<head>
+	<title>{% block title %}{% endblock %}</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<!-- CSS only -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+	<!-- JavaScript Bundle with Popper -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+		crossorigin="anonymous"></script>
+	{% tailwind_css %}
+	<script src="{% static 'app/js/jquery.js' %}"></script>
+	<link rel="icon" type="image/png" href="{% static 'openmrs-favicon.png' %}">
+
+
+</head>
+
 <body>
-	<header class="p-4	flex items-center justify-between">
+	<header class="base-header">
 		<div>
-			<a href="{% url 'home' %}"><img class="w-36 object-contain" src="https://openmrs.org/wp-content/uploads/2021/08/cropped-OpenMRSlogo-transparent.png" alt="OpemMRS logo"></a>
+			<a href="{% url 'home' %}"><img class="openmrs-logo"
+					src="https://openmrs.org/wp-content/uploads/2021/08/cropped-OpenMRSlogo-transparent.png"
+					alt="OpemMRS logo"></a>
 		</div>
-		<div class="flex items-center space-x-6">
+		<div class="navbar">
 			{% if request.session.session_id %}
-			<a class="text-[#2D9CDB] font-bold cursor-pointer" href="{% url 'profile' %}">{{'Navigation.options'|get_message_openMRS:request.session.locale}}</a>  
-			<a class="text-[#2D9CDB] font-bold" href="{% url 'logout' %}">{{'header.logout'|get_message_openMRS:request.session.locale}}</a>
+			<a class="nav-item"
+				href="{% url 'profile' %}">{{'Navigation.options'|get_message_openMRS:request.session.locale}}</a>
+			<a class="nav-item"
+				href="{% url 'logout' %}">{{'header.logout'|get_message_openMRS:request.session.locale}}</a>
 			{% else %}
-			<a class="text-[#2D9CDB] font-bold" href="{% url 'home' %}">{{'header.login'|get_message_openMRS:request.session.locale}}</a>
+			<a class="nav-item" href="{% url 'home' %}">Login</a>
 			{% endif %}
 		</div>
 	</header>
@@ -38,4 +47,5 @@
 	</div>
 
 </body>
+
 </html>

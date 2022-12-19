@@ -1,34 +1,32 @@
-{% extends 'app/base/base.html' %} 
+{% extends 'app/base/base.html' %}
 
 {% block title %}
-  {{title}}
+{{title}}
 {% endblock %}
 
 
 
 {%block content%}
-<div class="flex-column-center m-36 flex-grow">
-  <div class="flex-column-center items-center">
-    <div
-      class="search_page_container">
-      <input class="search_page_input" type="text" id="search-input" name="search"
-        placeholder="Search for Patients" title="Enter 2 or more characters"/>
-      <svg id="search-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-        class="w-6 h-6">
+<div class="search-page-container">
+  <div class="search-input-container">
+    <div class="search-box">
+      <input class="search-page-input" type="text" id="search-input" name="search" placeholder="Search for Patients"
+        title="Enter 2 or more characters" />
+      <svg id="search-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+        stroke="currentColor" class="w-6 h-6">
         <path stroke-linecap="round" stroke-linejoin="round"
           d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
       </svg>
     </div>
-    <div id="search-results"
-      class="search_result_container">
-      <div id="search-results" class="grid grid-cols-1 ">
-       
+    <div id="search-results" class="search-result-container">
+      <div id="search-results" class="search-results-box">
+
 
 
 
       </div>
     </div>
-    <div class="flex items-center space-x-4 mt-6">
+    <div class="patient-create-new-box">
       <p>Can't find the partient ? </p>
       <a href="{% url 'enrollPatient' %}"><button class="button-primary">Create One</button></a>
     </div>
@@ -38,7 +36,7 @@
   <script type="text/javascript">
     var minSearchCharacters = "{{ minSearchCharacters}}"
     $('#search-input').keyup(function () {
-      
+
 
       if ($('#search-input').val() === '') {
 
@@ -46,11 +44,11 @@
         $('#search-results').removeClass('flex')
         $('#search-results').html("")
 
-      } else if($('#search-input').val().length >= Number(minSearchCharacters)) {
+      } else if ($('#search-input').val().length >= Number(minSearchCharacters)) {
         $('#search-results').html("")
         $('#search-results').append(`
         
-        <div class="flex items-center justify-center">
+        <div class="loader-box">
 <lord-icon
     src="https://cdn.lordicon.com/xjovhxra.json"
     trigger="loop"
@@ -72,7 +70,7 @@
               $('#search-results').html("")
               $('#search-results').append(
                 `
-              <div class="flex items-center text-center justify-center">
+              <div class="patient-notfound-box">
                 <h3>
                   Could not find any patient according to your search
                   </h3>
@@ -83,7 +81,7 @@
               $('#search-results').html("")
 
               $('#search-results').append(
-                `<div class="search_result_items font-bold">
+                `<div class="search-result-items font-bold">
               <p>Identifier</p>
               <p class="col-span-2">Given Name</p>
               <p>Age</p>
@@ -91,11 +89,11 @@
             </div>`
               )
               for (i = 0; i < data.results.length; i++) {
-                const path = `mdrtbdashboard/patient/${data.results[i].uuid}`
+                const path = `patient/${data.results[i].uuid}/enrolledprograms`
                 $('#search-results').append(
                   `
                 <a href="${path}">
-                  <div class="search_result_items">
+                  <div class="search-result-items">
                 <p>${data.results[i].identifiers[0].identifier}</p>
                 <p class="text-wrap col-span-2">${data.results[i].person.display}</p>
                 <p>${data.results[i].person.age}</p>
