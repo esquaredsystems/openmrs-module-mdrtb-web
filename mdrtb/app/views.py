@@ -12,6 +12,8 @@ from django.core.cache import cache
 
 
 def index(req):
+    msg = mu.get_global_msgs('Navigation.options',source='commonlab')
+    print(msg)
     return render(req, 'app/tbregister/reportmockup.html')
 
 

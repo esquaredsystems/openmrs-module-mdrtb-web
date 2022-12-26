@@ -18,9 +18,8 @@ def read_properties_file(filepath,mode,encoding):
             configdata.append(line)
         file.close()
         return configdata  
-    except Exception as e:
-        print(e)
-
+    except FileNotFoundError as e:
+        return None
 
 
 def calculate_age(dob):
@@ -30,9 +29,10 @@ def calculate_age(dob):
     return today_date.year-int(converted_date[6:])
     
 
+
+
 def iso_to_normal(date):
     return date[:date.find('T')].replace('-' , '.')
-
 
 
 
