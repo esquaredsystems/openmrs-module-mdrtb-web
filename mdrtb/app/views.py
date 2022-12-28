@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect , HttpResponseRedirect
+from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.http import JsonResponse
 import utilities.restapi_utils as ru
 import utilities.metadata_util as mu
@@ -12,7 +12,7 @@ from django.core.cache import cache
 
 
 def index(req):
-    msg = mu.get_global_msgs('Navigation.options',source='commonlab')
+    msg = mu.get_global_msgs('Navigation.options', source='commonlab')
     print(msg)
     return render(req, 'app/tbregister/reportmockup.html')
 
@@ -20,7 +20,7 @@ def index(req):
 def login(req):
     context = {'minSearchCharacters': '2', 'title': "Search Patients"}
     if 'session_id' in req.session:
-        
+
         return render(req, 'app/tbregister/search_patients.html', context=context)
     else:
         if req.method == 'POST':
@@ -151,7 +151,7 @@ def enroll_in_dots_program(req):
         return redirect('home')
 
 
-def enrolled_programs(req,uuid):
+def enrolled_programs(req, uuid):
     return render(req, 'app/tbregister/enrolled_programs.html')
 
 
@@ -235,7 +235,7 @@ def tb03u_form(req):
 
 def manage_adverse_events(req):
     context = {'title': 'Manage Adverse Events'}
-    return render(req, 'app/tbregister/mdr/manage_ae.html',context=context)
+    return render(req, 'app/tbregister/mdr/manage_ae.html', context=context)
 
 
 def adverse_events_form(req):
@@ -263,8 +263,8 @@ def drug_resistence_form(req):
 
 
 def manage_regimens(req):
-    context={'title': 'Manage Regimens'}
-    return render(req, 'app/tbregister/mdr/manage_regimens.html' , context=context)
+    context = {'title': 'Manage Regimens'}
+    return render(req, 'app/tbregister/mdr/manage_regimens.html', context=context)
 
 
 def regimen_form(req):
@@ -311,7 +311,7 @@ def patientList(req):
 def patient_dashboard(req, uuid, mdrtb=None):
     patient = req.session['created_patient']
     enroll_info = req.session['enrollment_info']
-    
+
     # status, response = ru.get(req, f'patient/{uuid}', {'v': 'full'})
     # if status:
     patient['uuid'] = 'c344bb3a-3078-4725-9c42-78fee5f30120'
@@ -346,7 +346,7 @@ def concepts(req):
 
 
 def manage_test_types(req):
-    context = {'title' : 'Manage Test Types'}
+    context = {'title': 'Manage Test Types'}
     if req.method == 'POST':
         search_results = cu.get_test_types_by_search(req, req.POST['search'])
         if len(search_results) > 0:
@@ -378,7 +378,7 @@ def fetch_attributes(req):
 
 
 def add_test_type(req):
-    context = {'title' : 'Add Test Type'}
+    context = {'title': 'Add Test Type'}
     if req.method == 'POST':
         body = {
             "name": req.POST['testname'],
@@ -403,7 +403,7 @@ def add_test_type(req):
 
 
 def edit_test_type(req, uuid):
-    context = {'title' : 'Edit Test Type'}
+    context = {'title': 'Edit Test Type'}
     status, response = ru.get(
         req, f'commonlab/labtesttype/{uuid}', {'v': 'full', 'lang': 'en'})
     if status:
@@ -461,7 +461,7 @@ def manageAttributes(req, uuid):
 
 def addattributes(req, uuid):
     context = {'labTestUuid': uuid, 'prefferedHandlers': cu.get_preffered_handler(),
-               'dataTypes': cu.get_attributes_data_types() , 'title' : 'Add attributes'}
+               'dataTypes': cu.get_attributes_data_types(), 'title': 'Add attributes'}
     if req.method == 'POST':
         body = {
             'labTestType': uuid,
@@ -487,7 +487,7 @@ def addattributes(req, uuid):
 
 
 def editAttribute(req, testid, attrid):
-    context = {'state': 'edit','testid': testid , 'title' : 'Edit Attribute'}
+    context = {'state': 'edit', 'testid': testid, 'title': 'Edit Attribute'}
     status, response = ru.get(
         req, f'commonlab/labtestattributetype/{attrid}', {'v': "full"})
     if status:
@@ -517,7 +517,7 @@ def editAttribute(req, testid, attrid):
         status, response = ru.post(
             req, f'commonlab/labtestattributetype/{attrid}', body)
         if status:
-            
+
             return redirect(f'/commonlab/labtest/{testid}/manageattributes')
         else:
             print(response.status_code)
@@ -528,7 +528,8 @@ def editAttribute(req, testid, attrid):
 
 def managetestorders(req, uuid):
     context = {'title': 'Manage Lab Test Orders', 'patient': uuid}
-    status, response = ru.get(req, f'commonlab/labtestorder', {'patient' : uuid , 'v' : 'custom:(uuid,labTestType,labReferenceNumber,order)'})
+    status, response = ru.get(req, f'commonlab/labtestorder', {
+                              'patient': uuid, 'v': 'custom:(uuid,labTestType,labReferenceNumber,order)'})
     if status:
         context['orders'] = response['results']
         context['json_orders'] = json.dumps(response['results'])
@@ -536,16 +537,15 @@ def managetestorders(req, uuid):
 
 
 def add_lab_test(req, uuid):
-    context = {'title': 'Add Lab Test' , 'labtestid' : uuid}
+    context = {'title': 'Add Lab Test', 'labtestid': uuid}
     if req.method == 'POST':
-        body={
-            'encounter' : req.POST['encounter'],
-            'testgroup' : req.POST['testGroup'],
-            'labtesttype' : req.POST['testType'],
-            'labreferencenumber' : req.POST['labref'],
-            'instructions' : req.POST['instructions'],
+        body = {
+            'encounter': req.POST['encounter'],
+            'testgroup': req.POST['testGroup'],
+            'labtesttype': req.POST['testType'],
+            'labreferencenumber': req.POST['labref'],
+            'instructions': req.POST['instructions'],
         }
-        
 
     encounters = cu.get_patient_encounters(req, uuid)
     labtests, testgroups = cu.get_test_groups_and_tests(req)
@@ -557,11 +557,12 @@ def add_lab_test(req, uuid):
 
 
 def managetestsamples(req, orderid):
-    context={'title': 'Manage Test Samples'}
-    status, response = ru.get(req, f'commonlab/labtestorder/{orderid}' , {'v': 'custom:(labTestSamples)'})
+    context = {'title': 'Manage Test Samples'}
+    status, response = ru.get(
+        req, f'commonlab/labtestorder/{orderid}', {'v': 'custom:(labTestSamples)'})
     if status:
         context['samples'] = response['labTestSamples']
-    return render(req, 'app/commonlab/managetestsamples.html' , context=context)
+    return render(req, 'app/commonlab/managetestsamples.html', context=context)
 
 
 def add_test_sample(req, orderid):

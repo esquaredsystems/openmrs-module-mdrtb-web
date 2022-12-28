@@ -18,38 +18,52 @@ def read_properties_file(filepath,mode,encoding):
             configdata.append(line)
         file.close()
         return configdata  
-    except FileNotFoundError as e:
+    except Exception as e:
         return None
+        
+        
+
 
 
 def calculate_age(dob):
     age = 0
-    converted_date  = datetime.strptime(dob, '%d/%m/%Y %H:%M:%S').strftime("%d-%m-%Y")
-    today_date= date.today()
-    return today_date.year-int(converted_date[6:])
+    try:
+        converted_date  = datetime.strptime(dob, '%d/%m/%Y')
+        today_date= date.today()
+        return today_date.year-converted_date.year
+    except Exception as e:
+        return None
     
 
 
 
 def iso_to_normal(date):
-    return date[:date.find('T')].replace('-' , '.')
+    try:
+        normal = date[:date.find('T')].replace('-' , '.')
+        return normal
+    except Exception as e:
+        return None
+
 
 
 
 def remove_given_str_from_arr(arr=[], str=''):
     tCopy = arr.copy()
-    tCopy.remove(tCopy[tCopy.index(str)])
-    return tCopy
+    try:
+        tCopy.remove(tCopy[tCopy.index(str)])
+        return tCopy
+    except Exception as e:
+        return arr
 
 
-def remove_given_str_from_obj_arr(arr, str, call):
+def remove_given_str_from_obj_arr(arr, str, call=None):
     temp = arr.copy()
     removedName = ''
     for item in temp:
         if item['value'] == str:
             removedName = item['name']
             temp.remove(temp[temp.index(item)])
-    if call == 'helpers':
+    if call == 'commonlab':
         return removedName
     else:
         return temp

@@ -1,0 +1,229 @@
+{
+    "results": [
+        {
+            "uuid": "31bf1518-0370-102d-b0e3-001ec94a0cc1",
+            "display": "A TB smear result",
+            "name": "SMEAR",
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/31bf1518-0370-102d-b0e3-001ec94a0cc1",
+                    "rel": "self"
+                },
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/31bf1518-0370-102d-b0e3-001ec94a0cc1?v=full",
+                    "rel": "full"
+                }
+            ]
+        },
+        {
+            "uuid": "31bf09b0-0370-102d-b0e3-001ec94a0cc1",
+            "display": "This is the master concept set containing all metadata and results for a DST",
+            "name": "DST",
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/31bf09b0-0370-102d-b0e3-001ec94a0cc1",
+                    "rel": "self"
+                },
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/31bf09b0-0370-102d-b0e3-001ec94a0cc1?v=full",
+                    "rel": "full"
+                }
+            ]
+        },
+        {
+            "uuid": "31bf10e0-0370-102d-b0e3-001ec94a0cc1",
+            "display": null,
+            "name": "TUBERCULOSIS CULTURE CONSTRUCT",
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/31bf10e0-0370-102d-b0e3-001ec94a0cc1",
+                    "rel": "self"
+                },
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/31bf10e0-0370-102d-b0e3-001ec94a0cc1?v=full",
+                    "rel": "full"
+                }
+            ]
+        },
+        {
+            "uuid": "0737cfba-5ae8-4605-bd52-74c26ee4da9e",
+            "display": null,
+            "name": "TREATMENT SUPPORTER CONSTRUCT",
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/0737cfba-5ae8-4605-bd52-74c26ee4da9e",
+                    "rel": "self"
+                },
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/0737cfba-5ae8-4605-bd52-74c26ee4da9e?v=full",
+                    "rel": "full"
+                }
+            ]
+        },
+        {
+            "uuid": "6a6be4e0-9a56-4376-a8b3-9b6a9ec2d9bf",
+            "display": "A TB MTB/RIF result",
+            "name": "XPERT",
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/6a6be4e0-9a56-4376-a8b3-9b6a9ec2d9bf",
+                    "rel": "self"
+                },
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/6a6be4e0-9a56-4376-a8b3-9b6a9ec2d9bf?v=full",
+                    "rel": "full"
+                }
+            ]
+        },
+        {
+            "uuid": "d587d8cb-6f41-466d-9426-22c712783cd5",
+            "display": "",
+            "name": "TUBERCULOSIS HAIN TEST CONSTRUCT",
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/d587d8cb-6f41-466d-9426-22c712783cd5",
+                    "rel": "self"
+                },
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/d587d8cb-6f41-466d-9426-22c712783cd5?v=full",
+                    "rel": "full"
+                }
+            ]
+        },
+        {
+            "uuid": "4f3a74ea-c5a8-49bc-a983-5410ed506f38",
+            "display": "microscopy",
+            "name": "MICROSCOPY",
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/4f3a74ea-c5a8-49bc-a983-5410ed506f38",
+                    "rel": "self"
+                },
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/4f3a74ea-c5a8-49bc-a983-5410ed506f38?v=full",
+                    "rel": "full"
+                }
+            ]
+        },
+        {
+            "uuid": "1f807e0d-d3d1-44e4-b529-d65e68d73d8d",
+            "display": null,
+            "name": "HAIN 2 TEST CONSTRUCT",
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/1f807e0d-d3d1-44e4-b529-d65e68d73d8d",
+                    "rel": "self"
+                },
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/1f807e0d-d3d1-44e4-b529-d65e68d73d8d?v=full",
+                    "rel": "full"
+                }
+            ]
+        },
+        {
+            "uuid": "48d2d7f8-3148-4a7f-9c48-43f6dc4f179b",
+            "display": "MGIT RESULT",
+            "name": "MGIT RESULT TEMPLATE",
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/48d2d7f8-3148-4a7f-9c48-43f6dc4f179b",
+                    "rel": "self"
+                },
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/48d2d7f8-3148-4a7f-9c48-43f6dc4f179b?v=full",
+                    "rel": "full"
+                }
+            ]
+        },
+        {
+            "uuid": "b23a6d57-03d4-44ae-a16c-d06e87ba1a59",
+            "display": null,
+            "name": "L-J RESULT TEMPLATE",
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/b23a6d57-03d4-44ae-a16c-d06e87ba1a59",
+                    "rel": "self"
+                },
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/b23a6d57-03d4-44ae-a16c-d06e87ba1a59?v=full",
+                    "rel": "full"
+                }
+            ]
+        },
+        {
+            "uuid": "2819d50b-edd6-4923-b364-90d3c52a6a1d",
+            "display": null,
+            "name": "CONTAMINATED TUBES RESULT TEMPLATE",
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/2819d50b-edd6-4923-b364-90d3c52a6a1d",
+                    "rel": "self"
+                },
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/2819d50b-edd6-4923-b364-90d3c52a6a1d?v=full",
+                    "rel": "full"
+                }
+            ]
+        },
+        {
+            "uuid": "d85aa643-e6d7-4e3d-9428-0032006aba2f",
+            "display": null,
+            "name": "DST1 MGIT CONSTRUCT",
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/d85aa643-e6d7-4e3d-9428-0032006aba2f",
+                    "rel": "self"
+                },
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/d85aa643-e6d7-4e3d-9428-0032006aba2f?v=full",
+                    "rel": "full"
+                }
+            ]
+        },
+        {
+            "uuid": "9350c6c7-63a3-4c49-8869-b1fc18cc182d",
+            "display": null,
+            "name": "DST1 LJ CONSTRUCT",
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/9350c6c7-63a3-4c49-8869-b1fc18cc182d",
+                    "rel": "self"
+                },
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/9350c6c7-63a3-4c49-8869-b1fc18cc182d?v=full",
+                    "rel": "full"
+                }
+            ]
+        },
+        {
+            "uuid": "7af7afa0-7046-4f06-95e9-bf655808326d",
+            "display": null,
+            "name": "DST2 MGIT CONSTRUCT",
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/7af7afa0-7046-4f06-95e9-bf655808326d",
+                    "rel": "self"
+                },
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/7af7afa0-7046-4f06-95e9-bf655808326d?v=full",
+                    "rel": "full"
+                }
+            ]
+        },
+        {
+            "uuid": "3cbafe53-8630-446e-9905-b83c5c6fd04b",
+            "display": null,
+            "name": "HAIN2 TEST",
+            "links": [
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/3cbafe53-8630-446e-9905-b83c5c6fd04b",
+                    "rel": "self"
+                },
+                {
+                    "uri": "NEED-TO-CONFIGURE/ws/rest/v1/commonlab/concept/3cbafe53-8630-446e-9905-b83c5c6fd04b?v=full",
+                    "rel": "full"
+                }
+            ]
+        }
+    ]
+}
