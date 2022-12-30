@@ -7,6 +7,19 @@
 
 
 {%block content%}
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags %}
+<script>alert("{{ message }}")</script> {% endif %}
+
+{% endfor %}
+
+{% endif %}
+
+
+
+
 <div class="search-page-container">
   <div class="search-input-container">
     <div class="search-box">

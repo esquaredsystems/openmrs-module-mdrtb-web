@@ -39,7 +39,7 @@
         @apply hidden transition-all group-hover:flex flex-col justify-center absolute origin-top top-8 bg-gray-300 shadow-lg p-3 w-max -left-2 ease-in-out duration-700;
     }
     .dropdown-item{
-        @apply  hover:text-[#044062] text-black;
+        @apply  text-[#044062];
     }
     .dropdown-parent{
           @apply flex items-center space-x-2 cursor-pointer  relative z-10;

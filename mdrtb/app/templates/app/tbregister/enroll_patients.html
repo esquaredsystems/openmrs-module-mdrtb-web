@@ -7,6 +7,8 @@
 
 {%block content%}
 <div>
+
+
   {% if error %} {{error}} {% endif %}
   <form action="{% url 'enrollPatient' %}" method="post" class="enroll-form">
     {% csrf_token %}
@@ -28,16 +30,32 @@
           </div>
         </div>
         <div class="enrollform-section">
-          <div class="input-container space-x-8">
-            <label class="input-label w-4/12"
+          <div class="input-container">
+            <label class="input-label md:w-1/5"
               for="name">{{'mdrtb.birthdate'|get_message:request.session.locale}}</label>
             <input required class="disabled:pointer-events-none input w-full" type="date" max="2022-12-31" name="dob"
               id="dob" />
           </div>
-          <div class="font-bold">OR</div>
           <div class="input-container">
-            <label class="input-label" for="name">{{'mdrtb.age'|get_message:request.session.locale}}</label>
+            <label class="input-label md:w-1/5" for="name">{{'mdrtb.age'|get_message:request.session.locale}}</label>
             <input required class="input disabled:pointer-events-none" type="number" name="age" id="age" min="1" />
+          </div>
+        </div>
+        <div class="enrollform-section">
+          <div class="input-container">
+            <label class="input-label md:w-1/5"
+              for="patientidentifier">{{'mdrtb.patientidentifier'|get_message:request.session.locale}}</label>
+            <input required class="input" type="text" name="patientidentifier" />
+          </div>
+          <div class="input-container">
+            <label class="input-label md:w-1/5"
+              for="patientidentifiertype">{{'mdrtb.patientidentifiertype'|get_message:request.session.locale}}</label>
+            <select class="input" name="patientidentifiertype">
+              <option selected value="None">Select</option>
+              {% for idtype in identifiertypes %}
+              <option value="{{idtype.uuid}}">{{idtype.name}}</option>
+              {% endfor %}
+            </select>
           </div>
         </div>
         <div class="input-container">

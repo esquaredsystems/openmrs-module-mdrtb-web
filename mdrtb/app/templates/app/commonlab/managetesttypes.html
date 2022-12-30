@@ -18,7 +18,7 @@
     </div>
     <div class="m-4">
       <div id="attrbox" class="grid grid-cols-1 space-y-4 h-min w-full bg-gray-200 p-4 rounded-md shadow-md">
-        <div class="search_result_items font-bold">
+        <div class="search-result-items font-bold">
           <p class="col-span-2">Name</p>
           <p>Sort Weight</p>
           <p>Group Name</p>
@@ -155,7 +155,7 @@
           for (i = 0; i < data.attributes.length; i++) {
             $('#attrbox').append(
               `
-            <div class="search_result_items font-bold">
+            <div class="search-result-items font-bold">
           <p class="col-span-2">${data.attributes[i].attrName}</p>
           <p>${data.attributes[i].sortWeight}</p>
           <p>${data.attributes[i].groupName}</p>
@@ -176,7 +176,7 @@
     $('#modal').addClass('opacity-0')
     $('#attrbox').html(
       `
-      <div class="search_result_items font-bold">
+      <div class="search-result-items font-bold">
           <p class="col-span-2">Name</p>
           <p>Sort Weight</p>
           <p>Group Name</p>

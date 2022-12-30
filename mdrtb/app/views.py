@@ -8,6 +8,7 @@ import utilities.common_utils as util
 import json
 import datetime
 from uuid import uuid4
+from django.contrib import messages
 from django.core.cache import cache
 
 
@@ -54,15 +55,15 @@ def enroll_patient(req):
 
     if req.method == 'POST':
         person_info = {
-            "uuid": "8d79403a-c2cc-11de-8d13-0010c6dffd8u",
+            "uuid": "6f609e41-18e9-4925-90bc-803d603b0933",
             "names": [{
                 "givenName": req.POST['givenname'],
                 "familyName":req.POST['familyname']
             }],
             "identifiers": [
                 {
-                    "identifier": "00003",
-                    "identifierType": "8d79403a-c2cc-11de-8d13-0010c6dffd0f",
+                    "identifier": req.POST['patientidentifier'],
+                    "identifierType": req.POST['patientidentifiertype'],
                     "location": req.POST['district'],
                     "preferred": False
                 }
@@ -79,7 +80,7 @@ def enroll_patient(req):
         else:
             today = datetime.date.today()
             person_info['age'] = req.POST['age']
-            person_info['birthDate'] = f"01.01.{today.year - int(person_info['age'])}"
+            person_info['birthDate'] = f"01-01-{today.year - int(person_info['age'])}"
 
         if 'deceased' in req.POST:
             person_info['deathDate'] = req.POST['deathdate']
@@ -116,8 +117,14 @@ def enroll_patient(req):
             print(e)
             return redirect('home')
     if 'session_id' in req.session:
-        locations = json.dumps(mu.get_locations())
-        return render(req, 'app/tbregister/enroll_patients.html', context={'locations': locations, 'title': "Enroll new Patient"})
+        try:
+            identifiertypes = mu.get_patient_identifier_types(req)
+            locations = json.dumps(mu.get_locations())
+        except Exception as e:
+            messages.error(req, e)
+            return redirect('home')
+        return render(req, 'app/tbregister/enroll_patients.html',
+                      context={'locations': locations, 'title': "Enroll new Patient", 'identifiertypes': identifiertypes})
     else:
         return redirect('home')
 
@@ -152,6 +159,7 @@ def enroll_in_dots_program(req):
 
 
 def enrolled_programs(req, uuid):
+    print(uuid)
     return render(req, 'app/tbregister/enrolled_programs.html')
 
 
@@ -180,7 +188,8 @@ def tb03_form(req):
 
         }
         req.session['tb03_info'] = tb03_info
-        return redirect('enrolledprograms')
+        patient = req.session['created_patient']
+        return redirect(f'tbdashboard/patient/{patient["uuid"]}')
 
     if 'session_id' in req.session:
         if 'enrollment_info' not in req.session:
@@ -314,7 +323,7 @@ def patient_dashboard(req, uuid, mdrtb=None):
 
     # status, response = ru.get(req, f'patient/{uuid}', {'v': 'full'})
     # if status:
-    patient['uuid'] = 'c344bb3a-3078-4725-9c42-78fee5f30120'
+    patient['uuid'] = '6f609e41-18e9-4925-90bc-803d603b0933'
     if mdrtb:
         return render(req, 'app/tbregister/dashboard.html', context={
             'title': 'MDR Dashboard',

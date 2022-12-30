@@ -5,12 +5,10 @@ from utilities import restapi_utils as ru
 import django
 from django.core.cache import cache
 from django.utils.safestring import SafeString as ss
-
-
 import os
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'mdrtb.settings'
-django.setup()
+# os.environ['DJANGO_SETTINGS_MODULE'] = 'mdrtb.settings'
+# django.setup()
 
 
 def get_global_msgs(message_code, locale=None, default=None, source=None):
@@ -52,84 +50,6 @@ def get_global_msgs(message_code, locale=None, default=None, source=None):
 
     else:
         raise Exception("Please provide a valid message code")
-
-
-# def get_message(message_code, locale=None, default=None):
-#     value = ''
-#     dir = f'{u.get_project_root()}/resources'
-#     if not locale:
-#         data = u.read_properties_file(
-#             f'{dir}/messages.properties', 'r', encoding='utf-8')
-#     else:
-#         data = u.read_properties_file(
-#             f'{dir}/messages_{locale}.properties', 'r', encoding='utf-8')
-#     if message_code:
-#         for message in data:
-#             split_msg = message.split('=')
-#             if split_msg[0] == message_code:
-#                 value = split_msg[1]
-#             elif default:
-#                 value = default
-#     else:
-#         raise Exception("Please provide a valid message code")
-
-#     if len(value) < 1:
-#         value = message_code
-#     cleaner = re.compile('<.*?>')
-#     return re.sub(cleaner, ' ', value.strip())
-
-
-# def get_message_openMRS_lib(message_code, locale=None, default=None):
-#     value = ''
-#     dir = f'{u.get_project_root()}/resources'
-#     if not locale:
-#         data = u.read_properties_file(
-#             f'{dir}/openMRS_messages.properties', 'r', encoding='utf-8')
-#     else:
-#         data = u.read_properties_file(
-#             f'{dir}/openMRS_messages_{locale}.properties', 'r', encoding='utf-8')
-#     if message_code:
-#         if data is not None:
-#             for message in data:
-#                 split_msg = message.split('=')
-#                 if split_msg[0].strip() == message_code.strip():
-#                     value = split_msg[1]
-#                 elif default:
-#                     value = default
-#         else:
-#             return message_code
-#     else:
-#         raise Exception("Please provide a valid message code")
-
-#     if len(value) < 1:
-#         value = message_code
-#     cleaner = re.compile('<.*?>')
-#     return re.sub(cleaner, ' ', value.strip())
-
-
-# def get_commonlab_message(message_code, locale=None, default=None):
-#     value = ''
-#     dir = f'{u.get_project_root()}/resources'
-#     if not locale:
-#         data = u.read_properties_file(
-#             f'{dir}/commonlab_messages.properties', 'r', encoding='utf-8')
-#     else:
-#         data = u.read_properties_file(
-#             f'{dir}/commonlab_messages_{locale}.properties', 'r', encoding='utf-8')
-#     if message_code:
-#         for message in data:
-#             split_msg = message.split('=')
-#             if split_msg[0] == message_code:
-#                 value = split_msg[1]
-#             elif default:
-#                 value = default
-#     else:
-#         raise Exception("Please provide a valid message code")
-
-#     if len(value) < 1:
-#         value = message_code
-#     cleaner = re.compile('<.*?>')
-#     return re.sub(cleaner, ' ', value.strip())
 
 
 def get_concepts_and_set_cache(req):
@@ -332,3 +252,12 @@ def get_user(req, username):
         return response
     else:
         raise Exception('Cant find user')
+
+
+def get_patient_identifier_types(req):
+    status, response = ru.get(req, 'patientidentifiertype', {
+                              'v': 'custom:(uuid,name)'})
+    if status:
+        return response['results']
+    else:
+        raise Exception('Cant find patient identifier types')
