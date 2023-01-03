@@ -77,6 +77,7 @@ def enroll_patient(req):
         }
         if 'dob' in req.POST:
             person_info['birthDate'] = req.POST['dob']
+            person_info['age'] = util.calculate_age(req.POST['dob'])
         else:
             today = datetime.date.today()
             person_info['age'] = req.POST['age']
@@ -111,6 +112,7 @@ def enroll_patient(req):
 
         # MOCK:
         try:
+            print(person_info)
             req.session['created_patient'] = person_info
             return redirect('dotsEnroll')
         except Exception as e:
@@ -159,7 +161,6 @@ def enroll_in_dots_program(req):
 
 
 def enrolled_programs(req, uuid):
-    print(uuid)
     return render(req, 'app/tbregister/enrolled_programs.html')
 
 

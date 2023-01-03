@@ -86,7 +86,6 @@ def get_concept_by_uuid(uuid, req):
         if status:
             return status, response
         else:
-            print(concept_found)
             return False, "cant find"
 
 
