@@ -168,3 +168,14 @@ def get_sample_units(req):
                 'name': unit['display'],
             })
     return units
+
+def get_commonlab_labtesttype(req,uuid):
+    status, response = ru.get(req, f'commonlab/labtesttype/{uuid}', {'v': 'full'})
+    if status:
+        return response
+    else:
+        return None
+
+def get_reference_concept_of_labtesttype(req,labtestid):
+    labtest = get_commonlab_labtesttype(req,labtestid)
+    return labtest['referenceConcept']['uuid']

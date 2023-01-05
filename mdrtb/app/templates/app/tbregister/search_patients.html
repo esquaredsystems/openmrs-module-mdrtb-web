@@ -102,6 +102,7 @@
             </div>`
               )
               for (i = 0; i < data.results.length; i++) {
+              console.log(data.results[i].uuid)
                 const path = `patient/${data.results[i].uuid}/enrolledprograms`
                 $('#search-results').append(
                   `

@@ -32,7 +32,7 @@
         <h2 class="text-[#2D9CDB] text-3xl font-bold">
           {{'mdrtb.enrollment.tbPrograms'|get_message:request.session.locale}}
         </h2>
-        <a href="{% url 'dashboard' uuid='bc3e2d3b-cc0c-4f6d-bec8-fc0264c68ba6' %}"
+        <a href="{% url 'dashboard' uuid=uuid %}"
           class="font-bold underline text-[#044062]">
           Edit program
         </a>
@@ -74,7 +74,7 @@
         <h2 class="text-[#2D9CDB] text-3xl font-bold">
           {{'mdrtb.enrollment.mdrtbPrograms'|get_message:request.session.locale}}
         </h2>
-        <a href="{% url 'mdrdashboard' mdrtb='mdrtb' uuid='bc3e2d3b-cc0c-4f6d-bec8-fc0264c68ba6' %}"
+        <a href="{% url 'mdrdashboard' mdrtb='mdrtb' uuid=uuid %}"
           class="font-bold underline text-[#044062]">
           Edit program
         </a>

@@ -65,7 +65,6 @@ def enroll_patient(req):
                     "identifier": req.POST['patientidentifier'],
                     "identifierType": req.POST['patientidentifiertype'],
                     "location": req.POST['district'],
-                    "preferred": False
                 }
             ],
             "gender": req.POST['gender'],
@@ -161,7 +160,11 @@ def enroll_in_dots_program(req):
 
 
 def enrolled_programs(req, uuid):
-    return render(req, 'app/tbregister/enrolled_programs.html')
+    context = {
+        'title': 'Enrolled Programs',
+        'uuid': uuid
+    }
+    return render(req, 'app/tbregister/enrolled_programs.html', context=context)
 
 
 def tb03_form(req):
@@ -324,7 +327,7 @@ def patient_dashboard(req, uuid, mdrtb=None):
 
     # status, response = ru.get(req, f'patient/{uuid}', {'v': 'full'})
     # if status:
-    patient['uuid'] = '6f609e41-18e9-4925-90bc-803d603b0933'
+    patient['uuid'] = uuid
     if mdrtb:
         return render(req, 'app/tbregister/dashboard.html', context={
             'title': 'MDR Dashboard',
@@ -550,13 +553,20 @@ def add_lab_test(req, uuid):
     context = {'title': 'Add Lab Test', 'labtestid': uuid}
     if req.method == 'POST':
         body = {
-            'encounter': req.POST['encounter'],
-            'testgroup': req.POST['testGroup'],
             'labtesttype': req.POST['testType'],
             'labreferencenumber': req.POST['labref'],
-            'instructions': req.POST['instructions'],
-        }
+            "order": {
+                "action": "NEW",
+                "patient": uuid,
+                "concept": cu.get_reference_concept_of_labtesttype(req, req.POST['testType']),
+                "encounter": req.POST['encounter'],
+                "type": "order",
+                "orderer": "09544a0e-14f1-11ed-9181-00155dcead03"
 
+            }
+        }
+        status, response = ru.post(req, 'commonlab/labtestorder', body)
+        return redirect('managetestorders',uuid=uuid)
     encounters = cu.get_patient_encounters(req, uuid)
     labtests, testgroups = cu.get_test_groups_and_tests(req)
     if encounters:
