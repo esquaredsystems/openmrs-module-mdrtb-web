@@ -70,3 +70,11 @@ def remove_given_str_from_obj_arr(arr, str, call=None):
     else:
         return temp
 
+def remove_obj_from_objarr(obj,uuid_to_remove,key=None):
+    for item in obj:
+        if key:
+            if item[key] == uuid_to_remove:
+                obj.remove(item)
+                return obj
+
+

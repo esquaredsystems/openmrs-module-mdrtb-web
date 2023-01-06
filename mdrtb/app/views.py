@@ -550,23 +550,28 @@ def managetestorders(req, uuid):
 
 
 def add_lab_test(req, uuid):
-    context = {'title': 'Add Lab Test', 'labtestid': uuid}
+    context = {'title': 'Add Lab Test', 'patient': uuid}
     if req.method == 'POST':
         body = {
-            'labtesttype': req.POST['testType'],
-            'labreferencenumber': req.POST['labref'],
+            'labTestType': req.POST['testType'],
+            'labReferenceNumber': req.POST['labref'],
             "order": {
                 "action": "NEW",
                 "patient": uuid,
                 "concept": cu.get_reference_concept_of_labtesttype(req, req.POST['testType']),
                 "encounter": req.POST['encounter'],
                 "type": "order",
+                "instructions": None if req.POST['instructions'] == None else req.POST['instructions'],
                 "orderer": "09544a0e-14f1-11ed-9181-00155dcead03"
 
             }
         }
         status, response = ru.post(req, 'commonlab/labtestorder', body)
-        return redirect('managetestorders',uuid=uuid)
+        if status:
+            return redirect('managetestorders', uuid=uuid)
+        else:
+            messages.error(req, "response['message']")
+        return redirect('managetestorders', uuid=uuid)
     encounters = cu.get_patient_encounters(req, uuid)
     labtests, testgroups = cu.get_test_groups_and_tests(req)
     if encounters:
@@ -575,6 +580,60 @@ def add_lab_test(req, uuid):
         context['labtests'] = json.dumps(labtests)
     return render(req, 'app/commonlab/addlabtest.html', context=context)
 
+
+def edit_lab_test(req, patientid, orderid):
+    context = {'title': 'Edit Lab Test', 'state': 'edit',
+               'orderid': orderid, 'patientid': patientid}
+    if req.method == 'POST':
+        body = {
+            'labTestType': req.POST['testType'],
+            'labReferenceNumber': req.POST['labref'],
+            "order": {
+                "action": "NEW",
+                "patient": patientid,
+                "concept": cu.get_reference_concept_of_labtesttype(req, req.POST['testType']),
+                "encounter": req.POST['encounter'],
+                "type": "order",
+                "instructions": None if req.POST['instructions'] == None else req.POST['instructions'],
+                "orderer": "09544a0e-14f1-11ed-9181-00155dcead03"
+
+            }
+        }
+        print(body)
+        status, response = ru.post(
+            req, f'commonlab/labtestorder/{orderid}', body)
+        if status:
+            return redirect('managetestorders', uuid=patientid)
+        else:
+            print(response)
+            messages.error(req, 'dfsd')
+            return redirect('managetestorders', uuid=patientid)
+    status, response = ru.get(
+        req, f'commonlab/labtestorder/{orderid}', {'v': 'custom:(uuid,order,labTestType,labReferenceNumber)'})
+    if status:
+        encounters = cu.get_patient_encounters(
+            req, response['order']['patient']['uuid'])
+        labtests, testgroups = cu.get_test_groups_and_tests(req)
+        context['laborder'] = cu.get_custome_lab_order(response)
+        context['encounters'] = util.remove_obj_from_objarr(
+            encounters['results'], context['laborder']['order']['encounter']['uuid'], 'uuid')
+        context['testgroups'] = util.remove_given_str_from_arr(
+            testgroups, context['laborder']['labtesttype']['testGroup'])
+
+        context['labtests'] = json.dumps(labtests)
+        return render(req, 'app/commonlab/addlabtest.html', context=context)
+    else:
+        print(response)
+        messages.error(req, '404')
+        return redirect('managetestorders', uuid=patientid)
+
+
+def delete_lab_test(req,patientid,orderid):
+    status, response = ru.delete(req, f'commonlab/labtestorder/{orderid}')
+    if status:
+        return redirect('managetestorders', uuid=patientid)
+    else:
+        print(response)
 
 def managetestsamples(req, orderid):
     context = {'title': 'Manage Test Samples'}
@@ -593,3 +652,4 @@ def add_test_sample(req, orderid):
     }
 
     return render(req, 'app/commonlab/addsample.html', context=context)
+

@@ -169,13 +169,43 @@ def get_sample_units(req):
             })
     return units
 
-def get_commonlab_labtesttype(req,uuid):
-    status, response = ru.get(req, f'commonlab/labtesttype/{uuid}', {'v': 'full'})
+
+def get_commonlab_labtesttype(req, uuid):
+    status, response = ru.get(
+        req, f'commonlab/labtesttype/{uuid}', {'v': 'full'})
     if status:
         return response
     else:
         return None
 
-def get_reference_concept_of_labtesttype(req,labtestid):
-    labtest = get_commonlab_labtesttype(req,labtestid)
-    return labtest['referenceConcept']['uuid']
+
+def get_reference_concept_of_labtesttype(req, labtestid):
+    try:
+        labtest = get_commonlab_labtesttype(req, labtestid)
+        return labtest['referenceConcept']['uuid']
+    except Exception as e:
+        print(e)
+        return None
+
+
+def get_custome_lab_order(full_order):
+    order = full_order['order']
+    return {
+        'laborder_id': full_order['uuid'],
+        'labref': full_order['labReferenceNumber'],
+        'order': {
+            'patient': order['patient']['uuid'],
+            'encounter': {
+                'uuid': order['encounter']['uuid'],
+                'name': order['encounter']['display']
+            },
+            'instructions': '' if order['instructions'] == None else order['instructions']
+        },
+        'labtesttype': {
+            'uuid': full_order['labTestType']['uuid'],
+            'name': full_order['labTestType']['name'],
+            'testGroup': full_order['labTestType']['testGroup'],
+        },
+
+
+    }
