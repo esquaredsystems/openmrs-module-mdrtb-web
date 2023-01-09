@@ -556,21 +556,23 @@ def add_lab_test(req, uuid):
             'labTestType': req.POST['testType'],
             'labReferenceNumber': req.POST['labref'],
             "order": {
-                "action": "NEW",
                 "patient": uuid,
                 "concept": cu.get_reference_concept_of_labtesttype(req, req.POST['testType']),
                 "encounter": req.POST['encounter'],
                 "type": "order",
                 "instructions": None if req.POST['instructions'] == None else req.POST['instructions'],
+                "orderType": "33ccfcc6-0370-102d-b0e3-001ec94a0cc1",
                 "orderer": "09544a0e-14f1-11ed-9181-00155dcead03"
 
             }
         }
+        print(body)
         status, response = ru.post(req, 'commonlab/labtestorder', body)
         if status:
             return redirect('managetestorders', uuid=uuid)
         else:
-            messages.error(req, "response['message']")
+            print(response)
+            messages.error(req, response['error']['message'])
         return redirect('managetestorders', uuid=uuid)
     encounters = cu.get_patient_encounters(req, uuid)
     labtests, testgroups = cu.get_test_groups_and_tests(req)
@@ -628,15 +630,16 @@ def edit_lab_test(req, patientid, orderid):
         return redirect('managetestorders', uuid=patientid)
 
 
-def delete_lab_test(req,patientid,orderid):
+def delete_lab_test(req, patientid, orderid):
     status, response = ru.delete(req, f'commonlab/labtestorder/{orderid}')
     if status:
         return redirect('managetestorders', uuid=patientid)
     else:
         print(response)
 
+
 def managetestsamples(req, orderid):
-    context = {'title': 'Manage Test Samples'}
+    context = {'title': 'Manage Test Samples', 'orderid': orderid}
     status, response = ru.get(
         req, f'commonlab/labtestorder/{orderid}', {'v': 'custom:(labTestSamples)'})
     if status:
@@ -645,11 +648,32 @@ def managetestsamples(req, orderid):
 
 
 def add_test_sample(req, orderid):
-    context = {'title': 'Add Sample', 'specimentype': cu.get_commonlab_concepts_by_type(
-        req, 'specimentype'), 'specimensite': cu.get_commonlab_concepts_by_type(req, 'specimensite'),
-        'units': cu.get_sample_units(req)
+    context = {'title': 'Add Sample', 'orderid': orderid}
+    if req.method == 'POST':
+        body = {
+            "labTest": orderid,
+            "specimenType": req.POST['specimentype'],
+            "specimenSite":  req.POST['specimensite'],
+            "sampleIdentifier":  req.POST['specimenid'],
+            "quantity": "" if not req.POST['quantity'] else req.POST['quantity'],
+            "units": "" if not req.POST['units'] else req.POST['units'],
+            "collectionDate":  req.POST['collectedon'],
+            "status": "COLLECTED",
+            "collector": "0e5ac8a2-cb48-40ff-a9bd-b0e09afa7860"
+        }
+        print(body)
+        status, response = ru.post(req, 'commonlab/labtestsample', body)
+        if status:
+            return redirect('managetestsamples', orderid=orderid)
+        else:
+            print(response)
+            messages.error(req, 'Error adding samples')
+            return redirect('managetestsamples', orderid=orderid)
 
-    }
+    context['specimentype'] = cu.get_commonlab_concepts_by_type(
+        req, 'specimentype')
+    context['specimensite'] = cu.get_commonlab_concepts_by_type(
+        req, 'specimensite')
+    context['units'] = cu.get_sample_units(req)
 
     return render(req, 'app/commonlab/addsample.html', context=context)
-

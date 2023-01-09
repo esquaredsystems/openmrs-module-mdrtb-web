@@ -11,9 +11,10 @@
 
 <div class="m-4">
     <h1 class="primary-heading">{{'commonlabtest.labtestsample.add'|get_message_commonlab:request.session.locale}}</h1>
-    <form class="m-10 flex-column-center space-y-6" action="">
+    <form class="m-10 flex-column-center space-y-6" action="{% url 'addtestsample' orderid=orderid %}" method="post">
+        {% csrf_token %}
         <div class="input-container">
-            <label class="input-label">
+            <label class="input-label required">
                 {{'general.specimenType'|get_message_commonlab:request.session.locale}}
 
             </label>
@@ -25,7 +26,7 @@
             </select>
         </div>
         <div class="input-container">
-            <label class="input-label">
+            <label class="input-label required">
                 {{'general.specimenSite'|get_message_commonlab:request.session.locale}}
 
             </label>
@@ -42,14 +43,14 @@
                 {{'commonlabtest.labtestsample.quantity'|get_message_commonlab:request.session.locale}}
 
             </label>
-            <input required class="input" type="number" name="quantity">
+            <input class="input" type="number" name="quantity">
         </div>
         <div class="input-container">
             <label class="input-label">
                 {{'commonlabtest.labtestsample.unit'|get_message_commonlab:request.session.locale}}
 
             </label>
-            <select required name="unit" class="input">
+            <select name="units" class="input">
                 <option selected value="">Select</option>
 
                 {% for unit in units %}
@@ -59,7 +60,7 @@
 
         </div>
         <div class="input-container">
-            <label class="input-label">
+            <label class="input-label required">
                 {{'commonlabtest.labtestsample.sampleIdentifier'|get_message_commonlab:request.session.locale}}
 
             </label>
@@ -67,14 +68,15 @@
 
         </div>
         <div class="input-container">
-            <label class="input-label">
+            <label class="input-label required">
                 {{'commonlabtest.labtestsample.collectionDate'|get_message_commonlab:request.session.locale}}
 
             </label>
             <input class="input" type="date" name="collectedon">
         </div>
         <div class="flex-center space-x-4">
-            <button class="button-primary w-1/5"> {{'general.save'|get_message_openMRS:request.session.locale}}</button>
+            <input type="submit" class="button-primary w-1/5"
+                value="{{'general.save'|get_message_openMRS:request.session.locale}}" />
             <a href="javascript:history.go(-1)" class="cancel-button">
                 {{'general.cancel'|get_message_openMRS:request.session.locale}}</a>
         </div>
