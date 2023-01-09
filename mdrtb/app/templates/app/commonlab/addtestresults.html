@@ -1,0 +1,89 @@
+{% extends 'app/base/base_without_menu.html' %}
+{% block title %}
+{{title}}
+{% endblock %}
+{% block content %}
+
+
+<div class="m-4">
+    <h1 class="primary-heading">{{'commonlabtest.result.add'|get_message_commonlab:request.session.locale}}</h1>
+    <form id="results-form" class="m-10 space-y-8 " action="{% url 'addtestresults' orderid=orderid %}" method="post">
+        {% csrf_token %}
+        <div class="flex-column-center space-y-6" id="attributes-container">
+            <div class="input-container">
+                <label class="input-label">Attachment</label>
+                <input type="file" 
+                       class="ml-4 w-full text-sm rounded-md leading-6 
+                       file:bg-gray-200
+                        file:text-black 
+                       file:font-semi-bold 
+                       file:border-none file:px-4 file:py-1 file:mr-6 file:border-gray-200 border border-gray-300 ">
+              </div>
+        </div>
+        <div class="flex-center space-x-3">
+            <input type="submit" class="button-primary w-1/5" value="Submit">
+            <a class="cancel-button" href="javascript:history.go(-1)">Cancel</a>
+        </div>
+    </form>
+</div>
+
+
+
+
+<script>
+    let attributes = JSON.parse("{{attributes | escapejs}}")
+
+    if (attributes.length <= 0) {
+        $('#results-form').html(
+            `
+               <div class="m-10 space-y-6 flex-column-center">
+                <div>NO ATTRIBUTES FOUND</div>
+               <a class="cancel-button" href="javascript:history.go(-1)">Go Back</a>
+                </div>
+               `
+
+        )
+    } else {
+
+
+
+        for (attribute of attributes) {
+            if (attribute.inputType == 'checkbox') {
+                $('#attributes-container').append(
+                    `<div class="input-container">
+                <label class="input-label capitalize">
+                    ${attribute.name}
+
+                </label>
+                <input name="${attribute.uuid}" type="${attribute.inputType}">
+            </div>
+            `
+                )
+            } else if (attribute.inputType == 'textarea') {
+                $('#attributes-container').append(
+                    `<div class="input-container">
+                <label class="input-label capitalize">
+                    ${attribute.name}
+
+                </label>
+                <textarea name="${attribute.uuid}" class="input"></textarea>
+            </div>
+            `
+                )
+            } else {
+                $('#attributes-container').append(
+                    `<div class="input-container">
+                <label class="input-label capitalize">
+                    ${attribute.name}
+
+                </label>
+                <input name="${attribute.uuid}" class="input" type="${attribute.inputType}">
+            </div>
+            `
+                )
+            }
+        }
+    }
+
+</script>
+{% endblock %}

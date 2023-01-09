@@ -130,8 +130,9 @@
     function showModal(uuid) {
       for (order of orders) {
         if (order.uuid === uuid) {
-          let samplesUrl = `{% url 'managetestsamples' orderid=122 %}`.replace('122' ,uuid)
-          console.log(samplesUrl)
+          let samplesUrl = `{% url 'managetestsamples' orderid=122 %}`.replace('122', uuid)
+          let resultsUrl = `{% url 'addtestresults' orderid=122 %}?pateint={{patient}}`.replace('122', uuid)
+          console.log(resultsUrl)
           $("#modal").append(
             `
             <div class="flex items-center justify-between">
@@ -181,7 +182,7 @@
             Test Result:
           </span>
           <span class="w-3/5">
-            <a href=${samplesUrl}>
+            <a href=${resultsUrl}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round"

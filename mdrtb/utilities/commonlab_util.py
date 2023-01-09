@@ -63,27 +63,33 @@ def get_attributes_data_types():
     attributesDataTypes = [
         {
             'value': 'org.openmrs.customdatatype.datatype.DateDatatype.name',
-            'name': 'Date'
+            'name': 'Date',
+            'inputType': 'date'
         },
         {
             'value': 'org.openmrs.customdatatype.datatype.BooleanDatatype.name',
-            'name': 'Boolean'
+            'name': 'Boolean',
+            'inputType': 'checkbox'
         },
         {
             'value': 'org.openmrs.customdatatype.datatype.LongFreeTextDatatype.name',
-            'name': 'LongFreeText'
+            'name': 'LongFreeText',
+            'inputType': 'textarea'
         },
         {
             'value': 'org.openmrs.customdatatype.datatype.FreeTextDatatype.name',
-            'name': 'FreeText'
+            'name': 'FreeText',
+            'inputType': 'text'
         },
         {
             'value': 'org.openmrs.customdatatype.datatype.RegexValidatedTextDatatype.name',
-            'name': 'RegexValidatedText'
+            'name': 'RegexValidatedText',
+            'inputType': 'text'
         },
         {
             'value': 'org.openmrs.customdatatype.datatype.ConceptDatatype.name',
-            'name': 'Concept'
+            'name': 'Concept',
+            'inputType': 'text'
         },
     ]
     return attributesDataTypes
@@ -106,7 +112,7 @@ def get_attributes_of_labtest(req, uuid):
         sortedAttr = sorted(data['results'], key=lambda x: x['sortWeight'])
         return sortedAttr
     else:
-        return data['error']['message']
+        raise Exception(data['error']['message'])
 
 
 def add_edit_test_type(req, data, url):
@@ -209,3 +215,28 @@ def get_custome_lab_order(full_order):
 
 
     }
+
+
+def get_custom_attribute_for_labresults(req, orderid):
+    context = {'title': 'Add Test Results'}
+    status, response = ru.get(
+        req, f'commonlab/labtestorder/{orderid}', {'v': 'custom:(labTestType)'})
+    attrs = []
+    datatypes = get_attributes_data_types()
+    if status:
+        try:
+            attributes = get_attributes_of_labtest(
+                req, response['labTestType']['uuid'])
+            for attribute in attributes:
+                for datatype in datatypes:
+                    if datatype['value'].replace('.name', '') == attribute['datatypeClassname']:
+                        attrs.append({
+                            'uuid': attribute['uuid'],
+                            'name': attribute['name'],
+                            'dataType': attribute['datatypeClassname'],
+                            'inputType': datatype['inputType']
+                        })
+
+            return attrs
+        except Exception as e:
+            raise Exception(e)

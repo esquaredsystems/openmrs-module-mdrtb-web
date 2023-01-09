@@ -54,7 +54,9 @@ urlpatterns = [
     path('commonlab/order/<str:orderid>/addsample',
          views.add_test_sample, name='addtestsample'),
     path('commonlab/retiretesttype/<str:uuid>',
-         views.retire_test_type, name='retiretesttype')
+         views.retire_test_type, name='retiretesttype'),
+    path('commonlab/order/<str:orderid>/addtestresults',
+         views.add_test_results, name='addtestresults')
 
 
 

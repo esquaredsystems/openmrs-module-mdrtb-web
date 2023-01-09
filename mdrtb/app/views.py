@@ -677,3 +677,41 @@ def add_test_sample(req, orderid):
     context['units'] = cu.get_sample_units(req)
 
     return render(req, 'app/commonlab/addsample.html', context=context)
+
+
+def add_test_results(req, orderid):
+    context = {'title': 'Add Test Results', 'orderid': orderid}
+    if req.method == 'POST':
+        body = []
+        attributes = cu.get_custom_attribute_for_labresults(req, orderid)
+        for key, value in req.POST.items():
+            if value:
+                if value == 'on':
+                    body.append(
+                        {
+                            "attributeType": key,
+                            "valueReference": True
+                        }
+                    )
+                elif value == 'off':
+                    body.append(
+                        {
+                            "attributeType": key,
+                            "valueReference": False
+                        }
+                    )
+                else:
+                    body.append(
+                        {
+                            "attributeType": key,
+                            "valueReference": value
+                        }
+                    )
+        body.pop(0)
+    try:
+        attributes = cu.get_custom_attribute_for_labresults(req, orderid)
+        context['attributes'] = json.dumps(attributes)
+    except Exception as e:
+        messages.error(req, e)
+        return redirect('managetestorders', uuid=req.GET['pateint'])
+    return render(req, 'app/commonlab/addtestresults.html', context=context)
