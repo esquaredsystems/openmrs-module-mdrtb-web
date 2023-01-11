@@ -13,9 +13,41 @@ from django.core.cache import cache
 
 
 def index(req):
-    msg = mu.get_global_msgs('Navigation.options', source='commonlab')
-    print(msg)
-    return render(req, 'app/tbregister/reportmockup.html')
+    context = {'title': 'Add Test Results', 'orderid': orderid}
+    if req.method == 'POST':
+        body = []
+        attributes = cu.get_custom_attribute_for_labresults(req, orderid)
+        for key, value in req.POST.items():
+            if value:
+                if value == 'on':
+                    body.append(
+                        {
+                            "attributeType": key,
+                            "valueReference": True
+                        }
+                    )
+                elif value == 'off':
+                    body.append(
+                        {
+                            "attributeType": key,
+                            "valueReference": False
+                        }
+                    )
+                else:
+                    body.append(
+                        {
+                            "attributeType": key,
+                            "valueReference": value
+                        }
+                    )
+        body.pop(0)
+    try:
+        attributes = cu.get_custom_attribute_for_labresults(req, orderid)
+        context['attributes'] = json.dumps(attributes)
+    except Exception as e:
+        messages.error(req, e)
+        return redirect('managetestorders', uuid=req.GET['pateint'])
+    return render(req, 'app/commonlab/addtestresults.html', context=context)
 
 
 def login(req):
@@ -31,7 +63,7 @@ def login(req):
             if response:
                 return render(req, 'app/tbregister/search_patients.html')
             else:
-                context['error'] = response.status_code
+                messages.error(req,'Cannot login right now. Please try again later.')
                 context['title'] = 'Login'
                 return render(req, 'app/tbregister/login.html', context=context)
         else:
@@ -115,7 +147,7 @@ def enroll_patient(req):
             req.session['created_patient'] = person_info
             return redirect('dotsEnroll')
         except Exception as e:
-            print(e)
+            message.error(req,e)
             return redirect('home')
     if 'session_id' in req.session:
         try:
@@ -143,7 +175,7 @@ def enroll_in_dots_program(req):
         try:
             req.session['enrollment_info'] = enrollment_info
         except Exception as e:
-            print(e)
+            message.error(req,e)
         return redirect('tb03')
 
     if 'session_id' in req.session:

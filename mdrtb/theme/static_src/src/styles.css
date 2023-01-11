@@ -35,14 +35,52 @@
     .table-item{
         @apply border-2 border-black bg-[#9DC6DE];
     }
-    .dropdown {
-        @apply hidden transition-all group-hover:flex flex-col justify-center absolute origin-top top-8 bg-gray-300 shadow-lg p-3 w-max -left-2 ease-in-out duration-700;
+    .tw-dropdown-header{
+        @apply dropdown-toggle
+        px-6
+        after:hidden
+        py-2.5
+        text-black
+        font-medium
+        leading-tight
+        transition
+        duration-150
+        ease-in-out
+        flex
+        items-center
+        whitespace-nowrap;
     }
-    .dropdown-item{
-        @apply  text-[#044062];
+    .tw-dropdown-item-list{
+        @apply 
+        min-w-max
+        absolute
+        bg-white
+        text-base
+        z-50
+        float-left
+        py-2
+        list-none
+        text-left
+        rounded-lg
+        shadow-lg
+        mt-1
+        hidden
+        m-0
+        bg-clip-padding
+        border-none;
     }
-    .dropdown-parent{
-          @apply flex items-center space-x-2 cursor-pointer  relative z-10;
+    .tw-dropdown-item{
+        @apply dropdown-item
+        text-sm
+        py-2
+        px-4
+        font-normal
+        block
+        w-full
+        whitespace-nowrap
+        bg-transparent
+        text-gray-700
+        hover:bg-gray-100;
     }
     .input-container{
             @apply  flex items-center w-full space-x-4;

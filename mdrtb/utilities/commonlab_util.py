@@ -231,6 +231,7 @@ def get_custom_attribute_for_labresults(req, orderid):
                 for datatype in datatypes:
                     if datatype['value'].replace('.name', '') == attribute['datatypeClassname']:
                         attrs.append({
+                            'group': attribute['groupName'] if attribute['groupName'] is not 'null' else None,
                             'uuid': attribute['uuid'],
                             'name': attribute['name'],
                             'dataType': attribute['datatypeClassname'],
