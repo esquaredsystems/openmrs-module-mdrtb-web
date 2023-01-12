@@ -63,7 +63,8 @@ def login(req):
             if response:
                 return render(req, 'app/tbregister/search_patients.html')
             else:
-                messages.error(req,'Cannot login right now. Please try again later.')
+                messages.error(
+                    req, 'Cannot login right now. Please try again later.')
                 context['title'] = 'Login'
                 return render(req, 'app/tbregister/login.html', context=context)
         else:
@@ -147,7 +148,7 @@ def enroll_patient(req):
             req.session['created_patient'] = person_info
             return redirect('dotsEnroll')
         except Exception as e:
-            message.error(req,e)
+            message.error(req, e)
             return redirect('home')
     if 'session_id' in req.session:
         try:
@@ -175,7 +176,7 @@ def enroll_in_dots_program(req):
         try:
             req.session['enrollment_info'] = enrollment_info
         except Exception as e:
-            message.error(req,e)
+            message.error(req, e)
         return redirect('tb03')
 
     if 'session_id' in req.session:
@@ -714,36 +715,48 @@ def add_test_sample(req, orderid):
 def add_test_results(req, orderid):
     context = {'title': 'Add Test Results', 'orderid': orderid}
     if req.method == 'POST':
-        body = []
-        attributes = cu.get_custom_attribute_for_labresults(req, orderid)
-        for key, value in req.POST.items():
-            if value:
-                if value == 'on':
-                    body.append(
-                        {
-                            "attributeType": key,
-                            "valueReference": True
-                        }
-                    )
-                elif value == 'off':
-                    body.append(
-                        {
-                            "attributeType": key,
-                            "valueReference": False
-                        }
-                    )
-                else:
-                    body.append(
-                        {
-                            "attributeType": key,
-                            "valueReference": value
-                        }
-                    )
-        body.pop(0)
+        status,laborder = ru.get(req,f'commonlab/labtestorder/{orderid}',{})
+        if status:
+            body = {
+                "order": laborder['uuid'],
+                "labReferenceNumber": laborder['labReferenceNumber'],
+                 "labTestType": laborder['labTestType']['uuid'],
+                 "attributes" : []
+            }
+            for key, value in req.POST.items():
+                if value:
+                    if value == 'on':
+                        body['attributes'].append(
+                            {
+                                "attributeType": key,
+                                "valueReference": True
+                            }
+                        )
+                    elif value == 'off':
+                        body['attributes'].append(
+                            {
+                                "attributeType": key,
+                                "valueReference": False
+                            }
+                        )
+                    else:
+                        body['attributes'].append(
+                            {
+                                "attributeType": key,
+                                "valueReference": value
+                            }
+                        )
+            body['attributes'].pop(0)
+            print(body)
+        else:
+            messages.error(req,'Error creating the order')
+            return redirect('managetestorders', uuid=req.GET['patient'])
+        print(body)
     try:
-        attributes = cu.get_custom_attribute_for_labresults(req, orderid)
+        attributes = cu.get_custom_attribute_for_labresults(
+            req, orderid)
         context['attributes'] = json.dumps(attributes)
     except Exception as e:
         messages.error(req, e)
-        return redirect('managetestorders', uuid=req.GET['pateint'])
+        return redirect('managetestorders', uuid=req.GET['patient'])
     return render(req, 'app/commonlab/addtestresults.html', context=context)

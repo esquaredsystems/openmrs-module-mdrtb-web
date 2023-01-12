@@ -138,7 +138,7 @@
       for (order of orders) {
         if (order.uuid === uuid) {
           let samplesUrl = `{% url 'managetestsamples' orderid=122 %}`.replace('122', uuid)
-          let resultsUrl = `{% url 'addtestresults' orderid=122 %}?pateint={{patient}}`.replace('122', uuid)
+          let resultsUrl = `{% url 'addtestresults' orderid=122 %}?patient={{patient}}`.replace('122', uuid)
           console.log(resultsUrl)
           $("#modal").append(
             `

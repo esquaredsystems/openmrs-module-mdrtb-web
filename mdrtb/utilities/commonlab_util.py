@@ -221,23 +221,21 @@ def get_custom_attribute_for_labresults(req, orderid):
     context = {'title': 'Add Test Results'}
     status, response = ru.get(
         req, f'commonlab/labtestorder/{orderid}', {'v': 'custom:(labTestType)'})
-    attrs = []
     datatypes = get_attributes_data_types()
-    if status:
-        try:
-            attributes = get_attributes_of_labtest(
-                req, response['labTestType']['uuid'])
-            for attribute in attributes:
-                for datatype in datatypes:
-                    if datatype['value'].replace('.name', '') == attribute['datatypeClassname']:
-                        attrs.append({
-                            'group': attribute['groupName'] if attribute['groupName'] is not 'null' else None,
-                            'uuid': attribute['uuid'],
-                            'name': attribute['name'],
-                            'dataType': attribute['datatypeClassname'],
-                            'inputType': datatype['inputType']
-                        })
-
-            return attrs
-        except Exception as e:
-            raise Exception(e)
+    try:
+        attributes = get_attributes_of_labtest(
+            req, response['labTestType']['uuid'])
+        attrs = []
+        for attribute in attributes:
+            for datatype in datatypes:
+                if datatype['value'].replace('.name', '') == attribute['datatypeClassname']:
+                    attrs.append({
+                        'uuid': attribute['uuid'],
+                        'name': attribute['name'],
+                        'datatype': attribute['datatypeClassname'],
+                        'inputType': datatype['inputType'],
+                        'group': attribute['groupName'],
+                    })
+        return attrs
+    except Exception as e:
+        raise Exception(e)
