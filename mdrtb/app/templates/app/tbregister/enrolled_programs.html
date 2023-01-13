@@ -9,7 +9,8 @@
 {% for message in messages %}
 {% if message.tags %}
 
-<div id='alert-er' class="left-0 transition-all animate-bounce duration-200 alert alert-danger m-4 w-fit flex-center space-x-4">
+<div id='alert-er'
+  class="left-0 transition-all animate-bounce duration-200 alert alert-danger m-4 w-fit flex-center space-x-4">
   <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" viewBox="0 0 16 16" role="img"
     aria-label="Warning:">
     <path
@@ -44,8 +45,8 @@
         </svg>
       </div>
       <div class="font-bold">
-        <div>{{patient.names.0.givenName}} {{patient.names.0.familyName}}</div>
-        <div>{{patient.age}} yrs ({{patient.birthDate}})</div>
+        <div>{{patient.person.preferredName.givenName}} {{patient.person.preferredName.familyName}}</div>
+        <div>{{patient.person.age}} yrs ({{patient.person.birthdate | iso_to_normal_date}})</div>
       </div>
     </div>
     <div class="patient-id-container">
@@ -59,8 +60,7 @@
         <h2 class="text-[#2D9CDB] text-3xl font-bold">
           {{'mdrtb.enrollment.tbPrograms'|get_message:request.session.locale}}
         </h2>
-        <a href="{% url 'dashboard' uuid=uuid %}"
-          class="font-bold underline text-[#044062]">
+        <a href="{% url 'dashboard' uuid=uuid %}" class="font-bold underline text-[#044062]">
           Edit program
         </a>
       </div>
@@ -101,8 +101,7 @@
         <h2 class="text-[#2D9CDB] text-3xl font-bold">
           {{'mdrtb.enrollment.mdrtbPrograms'|get_message:request.session.locale}}
         </h2>
-        <a href="{% url 'mdrdashboard' mdrtb='mdrtb' uuid=uuid %}"
-          class="font-bold underline text-[#044062]">
+        <a href="{% url 'mdrdashboard' mdrtb='mdrtb' uuid=uuid %}" class="font-bold underline text-[#044062]">
           Edit program
         </a>
       </div>
@@ -127,7 +126,7 @@
         <div class="space-x-3">
           <span class="font-bold">{{'mdrtb.tb03u'|get_message:request.session.locale}}: </span>
           <span class="programs-form-label underline">
-            <a  href="{% url 'tb03u' %}">{{'mdrtb.tb03'|get_message:request.session.locale}}</a></span>
+            <a href="{% url 'tb03u' %}">{{'mdrtb.tb03'|get_message:request.session.locale}}</a></span>
         </div>
 
       </div>

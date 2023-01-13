@@ -197,7 +197,13 @@ def enrolled_programs(req, uuid):
         'title': 'Enrolled Programs',
         'uuid': uuid
     }
-    return render(req, 'app/tbregister/enrolled_programs.html', context=context)
+    status,response = ru.get(req,f'patient/{uuid}',{'v' : 'full'})
+    if status:
+        context['patient'] = response
+        return render(req, 'app/tbregister/enrolled_programs.html', context=context)
+    else:
+        messages.error(req,'Can not find patient data')
+        return redirect('home')    
 
 
 def tb03_form(req):

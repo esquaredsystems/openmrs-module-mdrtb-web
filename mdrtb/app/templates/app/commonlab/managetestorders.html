@@ -97,7 +97,7 @@
                     </div>
                   </td>
                   <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p class="text-gray-900 whitespace-no-wrap">TB03</p>
+                    <p class="text-gray-900 whitespace-no-wrap">{{order.order.encounter.display|get_encounter_name}}</p>
                   </td>
                   <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                     <p class="text-gray-900 whitespace-no-wrap">
@@ -151,21 +151,13 @@
     </div>
     <div id="order-details" class="flex flex-col p-3">
       <div class="flex-column-center space-y-4 flex-none h-min w-full bg-gray-200 p-4 rounded-md shadow-md">
-        <div class="flex-center space-x-4  w-full border-gray-500">
-          <span class="font-bold w-2/5">
-            {{'ConceptProposal.encounter'|get_message_openMRS:request.session.locale}}:
-
-          </span>
-          <span class="w-3/5">
-            ${order.order.encounter.display.split(' ')[0]}
-          </span>
-        </div>
+       
         <div class="flex-center space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
             {{'Encounter.datetime'|get_message_openMRS:request.session.locale}}:
           </span>
           <span class="w-3/5">
-            ${order.order.encounter.display.split(' ')[1]}
+            ${order.order.encounter.display.slice(order.order.encounter.display.length -10)}
           </span>
         </div>
         
