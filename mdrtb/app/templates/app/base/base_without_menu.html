@@ -23,10 +23,19 @@
 </head>
 <style>
 	.required:after {
-		content: " *";
-		color: rgb(208, 40, 40);
+	  content: " *";
+	  color: red;
 	}
-</style>
+  
+	input:-webkit-autofill,
+	input:-webkit-autofill:focus {
+	  transition: background-color 600000s 0s, color 600000s 0s;
+	}
+  
+	input[data-autocompleted] {
+	  background-color: transparent !important;
+	}
+  </style>
 
 <body>
 	<header class="base-header">

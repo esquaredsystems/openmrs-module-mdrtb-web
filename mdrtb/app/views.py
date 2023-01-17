@@ -13,41 +13,7 @@ from django.core.cache import cache
 
 
 def index(req):
-    context = {'title': 'Add Test Results', 'orderid': orderid}
-    if req.method == 'POST':
-        body = []
-        attributes = cu.get_custom_attribute_for_labresults(req, orderid)
-        for key, value in req.POST.items():
-            if value:
-                if value == 'on':
-                    body.append(
-                        {
-                            "attributeType": key,
-                            "valueReference": True
-                        }
-                    )
-                elif value == 'off':
-                    body.append(
-                        {
-                            "attributeType": key,
-                            "valueReference": False
-                        }
-                    )
-                else:
-                    body.append(
-                        {
-                            "attributeType": key,
-                            "valueReference": value
-                        }
-                    )
-        body.pop(0)
-    try:
-        attributes = cu.get_custom_attribute_for_labresults(req, orderid)
-        context['attributes'] = json.dumps(attributes)
-    except Exception as e:
-        messages.error(req, e)
-        return redirect('managetestorders', uuid=req.GET['pateint'])
-    return render(req, 'app/commonlab/addtestresults.html', context=context)
+    return render(req, 'app/tbregister/reportmockup.html', context=context)
 
 
 def login(req):
@@ -538,7 +504,7 @@ def addattributes(req, uuid):
     return render(req, 'app/commonlab/addattributes.html', context=context)
 
 
-def editAttribute(req, testid, attrid):
+def editAttribute(req , testid, attrid):
     context = {'state': 'edit', 'testid': testid, 'title': 'Edit Attribute'}
     status, response = ru.get(
         req, f'commonlab/labtestattributetype/{attrid}', {'v': "full"})

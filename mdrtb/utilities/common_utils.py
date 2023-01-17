@@ -24,11 +24,10 @@ def read_properties_file(filepath,mode,encoding):
         
 
 
-
 def calculate_age(dob):
     age = 0
     try:
-        converted_date  = datetime.strptime(dob, '%Y-%m-%d').date()
+        converted_date  = datetime.strptime(dob, '%m/%d/%Y').date()
         today_date= date.today()
         if today_date.month != converted_date.month:
             return (today_date.year-converted_date.year) - 1
@@ -37,7 +36,6 @@ def calculate_age(dob):
     except Exception as e:
         return None
     
-
 
 def iso_to_normal(date):
     try:
