@@ -254,7 +254,7 @@ def get_user(req, username):
 
 
 def get_patient_identifier_types(req):
-    status, response = ru.get(req, 'patientidentifiertype', {
+    status, response = ru.get(req, 'patientidentifierype', {
                               'v': 'custom:(uuid,name)'})
     if status:
         return response['results']

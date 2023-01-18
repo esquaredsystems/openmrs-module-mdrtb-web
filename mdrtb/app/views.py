@@ -163,13 +163,13 @@ def enrolled_programs(req, uuid):
         'title': 'Enrolled Programs',
         'uuid': uuid
     }
-    status,response = ru.get(req,f'patient/{uuid}',{'v' : 'full'})
+    status, response = ru.get(req, f'patient/{uuid}', {'v': 'full'})
     if status:
         context['patient'] = response
         return render(req, 'app/tbregister/enrolled_programs.html', context=context)
     else:
-        messages.error(req,'Can not find patient data')
-        return redirect('home')    
+        messages.error(req, 'Can not find patient data')
+        return redirect('home')
 
 
 def tb03_form(req):
@@ -504,7 +504,7 @@ def addattributes(req, uuid):
     return render(req, 'app/commonlab/addattributes.html', context=context)
 
 
-def editAttribute(req , testid, attrid):
+def editAttribute(req, testid, attrid):
     context = {'state': 'edit', 'testid': testid, 'title': 'Edit Attribute'}
     status, response = ru.get(
         req, f'commonlab/labtestattributetype/{attrid}', {'v': "full"})
@@ -687,13 +687,13 @@ def add_test_sample(req, orderid):
 def add_test_results(req, orderid):
     context = {'title': 'Add Test Results', 'orderid': orderid}
     if req.method == 'POST':
-        status,laborder = ru.get(req,f'commonlab/labtestorder/{orderid}',{})
+        status, laborder = ru.get(req, f'commonlab/labtestorder/{orderid}', {})
         if status:
             body = {
                 "order": laborder['uuid'],
                 "labReferenceNumber": laborder['labReferenceNumber'],
-                 "labTestType": laborder['labTestType']['uuid'],
-                 "attributes" : []
+                "labTestType": laborder['labTestType']['uuid'],
+                "attributes": []
             }
             for key, value in req.POST.items():
                 if value:
@@ -721,13 +721,14 @@ def add_test_results(req, orderid):
             body['attributes'].pop(0)
             print(body)
         else:
-            messages.error(req,'Error creating the order')
+            messages.error(req, 'Error creating the order')
             return redirect('managetestorders', uuid=req.GET['patient'])
         print(body)
     try:
-        attributes = cu.get_custom_attribute_for_labresults(
+        attributes, testType = cu.get_custom_attribute_for_labresults(
             req, orderid)
         context['attributes'] = json.dumps(attributes)
+        context['testType'] = testType
     except Exception as e:
         messages.error(req, e)
         return redirect('managetestorders', uuid=req.GET['patient'])

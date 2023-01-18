@@ -219,16 +219,17 @@ def get_custome_lab_order(full_order):
 
 def get_custom_attribute_for_labresults(req, orderid):
     context = {'title': 'Add Test Results'}
-    status, response = ru.get(
-        req, f'commonlab/labtestorder/{orderid}', {'v': 'custom:(labTestType)'})
     datatypes = get_attributes_data_types()
     try:
+        status, response = ru.get(
+        req, f'commonlab/labtestorder/{orderid}', {'v': 'custom:(labTestType)'})
         attributes = get_attributes_of_labtest(
             req, response['labTestType']['uuid'])
         attrs = []
         for attribute in attributes:
             for datatype in datatypes:
-                if datatype['value'].replace('.name', '') == attribute['datatypeClassname']:
+                
+                if datatype['value'].replace('.name','') == attribute['datatypeClassname'].replace('.name',''):
                     attrs.append({
                         'uuid': attribute['uuid'],
                         'name': attribute['name'],
@@ -236,6 +237,7 @@ def get_custom_attribute_for_labresults(req, orderid):
                         'inputType': datatype['inputType'],
                         'group': attribute['groupName'],
                     })
-        return attrs
+        
+        return attrs , response['labTestType']['uuid']
     except Exception as e:
         raise Exception(e)
