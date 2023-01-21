@@ -13,7 +13,7 @@
   <h1 class="text-[#2D9CDB] text-3xl font-bold">
     {{'mdrtb.enrollment.enroll'|get_message:request.session.locale}}
   </h1>
-  <form action="{% url 'dotsEnroll' %}" method="post" class="flex flex-col">
+  <form action="{% url 'dotsEnroll' uuid=uuid %}" method="post" class="flex flex-col">
     {% csrf_token %}
 
     <div class="p-4 flex flex-col justify-center space-y-4">

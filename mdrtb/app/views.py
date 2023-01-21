@@ -17,17 +17,24 @@ def index(req):
 
 
 def login(req):
-    context = {'minSearchCharacters': '2', 'title': "Search Patients"}
+    context = {'title': "Search Patients"}
     if 'session_id' in req.session:
-
-        return render(req, 'app/tbregister/search_patients.html', context=context)
+        minSearchCharacters = mu.get_global_properties(
+            req, 'minSearchCharacters')
+        if minSearchCharacters:
+            context['minSearchCharacters'] = minSearchCharacters
+            return render(req, 'app/tbregister/search_patients.html', context=context)
+        else:
+            print('IDHAR')
+            messages.error(req, 'Error finding global property')
+            return redirect('home')
     else:
         if req.method == 'POST':
             username = req.POST['username']
             password = req.POST['password']
             response = ru.initiate_session(req, username, password)
             if response:
-                return render(req, 'app/tbregister/search_patients.html')
+                return redirect('home')
             else:
                 messages.error(
                     req, 'Cannot login right now. Please try again later.')
@@ -40,6 +47,7 @@ def login(req):
 def search_patients_query(req):
     q = req.GET['q']
     _, response = ru.get(req, 'patient', {'q': q, 'v': 'full'})
+
     return JsonResponse(response)
 
 
@@ -53,69 +61,61 @@ def search_patients_view(req):
 def enroll_patient(req):
 
     if req.method == 'POST':
-        person_info = {
-            "uuid": "6f609e41-18e9-4925-90bc-803d603b0933",
-            "names": [{
-                "givenName": req.POST['givenname'],
-                "familyName":req.POST['familyname']
-            }],
+        patient_info = {
             "identifiers": [
                 {
                     "identifier": req.POST['patientidentifier'],
                     "identifierType": req.POST['patientidentifiertype'],
-                    "location": req.POST['district'],
+                    # Temporatry hard coded location (Dushanbe)
+                    "location": "82be00a0-894b-42aa-812f-428f23e9fd7a"
+
                 }
             ],
-            "gender": req.POST['gender'],
-            "addresses": [{
-                "address1": req.POST['address'],
-                "cityVillage": req.POST['oblast'],
-                "country": req.POST['country'],
-            }]
-        }
+            "person": {
+                "names": [{
+                    "givenName": req.POST['givenname'],
+                    "familyName":req.POST['familyname']
+                }],
+
+                "gender": req.POST['gender'],
+                "addresses": [{
+                    "address1": req.POST['address'],
+                    "cityVillage": req.POST['oblast'],
+                    "country": req.POST['country'],
+                }]
+            }}
         if 'dob' in req.POST:
-            person_info['birthDate'] = req.POST['dob']
-            person_info['age'] = util.calculate_age(req.POST['dob'])
+            patient_info['person']['birthdate'] = req.POST['dob']
+            patient_info['person']['birthdateEstimated'] = False
         else:
-            today = datetime.date.today()
-            person_info['age'] = req.POST['age']
-            person_info['birthDate'] = f"01-01-{today.year - int(person_info['age'])}"
+            patient_info['person']['age'] = req.POST['age']
 
         if 'deceased' in req.POST:
-            person_info['deathDate'] = req.POST['deathdate']
-            person_info['causeOfDeath'] = req.POST['causeofdeath']
-        elif 'voided' in req.POST:
-            person_info['reasonToVoid'] = req.POST['reasontovoid']
+            patient_info['person']['deathDate'] = req.POST['deathdate']
+            patient_info['person']['causeOfDeath'] = req.POST['causeofdeath']
+        else:
+            patient_info['person']['deathDate'] = None
+            patient_info['person']['dead'] = False
+            patient_info['person']['causeOfDeath'] = None
 
-        # status , response = ru.post(req, 'person', person_info)
-        # if status:
-        #     patient_info = {
-        #         "person" : response['uuid'],
-        #         "identifiers" : [
-        #             {
-        #                 "identifier" : "00003",
-        #                 "identifierType" : "8d79403a-c2cc-11de-8d13-0010c6dffd0f",
-        #                 "location" : req.POST['district'],
-        #                 "preferred" : False
-        #             }
-        #         ]
-        #     }
-        #     status,patient_res = ru.post(req,'patient',patient_info)
-        #     if status:
-        #         return render(req,'app/tbregister/enroll_program.html')
-        #     else:
-        #         return render(req, 'app/tbregister/enroll_patients.html',context={'error' : patient_res['error']['message']})
-        # else:
-        #     print(response)
+        if 'voided' in req.POST:
+            patient_info['person']['reasonToVoid'] = req.POST['reasontovoid']
+
+        status, response = ru.post(req, 'patient', patient_info)
+        if status:
+            return redirect('dotsEnroll', uuid=response['uuid'])
+        else:
+            messages.error(req, "Error creating patient")
+            return redirect('home')
 
         # MOCK:
-        try:
-            print(person_info)
-            req.session['created_patient'] = person_info
-            return redirect('dotsEnroll')
-        except Exception as e:
-            message.error(req, e)
-            return redirect('home')
+        # try:
+        #     print(patient_info)
+        #     # req.session['created_patient'] = person_info
+        #     # return redirect('dotsEnroll')
+        # except Exception as e:
+        #     message.error(req, e)
+        #     return redirect('home')
     if 'session_id' in req.session:
         try:
             identifiertypes = mu.get_patient_identifier_types(req)
@@ -129,33 +129,28 @@ def enroll_patient(req):
         return redirect('home')
 
 
-def enroll_in_dots_program(req):
+def enroll_in_dots_program(req, uuid):
     if req.method == 'POST':
         enrollment_info = {
-            "enroll_date": req.POST['enrollmentdate'],
-            "oblast": req.POST['oblast'],
-            "district": req.POST['district'],
-            "facility": req.POST['facility'],
+            "dateEnrolled": req.POST['enrollmentdate'],
+            "program": "e80fec43-f2b5-45b0-aec1-eaf74be26ff9",
+            "patient": uuid,
+            "location": "",
             "registration_group_prev_treatment": req.POST['reggrpprevtreatment'],
             "registration_group_prev_drug": req.POST['reggrpprevdrug'],
         }
         try:
-            req.session['enrollment_info'] = enrollment_info
+            print(enrollment_info)
         except Exception as e:
             message.error(req, e)
-        return redirect('tb03')
+        return redirect('dotsEnroll', uuid=uuid)
 
-    if 'session_id' in req.session:
-        if 'created_patient' not in req.session:
-            return redirect('enrollPatient')
-        locations = json.dumps(mu.get_locations())
-        status, registration_group_concepts = mu.get_concept_by_uuid(
-            'ae16bb6e-3d82-4e14-ab07-2018ee10d311', req)
-        status, registration_group_prev_drug_concepts = mu.get_concept_by_uuid(
-            '31c2d590-0370-102d-b0e3-001ec94a0cc1', req)
-        return render(req, 'app/tbregister/dots/enroll_program.html', context={'locations': locations, 'reggrp': registration_group_concepts['answers'], 'reggrpprev': registration_group_prev_drug_concepts['answers'], 'title': "Enroll in Dots Progam"})
-    else:
-        return redirect('home')
+    locations = json.dumps(mu.get_locations())
+    status, registration_group_concepts = mu.get_concept_by_uuid(
+        'ae16bb6e-3d82-4e14-ab07-2018ee10d311', req)
+    status, registration_group_prev_drug_concepts = mu.get_concept_by_uuid(
+        '31c2d590-0370-102d-b0e3-001ec94a0cc1', req)
+    return render(req, 'app/tbregister/dots/enroll_program.html', context={'locations': locations, 'reggrp': registration_group_concepts['answers'], 'reggrpprev': registration_group_prev_drug_concepts['answers'], 'title': "Enroll in Dots Progam", 'uuid': uuid})
 
 
 def enrolled_programs(req, uuid):

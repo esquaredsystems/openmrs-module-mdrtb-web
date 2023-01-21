@@ -50,7 +50,7 @@
             <label class="input-label md:w-1/5"
               for="patientidentifiertype">{{'mdrtb.patientidentifiertype'|get_message:request.session.locale}}</label>
             <select class="input" name="patientidentifiertype">
-              <option selected value="None">Select</option>
+              <option selected value="">Select</option>
               {% for idtype in identifiertypes %}
               <option value="{{idtype.uuid}}">{{idtype.name}}</option>
               {% endfor %}

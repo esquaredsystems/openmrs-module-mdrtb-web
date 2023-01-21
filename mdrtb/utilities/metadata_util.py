@@ -254,9 +254,18 @@ def get_user(req, username):
 
 
 def get_patient_identifier_types(req):
-    status, response = ru.get(req, 'patientidentifierype', {
+    status, response = ru.get(req, 'patientidentifiertype', {
                               'v': 'custom:(uuid,name)'})
     if status:
         return response['results']
     else:
         raise Exception('Cant find patient identifier types')
+
+
+def get_global_properties(req, key):
+    status, response = ru.get(req, 'systemsetting', {'q': key,
+                                                     'v': 'custom:(value)'})
+    if status:
+        return response['results'][0]['value']
+    else:
+        return None

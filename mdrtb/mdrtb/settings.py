@@ -45,8 +45,6 @@ INSTALLED_APPS = [
 ]
 
 
-
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -132,8 +130,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-     BASE_DIR / "static",
-     '/var/www/static/',
+    BASE_DIR / "static",
+    '/var/www/static/',
 ]
 
 # Default primary key field type
@@ -145,4 +143,4 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 NPM_BIN_PATH = "C:\Program Files\\nodejs\\npm.cmd"
-BASE_URL = "http://46.20.206.173:18080/openmrs/ws/rest/v1/"
+BASE_URL = "http://46.20.206.173:38080/openmrs/ws/rest/v1/"

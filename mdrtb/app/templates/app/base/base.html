@@ -44,6 +44,7 @@
     </div>
     <div class="navbar">
       {% if request.session.session_id %}
+      <a class="nav-item" href="#">Logged in as {{request.session.logged_user.person.display}}</a>
       <a class="nav-item"
         href="{% url 'profile' %}">{{'Navigation.options'|get_message_openMRS:request.session.locale}}</a>
       <a class="nav-item" href="{% url 'logout' %}">{{'header.logout'|get_message_openMRS:request.session.locale}}</a>

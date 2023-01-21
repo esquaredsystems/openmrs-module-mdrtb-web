@@ -71,9 +71,18 @@
         $.ajax({
           url: "{% url 'search'%}?q=" + `${val}`,
           method: 'GET',
-
           success: function (data) {
-            console.log(data)
+            if(data.error){
+              $('#search-results').html(
+                `
+              <div class="patient-notfound-box">
+                <h3>
+                  Could not find any patient according to your search
+                  </h3>
+            </div>
+              `
+              )
+            }
             if (data.results.length === 0) {
               $('#search-results').html("")
               $('#search-results').append(
@@ -114,6 +123,7 @@
               }
             }
           }
+          
 
         })
         $('#search-results').removeClass('hidden')
