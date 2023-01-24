@@ -19,6 +19,16 @@ def initiate_session(req, username, password):
     else:
         return False
 
+def refresh_session(req):
+    response = requests.get(url=BASE_URL + 'session')
+    if response.status_code == 200:
+        req.session['session_id'] = response.json()['sessionId']
+        req.session['logged_user'] = response.json()['user']
+        req.session['encoded_credentials'] = encoded_credentials
+        req.session['locale'] = 'en'
+        return True
+    else:
+        return False
 
 def clear_session(req):
     # This will remove all the login info for user
@@ -34,8 +44,9 @@ def get(req, endpoint, parameters):
                             headers=get_auth_headers(req), params=parameters)
     if response.status_code == 200:
         return True, response.json()
-    else:
-        return False, response.json()
+    elif response.status_code == 403:
+        refreshed_session = refresh_session(req)
+        return False, response.status_code
 
 
 def post(req, endpoint, data):

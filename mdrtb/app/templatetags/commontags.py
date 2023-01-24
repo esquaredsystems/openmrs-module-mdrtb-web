@@ -17,3 +17,7 @@ def iso_to_normal_date(date):
 @register.filter
 def get_encounter_name(name):
     return name[:len(name)-10]
+
+@register.filter
+def get_id_from_name(name):
+    return name.split('-')[0]

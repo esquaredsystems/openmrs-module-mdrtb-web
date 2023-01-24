@@ -3,6 +3,7 @@ from django.http import JsonResponse
 import utilities.restapi_utils as ru
 import utilities.metadata_util as mu
 import utilities.commonlab_util as cu
+import utilities.patientutls as pu
 import utilities.formsutil as fu
 import utilities.common_utils as util
 import json
@@ -21,13 +22,13 @@ def login(req):
     if 'session_id' in req.session:
         minSearchCharacters = mu.get_global_properties(
             req, 'minSearchCharacters')
-        if minSearchCharacters:
+        if minSearchCharacters is not None:
             context['minSearchCharacters'] = minSearchCharacters
             return render(req, 'app/tbregister/search_patients.html', context=context)
         else:
-            print('IDHAR')
             messages.error(req, 'Error finding global property')
-            return redirect('home')
+            context['minSearchCharacters'] = 3
+            return render(req, 'app/tbregister/search_patients.html', context=context)
     else:
         if req.method == 'POST':
             username = req.POST['username']
@@ -158,12 +159,12 @@ def enrolled_programs(req, uuid):
         'title': 'Enrolled Programs',
         'uuid': uuid
     }
-    status, response = ru.get(req, f'patient/{uuid}', {'v': 'full'})
-    if status:
-        context['patient'] = response
+    try:
+        programs = pu.get_enrolled_programs_by_patient(req, uuid)
+        context['programs'] = programs['results']
         return render(req, 'app/tbregister/enrolled_programs.html', context=context)
-    else:
-        messages.error(req, 'Can not find patient data')
+    except Exception as e:
+        messages.error(req, e)
         return redirect('home')
 
 
@@ -195,32 +196,21 @@ def tb03_form(req):
         patient = req.session['created_patient']
         return redirect(f'tbdashboard/patient/{patient["uuid"]}')
 
-    if 'session_id' in req.session:
-        if 'enrollment_info' not in req.session:
-            return redirect('dotsEnroll')
-        if 'tb03_concepts' in req.session:
-            concepts = req.session['tb03_concepts']
-        else:
-            concept_ids = ["ddf6e09c-f018-4048-a69f-436ff22308b5",
-                           "2cd70c1e-955d-428e-86cd-3efc5ecbcabd",
-                           "ebde5ed8-4717-472d-9172-599af069e94d",
-                           "31b4c61c-0370-102d-b0e3-001ec94a0cc1",
-                           "31b94ef8-0370-102d-b0e3-001ec94a0cc1",
-                           "3f5a6930-5ead-4880-80ce-6ab79f4f6cb1",
-                           "a690e0c4-3371-49b3-9d52-b390fca3dd90",
-                           "0f7abf6d-e0bb-46ce-aa69-5214b0d2a295"
-                           ]
-            concepts = fu.get_form_concepts(concept_ids, req)
-            req.session['tb03_concepts'] = concepts
-        context = {
-            "enrollment_info": req.session['enrollment_info'],
-            "created_patient": req.session['created_patient'],
-            "concepts": concepts,
-            "title": "TB03"
-        }
-        return render(req, 'app/tbregister/dots/tb03.html', context=context)
-    else:
-        return redirect('home')
+    concept_ids = ["ddf6e09c-f018-4048-a69f-436ff22308b5",
+                   "2cd70c1e-955d-428e-86cd-3efc5ecbcabd",
+                   "ebde5ed8-4717-472d-9172-599af069e94d",
+                   "31b4c61c-0370-102d-b0e3-001ec94a0cc1",
+                   "31b94ef8-0370-102d-b0e3-001ec94a0cc1",
+                   "3f5a6930-5ead-4880-80ce-6ab79f4f6cb1",
+                   "a690e0c4-3371-49b3-9d52-b390fca3dd90",
+                   "0f7abf6d-e0bb-46ce-aa69-5214b0d2a295"
+                   ]
+    concepts = fu.get_form_concepts(concept_ids, req)
+    context = {
+        "concepts": concepts,
+        "title": "TB03"
+    }
+    return render(req, 'app/tbregister/dots/tb03.html', context=context)
 
 
 def transfer(req):
