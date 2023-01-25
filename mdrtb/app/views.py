@@ -159,13 +159,12 @@ def enrolled_programs(req, uuid):
         'title': 'Enrolled Programs',
         'uuid': uuid
     }
-    try:
-        programs = pu.get_enrolled_programs_by_patient(req, uuid)
-        context['programs'] = programs['results']
-        return render(req, 'app/tbregister/enrolled_programs.html', context=context)
-    except Exception as e:
-        messages.error(req, e)
-        return redirect('home')
+
+    patient, programs = pu.get_enrolled_programs_by_patient(req, uuid)
+    if patient and programs is not None:
+        context['patient'] = patient
+        context['programs'] = programs
+    return render(req, 'app/tbregister/enrolled_programs.html', context=context)
 
 
 def tb03_form(req):

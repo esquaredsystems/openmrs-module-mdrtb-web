@@ -33,6 +33,7 @@ def refresh_session(req):
 def clear_session(req):
     # This will remove all the login info for user
     del req.session['session_id']
+    
     del req.session['encoded_credentials']
     del req.session['locale']
     del req.session['logged_user']
