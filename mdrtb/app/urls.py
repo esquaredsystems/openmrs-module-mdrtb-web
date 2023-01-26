@@ -14,7 +14,7 @@ urlpatterns = [
     path('searchpatients', views.search_patients_view, name='searchPatientsView'),
     path('enrollpatient', views.enroll_patient, name='enrollPatient'),
     path('patient/<str:uuid>/programenroll',
-         views.enroll_in_dots_program, name="dotsEnroll"),
+         views.enroll_in_program, name="programenroll"),
     path('patient/<str:uuid>/enrolledprograms',
          views.enrolled_programs, name='enrolledprograms'),
     path('transfer', views.transfer, name='transfer'),

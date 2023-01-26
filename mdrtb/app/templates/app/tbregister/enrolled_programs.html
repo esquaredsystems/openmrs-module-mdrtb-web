@@ -62,12 +62,12 @@
             </a>
 
           </div>
-          
+
         </div>
         {% if programs %}
         <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
           <div class="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
-            
+
             <table class="min-w-full leading-normal">
               <thead>
                 <tr class="">
@@ -134,7 +134,7 @@
 
               </tbody>
             </table>
-           
+
           </div>
         </div>
         {% else %}
@@ -142,13 +142,17 @@
           <h1 class="text-center mx-auto font-bold text-3xl">No programs to display</h1>
           <a href="#" class="button-primary text-center hover:text-white">Add Program</a>
         </div>
-        
+
         {% endif %}
       </div>
     </div>
   </section>
 </div>
 <script defer>
+
+  if (!$(document.body).hasClass('modal-open')) {
+    $('#modalBody').html('')
+  }
 
   const showStatesModal = (name, states) => {
     $('#statesModalScrollableLabel').html(`${name} States`)

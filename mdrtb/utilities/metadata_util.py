@@ -269,3 +269,14 @@ def get_global_properties(req, key):
         return response['results'][0]['value']
     else:
         return None
+
+
+def get_locations_temp(req):
+
+    locations = cache.get('locations')
+    if not locations:
+        status, first_100_locations = ru.get(
+            req, 'location', {'v': 'full', 'limit': 100})
+        return all_locations
+    else:
+        return locations

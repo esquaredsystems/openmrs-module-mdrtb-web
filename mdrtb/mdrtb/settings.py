@@ -76,9 +76,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'mdrtb.wsgi.application'
 
 
+SESSIONS_ENGINE = 'django.contrib.sessions.backends.cache'
+
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
+        'LOCATION': '127.0.0.1:11211',
     }
 }
 

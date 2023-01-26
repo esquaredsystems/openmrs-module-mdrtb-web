@@ -14,6 +14,20 @@ from django.core.cache import cache
 
 
 def index(req):
+    context = {}
+    locations = cache.get('locations')
+    if locations is None:
+        locations = mu.get_locations_temp(req)
+        if locations:
+            print('from rest')
+            context['locations'] = json.dumps(locations)
+    else:
+        print('LOCATIONS:', len(locations))
+        for location in locations:
+            if location['uuid'] == 'ce3f1dac-26ad-49bc-8d9b-7ac340852ee8':
+                print(location['name'])
+        print('from cache')
+        context['locations'] = json.dumps(locations)
     return render(req, 'app/tbregister/reportmockup.html', context=context)
 
 
@@ -35,14 +49,19 @@ def login(req):
             password = req.POST['password']
             response = ru.initiate_session(req, username, password)
             if response:
-                return redirect('home')
+                if 'redirect' in req.session:
+                    return redirect(req.session['redirect'])
+                else:
+                    return redirect('home')
             else:
                 messages.error(
                     req, 'Cannot login right now. Please try again later.')
                 context['title'] = 'Login'
                 return render(req, 'app/tbregister/login.html', context=context)
         else:
-            return render(req, 'app/tbregister/login.html')
+            context['title'] = 'Login'
+            print(context['title'])
+            return render(req, 'app/tbregister/login.html', context=context)
 
 
 def search_patients_query(req):
@@ -130,7 +149,7 @@ def enroll_patient(req):
         return redirect('home')
 
 
-def enroll_in_dots_program(req, uuid):
+def enroll_in_program(req, uuid):
     if req.method == 'POST':
         enrollment_info = {
             "dateEnrolled": req.POST['enrollmentdate'],
@@ -144,7 +163,7 @@ def enroll_in_dots_program(req, uuid):
             print(enrollment_info)
         except Exception as e:
             message.error(req, e)
-        return redirect('dotsEnroll', uuid=uuid)
+        return redirect('programenroll', uuid=uuid)
 
     locations = json.dumps(mu.get_locations())
     status, registration_group_concepts = mu.get_concept_by_uuid(
@@ -335,7 +354,7 @@ def user_profile(req):
 
 
 def logout(req):
-    status, response = ru.delete(req, 'session')
+    status, _ = ru.delete(req, 'session')
     if status:
         ru.clear_session(req)
     return redirect('home')

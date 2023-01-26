@@ -19,6 +19,7 @@ def initiate_session(req, username, password):
     else:
         return False
 
+
 def refresh_session(req):
     response = requests.get(url=BASE_URL + 'session')
     if response.status_code == 200:
@@ -30,10 +31,11 @@ def refresh_session(req):
     else:
         return False
 
+
 def clear_session(req):
+    req.session['redirect'] = req.META['HTTP_REFERER']
     # This will remove all the login info for user
     del req.session['session_id']
-    
     del req.session['encoded_credentials']
     del req.session['locale']
     del req.session['logged_user']
@@ -46,7 +48,12 @@ def get(req, endpoint, parameters):
     if response.status_code == 200:
         return True, response.json()
     elif response.status_code == 403:
-        refreshed_session = refresh_session(req)
+        print('Expired')
+        clear_session(req)
+        return False, response.status_code
+    else:
+        print('Failed')
+        print(response.status_code)
         return False, response.status_code
 
 
