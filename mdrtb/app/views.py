@@ -6,6 +6,7 @@ import utilities.commonlab_util as cu
 import utilities.patientutls as pu
 import utilities.formsutil as fu
 import utilities.common_utils as util
+import utilities.locationsutil as lu
 import json
 import datetime
 from uuid import uuid4
@@ -14,7 +15,7 @@ from django.core.cache import cache
 
 
 def index(req):
-    locations = json.dumps(mu.get_locations_and_set_cache(req))
+    locations = json.dumps(lu.assign_facilities(req))
     return render(req, 'app/tbregister/reportmockup.html', context={'locations': locations})
 
 
