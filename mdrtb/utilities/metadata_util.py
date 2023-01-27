@@ -271,12 +271,19 @@ def get_global_properties(req, key):
         return None
 
 
-def get_locations_temp(req):
-
+def get_locations_and_set_cache(req):
     locations = cache.get('locations')
+    non_retired_locations = []
     if not locations:
-        status, first_100_locations = ru.get(
-            req, 'location', {'v': 'full', 'limit': 100})
-        return all_locations
+        status, locations = ru.get(
+            req, 'location', {'v': 'custom:(uuid,name,parentLocation,childLocations,attributes,retired)', 'limit': 300})
+        if status:
+            for location in locations['results']:
+                if location['retired'] is False:
+                    non_retired_locations.append(location)
+            cache.set('locations', non_retired_locations)
+            return non_retired_locations
+        else:
+            return None
     else:
-        return locations
+        return non_retired_locations

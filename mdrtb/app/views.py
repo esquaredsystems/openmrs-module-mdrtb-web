@@ -14,24 +14,12 @@ from django.core.cache import cache
 
 
 def index(req):
-    context = {}
-    locations = cache.get('locations')
-    if locations is None:
-        locations = mu.get_locations_temp(req)
-        if locations:
-            print('from rest')
-            context['locations'] = json.dumps(locations)
-    else:
-        print('LOCATIONS:', len(locations))
-        for location in locations:
-            if location['uuid'] == 'ce3f1dac-26ad-49bc-8d9b-7ac340852ee8':
-                print(location['name'])
-        print('from cache')
-        context['locations'] = json.dumps(locations)
-    return render(req, 'app/tbregister/reportmockup.html', context=context)
+    locations = json.dumps(mu.get_locations_and_set_cache(req))
+    return render(req, 'app/tbregister/reportmockup.html', context={'locations': locations})
 
 
 def login(req):
+
     context = {'title': "Search Patients"}
     if 'session_id' in req.session:
         minSearchCharacters = mu.get_global_properties(

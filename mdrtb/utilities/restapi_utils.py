@@ -2,6 +2,8 @@ import requests
 import base64
 from utilities import metadata_util as mu
 from mdrtb.settings import BASE_URL
+from django.shortcuts import redirect
+from django.contrib import messages
 
 
 def initiate_session(req, username, password):
@@ -33,7 +35,6 @@ def refresh_session(req):
 
 
 def clear_session(req):
-    req.session['redirect'] = req.META['HTTP_REFERER']
     # This will remove all the login info for user
     del req.session['session_id']
     del req.session['encoded_credentials']
@@ -50,7 +51,8 @@ def get(req, endpoint, parameters):
     elif response.status_code == 403:
         print('Expired')
         clear_session(req)
-        return False, response.status_code
+        messages.error(req, 'Please Login again')
+        return redirect('home')
     else:
         print('Failed')
         print(response.status_code)
