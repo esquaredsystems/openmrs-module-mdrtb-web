@@ -11,74 +11,55 @@
 
 <div class="m-16">
   <h1 class="text-[#2D9CDB] text-3xl font-bold">
-    {{'mdrtb.enrollment.enroll'|get_message:request.session.locale}}
+    {{'Program.add'|get_message_openMRS:request.session.locale}}
   </h1>
   <form action="{% url 'programenroll' uuid=uuid %}" method="post" class="flex flex-col">
     {% csrf_token %}
 
-    <div class="p-4 flex flex-col justify-center space-y-4">
+    <div id="enroll-form" class="p-4 flex flex-col justify-center space-y-4">
+      {% if programs %}
       <div class="input-container">
-        <label class="font-bold text-[#9E9E9E] w-2/5" for=""
-          >{{'mdrtb.enrollment.date'|get_message:request.session.locale}}</label
-        >
-        <input
-          class="input w-3/5"
-          type="date"
-          name="enrollmentdate"
-          id="enrollmentdate"
-          required
-        />
+        <label
+          class="font-bold text-[#9E9E9E] w-2/5 required">{{'Program.header'|get_message_openMRS:request.session.locale}}</label>
+        <select class="input w-3/5" name="program" id="program-select" required>
+          <option selected value="">Choose a Program</option>
+          {% for program in programs %}
+          <option value="{{program.uuid}}">{{program.name}}</option>
+          {% endfor %}
+        </select>
+
+      </div>
+      {% endif %}
+      <div class="input-container">
+        <label class="font-bold text-[#9E9E9E] w-2/5 required"
+          for="">{{'mdrtb.enrollment.date'|get_message:request.session.locale}}</label>
+        <input class="input w-3/5" type="date" name="enrollmentdate" id="enrollmentdate" required />
       </div>
       <div class="input-container">
-        <label class="font-bold text-[#9E9E9E] w-2/5" for=""
-          >{{'mdrtb.oblast'|get_message:request.session.locale}}</label
-        >
-        <select
-          class="input w-3/5 disabled:pointer-events-none"
-          name="oblast"
-          id="oblast-select"
-          required
-        >
-          <option value="None">Select</option>
+        <label class="font-bold text-[#9E9E9E] w-2/5 required"
+          for="">{{'mdrtb.oblast'|get_message:request.session.locale}}</label>
+        <select class="input w-3/5 disabled:pointer-events-none " name="oblast" id="oblast-select" required>
+          <option value="">Select</option>
         </select>
       </div>
       <div class="input-container">
-        <label class="font-bold text-[#9E9E9E] w-2/5" for=""
-          >{{'mdrtb.district'|get_message:request.session.locale}}</label
-        >
-        <select class="input w-3/5" name="district" id="district-select" required>
-          
-        </select>
-      </div>
-      <div class="input-container">
-        <label class="font-bold text-[#9E9E9E] w-2/5" for=""
-          >{{'mdrtb.facility'|get_message:request.session.locale}}</label
-        >
-        <select class="input w-3/5" name="facility" id="facility-select">
-          <option value="None">Select</option>
+        <label class="font-bold text-[#9E9E9E] w-2/5 required"
+          for="">{{'mdrtb.district'|get_message:request.session.locale}}</label>
+        <select class="input w-3/5 " name="district" id="district-select" required>
+          <option value="">Select</option>
 
         </select>
       </div>
-      <div class="input-container">
-        <label class="font-bold text-[#9E9E9E] w-2/5"
-          >{{'mdrtb.previousTreatmentClassification'|get_message:request.session.locale}}</label
-        >
-        <select class="input w-3/5" name="reggrpprevtreatment" required>
-          {% for concept in reggrp %}
-          <option value="{{concept.display}}">{{concept.display}}</option>
-          {% endfor %}
-          
+      <div class="input-container ">
+        <label class="font-bold text-[#9E9E9E] w-2/5 required"
+          for="">{{'mdrtb.facility'|get_message:request.session.locale}}</label>
+        <select class="input w-3/5 " name="facility" id="facility-select" required>
+          <option value="">Select</option>
+
         </select>
       </div>
-      <div class="input-container">
-        <label class="font-bold text-[#9E9E9E] w-2/5"
-          >{{'mdrtb.previousDrugClassification'|get_message:request.session.locale}}</label
-        >
-        <select class="input w-3/5" name="reggrpprevdrug" required>
-          {% for concept in reggrpprev %}
-          <option value="{{concept.display}}">{{concept.display}}</option>
-          {% endfor %}
-        </select>
+      <div id="states" class="flex-column-center space-y-4">
+
       </div>
     </div>
     <div class="flex items-center p-4 space-x-8">
@@ -90,8 +71,42 @@
       </a>
     </div>
   </form>
+  <script defer>
+    let programs = JSON.parse("{{jsonprograms | escapejs }}")
+    $('#program-select').change((selectProgram) => {
+      $('#states').html('')
+      for (program of programs) {
+        if (program.uuid === selectProgram.target.value) {
+          $('#states').append(
+            ` <h3 id="initialStates" class="primary-heading text-xl" >{{'Program.initialStates' | get_message_openMRS:request.session.locale}}</h3>`
+          )
+          for (workFlow of program.allWorkflows) {
+            if (!workFlow.retired) {
+              $('#states').append(
+                ` <div class="input-container ">
+        <label class="font-bold normal-case text-sm text-[#9E9E9E] w-2/5"
+          >${workFlow.concept.display}</label
+        >
+        <select class="input w-3/5" name=${workFlow.concept.uuid} id=${workFlow.concept.uuid}>
+          <option selected value="">Select</option></select>
+      </div>
+                  `
+              )
+              workFlow.states.forEach(item => {
+                if (item.retired === false) {
 
-  <script>
+                  $(`#${workFlow.concept.uuid}`).append(
+                    `<option value=${item.concept.uuid}>${item.concept.display}</option>`
+                  )
+                }
+              })
+            }
+          }
+        }
+      }
+    })
+
+
     const setMaxDate = () => {
       let date = new Date();
       maxDate = date.toISOString().substring(0, 10);
@@ -102,11 +117,11 @@
     var locations = JSON.parse("{{locations | escapejs }}");
     let tjkRegions = locations[0].children;
     function setLocations(tjkRegions) {
-        
+
       for (let location of tjkRegions) {
-        
+
         if (location.level === "region") {
-        
+
           $("#oblast-select").append(
             $("<option>", {
               value: location.name,
@@ -156,7 +171,7 @@
                     if (kid.level === "facility") {
                       $("#facility-select").append(
                         $("<option>", {
-                          value:  kid.name,
+                          value: kid.name,
                           text: kid.name,
                         })
                       );
@@ -173,10 +188,10 @@
 
 
 
-    function disableLocationsInput(){
-        $('#district-select').prop('disabled' , true)
-        $('#facility-select').prop('disabled' , true)
-        
+    function disableLocationsInput() {
+      $('#district-select').prop('disabled', true)
+      $('#facility-select').prop('disabled', true)
+
 
     }
     disableLocationsInput()

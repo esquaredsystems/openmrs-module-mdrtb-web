@@ -41,12 +41,12 @@ def get_enrolled_programs_by_patient(req, uuid):
                         "work_flow_states": []
                     },
                     "date_enrolled": program['dateEnrolled'],
-                    "date_completed": program['dateCompleted'],
+                    "date_completed": program['dateCompleted'] if program['dateCompleted'] is not None else None,
                     "outcome": program['outcome'],
                     "location": {
                         'uuid': program['location']['uuid'],
                         "name": program['location']['display']
-                    },
+                    } if program['location'] is not None else None,
                     "creator": {
                         'uuid': program['auditInfo']['creator']['uuid'],
                         "name": program['auditInfo']['creator']['display']
@@ -65,35 +65,36 @@ def get_enrolled_programs_by_patient(req, uuid):
                                 }
                             }
                         )
-                for state in program['states']:
-                    for local_program in programs_info:
-                        local_program['states'].append(
-                            {
-                                "uuid": state['state']['uuid'],
-                                'concept': {
-                                    'uuid': state['state']['concept']['uuid'],
-                                    'name': state['state']['concept']['display'],
-                                },
-                                "start_date": state['startDate']
-                            }
-                        )
-            final_states = []
-            for program_info in programs_info:
-                for program_state in program_info['states']:
-                    for work_flow_state in program_info['program']['work_flow_states']:
-                        for state in work_flow_state['concept']['states']:
-                            if program_state['uuid'] == state:
-                                final_states.append(
-                                    {
-                                        'concept': work_flow_state['concept']['name'],
-                                        'answer': program_state['concept']['name'],
-                                        "start_date": program_state['start_date']
-                                    }
-                                )
-                program_info['states'] = final_states
+                if program['states']:
+                    for state in program['states']:
+                        for local_program in programs_info:
+                            local_program['states'].append(
+                                {
+                                    "uuid": state['state']['uuid'],
+                                    'concept': {
+                                        'uuid': state['state']['concept']['uuid'],
+                                        'name': state['state']['concept']['display'],
+                                    },
+                                    "start_date": state['startDate']
+                                }
+                            )
+                    final_states = []
+                    for program_info in programs_info:
+                        for program_state in program_info['states']:
+                            for work_flow_state in program_info['program']['work_flow_states']:
+                                for state in work_flow_state['concept']['states']:
+                                    if program_state['uuid'] == state:
+                                        final_states.append(
+                                            {
+                                                'concept': work_flow_state['concept']['name'],
+                                                'answer': program_state['concept']['name'],
+                                                "start_date": program_state['start_date']
+                                            }
+                                        )
+                        program_info['states'] = final_states
             return patient_info, programs_info
         else:
             patient = get_patient(req, uuid)
-            return patient , []
+            return patient, []
     else:
         return None

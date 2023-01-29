@@ -1,6 +1,7 @@
 from django.template.defaulttags import register
 from datetime import datetime
 from dateutil import parser
+import json
 
 
 @register.filter
@@ -11,13 +12,23 @@ def get_datenow(placeholder):
 
 @register.filter
 def iso_to_normal_date(date):
-    return str(parser.isoparse(date)).split(' ')[0]
+    if date:
+        return str(parser.isoparse(date)).split(' ')[0]
+    else:
+        return None
 
 
 @register.filter
 def get_encounter_name(name):
     return name[:len(name)-10]
 
+
 @register.filter
 def get_id_from_name(name):
     return name.split('-')[0]
+
+
+@register.filter
+def parse_json(jsonstring):
+    parsed_json = json.loads(jsonstring)
+    return list(parsed_json)

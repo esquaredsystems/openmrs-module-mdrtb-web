@@ -16,11 +16,11 @@ from django.core.cache import cache
 
 def index(req):
     locations = json.dumps(lu.assign_facilities(req))
-    return render(req, 'app/tbregister/reportmockup.html', context={'locations': locations})
+    context = {'locations': locations}
+    return render(req, 'app/tbregister/reportmockup.html', context=context)
 
 
 def login(req):
-
     context = {'title': "Search Patients"}
     if 'session_id' in req.session:
         minSearchCharacters = mu.get_global_properties(
@@ -43,8 +43,6 @@ def login(req):
                 else:
                     return redirect('home')
             else:
-                messages.error(
-                    req, 'Cannot login right now. Please try again later.')
                 context['title'] = 'Login'
                 return render(req, 'app/tbregister/login.html', context=context)
         else:
@@ -139,27 +137,30 @@ def enroll_patient(req):
 
 
 def enroll_in_program(req, uuid):
+    context = {'title': 'Add a new Program', 'uuid': uuid}
     if req.method == 'POST':
-        enrollment_info = {
-            "dateEnrolled": req.POST['enrollmentdate'],
-            "program": "e80fec43-f2b5-45b0-aec1-eaf74be26ff9",
+        body = {
             "patient": uuid,
-            "location": "",
-            "registration_group_prev_treatment": req.POST['reggrpprevtreatment'],
-            "registration_group_prev_drug": req.POST['reggrpprevdrug'],
+            "program": req.POST['program'],
+            "dateEnrolled": req.POST['enrollmentdate'],
+            # TODO: Remaining values are yet to be decided how to send
         }
         try:
-            print(enrollment_info)
+            for key, value in req.POST.items():
+                print("{} has value of {}".format(key, value))
         except Exception as e:
             message.error(req, e)
         return redirect('programenroll', uuid=uuid)
 
+    programs = mu.get_programs(req)
+    if programs:
+        context['programs'] = programs
+        context['jsonprograms'] = json.dumps(programs)
+
     locations = json.dumps(mu.get_locations())
-    status, registration_group_concepts = mu.get_concept_by_uuid(
-        'ae16bb6e-3d82-4e14-ab07-2018ee10d311', req)
-    status, registration_group_prev_drug_concepts = mu.get_concept_by_uuid(
-        '31c2d590-0370-102d-b0e3-001ec94a0cc1', req)
-    return render(req, 'app/tbregister/dots/enroll_program.html', context={'locations': locations, 'reggrp': registration_group_concepts['answers'], 'reggrpprev': registration_group_prev_drug_concepts['answers'], 'title': "Enroll in Dots Progam", 'uuid': uuid})
+    if locations:
+        context['locations'] = locations
+    return render(req, 'app/tbregister/dots/enroll_program.html', context=context)
 
 
 def enrolled_programs(req, uuid):

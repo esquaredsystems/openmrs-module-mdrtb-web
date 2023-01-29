@@ -56,7 +56,7 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-4">
             <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">Enrolled Programs</h2>
-            <a href="#" class="text-[#044062] font-bold underline">
+            <a href="{% url 'programenroll' uuid=uuid %}" class="text-[#044062] font-bold underline">
               {{'general.add'|get_message_openMRS:request.session.locale}}
               {{'general.new'|get_message_openMRS:request.session.locale}}
             </a>
@@ -115,7 +115,13 @@
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">{{program.program.name}}</td>
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
                     {{program.date_enrolled|iso_to_normal_date}}</td>
-                  <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">{{program.location.name}}</td>
+                  <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
+                    {% if program.location %}
+                    {{program.location.name}}
+                    {% else %}
+                    None
+                    {% endif %}
+                  </td>
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
                     {{program.date_completed|iso_to_normal_date }}</td>
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
@@ -157,15 +163,24 @@
   const showStatesModal = (name, states) => {
     $('#statesModalScrollableLabel').html(`${name} States`)
     let jsonStates = JSON.parse(states.replaceAll("'", '"'))
-    for (state of jsonStates) {
-      let startdate = new Date(state.start_date)
-      $('#modalBody').append(
-        ` <div class="flex-center space-x-6">
+    if (jsonStates.length > 0) {
+      for (state of jsonStates) {
+        let startdate = new Date(state.start_date)
+        $('#modalBody').append(
+          ` <div class="flex-center space-x-6">
           <label class="input-label w-fit text-lg">${state.concept} : </label>
           <span class="text-md font-bold">${state.answer}  (${state.start_date.substring(0, 10)})</span>
         </div>`
+        )
+      }
+    } else {
+      $('#modalBody').append(
+        ` <div class="flex-center space-x-6 text-center text-xl">
+          No states to show
+        </div>`
       )
     }
+
 
 
   }
