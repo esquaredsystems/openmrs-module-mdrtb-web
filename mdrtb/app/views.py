@@ -15,9 +15,12 @@ from django.core.cache import cache
 
 
 def index(req):
-    locations = json.dumps(lu.assign_facilities(req))
-    context = {'locations': locations}
-    return render(req, 'app/tbregister/reportmockup.html', context=context)
+    if 'session_id' in req.session:
+        locations = json.dumps(lu.assign_facilities(req))
+        context = {'locations': locations}
+        return render(req, 'app/tbregister/reportmockup.html', context=context)
+    else:
+        return redirect('home')
 
 
 def login(req):

@@ -265,7 +265,7 @@ def get_patient_identifier_types(req):
 def get_global_properties(req, key):
     status, response = ru.get(req, 'systemsetting', {'q': key,
                                                      'v': 'custom:(value)'})
-    if status:
+    if status and response:
         return response['results'][0]['value']
     else:
         return None

@@ -134,3 +134,5 @@ resources/*.pdf
 
 #npm
 node_modules
+
+.vscode

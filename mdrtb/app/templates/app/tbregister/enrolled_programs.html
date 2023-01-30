@@ -144,9 +144,14 @@
           </div>
         </div>
         {% else %}
-        <div style="margin-top: 8rem;" class="flex-column-center space-y-4 mx-auto w-fit bg-gray-500 p-4 shadow-md">
-          <h1 class="text-center mx-auto font-bold text-3xl">No programs to display</h1>
-          <a href="#" class="button-primary text-center hover:text-white">Add Program</a>
+        <div style="margin-top: 8rem;"
+          class="flex-column-center space-y-6 mx-auto w-fit bg-gray-400 p-4 shadow-lg blur-sm">
+          <h1 class="text-center mx-auto font-semibold text-3xl">No programs to display</h1>
+          <div class="flex-center justify-center space-x-3">
+            <a href="{% url 'programenroll' uuid=uuid %}" class="button-primary text-center flex-1 hover:text-white">Add
+              Program</a>
+            <a href="javascript:history.go(-1)" class="cancel-button">Go Back</a>
+          </div>
         </div>
 
         {% endif %}

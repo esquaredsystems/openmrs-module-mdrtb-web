@@ -24,20 +24,20 @@ def initiate_session(req, username, password):
     else:
         clear_session(req)
         messages.error(
-            req, mu.get_global_msgs('auth.password.invalid'))
+            req, mu.get_global_msgs('auth.password.invalid', source='OpenMRS'))
         return False
 
 
-def refresh_session(req):
-    response = requests.get(url=BASE_URL + 'session')
-    if response.status_code == 200:
-        req.session['session_id'] = response.json()['sessionId']
-        req.session['logged_user'] = response.json()['user']
-        req.session['encoded_credentials'] = encoded_credentials
-        req.session['locale'] = 'en'
-        return True
-    else:
-        return False
+# def refresh_session(req):
+#     response = requests.get(url=BASE_URL + 'session')
+#     if response.status_code == 200:
+#         req.session['session_id'] = response.json()['sessionId']
+#         req.session['logged_user'] = response.json()['user']
+#         req.session['encoded_credentials'] = encoded_credentials
+#         req.session['locale'] = 'en'
+#         return True
+#     else:
+#         return False
 
 
 def clear_session(req):
@@ -50,56 +50,19 @@ def clear_session(req):
         del req.session['logged_user']
     except KeyError as e:
         pass
-    finally:
-        return None
 
 
 def get(req, endpoint, parameters):
-    try:
-        response = requests.get(
-            url=BASE_URL+endpoint, headers=get_auth_headers(req), params=parameters)
-        if response:
-            print('we got response with status {}'.format(response.status_code))
-            if response.status_code == 200:
-                return True, response.json()
-            else:
-                print(response.status_code)
-                return False, response.json()['error']
-    except Exception as e:
-        print(e)
-        print('RESPONSE', response)
-        return False, None
-
-
-# def get(req, endpoint, parameters):
-#     print('WE HERE AT GET')
-#     try:
-#         response = requests.get(url=BASE_URL + endpoint,
-#                             headers=get_auth_headers(req), params=parameters)
-#         if response:
-#             print('we got response with status {}'.format(response.status_code))
-#             if response.status_code == 200:
-#                 print('200')
-#                 return True, response.json()
-#             elif response.status_code == 403:
-#                 print('Expired')
-#                 clear_session(req)
-#                 messages.error(req, 'Please Login again')
-#                 return False, redirect('home')
-#             else:
-#                 print('Failed')
-#                 print(response.status_code)
-#                 return False, response.status_code
-#         else:
-#             print('NO RESPONSE')
-#             messages.error(req, 'Error logging in')
-#             clear_session(req)
-#             return False, redirect('home')
-#     except Exception as e:
-#         print('EXCEPTION')
-#         messages.error(req, 'Error logging in')
-#         return False, redirect('home')
-#         print(e)
+    response = requests.get(
+        url=BASE_URL+endpoint, headers=get_auth_headers(req), params=parameters)
+    if response.status_code == 403:
+        print(response.status_code)
+        clear_session(req)
+        messages.error(req, mu.get_global_msgs('Your session has expired'))
+        print(response.json())
+        return False, response.json()
+    response.raise_for_status()
+    return True, response.json()
 
 
 def post(req, endpoint, data):
