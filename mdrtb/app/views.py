@@ -24,34 +24,52 @@ def index(req):
 
 
 def login(req):
-    context = {'title': "Search Patients"}
     if 'session_id' in req.session:
-        minSearchCharacters = mu.get_global_properties(
+        min_search_characters = mu.get_global_properties(
             req, 'minSearchCharacters')
-        if minSearchCharacters is not None:
-            context['minSearchCharacters'] = minSearchCharacters
-            return render(req, 'app/tbregister/search_patients.html', context=context)
-        else:
-            messages.error(req, 'Error finding global property')
-            context['minSearchCharacters'] = 3
-            return render(req, 'app/tbregister/search_patients.html', context=context)
-    else:
-        if req.method == 'POST':
-            username = req.POST['username']
-            password = req.POST['password']
-            response = ru.initiate_session(req, username, password)
-            if response:
-                if 'redirect' in req.session:
-                    return redirect(req.session['redirect'])
-                else:
-                    return redirect('home')
-            else:
-                context['title'] = 'Login'
-                return render(req, 'app/tbregister/login.html', context=context)
-        else:
-            context['title'] = 'Login'
-            print(context['title'])
-            return render(req, 'app/tbregister/login.html', context=context)
+        context = {'title': "Search Patients",
+                   'minSearchCharacters': min_search_characters or 3}
+        return render(req, 'app/tbregister/search_patients.html', context=context)
+
+    if req.method == 'POST':
+        username = req.POST['username']
+        password = req.POST['password']
+        if ru.initiate_session(req, username, password):
+            return redirect(req.session.get('redirect', 'home'))
+
+    context = {'title': 'Login'}
+    return render(req, 'app/tbregister/login.html', context=context)
+
+
+# def login(req):
+#     context = {'title': "Search Patients"}
+#     if 'session_id' in req.session:
+#         minSearchCharacters = mu.get_global_properties(
+#             req, 'minSearchCharacters')
+#         if minSearchCharacters:
+#             context['minSearchCharacters'] = minSearchCharacters
+#             return render(req, 'app/tbregister/search_patients.html', context=context)
+#         else:
+#             messages.error(req, 'Error finding global property')
+#             context['minSearchCharacters'] = 3
+#             return render(req, 'app/tbregister/search_patients.html', context=context)
+#     else:
+#         if req.method == 'POST':
+#             username = req.POST['username']
+#             password = req.POST['password']
+#             response = ru.initiate_session(req, username, password)
+#             if response:
+#                 if 'redirect' in req.session:
+#                     return redirect(req.session['redirect'])
+#                 else:
+#                     return redirect('home')
+#             else:
+#                 context['title'] = 'Login'
+#                 return render(req, 'app/tbregister/login.html', context=context)
+#         else:
+#             context['title'] = 'Login'
+#             print(context['title'])
+#             return render(req, 'app/tbregister/login.html', context=context)
 
 
 def search_patients_query(req):
@@ -110,22 +128,15 @@ def enroll_patient(req):
 
         if 'voided' in req.POST:
             patient_info['person']['reasonToVoid'] = req.POST['reasontovoid']
-
+        print(patient_info)
         status, response = ru.post(req, 'patient', patient_info)
         if status:
-            return redirect('dotsEnroll', uuid=response['uuid'])
+            return redirect('programenroll', uuid=response['uuid'])
         else:
-            messages.error(req, "Error creating patient")
+            for error in response['globalErrors']:
+                messages.error(req, error['message'])
             return redirect('home')
 
-        # MOCK:
-        # try:
-        #     print(patient_info)
-        #     # req.session['created_patient'] = person_info
-        #     # return redirect('dotsEnroll')
-        # except Exception as e:
-        #     message.error(req, e)
-        #     return redirect('home')
     if 'session_id' in req.session:
         try:
             identifiertypes = mu.get_patient_identifier_types(req)
@@ -149,8 +160,9 @@ def enroll_in_program(req, uuid):
             # TODO: Remaining values are yet to be decided how to send
         }
         try:
-            for key, value in req.POST.items():
-                print("{} has value of {}".format(key, value))
+            status, response = ru.post(req, 'programenrollment', body)
+            if status:
+                return redirect('tb03')
         except Exception as e:
             message.error(req, e)
         return redirect('programenroll', uuid=uuid)

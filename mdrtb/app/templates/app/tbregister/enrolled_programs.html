@@ -125,9 +125,9 @@
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
                     {{program.date_completed|iso_to_normal_date }}</td>
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
-                    <button id="modalOpenBtn"
-                      onclick="showStatesModal( `{{program.program.name}}`, `{{program.states}}`)"
-                      data-bs-toggle="modal" data-bs-target="#statesModal" type="button" class="button-primary">
+                    <button id="modalOpenBtn" onclick="showStatesModal('{{program.program.name}}')"
+                      data-obj="{{program.states}}" data-bs-toggle="modal" data-bs-target="#statesModal" type="button"
+                      class="button-primary">
                       View States
                     </button>
                   </td>
@@ -165,16 +165,18 @@
     $('#modalBody').html('')
   }
 
-  const showStatesModal = (name, states) => {
+  const showStatesModal = (name) => {
+    let states = $('#modalOpenBtn').data('obj')
+    console.log(states.replaceAll(`'`, `"`))
     $('#statesModalScrollableLabel').html(`${name} States`)
-    let jsonStates = JSON.parse(states.replaceAll("'", '"'))
+    let jsonStates = JSON.parse(states.replaceAll(`'`, `"`).replaceAll(`None`, null))
     if (jsonStates.length > 0) {
       for (state of jsonStates) {
         let startdate = new Date(state.start_date)
         $('#modalBody').append(
           ` <div class="flex-center space-x-6">
           <label class="input-label w-fit text-lg">${state.concept} : </label>
-          <span class="text-md font-bold">${state.answer}  (${state.start_date.substring(0, 10)})</span>
+          <span class="text-md font-bold">${state.answer}  (${state.start_date ? state.start_date.substring(0, 10) : 'None'})</span>
         </div>`
         )
       }

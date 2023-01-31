@@ -78,20 +78,16 @@ def get_enrolled_programs_by_patient(req, uuid):
                                     "start_date": state['startDate']
                                 }
                             )
-                    final_states = []
                     for program_info in programs_info:
-                        for program_state in program_info['states']:
-                            for work_flow_state in program_info['program']['work_flow_states']:
-                                for state in work_flow_state['concept']['states']:
-                                    if program_state['uuid'] == state:
-                                        final_states.append(
-                                            {
-                                                'concept': work_flow_state['concept']['name'],
-                                                'answer': program_state['concept']['name'],
-                                                "start_date": program_state['start_date']
-                                            }
-                                        )
-                        program_info['states'] = final_states
+                        program_info['states'] = [
+                            {
+                                'concept': work_flow_state['concept']['name'],
+                                'answer': program_state['concept']['name'],
+                                "start_date": program_state['start_date']
+                            }
+                            for program_state in program_info['states'] for work_flow_state in program_info['program']['work_flow_states'] for state in work_flow_state['concept']['states'] if program_state['uuid'] == state
+                        ]
+
             return patient_info, programs_info
         else:
             patient = get_patient(req, uuid)
