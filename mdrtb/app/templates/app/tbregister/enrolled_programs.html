@@ -114,7 +114,7 @@
                 <tr>
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">{{program.program.name}}</td>
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
-                    {{program.date_enrolled|iso_to_normal_date}}</td>
+                    {{program.dateEnrolled|iso_to_normal_date}}</td>
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
                     {% if program.location %}
                     {{program.location.name}}
@@ -123,7 +123,7 @@
                     {% endif %}
                   </td>
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
-                    {{program.date_completed|iso_to_normal_date }}</td>
+                    {{program.dateCompleted|iso_to_normal_date }}</td>
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
                     <button id="modalOpenBtn" onclick="showStatesModal('{{program.program.name}}')"
                       data-obj="{{program.states}}" data-bs-toggle="modal" data-bs-target="#statesModal" type="button"
@@ -131,9 +131,15 @@
                       View States
                     </button>
                   </td>
-                  <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm"><button type="button"
-                      class="cancel-button">Edit Program</button></td>
-
+                  {% if program.program.uuid == "e80fec43-f2b5-45b0-aec1-eaf74be26ff9" %}
+                  <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
+                    <a href="{% url 'dashboard' uuid=uuid %}" type="button" class="cancel-button">Edit Program</a>
+                  </td>
+                  {% else %}
+                  <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
+                    <a href="{% url 'mdrdashboard' uuid=uuid %}" type="button" class="cancel-button">Edit Program</a>
+                  </td>
+                  {% endif %}
                 </tr>
                 {% endfor %}
 
@@ -160,23 +166,20 @@
   </section>
 </div>
 <script defer>
-
   if (!$(document.body).hasClass('modal-open')) {
     $('#modalBody').html('')
   }
 
   const showStatesModal = (name) => {
     let states = $('#modalOpenBtn').data('obj')
-    console.log(states.replaceAll(`'`, `"`))
     $('#statesModalScrollableLabel').html(`${name} States`)
     let jsonStates = JSON.parse(states.replaceAll(`'`, `"`).replaceAll(`None`, null))
     if (jsonStates.length > 0) {
       for (state of jsonStates) {
-        let startdate = new Date(state.start_date)
         $('#modalBody').append(
           ` <div class="flex-center space-x-6">
           <label class="input-label w-fit text-lg">${state.concept} : </label>
-          <span class="text-md font-bold">${state.answer}  (${state.start_date ? state.start_date.substring(0, 10) : 'None'})</span>
+          <span class="text-md font-bold">${state.answer.concept}   ( since ${state.answer.start_date ? state.answer.start_date.substring(0, 10) : 'None'})</span>
         </div>`
         )
       }

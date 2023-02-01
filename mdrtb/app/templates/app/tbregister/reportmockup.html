@@ -1,13 +1,45 @@
-{% extends 'app/base/base_without_menu.html' %}
-{% block title %} {{title}} {%endblock %} {% block content %}
+{% extends 'app/base/base.html' %}
+{% load static tailwind_tags %}
+{% load static %}
+{% tailwind_css %}
+
+{% block content %}
+<div id="location-form" class="enroll_form_bg m-16">
+  <div class="input-container">
+    <label class="input-label" for="country">{{'Location.country'|get_message_openMRS:request.session.locale}}</label>
+    <select required disabled class="input" name="country" id="country-select">
+      <option selected value="Tajikistan">Tajikistan</option>
+
+    </select>
+  </div>
+
+  <div class="input-container">
+    <label class="input-label" for="name">{{'mdrtb.region'|get_message:request.session.locale}}</label>
+    <select required class="input" name="region" id="region-select">
+      <option value="">Select</option>
+    </select>
+  </div>
+  <div id="subregion-container" class="input-container hidden">
+    <label class="input-label" for="name">Sub region</label>
+    <select disabled required class="input" name="subregion" id="subregion-select">
+      <option value="">Select</option>
+    </select>
+  </div>
+
+  <div class="input-container">
+    <label class="input-label" for="name">{{'mdrtb.district'|get_message:request.session.locale}}</label>
+    <select disabled required class="input" name="district" id="district-select">
+      <option value="">Select</option>
+    </select>
+  </div>
+  <div class="input-container">
+    <label class="input-label" for="name">{{'mdrtb.facility'|get_message:request.session.locale}}</label>
+    <select disabled required class="input" name="facility" id="facility-select">
+      <option value="">Select</option>
+
+    </select>
+  </div>
 
 
-<div class="m-4">
-  HELLO
 </div>
-
-<script>
-  let locations = JSON.parse("{{locations | escapejs }}");
-  console.log(locations)
-</script>
 {% endblock %}

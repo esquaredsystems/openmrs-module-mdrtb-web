@@ -4,11 +4,8 @@ import datetime
 from django.shortcuts import redirect
 
 
-def get_locations_and_set_cache(req):
-    locations = cache.get('locations')
-    if locations:
-        return locations
-
+def get_locations(req):
+    print('MAKING REST CALL')
     status, locations = ru.get(req, 'location', {
         'v': 'custom:(uuid,name,parentLocation,childLocations,attributes,retired)',
         'limit': 500
@@ -19,7 +16,6 @@ def get_locations_and_set_cache(req):
 
     non_retired_locations = [
         location for location in locations['results'] if not location['retired']]
-    cache.set('locations', non_retired_locations, timeout=86400)
     return non_retired_locations
 
 
@@ -33,8 +29,12 @@ def get_location_level(uuid, location_by_uuids):
             return level
     return None
 
+
 def create_location_hierarchy(req):
-    locations = get_locations_and_set_cache(req)
+    locations = cache.get('locations')
+    if locations:
+        return locations
+    locations = get_locations(req)
     location_by_uuids = {location['uuid']: location for location in locations}
     location_hierarchy = []
 
@@ -54,9 +54,10 @@ def create_location_hierarchy(req):
                                 'uuid': subchild['uuid'],
                                 'name': subchild.get('name', subchild['display']),
                                 'level': get_location_level(subchild['uuid'], location_by_uuids),
-                            } for subchild in child.get('childLocations', []) if not subchild.get('retired', location_by_uuids.get(subchild['uuid'],{'retired': True})['retired'])
+                            } for subchild in child.get('childLocations', []) if not subchild.get('retired', location_by_uuids.get(subchild['uuid'], {'retired': True})['retired'])
                         ] if child.get('childLocations') else []
-                    } for child in location.get('childLocations', []) if not child.get('retired', location_by_uuids.get(child['uuid'],{'retired': True})['retired'])
+                    } for child in location.get('childLocations', []) if not child.get('retired', location_by_uuids.get(child['uuid'], {'retired': True})['retired'])
                 ] if location.get('childLocations') else []
             })
+    cache.set('locations', location_hierarchy, timeout=86400)
     return location_hierarchy

@@ -18,79 +18,54 @@ def get_patient(req, uuid):
         return None
 
 
+def get_states(workflowstates, programstates):
+    for programstate in programstates:
+        state = programstate.get('state')
+        if state:
+            uuid = state.get('uuid')
+            if uuid:
+                display = next((ws['concept']['display']
+                               for ws in workflowstates if ws['uuid'] == uuid), None)
+                if display:
+                    return {
+                        "concept": display,
+                        "start_date": programstate.get('startDate')
+                    }
+
+
 def get_enrolled_programs_by_patient(req, uuid):
     status, response = ru.get(req, 'programenrollment', {
-                              'patient': uuid, 'v': 'full'})
-    programs_info = []
+                              'patient': uuid, 'v': 'custom:(uuid,program,states,dateEnrolled,dateCompleted,location,outcome)'})
     if status:
-        if len(response['results']) > 0:
-            patient_info = {
-                "uuid": uuid,
-                "name": response['results'][0]['patient']['person']['display'],
-                "age": response['results'][0]['patient']['person']['age'],
-                "dob": response['results'][0]['patient']['person']['birthdate'],
-                "identifier": response['results'][0]['patient']['display'].split('-')[0]
+        if len(response['results']) <= 0:
+            return None
+        programs_info = [
+            {
+                "uuid": program['uuid'],
+                "program": {
+                    "uuid": program['program']['uuid'],
+                    "name": program['program']['name'],
+                },
+                "dateEnrolled": program['dateEnrolled'],
+                "dateCompleted": program['dateCompleted'],
+                "location":{
+                    "uuid": program['location']['uuid'],
+                    "name": program['location']['name'],
+                },
+                "outcome": program['outcome'],
+                "states": [
 
-            }
-            for program in response['results']:
-                programs_info.append({
-                    "enrollment_uuid": program['uuid'],
-                    "program": {
-                        "uuid": program['program']['uuid'],
-                        "name": program['program']['name'],
-                        "work_flow_states": []
-                    },
-                    "date_enrolled": program['dateEnrolled'],
-                    "date_completed": program['dateCompleted'] if program['dateCompleted'] is not None else None,
-                    "outcome": program['outcome'],
-                    "location": {
-                        'uuid': program['location']['uuid'],
-                        "name": program['location']['display']
-                    } if program['location'] is not None else None,
-                    "creator": {
-                        'uuid': program['auditInfo']['creator']['uuid'],
-                        "name": program['auditInfo']['creator']['display']
-                    },
-                    "states": []
+                    {
+                        "concept": workflow['concept']['display'],
+                        "answer":  get_states(workflow['states'], program['states']),
+                    } for workflow in program['program']['allWorkflows']
 
-                })
-                for workFlowState in program['program']['allWorkflows']:
-                    for local_program in programs_info:
-                        local_program['program']['work_flow_states'].append(
-                            {
-                                'concept': {
-                                    'uuid': workFlowState['concept']['uuid'],
-                                    'name': workFlowState['concept']['display'],
-                                    'states': [state['uuid'] for state in workFlowState['states']]
-                                }
-                            }
-                        )
-                if program['states']:
-                    for state in program['states']:
-                        for local_program in programs_info:
-                            local_program['states'].append(
-                                {
-                                    "uuid": state['state']['uuid'],
-                                    'concept': {
-                                        'uuid': state['state']['concept']['uuid'],
-                                        'name': state['state']['concept']['display'],
-                                    },
-                                    "start_date": state['startDate']
-                                }
-                            )
-                    for program_info in programs_info:
-                        program_info['states'] = [
-                            {
-                                'concept': work_flow_state['concept']['name'],
-                                'answer': program_state['concept']['name'],
-                                "start_date": program_state['start_date']
-                            }
-                            for program_state in program_info['states'] for work_flow_state in program_info['program']['work_flow_states'] for state in work_flow_state['concept']['states'] if program_state['uuid'] == state
-                        ]
 
-            return patient_info, programs_info
-        else:
-            patient = get_patient(req, uuid)
-            return patient, []
+
+                ]
+
+            } for program in response['results']
+        ]
+        return programs_info
     else:
         return None

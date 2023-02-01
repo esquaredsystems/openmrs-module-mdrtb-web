@@ -53,13 +53,11 @@ def get(req, endpoint, parameters):
             return False, response.json()['error']['message']
         return True, response.json()
     except requests.exceptions.RequestException as err:
-        messages.error(req, str(err))
-        return False, str(e)
+        print(err)
+        raise Exception('Request error')
     except requests.exceptions.ConnectionError as connection_err:
-        print('Connection error')
-        clear_session(req)
-        messages.error(req, str(connection_err))
-        return False, str(connection_err)
+        print(connection_err)
+        raise Exception('Connection Error')
 
 
 def post(req, endpoint, data):

@@ -10,320 +10,158 @@
 
 
 <form action="{% url 'enrollPatient' %}" method="post" class="enroll-form">
-    {% csrf_token %}
-    <div class="enrollform-sections-container">
-      <h1 class="page-title">
-        {{'mdrtb.enrollNewPatient'|get_message:request.session.locale}}
-      </h1>
-      <div class="enroll_form_bg">
-        <div class="enrollform-section">
-          <div class="input-container">
-            <label class="input-label md:w-1/5"
-              for="name">{{'mdrtb.givenname'|get_message:request.session.locale}}</label>
-            <input required class="input" type="text" name="givenname" />
-          </div>
-          <div class="input-container">
-            <label class="input-label md:w-1/5"
-              for="name">{{'mdrtb.familyname'|get_message:request.session.locale}}</label>
-            <input required class="input" type="text" name="familyname" />
-          </div>
-        </div>
-        <div class="enrollform-section">
-          <div class="input-container">
-            <label class="input-label md:w-1/5"
-              for="name">{{'mdrtb.birthdate'|get_message:request.session.locale}}</label>
-            <input  required class="disabled:pointer-events-none input w-full" type="date" max="2022-12-31" name="dob"
-              id="dob" />
-          </div>
-          <div class="input-container">
-            <label class="input-label md:w-1/5" for="name">{{'mdrtb.age'|get_message:request.session.locale}}</label>
-            <input required class="input disabled:pointer-events-none" type="number" name="age" id="age" min="1" />
-          </div>
-        </div>
-        <div class="enrollform-section">
-          <div class="input-container">
-            <label class="input-label md:w-1/5"
-              for="patientidentifier">{{'mdrtb.patientidentifier'|get_message:request.session.locale}}</label>
-            <input required class="input" type="text" name="patientidentifier" />
-          </div>
-          <div class="input-container">
-            <label class="input-label md:w-1/5"
-              for="patientidentifiertype">{{'mdrtb.patientidentifiertype'|get_message:request.session.locale}}</label>
-            <select class="input" name="patientidentifiertype">
-              <option selected value="">Select</option>
-              {% for idtype in identifiertypes %}
-              <option value="{{idtype.uuid}}">{{idtype.name}}</option>
-              {% endfor %}
-            </select>
-          </div>
+  {% csrf_token %}
+  <div class="enrollform-sections-container">
+    <h1 class="page-title">
+      {{'mdrtb.enrollNewPatient'|get_message:request.session.locale}}
+    </h1>
+    <div class="enroll_form_bg">
+      <div class="enrollform-section">
+        <div class="input-container">
+          <label class="input-label md:w-1/5"
+            for="name">{{'mdrtb.givenname'|get_message:request.session.locale}}</label>
+          <input required class="input" type="text" name="givenname" />
         </div>
         <div class="input-container">
-          <label class="input-label" for="name">{{'mdrtb.gender'|get_message:request.session.locale}}</label>
-          <div class="radios-container">
-            <div class="radio-container">
-              <label for="Male">{{'mdrtb.male'|get_message:request.session.locale}}</label>
-              <input required name="gender" type="radio" value="M" />
-            </div>
-            <div class="radio-container">
-              <label for="Female">{{'mdrtb.female'|get_message:request.session.locale}}</label>
-              <input required name="gender" type="radio" value="F" />
-            </div>
-          </div>
+          <label class="input-label md:w-1/5"
+            for="name">{{'mdrtb.familyname'|get_message:request.session.locale}}</label>
+          <input required class="input" type="text" name="familyname" />
         </div>
       </div>
-      <div class="enroll_form_bg">
+      <div class="enrollform-section">
         <div class="input-container">
-          <label class="input-label"
-            for="country">{{'Location.country'|get_message_openMRS:request.session.locale}}</label>
-          <select required class="input" name="country" id="country-select">
-            <option value="None">Select</option>
-
-          </select>
+          <label class="input-label md:w-1/5"
+            for="name">{{'mdrtb.birthdate'|get_message:request.session.locale}}</label>
+          <input required class="disabled:pointer-events-none input w-full" type="date" max="2022-12-31" name="dob"
+            id="dob" />
         </div>
         <div class="input-container">
-          <label class="input-label" for="name">{{'mdrtb.oblast'|get_message:request.session.locale}}</label>
-          <select required class="input" name="oblast" id="oblast-select">
-            <option value="None">Select</option>
-          </select>
-        </div>
-        <div class="input-container">
-          <label class="input-label" for="name">{{'mdrtb.district'|get_message:request.session.locale}}</label>
-          <select required class="input" name="district" id="district-select">
-            <option value="None">Select</option>
-          </select>
-        </div>
-        <div class="input-container">
-          <label class="input-label" for="name">{{'mdrtb.facility'|get_message:request.session.locale}}</label>
-          <select required class="input" name="facility" id="facility-select">
-            <option value="None">Select</option>
-
-          </select>
-        </div>
-        <div class="input-container">
-          <label class="input-label" for="name">{{'mdrtb.address'|get_message:request.session.locale}}</label>
-          <input required class="input" type="text" name="address" />
-        </div>
-        <div class="input-container">
-          <label class="input-label opacity-0" for="name">{{'mdrtb.address'|get_message:request.session.locale}}</label>
-          <input class="input" type="text" name="address2" />
+          <label class="input-label md:w-1/5" for="name">{{'mdrtb.age'|get_message:request.session.locale}}</label>
+          <input required class="input disabled:pointer-events-none" type="number" name="age" id="age" min="1" />
         </div>
       </div>
-      <div class="enroll_form_bg">
+      <div class="enrollform-section">
         <div class="input-container">
-          <label class="input-label md:w-16"
-            for="deceased">{{'mdrtb.deceased'|get_message:request.session.locale}}</label>
-          <input id="deceased" type="checkbox" class="border-none shadow-sm cursor-pointer" name="deceased" />
-        </div>
-        <div id="deceased-container" class="hidden items-center space-x-8">
-          <div class="input-container">
-            <label class="text-[#9E9E9E] font-bold"
-              for="deceased">{{'mdrtb.deathDate'|get_message:request.session.locale}}</label>
-            <input type="date" class="input" name="deathdate" id="deathdate" />
-          </div>
-          <div class="input-container">
-            <label class="text-[#9E9E9E] font-bold"
-              for="deceased">{{'mdrtb.causeOfDeath'|get_message:request.session.locale}}</label>
-            <input type="text" class="input" name="causeofdeath" />
-          </div>
+          <label class="input-label md:w-1/5"
+            for="patientidentifier">{{'mdrtb.patientidentifier'|get_message:request.session.locale}}</label>
+          <input required class="input" type="text" name="patientidentifier" />
         </div>
         <div class="input-container">
-          <label class="input-label md:w-16" for="deceased">Voided</label>
-          <input id="voided" type="checkbox" class="border-none shadow-sm cursor-pointer" name="voided" />
-        </div>
-        <div id="voided-container" class="input-container hidden">
-          <label class="text-[#9E9E9E] font-bold" for="Reason to void">Reason to Void</label>
-          <input type="text" class="input" name="reasontovoid" />
+          <label class="input-label md:w-1/5"
+            for="patientidentifiertype">{{'mdrtb.patientidentifiertype'|get_message:request.session.locale}}</label>
+          <select required class="input" name="patientidentifiertype">
+            <option selected value="">Select</option>
+            {% for idtype in identifiertypes %}
+            <option value="{{idtype.uuid}}">{{idtype.name}}</option>
+            {% endfor %}
+          </select>
         </div>
       </div>
-
-      <div class="flex-center">
-        <input type="submit" class="button-primary w-1/5" value="Register" />
-
-        <a href="{% url 'home' %}" class="cancel-button"> Cancel </a>
+      <div class="input-container">
+        <label class="input-label" for="name">{{'mdrtb.gender'|get_message:request.session.locale}}</label>
+        <div class="radios-container">
+          <div class="radio-container">
+            <label for="Male">{{'mdrtb.male'|get_message:request.session.locale}}</label>
+            <input required name="gender" type="radio" value="M" />
+          </div>
+          <div class="radio-container">
+            <label for="Female">{{'mdrtb.female'|get_message:request.session.locale}}</label>
+            <input required name="gender" type="radio" value="F" />
+          </div>
+        </div>
       </div>
     </div>
-  </form>
-  <script>
-    const disableLocationsInput = () => {
-      $("#oblast-select").prop("disabled", true);
-      $("#district-select").prop("disabled", true);
-      $("#facility-select").prop("disabled", true);
+    <div class="enroll_form_bg">
+      {% include 'app/components/locations.html' %}
+      <div class="input-container">
+        <label class="input-label" for="name">{{'mdrtb.address'|get_message:request.session.locale}}</label>
+        <input required class="input" type="text" name="address" />
+      </div>
+      <div class="input-container">
+        <label class="input-label opacity-0" for="name">{{'mdrtb.address'|get_message:request.session.locale}}</label>
+        <input class="input" type="text" name="address2" />
+      </div>
+    </div>
+    <div class="enroll_form_bg">
+      <div class="input-container">
+        <label class="input-label md:w-16"
+          for="deceased">{{'mdrtb.deceased'|get_message:request.session.locale}}</label>
+        <input id="deceased" type="checkbox" class="border-none shadow-sm cursor-pointer" name="deceased" />
+      </div>
+      <div id="deceased-container" class="hidden items-center space-x-8">
+        <div class="input-container">
+          <label class="text-[#9E9E9E] font-bold"
+            for="deceased">{{'mdrtb.deathDate'|get_message:request.session.locale}}</label>
+          <input type="date" class="input" name="deathdate" id="deathdate" />
+        </div>
+        <div class="input-container">
+          <label class="text-[#9E9E9E] font-bold"
+            for="deceased">{{'mdrtb.causeOfDeath'|get_message:request.session.locale}}</label>
+          <input type="text" class="input" name="causeofdeath" />
+        </div>
+      </div>
+      <div class="input-container">
+        <label class="input-label md:w-16" for="deceased">Voided</label>
+        <input id="voided" type="checkbox" class="border-none shadow-sm cursor-pointer" name="voided" />
+      </div>
+      <div id="voided-container" class="input-container hidden">
+        <label class="text-[#9E9E9E] font-bold" for="Reason to void">Reason to Void</label>
+        <input type="text" class="input" name="reasontovoid" />
+      </div>
+    </div>
 
-    };
+    <div class="flex-center">
+      <input type="submit" class="button-primary w-1/5" value="Register" />
 
-    disableLocationsInput();
-    var locations = JSON.parse("{{locations | escapejs }}");
-    console.log(locations);
-    const setMaxDate = () => {
-      let date = new Date();
-      maxDate = date.toISOString().substring(0, 10);
-      $("#dob").prop("max", maxDate);
-      $("#deathdate").prop("max", maxDate);
-    };
+      <a href="{% url 'home' %}" class="cancel-button"> Cancel </a>
+    </div>
+  </div>
+</form>
+<script>
+  let date = new Date();
+  let maxDate = date.toISOString().substring(0, 10);
+  $('input[type="date"]').prop('max', maxDate)
 
-    setMaxDate();
-    function setLocations(locations) {
-      for (let location of locations) {
-        if (location.level === "country") {
-          setCountry(location.name);
 
-        }
 
-      }
-      oblastSelect()
 
+
+
+
+  $("#dob").change(function () {
+    if ($("#dob").val() != "") {
+      $("#age").prop("disabled", true);
+      $("#age").prop("title", "You can either enter age or date of birth");
+    } else {
+      $("#age").prop("disabled", false);
     }
-    setLocations(locations);
-    function oblastSelect() {
-      if ($("#country-select").val() != "") {
-        $("#oblast-select").prop("disabled", false);
-
-        let selectedCountry = $("#country-select").val();
-        for (let location of locations) {
-          if (location.name === selectedCountry) {
-            if (location.children != undefined) {
-              for (child of location.children) {
-                if (child.level === "region") {
-                  console.log(child);
-                  $("#oblast-select").append(
-                    $("<option>", {
-                      value: child.name,
-                      text: child.name,
-                    })
-                  );
-                }
-              }
-            }
-          }
-        }
-      };
+  });
+  $("#age").change(function () {
+    if ($("#age").val() != "") {
+      $("#dob").prop("disabled", true);
+    } else {
+      $("#dob").prop("disabled", false);
     }
-    function setCountry(country) {
-      console.log(`adding ${country} as country`);
-      // $('country-select').append(`
-      // <option value="${country}">${country}</option>
+  });
 
-      // `)
-      if (country != "Other") {
-        $("#country-select").append(
-          $("<option>", {
-            selected: true,
-            value: country,
-            text: country,
-          })
-
-        );
-        // $("#oblast-select").prop("disabled", false);
-
-      } else {
-        $("#country-select").append(
-          $("<option>", {
-            value: country,
-            text: country,
-          })
-        );
-      }
+  $("#deceased").change(function () {
+    if ($("#deceased").prop("checked")) {
+      $("#deceased-container").removeClass("hidden");
+      $("#deceased-container").addClass("flex");
+    } else {
+      $("#deceased-container").addClass("hidden");
+      $("#deceased-container").removeClass("flex");
     }
-
-
-
-    $("#oblast-select").change(function () {
-      $("#district-select").prop("disabled", false);
-      let selectedCountry = $("#country-select").val();
-      let selectedOblast = $("#oblast-select").val();
-      for (let location of locations) {
-        if (location.name === selectedCountry) {
-          if (location.children != undefined) {
-            for (child of location.children) {
-              if (child.name === selectedOblast) {
-                if (child.children != undefined) {
-                  for (kid of child.children) {
-                    if (kid.level === "district") {
-                      $("#district-select").append(
-                        $("<option>", {
-                          value: kid.name,
-                          text: kid.name,
-                        })
-                      );
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    });
-
-    $("#district-select").change(function () {
-      $("#facility-select").prop("disabled", false);
-      let selectedCountry = $("#country-select").val();
-      let selectedOblast = $("#oblast-select").val();
-      let selectedDistrict = $("#district-select").val();
-      for (let location of locations) {
-        if (location.name === selectedCountry) {
-          if (location.children != undefined) {
-            for (child of location.children) {
-              if (child.name === selectedOblast) {
-                if (child.children != undefined) {
-                  for (kid of child.children) {
-                    if (kid.name === selectedDistrict) {
-                      if (kid.children != undefined) {
-                        for (infant of kid.children) {
-                          if (infant.level === "facility") {
-                            $("#facility-select").append(
-                              $("<option>", {
-                                value: "81d267f7-0603-4bbb-a2a2-cd0f176d0911",
-                                text: infant.name,
-                              })
-                            );
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    });
-
-    $("#dob").change(function () {
-      if ($("#dob").val() != "") {
-        $("#age").prop("disabled", true);
-        $("#age").prop("title", "You can either enter age or date of birth");
-      } else {
-        $("#age").prop("disabled", false);
-      }
-    });
-    $("#age").change(function () {
-      if ($("#age").val() != "") {
-        $("#dob").prop("disabled", true);
-      } else {
-        $("#dob").prop("disabled", false);
-      }
-    });
-
-    $("#deceased").change(function () {
-      if ($("#deceased").prop("checked")) {
-        $("#deceased-container").removeClass("hidden");
-        $("#deceased-container").addClass("flex");
-      } else {
-        $("#deceased-container").addClass("hidden");
-        $("#deceased-container").removeClass("flex");
-      }
-    });
-    $("#voided").change(function () {
-      if ($("#voided").prop("checked")) {
-        $("#voided-container").removeClass("hidden");
-        $("#voided-container").addClass("flex");
-      } else {
-        $("#voided-container").addClass("hidden");
-        $("#voided-container").removeClass("flex");
-      }
-    });
-  </script>
+  });
+  $("#voided").change(function () {
+    if ($("#voided").prop("checked")) {
+      $("#voided-container").removeClass("hidden");
+      $("#voided-container").addClass("flex");
+    } else {
+      $("#voided-container").addClass("hidden");
+      $("#voided-container").removeClass("flex");
+    }
+  });
+</script>
 </div>
 {% endblock %}

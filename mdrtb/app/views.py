@@ -14,62 +14,50 @@ from django.contrib import messages
 from django.core.cache import cache
 
 
+def check_if_session_alive(req):
+    print('checking session')
+    if 'session_id' not in req.session:
+        messages.error(req, 'Session Expired Log in again')
+        return False
+    return True
+
+
 def index(req):
-    if 'session_id' in req.session:
-        locations = json.dumps(lu.assign_facilities(req))
-        context = {'locations': locations}
-        return render(req, 'app/tbregister/reportmockup.html', context=context)
-    else:
-        return redirect('home')
+    locations = json.dumps(lu.create_location_hierarchy(req))
+    context = {'locations': locations}
+    return render(req, 'app/components/locations.html', context=context)
 
 
 def login(req):
-    if 'session_id' in req.session:
-        min_search_characters = mu.get_global_properties(
-            req, 'minSearchCharacters')
-        context = {'title': "Search Patients",
-                   'minSearchCharacters': min_search_characters or 3}
-        return render(req, 'app/tbregister/search_patients.html', context=context)
-
-    if req.method == 'POST':
-        username = req.POST['username']
-        password = req.POST['password']
-        if ru.initiate_session(req, username, password):
-            return redirect(req.session.get('redirect', 'home'))
-
-    context = {'title': 'Login'}
-    return render(req, 'app/tbregister/login.html', context=context)
-
-
-# def login(req):
-#     context = {'title': "Search Patients"}
-#     if 'session_id' in req.session:
-#         minSearchCharacters = mu.get_global_properties(
-#             req, 'minSearchCharacters')
-#         if minSearchCharacters:
-#             context['minSearchCharacters'] = minSearchCharacters
-#             return render(req, 'app/tbregister/search_patients.html', context=context)
-#         else:
-#             messages.error(req, 'Error finding global property')
-#             context['minSearchCharacters'] = 3
-#             return render(req, 'app/tbregister/search_patients.html', context=context)
-#     else:
-#         if req.method == 'POST':
-#             username = req.POST['username']
-#             password = req.POST['password']
-#             response = ru.initiate_session(req, username, password)
-#             if response:
-#                 if 'redirect' in req.session:
-#                     return redirect(req.session['redirect'])
-#                 else:
-#                     return redirect('home')
-#             else:
-#                 context['title'] = 'Login'
-#                 return render(req, 'app/tbregister/login.html', context=context)
-#         else:
-#             context['title'] = 'Login'
-#             print(context['title'])
-#             return render(req, 'app/tbregister/login.html', context=context)
+    context = {'title': "Search Patients"}
+    session_alive = check_if_session_alive(req)
+    if session_alive:
+        try:
+            minSearchCharacters = mu.get_global_properties(
+                req, 'minSearchCharacters')
+            context['minSearchCharacters'] = minSearchCharacters
+            return render(req, 'app/tbregister/search_patients.html', context=context)
+        except Exception as e:
+            messages.error(req, 'Error finding global property')
+            context['minSearchCharacters'] = 3
+            return render(req, 'app/tbregister/search_patients.html', context=context)
+    else:
+        if req.method == 'POST':
+            username = req.POST['username']
+            password = req.POST['password']
+            response = ru.initiate_session(req, username, password)
+            if response:
+                if 'redirect' in req.session:
+                    return redirect(req.session['redirect'])
+                else:
+                    return redirect('home')
+            else:
+                context['title'] = 'Login'
+                return render(req, 'app/tbregister/login.html', context=context)
+        else:
+            context['title'] = 'Login'
+            print(context['title'])
+            return render(req, 'app/tbregister/login.html', context=context)
 
 
 def search_patients_query(req):
@@ -87,15 +75,25 @@ def search_patients_view(req):
 
 
 def enroll_patient(req):
-
+    session_alive = check_if_session_alive(req)
+    if session_alive:
+        try:
+            identifiertypes = mu.get_patient_identifier_types(req)
+            locations = json.dumps(lu.create_location_hierarchy(req))
+        except Exception as e:
+            messages.error(req, e)
+            return redirect('home')
+        return render(req, 'app/tbregister/enroll_patients.html',
+                      context={'locations': locations, 'title': "Enroll new Patient", 'identifiertypes': identifiertypes})
+    else:
+        return redirect('home')
     if req.method == 'POST':
         patient_info = {
             "identifiers": [
                 {
                     "identifier": req.POST['patientidentifier'],
                     "identifierType": req.POST['patientidentifiertype'],
-                    # Temporatry hard coded location (Dushanbe)
-                    "location": "82be00a0-894b-42aa-812f-428f23e9fd7a"
+                    "location": req.POST['district'] if 'facility' not in req.POST else req.POST['facility']
 
                 }
             ],
@@ -108,7 +106,7 @@ def enroll_patient(req):
                 "gender": req.POST['gender'],
                 "addresses": [{
                     "address1": req.POST['address'],
-                    "cityVillage": req.POST['oblast'],
+                    "stateProvince": req.POST['region'],
                     "country": req.POST['country'],
                 }]
             }}
@@ -128,29 +126,19 @@ def enroll_patient(req):
 
         if 'voided' in req.POST:
             patient_info['person']['reasonToVoid'] = req.POST['reasontovoid']
-        print(patient_info)
+
         status, response = ru.post(req, 'patient', patient_info)
         if status:
             return redirect('programenroll', uuid=response['uuid'])
         else:
-            for error in response['globalErrors']:
-                messages.error(req, error['message'])
+            messages.error(req, "Error creating patient")
             return redirect('home')
-
-    if 'session_id' in req.session:
-        try:
-            identifiertypes = mu.get_patient_identifier_types(req)
-            locations = json.dumps(mu.get_locations())
-        except Exception as e:
-            messages.error(req, e)
-            return redirect('home')
-        return render(req, 'app/tbregister/enroll_patients.html',
-                      context={'locations': locations, 'title': "Enroll new Patient", 'identifiertypes': identifiertypes})
-    else:
-        return redirect('home')
 
 
 def enroll_in_program(req, uuid):
+    session_alive = check_if_session_alive(req)
+    if not session_alive:
+        return redirect('home')
     context = {'title': 'Add a new Program', 'uuid': uuid}
     if req.method == 'POST':
         body = {
@@ -160,22 +148,22 @@ def enroll_in_program(req, uuid):
             # TODO: Remaining values are yet to be decided how to send
         }
         try:
-            status, response = ru.post(req, 'programenrollment', body)
-            if status:
-                return redirect('tb03')
+            for key, value in req.POST.items():
+                print("{} has value of {}".format(key, value))
         except Exception as e:
             message.error(req, e)
         return redirect('programenroll', uuid=uuid)
 
-    programs = mu.get_programs(req)
-    if programs:
+    try:
+        programs = mu.get_programs(req)
+        locations = json.dumps(lu.create_location_hierarchy(req))
         context['programs'] = programs
         context['jsonprograms'] = json.dumps(programs)
-
-    locations = json.dumps(mu.get_locations())
-    if locations:
         context['locations'] = locations
-    return render(req, 'app/tbregister/dots/enroll_program.html', context=context)
+    except Exception as e:
+        messages.error(req, str(e))
+        redirect('programenroll', uuid=uuid)
+    return render(req, 'app/tbregister/enroll_program.html', context=context)
 
 
 def enrolled_programs(req, uuid):
@@ -184,8 +172,9 @@ def enrolled_programs(req, uuid):
         'uuid': uuid
     }
 
-    patient, programs = pu.get_enrolled_programs_by_patient(req, uuid)
-    if patient and programs is not None:
+    programs = pu.get_enrolled_programs_by_patient(req, uuid)
+    patient = pu.get_patient(req, uuid)
+    if patient is not None and programs is not None:
         context['patient'] = patient
         context['programs'] = programs
     return render(req, 'app/tbregister/enrolled_programs.html', context=context)
@@ -356,13 +345,6 @@ def user_profile(req):
         return redirect(req.session['redirect'])
     req.session['redirect'] = req.META['HTTP_REFERER']
     return render(req, 'app/tbregister/user_profile.html')
-
-
-def logout(req):
-    status, _ = ru.delete(req, 'session')
-    if status:
-        ru.clear_session(req)
-    return redirect('home')
 
 
 def concepts(req):
@@ -741,3 +723,10 @@ def add_test_results(req, orderid):
         messages.error(req, e)
         return redirect('managetestorders', uuid=req.GET['patient'])
     return render(req, 'app/commonlab/addtestresults.html', context=context)
+
+
+def logout(req):
+    status, _ = ru.delete(req, 'session')
+    if status:
+        ru.clear_session(req)
+    return redirect('home')

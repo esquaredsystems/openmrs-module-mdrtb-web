@@ -89,158 +89,6 @@ def get_concept_by_uuid(uuid, req):
             return False, "cant find"
 
 
-def get_locations():
-    locations = [
-        {
-            "level": "country",
-            "name": "Tajikistan",
-            "children": [
-                {
-                    "level": "region",
-                    "name": "Душанбе",
-                    "children": [
-                        {
-                            "level": "district",
-                            "name": "Сино",
-                            "children": [
-                                {
-                                    "level": "facility",
-                                    "name": "МСШ (01)"
-
-                                },
-                                {
-                                    "level": "facility",
-                                    "name": "МСШ 1 (95)"
-
-                                },
-                                {
-
-                                    "level": "facility",
-                                    "name": "МСШ 10 (60)"
-
-                                },
-                                {
-                                    "level": "facility",
-                                    "name": "МСШ 11 (11)"
-
-                                },
-                                {
-                                    "level": "facility",
-                                    "name": "МСШ 12 (12)"
-
-                                },
-                            ]
-                        },
-                        {
-                            "level": "district",
-                            "name": "Фирдавсӣ",
-                            "children": [
-                                {
-                                    "level": "facility",
-                                    "name": "МСШ (01)"
-
-                                },
-                                {
-                                    "level": "facility",
-                                    "name": "МСШ 1 (95)"
-
-                                },
-                                {
-
-                                    "level": "facility",
-                                    "name": "МСШ 10 (60)"
-
-                                },
-                                {
-                                    "level": "facility",
-                                    "name": "МСШ 11 (11)"
-
-                                },
-                                {
-                                    "level": "facility",
-                                    "name": "МСШ 12 (12)"
-
-                                },
-                            ]
-                        },
-                        {
-                            "level": "district",
-                            "name": "Исмоили Сомонӣ",
-                            "children": [
-                                {
-                                    "level": "facility",
-                                    "name": "МСШ (01)"
-
-                                },
-                                {
-                                    "level": "facility",
-                                    "name": "МСШ 1 (95)"
-
-                                },
-                                {
-
-                                    "level": "facility",
-                                    "name": "МСШ 10 (60)"
-
-                                },
-                                {
-                                    "level": "facility",
-                                    "name": "МСШ 11 (11)"
-
-                                },
-                                {
-                                    "level": "facility",
-                                    "name": "МСШ 12 (12)"
-
-                                },
-                            ]
-                        },
-                        {
-                            "level": "district",
-                            "name": "Шоҳмансур",
-                            "children": [
-                                {
-                                    "level": "facility",
-                                    "name": "МСШ (01)"
-
-                                },
-                                {
-                                    "level": "facility",
-                                    "name": "МСШ 1 (95)"
-
-                                },
-                                {
-
-                                    "level": "facility",
-                                    "name": "МСШ 10 (60)"
-
-                                },
-                                {
-                                    "level": "facility",
-                                    "name": "МСШ 11 (11)"
-
-                                },
-                                {
-                                    "level": "facility",
-                                    "name": "МСШ 12 (12)"
-
-                                },
-                            ]
-                        }
-                    ]
-
-                }
-            ]
-        },
-        {
-            "level": "country",
-            "name": "Other"
-        }
-
-    ]
-    return locations
-
-
 def get_location(uuid):
     pass
 
@@ -263,12 +111,13 @@ def get_patient_identifier_types(req):
 
 
 def get_global_properties(req, key):
-    status, response = ru.get(req, 'systemsetting', {'q': key,
-                                                     'v': 'custom:(value)'})
-    if status and response:
-        return response['results'][0]['value']
-    else:
-        return None
+    try:
+        status, response = ru.get(req, 'systemsetting', {'q': key,
+                                                         'v': 'custom:(value)'})
+        if status:
+            return response['results'][0]['value']
+    except Exception as e:
+        raise Exception(e)
 
 
 def get_programs(req):
