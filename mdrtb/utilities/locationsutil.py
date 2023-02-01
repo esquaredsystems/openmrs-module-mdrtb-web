@@ -23,38 +23,40 @@ def get_locations_and_set_cache(req):
     return non_retired_locations
 
 
-def assign_districts_and_sub_regions(req):
+def get_location_level(uuid, location_by_uuids):
+    location = location_by_uuids.get(uuid, {})
+    attributes = location.get('attributes', [])
+    for attribute in attributes:
+        if attribute['attributeType']['uuid'] == "6b738ed1-78b3-4cdb-81f6-7fdc5da20a3d":
+            display = attribute.get('display')
+            level = display.split(':')[1].strip()
+            return level
+    return None
+
+def create_location_hierarchy(req):
     locations = get_locations_and_set_cache(req)
-    sorted_locs = [{
-        'uuid': location['uuid'],
-        'name': location['name'],
-        'level': "REGION",
-        'children': [
-            {
-                'uuid': child['uuid'],
-                'name': child['name'],
-                'level': child['attributes'][0]['display'].split(':')[1].strip(),
-                "children": []
-            }
-            for child in location['childLocations']
-        ]
-    } for location in locations if location['parentLocation'] is None]
+    location_by_uuids = {location['uuid']: location for location in locations}
+    location_hierarchy = []
 
-    return sorted_locs, locations
-
-
-def assign_facilities(req):
-    locations_with_districts, locations = assign_districts_and_sub_regions(req)
-    for region in locations_with_districts:
-        for location in locations:
-            for district in region['children']:
-                if location['uuid'] == district['uuid']:
-                    district['children'].append(
-                        {
-                            'uuid': child['uuid'],
-                            'name': child['name'],
-                            'level': location['attributes'][0]['display'].split(':')[1].strip()
-                        } for child in location['childLocations']
-                    )
-
-    return locations
+    for location in locations:
+        if location.get('parentLocation') is None and not location.get('retired', True):
+            location_hierarchy.append({
+                'uuid': location['uuid'],
+                'name': location['name'],
+                'level': get_location_level(location['uuid'], location_by_uuids),
+                'children': [
+                    {
+                        'uuid': child['uuid'],
+                        'name': child['name'],
+                        'level': get_location_level(child['uuid'], location_by_uuids),
+                        'children': [
+                            {
+                                'uuid': subchild['uuid'],
+                                'name': subchild.get('name', subchild['display']),
+                                'level': get_location_level(subchild['uuid'], location_by_uuids),
+                            } for subchild in child.get('childLocations', []) if not subchild.get('retired', location_by_uuids.get(subchild['uuid'],{'retired': True})['retired'])
+                        ] if child.get('childLocations') else []
+                    } for child in location.get('childLocations', []) if not child.get('retired', location_by_uuids.get(child['uuid'],{'retired': True})['retired'])
+                ] if location.get('childLocations') else []
+            })
+    return location_hierarchy
