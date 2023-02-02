@@ -34,6 +34,11 @@
           for="">{{'mdrtb.enrollment.date'|get_message:request.session.locale}}</label>
         <input class="input" type="date" name="enrollmentdate" id="enrollmentdate" required />
       </div>
+      <div class="input-container">
+        <label class="input-label"
+          for="">{{'mdrtb.enrollment.completionDate'|get_message:request.session.locale}}</label>
+        <input class="input" type="date" name="completiondate" id="completiondate" />
+      </div>
       {% include 'app/components/locations.html' %}
       <div id="states" class="flex-column-center space-y-4">
 
@@ -64,7 +69,7 @@
         <label class="font-bold normal-case text-sm text-[#9E9E9E] w-2/5"
           >${workFlow.concept.display}</label
         >
-        <select class="input w-3/5" name=${workFlow.concept.uuid} id=${workFlow.concept.uuid}>
+        <select class="input w-3/5" name=${workFlow.uuid} id=${workFlow.uuid}>
           <option selected value="">Select</option></select>
       </div>
                   `
@@ -72,8 +77,8 @@
               workFlow.states.forEach(item => {
                 if (item.retired === false) {
 
-                  $(`#${workFlow.concept.uuid}`).append(
-                    `<option value=${item.concept.uuid}>${item.concept.display}</option>`
+                  $(`#${workFlow.uuid}`).append(
+                    `<option value=${item.uuid}>${item.concept.display}</option>`
                   )
                 }
               })

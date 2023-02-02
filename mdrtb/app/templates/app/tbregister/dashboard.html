@@ -69,7 +69,7 @@
 
     </div>
     <div class="ml-4 flex items-center space-x-4">
-      {% if mdrtb %}
+      {% if not mdrtb %}
 
       <a href="{% url 'programenroll' uuid=uuid %}" class="font-bold underline text-[#044062]">
         {{'mdrtb.enrollment.enrollMdrtb'|get_message:request.session.locale}}
@@ -85,9 +85,37 @@
     </div>
   </div>
   <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
-    <div class="flex items-center space-x-4">
+    <div class="flex items-center space-x-2">
       <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.forms'|get_message:request.session.locale}}
       </h2>
+      <div class="dropdown">
+        <a class="tw-dropdown-header font-bold cancel-button" href="#" type="button" id="formsdropdown"
+          data-bs-toggle="dropdown" aria-expanded="false">
+          Add New
+          <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
+            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <path fill="currentColor"
+              d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z">
+            </path>
+          </svg>
+        </a>
+        {% if not mdrtb %}
+        <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="formsdropdown">
+          <li>
+            <a class="tw-dropdown-item" href="{% url 'tb03' uuid=uuid %}?program={{request.GET.program}}">TB03</a>
+          </li>
+
+        </ul>
+        {% else %}
+        <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="formsdropdown">
+          <li>
+            <a class="tw-dropdown-item" href="{% url 'tb03' uuid=uuid %}">TB03u</a>
+          </li>
+
+        </ul>
+        {% endif %}
+      </div>
+
     </div>
     <div class="ml-4 grid grid-cols-2 gap-3">
       {% for tb03 in forms.tb03s %}

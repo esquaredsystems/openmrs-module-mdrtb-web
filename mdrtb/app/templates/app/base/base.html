@@ -53,6 +53,7 @@
       {% endif %}
     </div>
   </header>
+  {% if request.session.session_id %}
   <div class="flex justify-center">
     <div>
       <div class="dropdown relative">
@@ -206,6 +207,8 @@
       </div>
     </div>
   </div>
+  {% endif %}
+
   {% if messages %}
   {% for message in messages %}
   {% if message.tags %}

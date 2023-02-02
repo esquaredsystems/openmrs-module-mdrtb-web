@@ -12,10 +12,31 @@ def get_patient(req, uuid):
         patient['name'] = patient_data['person']['display']
         patient['age'] = patient_data['person']['age']
         patient['dob'] = patient_data['person']['birthdate']
+        patient['gender'] = patient_data['person']['gender']
+        patient['address'] = patient_data['person']['preferredAddress']['display']
         patient['identifier'] = patient_data['identifiers'][0]['identifier']
         return patient
     else:
         print('PATIENT NOT FOUND')
+        return None
+
+
+def get_programs(req, uuid=None, params=None):
+    if uuid:
+        status, response = ru.get(
+            req, f'program/{uuid}', params)
+        if status:
+            return [workFlowUuid['uuid']
+                    for workFlowUuid in response['allWorkflows']]
+    status, response = ru.get(
+        req, 'program', {'v': 'custom:(uuid,name,retired,allWorkflows)'})
+    programs = []
+    if status:
+        for program in response['results']:
+            if program['retired'] == False:
+                programs.append(program)
+        return programs
+    else:
         return None
 
 

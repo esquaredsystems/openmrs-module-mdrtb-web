@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, HttpResponseRedirect
+from django.shortcuts import render, redirect, HttpResponseRedirect, reverse
 from django.http import JsonResponse
 import utilities.restapi_utils as ru
 import utilities.metadata_util as mu
@@ -23,12 +23,17 @@ def check_if_session_alive(req):
 
 
 def index(req):
-    locations = json.dumps(lu.create_location_hierarchy(req))
-    context = {'locations': locations}
-    return render(req, 'app/components/locations.html', context=context)
+    print(req.session['current_location'])
+    return render(req, 'app/tbregister/reportmockup.html')
 
 
 def login(req):
+    if 'current_patient' in req.session:
+        del req.session['current_patient']
+        if 'current_location' in req.session:
+            del req.session['current_location']
+            if 'current_date_enrolled' in req.session:
+                del req.session['current_date_enrolled']
     context = {'title': "Search Patients"}
     session_alive = check_if_session_alive(req)
     if session_alive:
@@ -148,17 +153,33 @@ def enroll_in_program(req, uuid):
             "patient": uuid,
             "program": req.POST['program'],
             "dateEnrolled": req.POST['enrollmentdate'],
-            # TODO: Remaining values are yet to be decided how to send
+            "location": req.POST.get('district', req.POST.get('facility', None)),
+            "dateCompleted": req.POST['completiondate'] if not req.POST['completiondate'] == '' else None,
+            "states": [
+                {
+                    "state": req.POST[work_flow_uuid],
+                    "startDate": req.POST['enrollmentdate'],
+                    "endDate": req.POST['completiondate'] if not req.POST['completiondate'] == '' else None
+                } for work_flow_uuid in pu.get_programs(req, uuid=req.POST['program'], params={'v': 'custom:(allWorkflows)'}) if work_flow_uuid in req.POST
+            ]
         }
         try:
-            for key, value in req.POST.items():
-                print("{} has value of {}".format(key, value))
+            status, response = ru.post(req, 'programenrollment', body)
+            if status:
+                req.session['current_patient'] = pu.get_patient(
+                    req, uuid)
+                req.session['current_location'] = {
+                    'uuid': response['location']['uuid'],
+                    'name': response['location']['name']
+                },
+                req.session['current+_date_enrolled'] = response['dateEnrolled']
+                return redirect(f'/patient/{uuid}/tb03'+'?program={}'.format(req.POST['program']))
         except Exception as e:
-            message.error(req, e)
-        return redirect('programenroll', uuid=uuid)
+            messages.error(req, e)
+            return redirect('programenroll', uuid=uuid)
 
     try:
-        programs = mu.get_programs(req)
+        programs = pu.get_programs(req)
         locations = json.dumps(lu.create_location_hierarchy(req))
         context['programs'] = programs
         context['jsonprograms'] = json.dumps(programs)
@@ -177,44 +198,58 @@ def enrolled_programs(req, uuid):
 
     programs = pu.get_enrolled_programs_by_patient(req, uuid)
     patient = pu.get_patient(req, uuid)
-    if patient is not None and programs is not None:
+    if patient:
         context['patient'] = patient
+    if programs:
         context['programs'] = programs
     return render(req, 'app/tbregister/enrolled_programs.html', context=context)
 
 
+def patient_dashboard(req, uuid, mdrtb=None):
+    if not check_if_session_alive(req):
+        return redirect('home')
+    program = req.GET['program']
+    context = {'uuid': uuid, 'title': 'Patient Dashboard'}
+    if mdrtb:
+        patient, program_info = pu.get_patient_dashboard_info(
+            req, uuid, program)
+        context['mdrtb'] = True
+        return render(req, 'app/tbregister/dashboard.html', context=context)
+    else:
+        patient, program_info, forms = pu.get_patient_dashboard_info(
+            req, uuid, program)
+        req.session['current_patient'] = patient
+        req.session['current_location'] = {
+            'uuid': program_info['location']['uuid'],
+            'name': program_info['location']['name']
+        }
+        req.session['current_date_enrolled'] = program_info['dateEnrolled']
+        if forms:
+            context['forms'] = forms
+        if patient and program:
+            context['patient'] = patient
+            context['program'] = program_info
+            return render(req, 'app/tbregister/dashboard.html', context=context)
+
+        else:
+            messages.error(req, 'Error fetching patient info')
+            return redirect('home')
+
+
 def tb03_form(req, uuid, formid=None):
+    print(req.session['current_location'])
+    if not check_if_session_alive(req):
+        return redirect('home')
+
+    program = req.GET['program']
     if formid:
-        print('BADHSAH WE IN EDIT')
         return render(req, 'app/tbregister/dots/tb03.html')
 
     if req.method == 'POST':
-        tb03_info = {
-            "ipCenter": req.POST['ipCenter'],
-            "ipCenterName": req.POST['ipCenterName'],
-            "cpCenter": req.POST['cpCenter'],
-            "cpCenterName": req.POST['cpCenterName'],
-            "regimenType": req.POST['regimenType'],
-            "treatmentStartDate": req.POST['treatmentStartDate'],
-            "siteOfTb": req.POST['siteOfTb'],
-            "hivDate": req.POST['hivDate'],
-            "hivStatus": req.POST['hivStatus'],
-            "artDate": req.POST['artDate'],
-            "pctDate": req.POST['pctDate'],
-            "xrayDate": req.POST['xrayDate'],
-            "resistanceType": req.POST['resistanceType'],
-            "treatmentOutcome": req.POST['treatmentOutcome'],
-            "treatmentOutcomeDate": req.POST['treatmentOutcomeDate'],
-            'causeOfDeath': req.POST['causeOfDeath'] if 'causeOfDeath' in req.POST else None,
-            'deathDate': req.POST['deathDate'] if 'deathDate' in req.POST else None,
-            "clinicalNotes": req.POST['clinicalNotes'],
-
-
-        }
-        req.session['tb03_info'] = tb03_info
-        patient = req.session['created_patient']
-        return redirect(f'tbdashboard/patient/{patient["uuid"]}')
-
+        response = fu.create_tb03(req, uuid, req.POST)
+        if not response:
+            messages.error(req, 'Error creating TB03')
+        return redirect(f'/tbdashboard/patient/{uuid}'+'?program={}'.format(program))
     concept_ids = ["ddf6e09c-f018-4048-a69f-436ff22308b5",
                    "2cd70c1e-955d-428e-86cd-3efc5ecbcabd",
                    "ebde5ed8-4717-472d-9172-599af069e94d",
@@ -228,7 +263,10 @@ def tb03_form(req, uuid, formid=None):
     context = {
         "concepts": concepts,
         "title": "TB03",
-        'uuid': uuid
+        'uuid': uuid,
+        'patient': req.session['current_patient'],
+        'location': req.session['current_location'],
+        'enrollment_date': req.session['current_date_enrolled']
     }
     return render(req, 'app/tbregister/dots/tb03.html', context=context)
 
@@ -329,31 +367,6 @@ def patientList(req):
 
     }
     return render(req, 'app/tbregister/patientlist.html', context=context)
-
-
-def patient_dashboard(req, uuid, mdrtb=None):
-    if not check_if_session_alive(req):
-        return redirect('home')
-    program = req.GET['program']
-    context = {'uuid': uuid, 'title': 'Patient Dashboard'}
-    if mdrtb:
-        patient, program_info = pu.get_patient_dashboard_info(
-            req, uuid, program)
-        context['mdrtb'] = True
-        return render(req, 'app/tbregister/dashboard.html', context=context)
-    else:
-        patient, program_info, forms = pu.get_patient_dashboard_info(
-            req, uuid, program)
-        if forms:
-            context['forms'] = forms
-        if patient and program:
-            context['patient'] = patient
-            context['program'] = program_info
-            return render(req, 'app/tbregister/dashboard.html', context=context)
-
-        else:
-            messages.error(req, 'Error fetching patient info')
-            return redirect('home')
 
 
 def user_profile(req):

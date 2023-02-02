@@ -54,7 +54,7 @@ def get(req, endpoint, parameters):
         if response.status_code == 403:
             clear_session(req)
             messages.error(req, 'Your session has expired')
-            return False, response.json()['error']['message']
+            raise Exception('Your session has expired')
         return True, response.json()
     except requests.exceptions.RequestException as err:
         print(err)
@@ -70,7 +70,7 @@ def post(req, endpoint, data):
     print(response.status_code)
     if response.status_code == 201:
         return True, response.json()
-    return False, response.json()['error']
+    raise Exception(response.json()['error']['message'])
 
 
 def delete(req, endpoint):

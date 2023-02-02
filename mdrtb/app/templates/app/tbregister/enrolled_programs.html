@@ -90,11 +90,12 @@
                   </th>
                   <th
                     class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
-                    View States
+                    {{'general.view'|get_message_openMRS:request.session.locale}}
+                    {{'Program.states'|get_message_openMRS:request.session.locale}}
                   </th>
                   <th
                     class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
-                    Edit Program
+                    {{'Patient.dashboard.title'|get_message_openMRS:request.session.locale}}
                   </th>
 
 
@@ -128,19 +129,21 @@
                     <button id="modalOpenBtn" onclick="showStatesModal('{{program.program.name}}')"
                       data-obj="{{program.states}}" data-bs-toggle="modal" data-bs-target="#statesModal" type="button"
                       class="button-primary">
-                      View States
+                      {{'general.view'|get_message_openMRS:request.session.locale}}
+                      {{'Program.states'|get_message_openMRS:request.session.locale}}
                     </button>
                   </td>
                   {% if program.program.uuid == "e80fec43-f2b5-45b0-aec1-eaf74be26ff9" %}
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
                     <a href="{% url 'dashboard' uuid=uuid %}?program={{program.uuid}}" type="button"
-                      class="cancel-button">Edit Program</a>
+                      class="cancel-button">{{'Patient.dashboard.title'|get_message_openMRS:request.session.locale}}
+                    </a>
                   </td>
                   {% else %}
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
                     <a href="{% url 'mdrtbashboard' uuid=uuid mdrtb=mdrtb %}?program={{program.uuid}}" type="button"
-                      class="cancel-button">Edit
-                      Program</a>
+                      class="cancel-button">{{'Patient.dashboard.title'|get_message_openMRS:request.session.locale}}
+                    </a>
                   </td>
                   {% endif %}
                 </tr>
@@ -153,8 +156,7 @@
           </div>
         </div>
         {% else %}
-        <div style="margin-top: 8rem;"
-          class="flex-column-center space-y-6 mx-auto w-fit bg-gray-400 p-4 shadow-lg blur-sm">
+        <div style="margin-top: 8rem;" class="flex-column-center space-y-6 mx-auto w-fit rounded-md bg-gray-100 p-4">
           <h1 class="text-center mx-auto font-semibold text-3xl">No programs to display</h1>
           <div class="flex-center justify-center space-x-3">
             <a href="{% url 'programenroll' uuid=uuid %}" class="button-primary text-center flex-1 hover:text-white">Add

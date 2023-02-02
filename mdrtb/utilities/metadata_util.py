@@ -118,17 +118,3 @@ def get_global_properties(req, key):
             return response['results'][0]['value']
     except Exception as e:
         raise Exception(e)
-
-
-def get_programs(req):
-    status, response = ru.get(
-        req, 'program', {'v': 'custom:(uuid,name,retired,allWorkflows)'})
-    programs = []
-    if status:
-        for program in response['results']:
-            if program['retired'] == False:
-                print('appending')
-                programs.append(program)
-        return programs
-    else:
-        return None
