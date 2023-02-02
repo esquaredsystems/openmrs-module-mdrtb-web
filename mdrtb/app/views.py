@@ -13,11 +13,11 @@ from uuid import uuid4
 from django.contrib import messages
 from django.core.cache import cache
 
+# start memcache if u havent
+
 
 def check_if_session_alive(req):
-    print('checking session')
     if 'session_id' not in req.session:
-        messages.error(req, 'Session Expired Log in again')
         return False
     return True
 
@@ -61,6 +61,9 @@ def login(req):
 
 
 def search_patients_query(req):
+    if not check_if_session_alive(req):
+        redirect('home')
+
     q = req.GET['q']
     _, response = ru.get(req, 'patient', {'q': q, 'v': 'full'})
 
@@ -180,7 +183,11 @@ def enrolled_programs(req, uuid):
     return render(req, 'app/tbregister/enrolled_programs.html', context=context)
 
 
-def tb03_form(req):
+def tb03_form(req, uuid, formid=None):
+    if formid:
+        print('BADHSAH WE IN EDIT')
+        return render(req, 'app/tbregister/dots/tb03.html')
+
     if req.method == 'POST':
         tb03_info = {
             "ipCenter": req.POST['ipCenter'],
@@ -220,7 +227,8 @@ def tb03_form(req):
     concepts = fu.get_form_concepts(concept_ids, req)
     context = {
         "concepts": concepts,
-        "title": "TB03"
+        "title": "TB03",
+        'uuid': uuid
     }
     return render(req, 'app/tbregister/dots/tb03.html', context=context)
 
@@ -324,18 +332,28 @@ def patientList(req):
 
 
 def patient_dashboard(req, uuid, mdrtb=None):
-    patient = req.session['created_patient']
-    enroll_info = req.session['enrollment_info']
-
-    # status, response = ru.get(req, f'patient/{uuid}', {'v': 'full'})
-    # if status:
-    patient['uuid'] = uuid
+    if not check_if_session_alive(req):
+        return redirect('home')
+    program = req.GET['program']
+    context = {'uuid': uuid, 'title': 'Patient Dashboard'}
     if mdrtb:
-        return render(req, 'app/tbregister/dashboard.html', context={
-            'title': 'MDR Dashboard',
-            'patient': patient, 'enroll': enroll_info, 'mdrtb': True})
-    return render(req, 'app/tbregister/dashboard.html', context={'title': 'TB Dashboard',
-                                                                 'patient': patient, 'enroll': enroll_info})
+        patient, program_info = pu.get_patient_dashboard_info(
+            req, uuid, program)
+        context['mdrtb'] = True
+        return render(req, 'app/tbregister/dashboard.html', context=context)
+    else:
+        patient, program_info, forms = pu.get_patient_dashboard_info(
+            req, uuid, program)
+        if forms:
+            context['forms'] = forms
+        if patient and program:
+            context['patient'] = patient
+            context['program'] = program_info
+            return render(req, 'app/tbregister/dashboard.html', context=context)
+
+        else:
+            messages.error(req, 'Error fetching patient info')
+            return redirect('home')
 
 
 def user_profile(req):
@@ -345,12 +363,6 @@ def user_profile(req):
         return redirect(req.session['redirect'])
     req.session['redirect'] = req.META['HTTP_REFERER']
     return render(req, 'app/tbregister/user_profile.html')
-
-
-def concepts(req):
-    mu.get_concept(req)
-    mu.get_concept_by_uuid('31b4a16e-0370-102d-b0e3-001ec94a0cc1')
-    return render(req, 'app/tbregister/dashboard.html')
 
 
 def manage_test_types(req):

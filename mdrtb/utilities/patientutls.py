@@ -1,5 +1,6 @@
 from utilities import common_utils as u
 from utilities import restapi_utils as ru
+from utilities import formsutil as fu
 
 
 def get_patient(req, uuid):
@@ -28,7 +29,7 @@ def get_states(workflowstates, programstates):
                                for ws in workflowstates if ws['uuid'] == uuid), None)
                 if display:
                     return {
-                        "concept": display,
+                        "concept": display.title(),
                         "start_date": programstate.get('startDate')
                     }
 
@@ -69,3 +70,41 @@ def get_enrolled_programs_by_patient(req, uuid):
         return programs_info
     else:
         return None
+
+
+def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
+    # this function will extend to other forms and laborders
+    patient = get_patient(req, patientuuid)
+    status, response = ru.get(req, f'programenrollment/{programuuid}', {
+        'v': 'custom:(uuid,program,states,dateEnrolled,dateCompleted,location,outcome)'})
+    if status:
+        program_info = {
+            "uuid": response['uuid'],
+            "program": {
+                'uuid': response['program']['uuid'],
+                'name': response['program']['name']
+            },
+            "location": {
+                "uuid": response['location']['uuid'],
+                "name": response['location']['name'],
+            },
+            'dateEnrolled': response['dateEnrolled'],
+            'dateCompleted': response['dateCompleted'],
+            'outcome': response['outcome'],
+            "states": [
+
+                {
+                    "concept": workflow['concept']['display'].title(),
+                    "answer":  get_states(workflow['states'], response['states']),
+                } for workflow in response['program']['allWorkflows']
+
+
+
+            ]
+        }
+
+    if not isMdrtb:
+        forms = {'tb03s': fu.get_patient_tb03_forms(req, patientuuid)}
+        return patient, program_info, forms
+    else:
+        return patient, program

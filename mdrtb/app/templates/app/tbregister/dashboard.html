@@ -1,8 +1,8 @@
-{% extends 'app/base/base_without_menu.html' %} 
+{% extends 'app/base/base_without_menu.html' %}
 
 
 {% block title %}
-  {{title}}
+{{title}}
 {% endblock %}
 
 
@@ -15,78 +15,89 @@
     <div class="flex items-center space-x-6">
       <div>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
-          <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
+          <path fill-rule="evenodd"
+            d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
+            clip-rule="evenodd" />
         </svg>
-        
+
       </div>
       <div class="font-bold">
-        <div >{{patient.names.0.givenName}} {{patient.names.0.familyName}}</div>
-        <div>{{patient.age}} yrs ({{patient.birthDate}})</div>
+        <div>{{patient.name}}</div>
+        <div>{{patient.age}} yrs ({{patient.dob | iso_to_normal_date}})</div>
       </div>
     </div>
     <div class="space-x-2 font-bold">
-      <span>Patient Id:</span><span>{{patient.identifiers.0.identifier}}</span>
+      <span>Patient Id:</span><span>{{patient.identifier}}</span>
     </div>
   </div>
   <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
     <div class="flex items-center space-x-4">
-      <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.programStatus'|get_message:request.session.locale}}
+      <h2 class="text-[#2D9CDB] text-3xl font-bold">{{program.program.name}}
       </h2>
-      <button
-        class="font-bold underline text-[#044062]"
-      >
+      <button class="font-bold underline text-[#044062]">
         Edit program
       </button>
     </div>
-      <div class="ml-4 grid grid-cols-2 gap-3">
-        <div class="space-x-3">
-          <span class="font-bold">{{'mdrtb.enrollment.date'|get_message:request.session.locale}}: </span><span class="tb03-form-label">{{enroll.enroll_date}}</span>
-        </div>
-        <div class="space-x-3">
-          <span class="font-bold">{{'mdrtb.enrollment.location'|get_message:request.session.locale}}: </span><span class="tb03-form-label">{{enroll.facility}}</span>
-        </div>
-        <div class="space-x-3">
-          <span class="font-bold">{{'mdrtb.previousTreatmentClassification'|get_message:request.session.locale}}: </span><span class="tb03-form-label">{{enroll.registration_group_prev_treatment}}</span>
-        </div>
-        <div class="space-x-3">
-          <span class="font-bold">{{'mdrtb.previousDrugClassification'|get_message:request.session.locale}}: </span><span class="tb03-form-label">
-            {{enroll.registration_group_prev_drug}}</span>
-        </div>
-        <div class="space-x-3">
-          <span class="font-bold">{{'mdrtb.completionDate'|get_message:request.session.locale}}: </span><span class="tb03-form-label"></span>
-        </div>
-        <div class="space-x-3">
-          <span class="font-bold">{{'mdrtb.outcome'|get_message:request.session.locale}}: </span><span class="tb03-form-label">22/22/2022</span>
-        </div>
-        
+    <div class="ml-4 grid grid-cols-2 gap-3">
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.enrollment.date'|get_message:request.session.locale}}: </span><span
+          class="tb03-form-label">{{program.dateEnrolled | iso_to_normal_date}}</span>
       </div>
-      <div class="ml-4 flex items-center space-x-4">
-        <a
-        href="{% url 'dotsEnroll' %}"
-        class="font-bold underline text-[#044062]"
-      >
-      {{'mdrtb.enrollment.enrollMdrtb'|get_message:request.session.locale}}
-      </a>
-      <a
-        href="{% url 'transfer' %}"
-        class="font-bold underline text-[#044062]"
-      >
-      Transfer
-      </a>
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.enrollment.location'|get_message:request.session.locale}}: </span><span
+          class="tb03-form-label">{{program.location.name}}</span>
       </div>
+      {% for state in program.states %}
+      <div class="space-x-3">
+        <span class="font-bold">{{state.concept}}: </span>
+        {% if state.answer.concept %}
+        <span class="tb03-form-label">{{state.answer.concept}}</span>
+        {% else %}
+        <span class="tb03-form-label">None</span>
+        {% endif %}
+      </div>
+      {% endfor %}
+
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.completionDate'|get_message:request.session.locale}}: </span><span
+          class="tb03-form-label">{{program.dateCompleted | iso_to_normal_date}}</span>
+      </div>
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.outcome'|get_message:request.session.locale}}: </span><span
+          class="tb03-form-label">{{program.outcome}}</span>
+      </div>
+
+    </div>
+    <div class="ml-4 flex items-center space-x-4">
+      {% if mdrtb %}
+
+      <a href="{% url 'programenroll' uuid=uuid %}" class="font-bold underline text-[#044062]">
+        {{'mdrtb.enrollment.enrollMdrtb'|get_message:request.session.locale}}
+      </a>
+      {% endif %}
+
+      <a href="{% url 'transfer' %}" class="font-bold underline text-[#044062]">
+        Transfer In
+      </a>
+      <a href="{% url 'transfer' %}" class="font-bold underline text-[#044062]">
+        Transfer Out
+      </a>
+    </div>
   </div>
   <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
     <div class="flex items-center space-x-4">
       <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.forms'|get_message:request.session.locale}}
       </h2>
     </div>
-      <div class="ml-4 grid grid-cols-2 gap-3">
-        <div class="space-x-3">
-          <span class="font-bold">{{'mdrtb.tb03'|get_message:request.session.locale}}: </span><a class="tb03-form-label underline" href="{% url 'tb03' %}">{{enroll.enroll_date}} at {{enroll.facility}}</a>
-        </div>
-        <div class="space-x-3">
-          <!-- <span class="font-bold">{{'mdrtb.form89'|get_message:request.session.locale}}: </span><span class="tb03-form-label"></span> -->
-        </div>
+    <div class="ml-4 grid grid-cols-2 gap-3">
+      {% for tb03 in forms.tb03s %}
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.tb03'|get_message:request.session.locale}}: </span><a
+          class="tb03-form-label underline" href="{% url 'edittb03' uuid=uuid formid=tb03.uuid %}">
+          {{tb03.encounter.encounterDatetime | iso_to_normal_date}} at
+          {{tb03.encounter.location.name}}</a>
+      </div>
+      {% endfor %}
     </div>
   </div>
   <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
@@ -94,43 +105,34 @@
       <div class="flex-center space-x-4">
         <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.labResults'|get_message:request.session.locale}}
         </h2>
-        <a
-        href="{% url 'managetestorders' uuid=patient.uuid %}"
-          class="cancel-button"
-        >
+        <a href="{% url 'managetestorders' uuid=uuid %}" class="cancel-button">
           View All Lab Tests
         </a>
       </div>
-      
+
     </div>
     <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
-      <div
-        class="inline-block min-w-full shadow-md rounded-lg overflow-hidden"
-      >
+      <div class="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
         <table class="min-w-full leading-normal">
           <thead>
             <tr>
               <th
-                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
-              >
+                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                 Name
               </th>
               <th
-                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
-              >
+                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                 Result
               </th>
               <th
-                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
-              >
+                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                 Collected On
               </th>
-              
+
               <th
-                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
-              >
-              Actions
-            </th>
+                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -140,24 +142,28 @@
               </td>
               <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                 Failed
-            </td>
-            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-              11/11/2022
-          </td>
-          <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-            <div class="flex items-center space-x-4 cursor-pointer">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 cursor-pointer">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <a href="#">
-                <svg  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-                </svg>
-              </a>
-              
-            </div>
-        </td>
+              </td>
+              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                11/11/2022
+              </td>
+              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                <div class="flex items-center space-x-4 cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-5 h-5 cursor-pointer">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                    </svg>
+                  </a>
+
+                </div>
+              </td>
             </tr>
             <tr>
               <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
@@ -165,24 +171,28 @@
               </td>
               <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                 Success
-            </td>
-            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-              11/11/2022
-          </td>
-          <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-            <div class="flex items-center space-x-4 cursor-pointer">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 cursor-pointer">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <a href="#">
-                <svg  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-                </svg>
-              </a>
-              
-            </div>
-        </td>
+              </td>
+              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                11/11/2022
+              </td>
+              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                <div class="flex items-center space-x-4 cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-5 h-5 cursor-pointer">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                    </svg>
+                  </a>
+
+                </div>
+              </td>
             </tr>
             <tr>
               <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
@@ -190,24 +200,28 @@
               </td>
               <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                 Failed
-            </td>
-            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-              11/11/2022
-          </td>
-          <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-            <div class="flex items-center space-x-4 cursor-pointer">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 cursor-pointer">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <a href="#">
-                <svg  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-                </svg>
-              </a>
-              
-            </div>
-        </td>
+              </td>
+              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                11/11/2022
+              </td>
+              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                <div class="flex items-center space-x-4 cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-5 h-5 cursor-pointer">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                    </svg>
+                  </a>
+
+                </div>
+              </td>
             </tr>
 
           </tbody>
@@ -221,26 +235,21 @@
     <div class="flex items-center space-x-4">
       <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.pv.regimens'|get_message:request.session.locale}}
       </h2>
-      <a
-      href="{% url 'manageregimens' %}"
-        class="text-[#044062] font-bold underline p-2"
-      >
+      <a href="{% url 'manageregimens' %}" class="text-[#044062] font-bold underline p-2">
         Regimens
       </a>
     </div>
-      
+
   </div>
   <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
     <div class="flex items-center space-x-4">
       <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.pv.pv'|get_message:request.session.locale}}
       </h2>
-      <a href="{% url 'manageae' %}"
-        class="text-[#044062] font-bold underline p-2"
-      >
+      <a href="{% url 'manageae' %}" class="text-[#044062] font-bold underline p-2">
         Manage AE's
       </a>
     </div>
-      
+
   </div>
   {% endif %}
 

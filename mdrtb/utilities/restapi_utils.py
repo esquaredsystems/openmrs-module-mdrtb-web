@@ -14,7 +14,10 @@ def initiate_session(req, username, password):
             f"{username}:{password}".encode('ascii')).decode('ascii')
         url = BASE_URL + 'session'
         headers = {'Authorization': f'Basic {encoded_credentials}'}
+        print('MAKING RESPONSE')
+
         response = requests.get(url, headers=headers)
+        print('RESPONSE', response)
         if response.status_code == 200 and response.json()['authenticated']:
             req.session['session_id'] = response.json()['sessionId']
             if 'user' in response.json():
@@ -27,6 +30,7 @@ def initiate_session(req, username, password):
             messages.error(
                 req, mu.get_global_msgs('auth.password.invalid', source='OpenMRS'))
     except Exception as e:
+        print(e)
         messages.error(req, "Error loggin in. Please try again later")
         return False
 

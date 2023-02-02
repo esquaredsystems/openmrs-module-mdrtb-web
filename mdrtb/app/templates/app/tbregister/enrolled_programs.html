@@ -133,11 +133,14 @@
                   </td>
                   {% if program.program.uuid == "e80fec43-f2b5-45b0-aec1-eaf74be26ff9" %}
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
-                    <a href="{% url 'dashboard' uuid=uuid %}" type="button" class="cancel-button">Edit Program</a>
+                    <a href="{% url 'dashboard' uuid=uuid %}?program={{program.uuid}}" type="button"
+                      class="cancel-button">Edit Program</a>
                   </td>
                   {% else %}
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
-                    <a href="{% url 'mdrdashboard' uuid=uuid %}" type="button" class="cancel-button">Edit Program</a>
+                    <a href="{% url 'mdrtbashboard' uuid=uuid mdrtb=mdrtb %}?program={{program.uuid}}" type="button"
+                      class="cancel-button">Edit
+                      Program</a>
                   </td>
                   {% endif %}
                 </tr>
