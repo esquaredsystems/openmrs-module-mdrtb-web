@@ -20,8 +20,8 @@
                 <label class="input-label" for="password">Password</label>
                 <div id="pass-container"
                     class="border rounded-md border-gray-200 outline-none focus:ring-0 w-full flex-center bg-white">
-                    <input  id="password-input" type="password" name="password" class="input border-none w-full">
-                    <svg  id="show-pass" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    <input id="password-input" type="password" name="password" class="input border-none w-full">
+                    <svg id="show-pass" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                         stroke-width="1.5" stroke="currentColor" class="cursor-pointer m-2 w-6 h-6">
                         <title>Show Password</title>
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -39,7 +39,7 @@
 </div>
 
 <script>
-    $(document).on('click','#show-pass',function () {
+    $(document).on('click', '#show-pass', function () {
         console.log('SHOW PASS')
         $('#password-input').attr('type', 'text')
         $('#show-pass').remove();
@@ -57,7 +57,7 @@
         )
 
     })
-    $(document).on('click','#hide-pass' , function () {
+    $(document).on('click', '#hide-pass', function () {
         console.log('HIDE PASS')
         $('#password-input').attr('type', 'password')
         $('#hide-pass').remove();

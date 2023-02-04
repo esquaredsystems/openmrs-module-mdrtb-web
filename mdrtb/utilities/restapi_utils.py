@@ -55,7 +55,11 @@ def get(req, endpoint, parameters):
             clear_session(req)
             messages.error(req, 'Your session has expired')
             raise Exception('Your session has expired')
+        response.raise_for_status()
         return True, response.json()
+    except requests.exceptions.HTTPError as httperr:
+        print(httperr)
+        raise Exception(f"{str(response.status_code)} Please try again later")
     except requests.exceptions.RequestException as err:
         print(err)
         raise Exception('Request error')

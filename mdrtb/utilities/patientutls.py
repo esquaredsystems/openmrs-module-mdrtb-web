@@ -128,4 +128,4 @@ def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
         forms = {'tb03s': fu.get_patient_tb03_forms(req, patientuuid)}
         return patient, program_info, forms
     else:
-        return patient, program
+        return patient, program_info

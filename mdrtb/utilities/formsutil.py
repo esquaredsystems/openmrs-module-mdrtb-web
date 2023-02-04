@@ -23,6 +23,7 @@ def get_patient_tb03_forms(req, patientuuid):
     status, response = ru.get(
         req, 'mdrtb/tb03', {'v': 'full', 'patient': patientuuid})
     if status:
+        print(response)
         return response['results']
     else:
         return None

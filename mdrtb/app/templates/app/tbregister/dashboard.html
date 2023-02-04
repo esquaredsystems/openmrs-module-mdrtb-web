@@ -71,7 +71,7 @@
     <div class="ml-4 flex items-center space-x-4">
       {% if not mdrtb %}
 
-      <a href="{% url 'programenroll' uuid=uuid %}" class="font-bold underline text-[#044062]">
+      <a href="{% url 'programenroll' uuid=uuid %}?mdrtb=true" class="font-bold underline text-[#044062]">
         {{'mdrtb.enrollment.enrollMdrtb'|get_message:request.session.locale}}
       </a>
       {% endif %}

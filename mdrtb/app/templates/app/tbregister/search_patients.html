@@ -34,10 +34,12 @@
 
       </div>
     </div>
+    {% if add_patient_privilege %}
     <div class="patient-create-new-box">
       <p>Can't find the partient ? </p>
       <a href="{% url 'enrollPatient' %}"><button class="button-primary">Create One</button></a>
     </div>
+    {% endif %}
   </div>
   <script src="https://cdn.lordicon.com/qjzruarw.js"></script>
 

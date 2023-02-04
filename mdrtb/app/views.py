@@ -7,6 +7,7 @@ import utilities.patientutls as pu
 import utilities.formsutil as fu
 import utilities.common_utils as util
 import utilities.locationsutil as lu
+import utilities.privileges as p
 import json
 import datetime
 from uuid import uuid4
@@ -23,11 +24,13 @@ def check_if_session_alive(req):
 
 
 def index(req):
-    print(req.session['current_location'])
+    p.create_privileges_enum(req)
+    print(p.get_privileges_enum().ADD_ALLERGIES.value)
     return render(req, 'app/tbregister/reportmockup.html')
 
 
 def login(req):
+    privileges = p.get_privileges_enum()
     if 'current_patient' in req.session:
         del req.session['current_patient']
         if 'current_location' in req.session:
@@ -40,6 +43,9 @@ def login(req):
         try:
             minSearchCharacters = mu.get_global_properties(
                 req, 'minSearchCharacters')
+            # Check if user has the privilege to Add patients
+            # if mu.check_if_user_has_privilege(privileges.ADD_PATIENTS, req.session['logged_user']['privileges']):
+            #     context['add_patient_privilege'] = True
             context['minSearchCharacters'] = minSearchCharacters
             return render(req, 'app/tbregister/search_patients.html', context=context)
         except Exception as e:
@@ -147,7 +153,10 @@ def enroll_in_program(req, uuid):
     session_alive = check_if_session_alive(req)
     if not session_alive:
         return redirect('home')
-    context = {'title': 'Add a new Program', 'uuid': uuid}
+    if req.GET['mdrtb']:
+        is_mdrtb = True
+    context = {'title': 'Add a new Program', 'uuid': uuid,
+               'mdrtb': True if is_mdrtb else False}
     if req.method == 'POST':
         body = {
             "patient": uuid,
@@ -196,13 +205,17 @@ def enrolled_programs(req, uuid):
         'uuid': uuid
     }
 
-    programs = pu.get_enrolled_programs_by_patient(req, uuid)
-    patient = pu.get_patient(req, uuid)
-    if patient:
-        context['patient'] = patient
-    if programs:
-        context['programs'] = programs
-    return render(req, 'app/tbregister/enrolled_programs.html', context=context)
+    try:
+        programs = pu.get_enrolled_programs_by_patient(req, uuid)
+        patient = pu.get_patient(req, uuid)
+        if patient:
+            context['patient'] = patient
+        if programs:
+            context['programs'] = programs
+        return render(req, 'app/tbregister/enrolled_programs.html', context=context)
+    except Exception as e:
+        messages.error(req, str(e))
+        return redirect('home')
 
 
 def patient_dashboard(req, uuid, mdrtb=None):
@@ -210,34 +223,37 @@ def patient_dashboard(req, uuid, mdrtb=None):
         return redirect('home')
     program = req.GET['program']
     context = {'uuid': uuid, 'title': 'Patient Dashboard'}
-    if mdrtb:
-        patient, program_info = pu.get_patient_dashboard_info(
-            req, uuid, program)
-        context['mdrtb'] = True
-        return render(req, 'app/tbregister/dashboard.html', context=context)
-    else:
-        patient, program_info, forms = pu.get_patient_dashboard_info(
-            req, uuid, program)
-        req.session['current_patient'] = patient
-        req.session['current_location'] = {
-            'uuid': program_info['location']['uuid'],
-            'name': program_info['location']['name']
-        }
-        req.session['current_date_enrolled'] = program_info['dateEnrolled']
-        if forms:
-            context['forms'] = forms
-        if patient and program:
-            context['patient'] = patient
-            context['program'] = program_info
+    try:
+        if mdrtb:
+            patient, program_info = pu.get_patient_dashboard_info(
+                req, uuid, program)
+            context['mdrtb'] = True
             return render(req, 'app/tbregister/dashboard.html', context=context)
-
         else:
-            messages.error(req, 'Error fetching patient info')
-            return redirect('home')
+            patient, program_info, forms = pu.get_patient_dashboard_info(
+                req, uuid, program)
+            req.session['current_patient'] = patient
+            req.session['current_location'] = {
+                'uuid': program_info['location']['uuid'],
+                'name': program_info['location']['name']
+            }
+            req.session['current_date_enrolled'] = program_info['dateEnrolled']
+            if forms:
+                context['forms'] = forms
+            if patient and program:
+                context['patient'] = patient
+                context['program'] = program_info
+                return render(req, 'app/tbregister/dashboard.html', context=context)
+
+            else:
+                messages.error(req, 'Error fetching patient info')
+                return redirect('home')
+    except Exception as e:
+        messages.error(req, str(e))
+        return redirect('home')
 
 
 def tb03_form(req, uuid, formid=None):
-    print(req.session['current_location'])
     if not check_if_session_alive(req):
         return redirect('home')
 
