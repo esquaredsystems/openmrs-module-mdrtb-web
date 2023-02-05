@@ -9,12 +9,17 @@
 {%block content%}
 
 <div>
-  <form action="{% url 'tb03' uuid=uuid %}?program={{request.GET.program}}" method="post" class="flex flex-col">
+  <form action="{% url 'tb03' uuid=uuid %}" method="post" class="flex flex-col">
     {% csrf_token %}
 
     <div class="m-16 flex flex-col justify-center space-y-4">
       <h1 class="text-[#2D9CDB] text-3xl font-bold">
-        {{'mdrtb.tb03'|get_message:request.session.locale}} Form
+        {% if state == 'edit' %}
+        {{'mdrtb.edit'|get_message:request.session.locale}}
+        {{'mdrtb.tb03'|get_message:request.session.locale}}
+        {% else %}
+        {{'mdrtb.tb03'|get_message:request.session.locale}}
+        {% endif %}
       </h1>
       <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4">
         <div class="flex items-center space-x-12">
@@ -77,6 +82,7 @@
           <div class="input-container">
             <label class="tb03-form-label"
               for="ipCenter">{{'mdrtb.tb03.treatmentSiteIP'|get_message:request.session.locale}}</label>
+
             <select required class="input" name="ddf6e09c-f018-4048-a69f-436ff22308b5">
               {% for concept in concepts.treatmentcenterforip %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>

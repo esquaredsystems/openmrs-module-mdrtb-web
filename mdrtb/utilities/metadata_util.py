@@ -121,6 +121,7 @@ def get_global_properties(req, key):
 
 
 def check_if_user_has_privilege(privilege_to_check, user_privileges):
+    print(user_privileges)
     has_privilege = False
     for privilege in user_privileges:
         if privilege['uuid'] == privilege_to_check:

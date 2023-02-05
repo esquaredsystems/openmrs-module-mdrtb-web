@@ -1,11 +1,11 @@
 import utilities.restapi_utils as ru
 from django.core.cache import cache
-import datetime
+from datetime import datetime
 from django.shortcuts import redirect
 
 
 def get_locations(req):
-    print('MAKING REST CALL')
+    print(f'MAKING REST CALL at {datetime.now()} ')
     status, locations = ru.get(req, 'location', {
         'v': 'custom:(uuid,name,parentLocation,childLocations,attributes,retired)',
         'limit': 500

@@ -10,7 +10,7 @@
         src="https://openmrs.org/wp-content/uploads/2021/08/cropped-OpenMRSlogo-transparent.png" alt="OpemMRS logo">
     <div class="login-form-container w-[30%]">
         <p>Welcome to OpenMRS tjk. Please login to proceed</p>
-        <form class="login-form  bg-gray-100 shadow-md p-4 rounded-md" action="{% url 'home' %}" method="post">
+        <form class="login-form  bg-gray-100 shadow-md p-4 rounded-md" action="{% url 'login' %}" method="post">
             {% csrf_token %}
             <div class="loginform-input-container">
                 <label class="input-label" for="username">Username</label>

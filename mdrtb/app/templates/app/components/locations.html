@@ -19,20 +19,22 @@
     </select>
 </div>
 <div id="subregion-container" class="input-container hidden">
-    <label class="input-label required" for="name">Sub region</label>
+    <label id="subregion-label" class="input-label" for="name">Sub region</label>
     <select disabled required class="input form-control" name="subregion" id="subregion-select">
         <option value="">Select</option>
     </select>
 </div>
 
 <div class="input-container">
-    <label class="input-label required" for="name">{{'mdrtb.district'|get_message:request.session.locale}}</label>
+    <label id="district-label" class="input-label"
+        for="name">{{'mdrtb.district'|get_message:request.session.locale}}</label>
     <select disabled required class="input form-control" name="district" id="district-select">
         <option value="">Select</option>
     </select>
 </div>
 <div class="input-container">
-    <label class="input-label required" for="name">{{'mdrtb.facility'|get_message:request.session.locale}}</label>
+    <label id="facility-label" class="input-label"
+        for="name">{{'mdrtb.facility'|get_message:request.session.locale}}</label>
     <select disabled required class="input form-control" name="facility" id="facility-select">
         <option value="">Select</option>
 

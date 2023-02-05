@@ -5,7 +5,6 @@
 {% endblock %}
 
 
-
 {%block content%}
 
 
@@ -80,13 +79,13 @@
                   `
               <div class="patient-notfound-box">
                 <h3>
-                  Could not find any patient according to your search
+                  Error finding patient
                   </h3>
             </div>
               `
                 )
               }
-              if (data.results.length === 0) {
+              else if (data.results.length === 0) {
 
                 $('#search-results').html("")
                 $('#search-results').append(

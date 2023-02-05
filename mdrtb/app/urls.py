@@ -2,14 +2,15 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.login, name='home'),
+    path('login', views.login, name='login'),
+    path('', views.search_patients_view, name='searchPatientsView'),
+
     path('search', views.search_patients_query, name='search'),
     path('tbdashboard/patient/<str:uuid>',
          views.patient_dashboard, name='dashboard'),
     path('<str:mdrtb>/dashboard/patient/<str:uuid>',
          views.patient_dashboard, name='mdrdashboard'),
     path('report', views.index, name='report'),
-    path('searchpatients', views.search_patients_view, name='searchPatientsView'),
     path('enrollpatient', views.enroll_patient, name='enrollPatient'),
     path('patient/<str:uuid>/programenroll',
          views.enroll_in_program, name="programenroll"),
@@ -20,7 +21,7 @@ urlpatterns = [
     path('profile', views.user_profile, name='profile'),
     path('patient/<str:uuid>/tb03', views.tb03_form, name='tb03'),
     path('patient/<str:uuid>/tb03/<str:formid>',
-         views.tb03_form, name='edittb03'),
+         views.edit_tb03_form, name='edittb03'),
     path('form89', views.form_89, name='form89'),
     path('regimen', views.regimen_form, name='regimen'),
     path('manageadverseevents', views.manage_adverse_events, name='manageae'),

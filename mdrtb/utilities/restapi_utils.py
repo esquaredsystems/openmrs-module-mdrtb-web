@@ -59,13 +59,15 @@ def get(req, endpoint, parameters):
         return True, response.json()
     except requests.exceptions.HTTPError as httperr:
         print(httperr)
-        raise Exception(f"{str(response.status_code)} Please try again later")
+        raise Exception(
+            "An error occured while processing your request. Please try again later")
     except requests.exceptions.RequestException as err:
         print(err)
-        raise Exception('Request error')
+        raise Exception(
+            'An error occured while processing your request. Please try again later')
     except requests.exceptions.ConnectionError as connection_err:
         print(connection_err)
-        raise Exception('Connection Error')
+        raise Exception('Please check your internet connection and try again')
 
 
 def post(req, endpoint, data):
