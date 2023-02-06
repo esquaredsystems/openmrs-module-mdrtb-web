@@ -71,12 +71,13 @@ def get(req, endpoint, parameters):
 
 
 def post(req, endpoint, data):
-    response = requests.post(url=BASE_URL+endpoint,
-                             headers=get_auth_headers(req), json=data)
-    print(response.status_code)
-    if response.status_code == 201:
-        return True, response.json()
-    raise Exception(response.json()['error']['message'])
+    try:
+        response = requests.post(url=BASE_URL+endpoint,
+                                 headers=get_auth_headers(req), json=data)
+        if response.status_code == 201:
+            return True, response.json()
+    except Exception as e:
+        raise Exception(response.json()['error']['message'])
 
 
 def delete(req, endpoint):

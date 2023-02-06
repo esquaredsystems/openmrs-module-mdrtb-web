@@ -36,7 +36,7 @@ def login(req):
         password = req.POST['password']
         response = ru.initiate_session(req, username, password)
         if response:
-            return redirect('searchPatientsView')
+            return redirect(req.session['redirect_url'])
         else:
             return render(req, 'app/tbregister/login.html', context=context)
     else:
@@ -57,6 +57,7 @@ def search_patients_query(req):
 
 
 def search_patients_view(req):
+    req.session['redirect_url'] = req.META['HTTP_REFERER']
     context = {'title': "Search Patients", 'add_patient_privilege': False}
     if 'current_patient' in req.session:
         del req.session['current_patient']
@@ -87,75 +88,36 @@ def search_patients_view(req):
 
 
 def enroll_patient(req):
-    if check_if_session_alive(req):
-        if req.method == 'POST':
-            patient_info = {
-                "identifiers": [
-                    {
-                        "identifier": req.POST['patientidentifier'],
-                        "identifierType": req.POST['patientidentifiertype'],
-                        "location": req.POST['district'] if 'facility' not in req.POST else req.POST['facility']
+    req.session['redirect_url'] = req.META['HTTP_REFERER']
+    if not check_if_session_alive(req):
+        return redirect('login')
 
-                    }
-                ],
-                "person": {
-                    "names": [{
-                        "givenName": req.POST['givenname'],
-                        "familyName":req.POST['familyname']
-                    }],
-
-                    "gender": req.POST['gender'],
-                    "addresses": [{
-                        "address1": req.POST['address'],
-                        "stateProvince": req.POST['region'],
-                        "country": req.POST['country'],
-                    }]
-                }}
-            if 'dob' in req.POST:
-                patient_info['person']['birthdate'] = req.POST['dob']
-                patient_info['person']['birthdateEstimated'] = False
-            else:
-                patient_info['person']['age'] = req.POST['age']
-
-            if 'deceased' in req.POST:
-                patient_info['person']['deathDate'] = req.POST['deathdate']
-                patient_info['person']['causeOfDeath'] = req.POST['causeofdeath']
-            else:
-                patient_info['person']['deathDate'] = None
-                patient_info['person']['dead'] = False
-                patient_info['person']['causeOfDeath'] = None
-
-            if 'voided' in req.POST:
-                patient_info['person']['reasonToVoid'] = req.POST['reasontovoid']
-
-            status, response = ru.post(req, 'patient', patient_info)
+    if req.method == 'POST':
+        try:
+            status, response = pu.create_patient(req, req.POST)
             if status:
                 return redirect('programenroll', uuid=response['uuid'])
-            else:
-                messages.error(req, "Error creating patient")
-                return redirect('searchPatientsView')
-        else:
-            try:
-                identifiertypes = mu.get_patient_identifier_types(req)
-                locations = json.dumps(lu.create_location_hierarchy(req))
-                return render(req, 'app/tbregister/enroll_patients.html',
-                              context={'locations': locations, 'title': "Enroll new Patient", 'identifiertypes': identifiertypes})
-            except Exception as e:
-                messages.error(req, e)
-                return redirect('searchPatientsView')
 
+        except Exception as e:
+            messages.error(req, str(e))
+            return redirect('searchPatientsView')
     else:
-
-        return redirect('searchPatientsView')
+        try:
+            identifiertypes = mu.get_patient_identifier_types(req)
+            locations = json.dumps(lu.create_location_hierarchy(req))
+            return render(req, 'app/tbregister/enroll_patients.html',
+                          context={'locations': locations, 'title': "Enroll new Patient", 'identifiertypes': identifiertypes})
+        except Exception as e:
+            messages.error(req, e)
+            return redirect('searchPatientsView')
 
 
 def enroll_in_program(req, uuid):
+    req.session['redirect_url'] = req.META['HTTP_REFERER']
+
     if not check_if_session_alive(req):
-        return redirect('home')
-    if req.GET['mdrtb']:
-        is_mdrtb = True
-    context = {'title': 'Add a new Program', 'uuid': uuid,
-               'mdrtb': True if is_mdrtb else False}
+        return redirect('login')
+    context = {'title': 'Add a new Program', 'uuid': uuid}
     if req.method == 'POST':
         body = {
             "patient": uuid,
@@ -179,26 +141,29 @@ def enroll_in_program(req, uuid):
                 req.session['current_location'] = {
                     'uuid': response['location']['uuid'],
                     'name': response['location']['name']
-                },
-                req.session['current+_date_enrolled'] = response['dateEnrolled']
+                }
+                req.session['current_date_enrolled'] = response['dateEnrolled']
                 return redirect(f'/patient/{uuid}/tb03'+'?program={}'.format(req.POST['program']))
         except Exception as e:
             messages.error(req, e)
             return redirect('programenroll', uuid=uuid)
-
-    try:
-        programs = pu.get_programs(req)
-        locations = json.dumps(lu.create_location_hierarchy(req))
-        context['programs'] = programs
-        context['jsonprograms'] = json.dumps(programs)
-        context['locations'] = locations
-    except Exception as e:
-        messages.error(req, str(e))
-        redirect('programenroll', uuid=uuid)
-    return render(req, 'app/tbregister/enroll_program.html', context=context)
+    else:
+        try:
+            programs = pu.get_programs(req)
+            locations = json.dumps(lu.create_location_hierarchy(req))
+            context['programs'] = programs
+            context['jsonprograms'] = json.dumps(programs)
+            context['locations'] = locations
+        except Exception as e:
+            messages.error(req, str(e))
+            redirect('programenroll', uuid=uuid)
+        return render(req, 'app/tbregister/enroll_program.html', context=context)
 
 
 def enrolled_programs(req, uuid):
+    req.session['redirect_url'] = req.META['HTTP_REFERER']
+    if not check_if_session_alive(req):
+        return redirect('login')
     context = {
         'title': 'Enrolled Programs',
         'uuid': uuid
@@ -218,8 +183,9 @@ def enrolled_programs(req, uuid):
 
 
 def patient_dashboard(req, uuid, mdrtb=None):
+    req.session['redirect_url'] = req.META['HTTP_REFERER']
     if not check_if_session_alive(req):
-        return redirect('home')
+        return redirect('login')
     program = req.GET['program']
     context = {'uuid': uuid, 'title': 'Patient Dashboard'}
     try:
@@ -291,6 +257,9 @@ def edit_tb03_form(req, uuid, formid):
                'location': req.session['current_location'],
                'enrollment_date': req.session['current_date_enrolled']}
     form = fu.get_tb03_by_uuid(req, formid)
+    if form:
+        context['form'] = form
+
     return render(req, 'app/tbregister/dots/tb03.html', context=context)
 
 

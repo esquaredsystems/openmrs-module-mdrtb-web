@@ -21,6 +21,54 @@ def get_patient(req, uuid):
         return None
 
 
+def create_patient(req, data):
+    patient_info = {
+        "identifiers": [
+            {
+                "identifier": data['patientidentifier'],
+                "identifierType": data['patientidentifiertype'],
+                "location": data['district'] if 'facility' not in data else data['facility']
+
+            }
+        ],
+        "person": {
+            "names": [{
+                "givenName": data['givenname'],
+                "familyName":data['familyname']
+            }],
+
+            "gender": data['gender'],
+            "addresses": [{
+                "address1": data['address'],
+                "stateProvince": data['region'],
+                "country": data['country'],
+            }]
+        }}
+    if 'dob' in data:
+        patient_info['person']['birthdate'] = data['dob']
+        patient_info['person']['birthdateEstimated'] = False
+    else:
+        patient_info['person']['age'] = data['age']
+
+    if 'deceased' in data:
+        patient_info['person']['deathDate'] = data['deathdate']
+        patient_info['person']['causeOfDeath'] = data['causeofdeath']
+    else:
+        patient_info['person']['deathDate'] = None
+        patient_info['person']['dead'] = False
+        patient_info['person']['causeOfDeath'] = None
+
+    if 'voided' in data:
+        patient_info['person']['reasonToVoid'] = data['reasontovoid']
+
+    try:
+        status, response = ru.post(req, 'patient', patient_info)
+        if status:
+            return status, response
+    except Exception as e:
+        raise Exception(str(e))
+
+
 def get_programs(req, uuid=None, params=None):
     if uuid:
         status, response = ru.get(

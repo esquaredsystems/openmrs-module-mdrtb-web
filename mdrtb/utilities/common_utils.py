@@ -1,50 +1,42 @@
 from pathlib import Path
-from datetime import datetime , date
-
-
-
+from datetime import datetime, date
 
 
 def get_project_root() -> Path:
     return Path(__file__).parent.parent
 
 
-
-def read_properties_file(filepath,mode,encoding):
+def read_properties_file(filepath, mode, encoding):
     configdata = []
     try:
-        file = open(filepath,mode,encoding=encoding)
+        file = open(filepath, mode, encoding=encoding)
         for line in file.readlines():
             configdata.append(line)
         file.close()
-        return configdata  
+        return configdata
     except Exception as e:
         return None
-        
-        
 
 
 def calculate_age(dob):
     age = 0
     try:
-        converted_date  = datetime.strptime(dob, '%m/%d/%Y').date()
-        today_date= date.today()
+        converted_date = datetime.strptime(dob, '%m/%d/%Y').date()
+        today_date = date.today()
         if today_date.month != converted_date.month:
             return (today_date.year-converted_date.year) - 1
         elif (today_date.day >= converted_date.day):
             return today_date.year-converted_date.year
     except Exception as e:
         return None
-    
+
 
 def iso_to_normal(date):
     try:
-        normal = date[:date.find('T')].replace('-' , '.')
+        normal = date[:date.find('T')].replace('-', '.')
         return normal
     except Exception as e:
         return None
-
-
 
 
 def remove_given_str_from_arr(arr=[], str=''):
@@ -68,11 +60,10 @@ def remove_given_str_from_obj_arr(arr, str, call=None):
     else:
         return temp
 
-def remove_obj_from_objarr(obj,uuid_to_remove,key=None):
+
+def remove_obj_from_objarr(obj, uuid_to_remove, key=None):
     for item in obj:
         if key:
             if item[key] == uuid_to_remove:
                 obj.remove(item)
                 return obj
-
-

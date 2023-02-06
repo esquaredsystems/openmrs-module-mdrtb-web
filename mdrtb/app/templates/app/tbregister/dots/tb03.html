@@ -84,6 +84,9 @@
               for="ipCenter">{{'mdrtb.tb03.treatmentSiteIP'|get_message:request.session.locale}}</label>
 
             <select required class="input" name="ddf6e09c-f018-4048-a69f-436ff22308b5">
+              {% if state == 'edit' %}
+              <option selected value="{{form.treatmentSiteIP.uuid}}">{{form.treatmentSiteIP.display}}</option>
+              {% endif %}
               {% for concept in concepts.treatmentcenterforip %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}

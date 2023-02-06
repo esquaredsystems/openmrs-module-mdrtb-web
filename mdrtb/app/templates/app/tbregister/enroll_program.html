@@ -23,13 +23,9 @@
         <select class="input" name="program" id="program-select" required>
           <option selected value="">Choose a Program</option>
           {% for program in programs %}
-          {% if mdrtb %}
-          {% if program.uuid == "34198d48-0370-102d-b0e3-001ec94a0cc1" %}
-          <option selected value="{{program.uuid}}">{{program.name}}</option>
-          {% else %}
           <option value="{{program.uuid}}">{{program.name}}</option>
-          {% endif %}
-          {% endif %}
+
+
           {% endfor %}
         </select>
 
