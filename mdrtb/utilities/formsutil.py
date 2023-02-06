@@ -6,15 +6,18 @@ from datetime import datetime
 def get_form_concepts(concept_ids, req):
     concept_dict = {}
     for id in concept_ids:
-        status, response = mu.get_concept_by_uuid(id, req)
-        if status:
-            answers = []
-            for answer in response['answers']:
-                answers.append(
-                    {'uuid': answer['uuid'], 'name': answer['display']})
-                concept_dict[response['display'].lower().replace(
-                    ' ', '')] = answers
+        try:
+            response = mu.get_concept(req, id)
+            if response:
+                answers = []
+                for answer in response['answers']:
+                    answers.append(
+                        {'uuid': answer['uuid'], 'name': answer['display']})
+                    concept_dict[response['display'].lower().replace(
+                        ' ', '')] = answers
 
+        except Exception as e:
+            raise Exception(str(e))
     return concept_dict
 
 
@@ -193,3 +196,29 @@ def create_tb03(req, patientuuid, data):
     #     return True
     # else:
     #     return False
+
+
+def remove_duplicate_concepts(concept_field, form_field):
+    if form_field:
+        for concept in concept_field:
+            if form_field['uuid'] == concept['uuid']:
+                concept_field.remove(concept)
+
+
+def remove_tb03_duplicates(concepts, form_data):
+    remove_duplicate_concepts(concepts.get(
+        'treatmentcenterforip', []), form_data.get('treatmentSiteIP', None))
+    remove_duplicate_concepts(concepts.get(
+        'treatmentcenterforcp', []), form_data.get('treatmentSiteCP', None))
+    remove_duplicate_concepts(concepts.get(
+        'causeofdeath', []), form_data.get('causeOfDeath', None))
+    remove_duplicate_concepts(concepts.get(
+        'resistancetype', []), form_data.get('resistanceType', None))
+    remove_duplicate_concepts(concepts.get(
+        'resultofhivtest', []), form_data.get('hivStatus', None))
+    remove_duplicate_concepts(concepts.get(
+        'siteoftbdisease', []), form_data.get('anatomicalSite', None))
+    remove_duplicate_concepts(concepts.get(
+        'tuberculosispatientcategory', []), form_data.get('patientCategory', None))
+    remove_duplicate_concepts(concepts.get(
+        'tuberculosistreatmentoutcome', []), form_data.get('treatmentOutcome', None))

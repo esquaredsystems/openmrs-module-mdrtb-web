@@ -5,4 +5,8 @@
 
 {% block content %}
 <h1>{{request.session.current_patient_flow}}</h1>
+<script>
+    let con = JSON.parse("{{c | escapejs}}")
+    console.log(con)
+</script>
 {% endblock %}

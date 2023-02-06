@@ -13,6 +13,7 @@ import datetime
 from uuid import uuid4
 from django.contrib import messages
 from django.core.cache import cache
+from resources.mdrtbConcepts import Concepts
 
 # start memcache if u havent
 
@@ -24,9 +25,12 @@ def check_if_session_alive(req):
 
 
 def index(req):
-    p.create_privileges_enum(req)
-    print(p.get_privileges_enum().ADD_ALLERGIES.value)
-    return render(req, 'app/tbregister/reportmockup.html')
+    concepts = cache.get('concepts')
+    if concepts:
+        print('Cache present at', datetime.datetime.now())
+    else:
+        print('Cache expired at', datetime.datetime.now())
+    return render(req, 'app/tbregister/reportmockup.html', context={'c': json.dumps(concepts)})
 
 
 def login(req):
@@ -36,7 +40,10 @@ def login(req):
         password = req.POST['password']
         response = ru.initiate_session(req, username, password)
         if response:
-            return redirect(req.session['redirect_url'])
+            if 'redirect_url' in req.session:
+                return redirect(req.session['redirect_url'])
+            else:
+                return redirect('searchPatientsView')
         else:
             return render(req, 'app/tbregister/login.html', context=context)
     else:
@@ -57,41 +64,38 @@ def search_patients_query(req):
 
 
 def search_patients_view(req):
-    req.session['redirect_url'] = req.META['HTTP_REFERER']
     context = {'title': "Search Patients", 'add_patient_privilege': False}
-    if 'current_patient' in req.session:
-        del req.session['current_patient']
-        if 'current_location' in req.session:
-            del req.session['current_location']
-            if 'current_date_enrolled' in req.session:
-                del req.session['current_date_enrolled']
-    if check_if_session_alive(req):
-        p.create_privileges_enum(req)
-        try:
-            minSearchCharacters = mu.get_global_properties(
-                req, 'minSearchCharacters')
-            context['minSearchCharacters'] = minSearchCharacters
-        except Exception as e:
-            messages.error(req, 'Error finding global property')
-            context['minSearchCharacters'] = 2
-        finally:
-            privileges = p.get_privileges_enum()
-            # Check if user is admin grant all privileges
-            if req.session['logged_user']['systemId'] == 'admin':
-                context['add_patient_privilege'] = True
-            # Check if user has the privilege to Add patients
-            elif mu.check_if_user_has_privilege(privileges.ADD_PATIENTS, req.session['logged_user']['privileges']):
-                context['add_patient_privilege'] = True
-            return render(req, 'app/tbregister/search_patients.html', context=context)
-    else:
+    if not check_if_session_alive(req):
         return redirect('login')
+    keys_to_delete = ['current_patient',
+                      'current_location', 'current_date_enrolled']
+    for key in keys_to_delete:
+        if key in req.session:
+            del req.session[key]
+    req.session['redirect_url'] = req.META['HTTP_REFERER']
+    p.create_privileges_enum(req)
+    try:
+        minSearchCharacters = mu.get_global_properties(
+            req, 'minSearchCharacters')
+        context['minSearchCharacters'] = minSearchCharacters
+    except Exception as e:
+        messages.error(req, 'Error finding global property')
+        context['minSearchCharacters'] = 2
+    finally:
+        privileges = p.get_privileges_enum()
+        # Check if user is admin grant all privileges
+        if req.session['logged_user']['systemId'] == 'admin':
+            context['add_patient_privilege'] = True
+        # Check if user has the privilege to Add patients
+        elif mu.check_if_user_has_privilege(privileges.ADD_PATIENTS, req.session['logged_user']['privileges']):
+            context['add_patient_privilege'] = True
+        return render(req, 'app/tbregister/search_patients.html', context=context)
 
 
 def enroll_patient(req):
-    req.session['redirect_url'] = req.META['HTTP_REFERER']
     if not check_if_session_alive(req):
         return redirect('login')
-
+    req.session['redirect_url'] = req.META['HTTP_REFERER']
     if req.method == 'POST':
         try:
             status, response = pu.create_patient(req, req.POST)
@@ -113,10 +117,9 @@ def enroll_patient(req):
 
 
 def enroll_in_program(req, uuid):
-    req.session['redirect_url'] = req.META['HTTP_REFERER']
-
     if not check_if_session_alive(req):
         return redirect('login')
+    req.session['redirect_url'] = req.META['HTTP_REFERER']
     context = {'title': 'Add a new Program', 'uuid': uuid}
     if req.method == 'POST':
         body = {
@@ -161,9 +164,9 @@ def enroll_in_program(req, uuid):
 
 
 def enrolled_programs(req, uuid):
-    req.session['redirect_url'] = req.META['HTTP_REFERER']
     if not check_if_session_alive(req):
         return redirect('login')
+    req.session['redirect_url'] = req.META['HTTP_REFERER']
     context = {
         'title': 'Enrolled Programs',
         'uuid': uuid
@@ -183,9 +186,9 @@ def enrolled_programs(req, uuid):
 
 
 def patient_dashboard(req, uuid, mdrtb=None):
-    req.session['redirect_url'] = req.META['HTTP_REFERER']
     if not check_if_session_alive(req):
         return redirect('login')
+    req.session['redirect_url'] = req.META['HTTP_REFERER']
     program = req.GET['program']
     context = {'uuid': uuid, 'title': 'Patient Dashboard'}
     try:
@@ -219,48 +222,67 @@ def patient_dashboard(req, uuid, mdrtb=None):
 
 
 def tb03_form(req, uuid):
-    req.session['redirect_url'] = req.META.get('HTTP_REFERER', None)
     if not check_if_session_alive(req):
-        return redirect('searchPatientsView')
+        return redirect('login')
+    req.session['redirect_url'] = req.META.get('HTTP_REFERER', None)
     if req.method == 'POST':
         response = fu.create_tb03(req, uuid, req.POST)
         if not response:
             messages.error(req, 'Error creating TB03')
         return redirect(req.session['redirect_url'])
-    concept_ids = ["ddf6e09c-f018-4048-a69f-436ff22308b5",
-                   "2cd70c1e-955d-428e-86cd-3efc5ecbcabd",
-                   "ebde5ed8-4717-472d-9172-599af069e94d",
-                   "31b4c61c-0370-102d-b0e3-001ec94a0cc1",
-                   "31b94ef8-0370-102d-b0e3-001ec94a0cc1",
-                   "3f5a6930-5ead-4880-80ce-6ab79f4f6cb1",
-                   "a690e0c4-3371-49b3-9d52-b390fca3dd90",
-                   "0f7abf6d-e0bb-46ce-aa69-5214b0d2a295"
-                   ]
-    concepts = fu.get_form_concepts(concept_ids, req)
-    context = {
-        "concepts": concepts,
-        "title": "TB03",
-        'uuid': uuid,
-        'patient': req.session['current_patient'],
-        'location': req.session['current_location'],
-        'enrollment_date': req.session['current_date_enrolled']
-    }
-    return render(req, 'app/tbregister/dots/tb03.html', context=context)
+    tb03_concepts = [
+        Concepts.TREATMENT_CENTER_FOR_IP.value,
+        Concepts.TREATMENT_CENTER_FOR_CP.value,
+        Concepts.TUBERCULOSIS_PATIENT_CATEGORY.value,
+        Concepts.ANATOMICAL_SITE_OF_TB.value,
+        Concepts.RESULT_OF_HIV_TEST.value,
+        Concepts.RESISTANCE_TYPE.value,
+        Concepts.TB_TREATMENT_OUTCOME.value,
+        Concepts.CAUSE_OF_DEATH.value]
+    try:
+        concepts = fu.get_form_concepts(tb03_concepts, req)
+        context = {
+            "concepts": concepts,
+            "title": "TB03",
+            'uuid': uuid,
+            'patient': req.session['current_patient'],
+            'location': req.session['current_location'],
+            'enrollment_date': req.session['current_date_enrolled']
+        }
+        return render(req, 'app/tbregister/dots/tb03.html', context=context)
+    except Exception as e:
+        messages.error(req, str(e))
+        return redirect(req.session['redirect_url'])
 
 
 def edit_tb03_form(req, uuid, formid):
-    req.session['redirect_url'] = req.META.get('HTTP_REFERER', None)
     if not check_if_session_alive(req):
-        return redirect('searchPatientsView')
+        req.session['redirect_url'] = req.META.get('HTTP_REFERER', None)
+        return redirect('login')
     context = {'title': 'Edit TB03', 'state': 'edit', 'uuid': uuid,
                'patient': req.session['current_patient'],
                'location': req.session['current_location'],
                'enrollment_date': req.session['current_date_enrolled']}
-    form = fu.get_tb03_by_uuid(req, formid)
-    if form:
-        context['form'] = form
-
-    return render(req, 'app/tbregister/dots/tb03.html', context=context)
+    tb03_concepts = [
+        Concepts.TREATMENT_CENTER_FOR_IP.value,
+        Concepts.TREATMENT_CENTER_FOR_CP.value,
+        Concepts.TUBERCULOSIS_PATIENT_CATEGORY.value,
+        Concepts.ANATOMICAL_SITE_OF_TB.value,
+        Concepts.RESULT_OF_HIV_TEST.value,
+        Concepts.RESISTANCE_TYPE.value,
+        Concepts.TB_TREATMENT_OUTCOME.value,
+        Concepts.CAUSE_OF_DEATH.value]
+    try:
+        form = fu.get_tb03_by_uuid(req, formid)
+        concepts = fu.get_form_concepts(tb03_concepts, req)
+        fu.remove_tb03_duplicates(concepts, form)
+        if form:
+            context['form'] = form
+            context['concepts'] = concepts
+            return render(req, 'app/tbregister/dots/tb03.html', context=context)
+    except Exception as e:
+        messages.error(req, str(e))
+        return redirect(req.session['redirect_url'])
 
 
 def transfer(req):

@@ -52,41 +52,27 @@ def get_global_msgs(message_code, locale=None, default=None, source=None):
         raise Exception("Please provide a valid message code")
 
 
-def get_concepts_and_set_cache(req):
-    concepts = cache.get('concepts')
-    if concepts is None:
-        status, response = ru.get(
-            req, 'concept', {'v': 'full', 'limit': '100'})
-        if status:
-            try:
-                cache.set('concepts', response['results'], 1000000)
-                concepts = cache.get('concepts')
-                return concepts
-            except Exception as e:
-                print(e)
-        else:
-            print(response)
-    else:
-        return concepts
+def get_concept_from_cache(uuid):
+    concepts = cache.get('concepts', [])
+    concept = next((c for c in concepts if c['uuid'] == uuid), {})
+    return bool(concept), concept
 
 
-def get_concept_by_uuid(uuid, req):
-    if 'concepts' in cache:
-        concepts = cache.get('concepts')
-    else:
-        concepts = get_concepts_and_set_cache(req)
-    concept_found = False
-    for concept in concepts:
-        if concept['uuid'] == uuid:
-            concept_found = True
-            return True, concept
-    if not concept_found:
+def get_concept(req, uuid):
+    found, concept = get_concept_from_cache(uuid)
+    if found:
+        return concept
+    try:
         status, response = ru.get(
             req, f'concept/{uuid}', {'v': "full", 'lang': req.session['locale']})
         if status:
-            return status, response
-        else:
-            return False, "cant find"
+            concepts = cache.get('concepts', [])
+            concepts.append(response)
+            cache.set('concepts', concepts, timeout=1000000)
+            return response
+    except Exception as e:
+        print(e)
+        raise Exception(str(e))
 
 
 def get_location(uuid):
