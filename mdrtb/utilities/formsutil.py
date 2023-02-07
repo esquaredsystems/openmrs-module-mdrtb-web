@@ -2,6 +2,7 @@ import utilities.metadata_util as mu
 import utilities.restapi_utils as ru
 from datetime import datetime
 from resources.mdrtbConcepts import Concepts
+import utilities.common_utils as cu
 
 
 def get_form_concepts(concept_ids, req):
@@ -49,7 +50,7 @@ def create_tb03(req, patientuuid, data):
         "encounter": {
             "patient": patientuuid,
             "encounterType": encounterType,
-            "encounterDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+            "encounterDatetime": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             "location": req.session['current_location']['uuid'],
             "obs": [
                 # Patient Program Id
@@ -62,149 +63,162 @@ def create_tb03(req, patientuuid, data):
                 # Treatment centre for IP
                 {
                     "person": patientuuid,
-                    "obsDatetime": datetime.now().strftime('%Y-%m-%d %H:%M:%S '),
+                    "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                     "concept": Concepts.TREATMENT_CENTER_FOR_IP.value,
-                    "value": req.POST.get(Concepts.TREATMENT_CENTER_FOR_IP.value, None)
+                    "value": data.get(Concepts.TREATMENT_CENTER_FOR_IP.value, None)
                 },
                 # Treatment centre for CP
                 {
                     "person": patientuuid,
                     "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                     "concept": Concepts.TREATMENT_CENTER_FOR_CP.value,
-                    "value": req.POST.get(Concepts.TREATMENT_CENTER_FOR_CP.value, None)
+                    "value": data.get(Concepts.TREATMENT_CENTER_FOR_CP.value, None)
                 },
                 # Name of IP Facility
                 {
                     "person": patientuuid,
                     "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                     "concept": Concepts.NAME_OF_IP_FACILITY.value,
-                    "value": req.POST.get(Concepts.NAME_OF_IP_FACILITY.value, None)
+                    "value": data.get(Concepts.NAME_OF_IP_FACILITY.value, None)
                 },
                 # Name of CP Facility
                 {
                     "person": patientuuid,
                     "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                     "concept": Concepts.NAME_OF_CP_FACILITY.value,
-                    "value": req.POST.get(Concepts.NAME_OF_CP_FACILITY.value, None)
+                    "value": data.get(Concepts.NAME_OF_CP_FACILITY.value, None)
                 },
                 # Patient Category
                 {
                     "person": patientuuid,
                     "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                     "concept": Concepts.TUBERCULOSIS_PATIENT_CATEGORY.value,
-                    "value": req.POST.get(Concepts.TUBERCULOSIS_PATIENT_CATEGORY.value, None)
+                    "value": data.get(Concepts.TUBERCULOSIS_PATIENT_CATEGORY.value, None)
                 },
                 # Date of Treatment Start
                 {
                     "person": patientuuid,
                     "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                     "concept": Concepts.DOTS_TREATMENT_START_DATE.value,
-                    "value": req.POST.get(Concepts.DOTS_TREATMENT_START_DATE.value, None)
+                    "value": cu.date_to_sql_format(data.get(Concepts.DOTS_TREATMENT_START_DATE.value, None))
                 },
                 # Site of TB disease
                 {
                     "person": patientuuid,
                     "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                     "concept": Concepts.ANATOMICAL_SITE_OF_TB.value,
-                    "value": req.POST.get(Concepts.ANATOMICAL_SITE_OF_TB.value, None)
+                    "value": data.get(Concepts.ANATOMICAL_SITE_OF_TB.value, None)
                 },
                 # HIV Test Date
                 {
                     "person": patientuuid,
                     "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                     "concept": Concepts.DATE_OF_HIV_TEST.value,
-                    "value": req.POST.get(Concepts.DATE_OF_HIV_TEST.value, None)
+                    "value": cu.date_to_sql_format(data.get(Concepts.DATE_OF_HIV_TEST.value, None))
                 },
                 # HIV Status
                 {
                     "person": patientuuid,
                     "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                     "concept": Concepts.RESULT_OF_HIV_TEST.value,
-                    "value": req.POST.get(Concepts.RESULT_OF_HIV_TEST.value, None)
+                    "value": data.get(Concepts.RESULT_OF_HIV_TEST.value, None)
                 },
                 # ART Start Date
                 {
                     "person": patientuuid,
                     "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                     "concept": Concepts.DATE_OF_ART_TREATMENT_START.value,
-                    "value": req.POST.get(Concepts.DATE_OF_ART_TREATMENT_START.value, None)
+                    "value": cu.date_to_sql_format(data.get(Concepts.DATE_OF_ART_TREATMENT_START.value, None))
                 },
                 # PCT Start Date
                 {
                     "person": patientuuid,
                     "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                     "concept": Concepts.DATE_OF_PCT_TREATMENT_START.value,
-                    "value": req.POST.get(Concepts.DATE_OF_PCT_TREATMENT_START.value, None)
+                    "value": cu.date_to_sql_format(data.get(Concepts.DATE_OF_PCT_TREATMENT_START.value, None))
                 },
                 # Date of X-ray
                 {
                     "person": patientuuid,
                     "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                     "concept": Concepts.XRAY_DATE.value,
-                    "value": req.POST.get(Concepts.XRAY_DATE.value, None)
+                    "value": cu.date_to_sql_format(data.get(Concepts.XRAY_DATE.value, None))
                 },
                 # Resistance Type
                 {
                     "person": patientuuid,
                     "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                     "concept": Concepts.RESISTANCE_TYPE.value,
-                    "value": req.POST.get(Concepts.RESISTANCE_TYPE.value, None)
+                    "value": data.get(Concepts.RESISTANCE_TYPE.value, None)
                 },
                 # Treatment Outcome
                 {
                     "person": patientuuid,
                     "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                     "concept": Concepts.TB_TREATMENT_OUTCOME.value,
-                    "value": req.POST.get(Concepts.TB_TREATMENT_OUTCOME.value, None)
+                    "value": data.get(Concepts.TB_TREATMENT_OUTCOME.value, None)
                 },
                 # Date of Treatment Outcome
                 {
                     "person": patientuuid,
                     "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                     "concept": Concepts.TREATMENT_OUTCOME_DATE.value,
-                    "value": req.POST.get(Concepts.TREATMENT_OUTCOME_DATE.value, None)
+                    "value": cu.date_to_sql_format(data.get(Concepts.TREATMENT_OUTCOME_DATE.value, None))
                 },
-                # Cause of Death
-                {
-                    "person": patientuuid,
-                    "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
-                    "concept": Concepts.CAUSE_OF_DEATH.value,
-                    "value": req.POST.get(Concepts.CAUSE_OF_DEATH.value, None)
-                },
-                # Other Cause of Death
-                {
-                    "person": patientuuid,
-                    "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
-                    "concept": Concepts.OTHER_CAUSE_OF_DEATH.value,
-                    "value": req.POST.get(Concepts.OTHER_CAUSE_OF_DEATH.value, None)
-                },
-                # Date of death
-                {
-                    "person": patientuuid,
-                    "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
-                    "concept": Concepts.DATE_OF_DEATH_AFTER_TREATMENT_OUTCOME.value,
-                    "value": req.POST.get(Concepts.DATE_OF_DEATH_AFTER_TREATMENT_OUTCOME.value, None)
-                },
+
                 # Clinical Notes
                 {
                     "person": patientuuid,
                     "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                     "concept": Concepts.CLINICIAN_NOTES.value,
-                    "value": req.POST.get(Concepts.CLINICIAN_NOTES.value, None)
+                    "value": data.get(Concepts.CLINICIAN_NOTES.value, None)
                 },
 
             ]
+
+
+
         }
     }
-    print('====================================')
-    print(tb03)
-    print('====================================')
 
-    # status, response = ru.post(req, 'mdrtb/tb03', tb03)
-    # if status:
-    #     return True
-    # else:
-    #     return False
+    if data.get(Concepts.CAUSE_OF_DEATH.value) in data:
+        tb03['encounter']['obs'].append(
+            # Cause of Death
+            {
+                "person": patientuuid,
+                "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+                "concept": Concepts.CAUSE_OF_DEATH.value,
+                "value": data.get(Concepts.CAUSE_OF_DEATH.value, None)
+            },
+        )
+    if data.get(Concepts.OTHER_CAUSE_OF_DEATH.value) in data:
+        tb03['encounter']['obs'].append(
+            # Other Cause of Death
+            {
+                "person": patientuuid,
+                "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+                "concept": Concepts.OTHER_CAUSE_OF_DEATH.value,
+                "value": data.get(Concepts.OTHER_CAUSE_OF_DEATH.value, None)
+            },
+        )
+    if data.get(Concepts.DATE_OF_DEATH_AFTER_TREATMENT_OUTCOME.value) in data:
+        tb03['encounter']['obs'].append(
+            # Date of death
+            {
+                "person": patientuuid,
+                "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+                "concept": Concepts.DATE_OF_DEATH_AFTER_TREATMENT_OUTCOME.value,
+                "value": cu.date_to_sql_format(data.get(Concepts.DATE_OF_DEATH_AFTER_TREATMENT_OUTCOME.value, None))
+            },
+        )
+
+    try:
+        # This returns the newly created TB03 form
+        status, _ = ru.post(req, 'mdrtb/tb03', tb03)
+        if status:
+            return True
+    except Exception as e:
+        raise Exception(str(e))
 
 
 def remove_duplicate_concepts(concept_field, form_field):

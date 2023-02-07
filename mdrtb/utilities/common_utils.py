@@ -1,5 +1,6 @@
 from pathlib import Path
 from datetime import datetime, date
+import utilities.constants as constants
 
 
 def get_project_root() -> Path:
@@ -67,3 +68,7 @@ def remove_obj_from_objarr(obj, uuid_to_remove, key=None):
             if item[key] == uuid_to_remove:
                 obj.remove(item)
                 return obj
+
+
+def date_to_sql_format(date):
+    return datetime.strptime(date, '%Y-%m-%d').strftime('%Y-%m-%d %H:%M:%S')

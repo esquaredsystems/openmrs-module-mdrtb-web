@@ -89,7 +89,7 @@
             @apply border rounded-md shadow-sm border-gray-200 outline-none focus:ring-0 w-11/12;
     }
     .input-label{
-            @apply text-[#9E9E9E] font-bold w-1/12;
+            @apply text-[#9E9E9E] font-bold w-full;
     }
     .page-title{
         @apply text-[#2D9CDB] text-3xl font-bold;
@@ -169,7 +169,7 @@
         @apply flex-column-center;
     }
     .enroll_form_bg{
-        @apply bg-[#9e9e9e28] shadow-md p-4 flex-column-center space-y-4;
+        @apply bg-[#9e9e9e11] shadow-md p-4 flex-column-center space-y-4;
     }
     .enrollform-sections-container{
         @apply m-16 flex-column-center space-y-8;

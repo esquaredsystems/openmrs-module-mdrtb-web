@@ -4,7 +4,7 @@ from . import views
 urlpatterns = [
     path('login', views.login, name='login'),
     path('', views.search_patients_view, name='searchPatientsView'),
-
+    path('locations', views.get_locations, name='locations'),
     path('search', views.search_patients_query, name='search'),
     path('tbdashboard/patient/<str:uuid>',
          views.patient_dashboard, name='dashboard'),

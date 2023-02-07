@@ -1,11 +1,8 @@
 import re
-import os
 from utilities import common_utils as u
 from utilities import restapi_utils as ru
-import django
 from django.core.cache import cache
 from django.utils.safestring import SafeString as ss
-import os
 
 # os.environ['DJANGO_SETTINGS_MODULE'] = 'mdrtb.settings'
 # django.setup()
@@ -68,7 +65,7 @@ def get_concept(req, uuid):
         if status:
             concepts = cache.get('concepts', [])
             concepts.append(response)
-            cache.set('concepts', concepts, timeout=1000000)
+            cache.set('concepts', concepts, timeout=0)
             return response
     except Exception as e:
         print(e)

@@ -18,37 +18,36 @@
     <div class="enroll_form_bg">
       <div class="enrollform-section">
         <div class="input-container">
-          <label class="input-label md:w-1/5 required"
+          <label class="input-label w-full required"
             for="name">{{'mdrtb.givenname'|get_message:request.session.locale}}</label>
           <input required class="input" type="text" name="givenname" />
         </div>
         <div class="input-container">
-          <label class="input-label md:w-1/5 required"
+          <label class="input-label w-full required"
             for="name">{{'mdrtb.familyname'|get_message:request.session.locale}}</label>
           <input required class="input" type="text" name="familyname" />
         </div>
       </div>
       <div class="enrollform-section">
         <div class="input-container">
-          <label id="dob-label" class="input-label md:w-1/5 required"
+          <label id="dob-label" class="input-label w-full required"
             for="name">{{'mdrtb.birthdate'|get_message:request.session.locale}}</label>
-          <input required class="disabled:pointer-events-none input w-full" type="date" max="2022-12-31" name="dob"
-            id="dob" />
+          <input required class="disabled:pointer-events-none input" type="date" max="2022-12-31" name="dob" id="dob" />
         </div>
         <div class="input-container ">
-          <label id="age-label" class="input-label md:w-1/5 required"
+          <label id="age-label" class="input-label w-full required"
             for="name">{{'mdrtb.age'|get_message:request.session.locale}}</label>
           <input required class="input disabled:pointer-events-none" type="number" name="age" id="age" min="1" />
         </div>
       </div>
       <div class="enrollform-section">
         <div class="input-container">
-          <label class="input-label md:w-1/5 required"
+          <label class="input-label w-full required"
             for="patientidentifier">{{'mdrtb.patientidentifier'|get_message:request.session.locale}}</label>
           <input required class="input" type="text" name="patientidentifier" />
         </div>
         <div class="input-container">
-          <label class="input-label md:w-1/5 required"
+          <label class="input-label w-full required"
             for="patientidentifiertype">{{'mdrtb.patientidentifiertype'|get_message:request.session.locale}}</label>
           <select required class="input" name="patientidentifiertype">
             <option selected value="">Select</option>

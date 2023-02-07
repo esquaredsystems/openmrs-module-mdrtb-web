@@ -1,4 +1,4 @@
-{% extends 'app/base/base_without_menu.html' %}
+{% extends 'app/base/base.html' %}
 
 {% block title %}
 {{title}}
@@ -32,7 +32,7 @@
             <span class="font-bold">
               {{'mdrtb.tb03.dateOfRegistration'|get_message:request.session.locale}}:
             </span>
-            <span class="tb03-form-label"> {{enrollment_date | iso_to_normal_date}} </span>
+            <span class="tb03-form-label w-full"> {{enrollment_date | iso_to_normal_date}} </span>
           </div>
           <div class="space-x-3">
             <span class="font-bold">
@@ -85,7 +85,7 @@
       <div class="p-4 flex flex-col justify-center space-y-4">
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label required"
+            <label class="tb03-form-label required w-full"
               for="ipCenter">{{'mdrtb.tb03.treatmentSiteIP'|get_message:request.session.locale}}</label>
 
             <select required class="input form-control" name="ddf6e09c-f018-4048-a69f-436ff22308b5">
@@ -100,7 +100,7 @@
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label required"
+            <label class="tb03-form-label w-full required"
               for="ipCenterName">{{'mdrtb.tb03.nameOfIPFacility'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
             <input type="text" required class="input form-control" value="{{form.nameOfIPFacility}}"
@@ -113,7 +113,7 @@
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label required"
+            <label class="tb03-form-label w-full required"
               for="cpCenter">{{'mdrtb.tb03.treatmentSiteCP'|get_message:request.session.locale}}</label>
             <select required class="input form-control" name="2cd70c1e-955d-428e-86cd-3efc5ecbcabd">
               {% if state == 'edit' %}
@@ -127,7 +127,7 @@
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label required"
+            <label class="tb03-form-label w-full required"
               for="cpCenterName">{{'mdrtb.tb03.nameOfCPFacility'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
             <input type="text" required class="input form-control" value="{{form.nameOfCPFacility}}"
@@ -140,7 +140,7 @@
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label required"
+            <label class="tb03-form-label w-full required"
               for="regimenType">{{'mdrtb.tb03.patientCategory'|get_message:request.session.locale}}</label>
             <select required class="input form-control" name="ebde5ed8-4717-472d-9172-599af069e94d">
               {% if state == 'edit' %}
@@ -154,7 +154,7 @@
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label required"
+            <label class="tb03-form-label w-full required"
               for="treatmentStartDate">{{'mdrtb.tb03.treatmentStartDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
             <input type="date" required value="{{form.treatmentStartDate | iso_to_normal_date}}"
@@ -167,7 +167,7 @@
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label required"
+            <label class="tb03-form-label w-full required"
               for="siteOfTb">{{'mdrtb.tb03.siteOfDisease'|get_message:request.session.locale}}</label>
             <select required class="input form-control" name="31b4c61c-0370-102d-b0e3-001ec94a0cc1">
               {% if state == 'edit' %}
@@ -181,7 +181,7 @@
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label required"
+            <label class="tb03-form-label w-full required"
               for="hivDate">{{'mdrtb.tb03.hivTestDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
             <input type="date" required value="{{form.hivTestDate | iso_to_normal_date}}" class="input form-control"
@@ -194,7 +194,7 @@
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label required"
+            <label class="tb03-form-label w-full required"
               for="hivStatus">{{'mdrtb.tb03.hivStatus'|get_message:request.session.locale}}</label>
             <select required class="input form-control" name="31b94ef8-0370-102d-b0e3-001ec94a0cc1">
               {% if state == 'edit' %}
@@ -208,7 +208,7 @@
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label required"
+            <label class="tb03-form-label w-full required"
               for="artDate">{{'mdrtb.tb03.artStartDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
             <input type="date" required value="{{form.artStartDate | iso_to_normal_date}}" class="input form-control"
@@ -220,7 +220,7 @@
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label required"
+            <label class="tb03-form-label w-full required"
               for="pctDate">{{'mdrtb.tb03.pctStartDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
             <input type="date" required value="{{form.pctStartDate | iso_to_normal_date}}" class="input form-control"
@@ -230,7 +230,7 @@
             {% endif %}
           </div>
           <div class="input-container">
-            <label class="tb03-form-label required"
+            <label class="tb03-form-label w-full required"
               for="xrayDate">{{'mdrtb.tb03.xrayDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
             <input type="date" required value="{{form.xrayDate|iso_to_normal_date}}" class="input form-control"
@@ -242,7 +242,7 @@
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label required"
+            <label class="tb03-form-label w-full required"
               for="resistanceType">{{'mdrtb.tb03.resistanceType'|get_message:request.session.locale}}</label>
             <select required class="input form-control" name="3f5a6930-5ead-4880-80ce-6ab79f4f6cb1">
               {% if state == 'edit' %}
@@ -256,7 +256,7 @@
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label required"
+            <label class="tb03-form-label w-full required"
               for="treatmentOutcome">{{'mdrtb.tb03.treatmentOutcome'|get_message:request.session.locale}}</label>
             <select required class="input form-control" name="a690e0c4-3371-49b3-9d52-b390fca3dd90">
               {% if state == 'edit' %}
@@ -272,7 +272,7 @@
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label required"
+            <label class="tb03-form-label w-full required"
               for="treatmentOutcomeDate">{{'mdrtb.tb03.treatmentOutcomeDateOnly'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
             <input type="date" required value="{{form.treatmentOutcomeDate | iso_to_normal_date}}"
@@ -282,7 +282,7 @@
             {% endif %}
           </div>
           <div class="input-container">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="causeOfDeath">{{'mdrtb.causeOfDeath'|get_message:request.session.locale}}</label>
             <select class="input form-control" name="0f7abf6d-e0bb-46ce-aa69-5214b0d2a295">
               {% if state == 'edit' %}
@@ -298,7 +298,7 @@
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="otherCauseOfdeath">{{'mdrtb.tb03.otherCauseOfDeath'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
             <input type="text" class="input form-control" value="{{form.otherCauseOfDeath}}"
@@ -308,7 +308,7 @@
             {% endif %}
           </div>
           <div class="input-container">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="deathDate">{{'mdrtb.tb03.afterOutcomeDeathDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
             <input type="date" class="input form-control"
@@ -322,14 +322,14 @@
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label required"
+            <label style="width: 8rem;" class="tb03-form-label required"
               for="clinicalNotes">{{'mdrtb.tb03.clinicalNotes'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <textarea required class="input form-control" name="31b474e6-0370-102d-b0e3-001ec94a0cc1">
-                {{form.clinicalNotes}}
-              </textarea>
+            <textarea rows="4" required class="input form-control"
+              name="31b474e6-0370-102d-b0e3-001ec94a0cc1">{{form.clinicalNotes}}</textarea>
             {% else %}
-            <textarea required class="input form-control" name="31b474e6-0370-102d-b0e3-001ec94a0cc1"></textarea>
+            <textarea rows="4" required class="input form-control"
+              name="31b474e6-0370-102d-b0e3-001ec94a0cc1"></textarea>
             {% endif %}
           </div>
         </div>

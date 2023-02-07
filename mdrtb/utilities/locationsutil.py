@@ -5,18 +5,18 @@ from django.shortcuts import redirect
 
 
 def get_locations(req):
-    print(f'MAKING REST CALL at {datetime.now()} ')
-    status, locations = ru.get(req, 'location', {
-        'v': 'custom:(uuid,name,parentLocation,childLocations,attributes,retired)',
-        'limit': 500
-    })
-
-    if not status:
-        return None
-
-    non_retired_locations = [
-        location for location in locations['results'] if not location['retired']]
-    return non_retired_locations
+    try:
+        status, locations = ru.get(req, 'location', {
+            'v': 'custom:(uuid,name,parentLocation,childLocations,attributes,retired)',
+            'limit': 500
+        })
+        if not status:
+            return None
+        non_retired_locations = [
+            location for location in locations['results'] if not location['retired']]
+        return non_retired_locations
+    except Exception as e:
+        raise Exception(str(e))
 
 
 def get_location_level(uuid, location_by_uuids):
@@ -59,5 +59,5 @@ def create_location_hierarchy(req):
                     } for child in location.get('childLocations', []) if not child.get('retired', location_by_uuids.get(child['uuid'], {'retired': True})['retired'])
                 ] if location.get('childLocations') else []
             })
-    cache.set('locations', location_hierarchy, timeout=86400)
+    cache.set('locations', location_hierarchy, timeout=0)
     return location_hierarchy

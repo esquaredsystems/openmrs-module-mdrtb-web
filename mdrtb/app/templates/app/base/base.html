@@ -1,349 +1,195 @@
-{% load static tailwind_tags %} {% load static %}
-
+{% load static tailwind_tags %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <title>{% block title %} {% endblock %}</title>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-  <!-- CSS only -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous" />
-  <!-- JavaScript Bundle with Popper -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
-    crossorigin="anonymous"></script>
-  {% tailwind_css %}
-  <script src="{% static 'app/js/jquery.js' %}"></script>
-  <link rel="icon" type="image/png" href="{% static 'openmrs-favicon.png' %}" />
+	<title>{% block title %}{{title}}{% endblock %}</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<!-- CSS only -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+	<!-- JavaScript Bundle with Popper -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+		crossorigin="anonymous"></script>
+	{% tailwind_css %}
+	<script src="{% static 'app/js/jquery.js' %}"></script>
+	<link rel="icon" type="image/png" href="{% static 'openmrs-favicon.png' %}">
+	<script src="./TW-ELEMENTS-PATH/dist/js/index.min.js"></script>
+
 </head>
 <style>
-  .required:after {
-    content: " *";
-    color: rgb(248 113 113);
-  }
+	.required:after {
+		content: " *";
+		color: red;
+	}
 
-  input:-webkit-autofill,
-  input:-webkit-autofill:focus {
-    transition: background-color 600000s 0s, color 600000s 0s;
-  }
+	input:-webkit-autofill,
+	input:-webkit-autofill:focus {
+		transition: background-color 600000s 0s, color 600000s 0s;
+	}
 
-  input[data-autocompleted] {
-    background-color: transparent !important;
-  }
+	input[data-autocompleted] {
+		background-color: transparent !important;
+	}
 </style>
 
 <body>
-  <header class="base-header">
-    <div>
-      <a href="{% url 'searchPatientsView' %}"><img class="openmrs-logo"
-          src="https://openmrs.org/wp-content/uploads/2021/08/cropped-OpenMRSlogo-transparent.png"
-          alt="OpemMRS logo" /></a>
-    </div>
-    <div class="navbar">
-      {% if request.session.session_id %}
-      <a class="nav-item" href="#">Logged in as {{request.session.logged_user.person.display}}</a>
-      <a class="nav-item"
-        href="{% url 'profile' %}">{{'Navigation.options'|get_message_openMRS:request.session.locale}}</a>
-      <a class="nav-item" href="{% url 'logout' %}">{{'header.logout'|get_message_openMRS:request.session.locale}}</a>
-      {% else %}
-      <a class="nav-item" href="{% url 'login' %}">Login</a>
-      {% endif %}
-    </div>
-  </header>
-  {% if request.session.session_id %}
-  <div class="flex justify-center">
-    <div>
-      <div class="dropdown relative">
-        <a class="tw-dropdown-header" href="#" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown"
-          aria-expanded="false">
-          {{'mdrtb.general'|get_message:request.session.locale}}
-          <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
-            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-            <path fill="currentColor"
-              d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z">
-            </path>
-          </svg>
-        </a>
-        <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="dropdownMenuButton2">
-          <li>
-            <a class="tw-dropdown-item" href="#">
-              {{'mdrtb.mergePatients'|get_message:request.session.locale}}
-            </a>
-          </li>
-          <li>
-            <a class="tw-dropdown-item"
-              href="{% url 'patientlist' %}">{{'mdrtb.patientLists'|get_message:request.session.locale}}</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div>
-      <div class="dropdown relative">
-        <a class="tw-dropdown-header" href="#" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown"
-          aria-expanded="false">
-          {{'mdrtb.dotsreports'|get_message:request.session.locale}}
-          <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
-            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-            <path fill="currentColor"
-              d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z">
-            </path>
-          </svg>
-        </a>
-        <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="dropdownMenuButton2">
-          <li>
-            <a class="tw-dropdown-item" href="#">{{'mdrtb.viewClosedReports'|get_message:request.session.locale}}</a>
-          </li>
-          <li>
-            <a class="tw-dropdown-item" href="#">{{'mdrtb.dotsreport07'|get_message:request.session.locale}}</a>
-          </li>
-          <li>
-            <a class="tw-dropdown-item" href="#">{{'mdrtb.dotsreport08'|get_message:request.session.locale}}</a>
-          </li>
-          <li>
-            <a class="tw-dropdown-item" href="#">{{'mdrtb.tb03Export'|get_message:request.session.locale}}</a>
-          </li>
-          <li>
-            <a class="tw-dropdown-item" href="#">{{'mdrtb.tb03ExportSingleLine'|get_message:request.session.locale}}</a>
-          </li>
-          <li>
-            <a class="tw-dropdown-item" href="#">{{'mdrtb.f89ExportSingleLine'|get_message:request.session.locale}}</a>
-          </li>
-          <li>
-            <a class="tw-dropdown-item" href="#">{{'mdrtb.dotsdq.title'|get_message:request.session.locale}}</a>
-          </li>
-          <li>
-            <a class="tw-dropdown-item" href="#">{{'mdrtb.dq.missingtb03'|get_message:request.session.locale}}</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div>
-      <div class="dropdown relative">
-        <a class="tw-dropdown-header" href="#" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown"
-          aria-expanded="false">
-          {{'mdrtb.mdrreports'|get_message:request.session.locale}}
-          <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
-            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-            <path fill="currentColor"
-              d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z">
-            </path>
-          </svg>
-        </a>
-        <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="dropdownMenuButton2">
-          <li>
-            <a class="tw-dropdown-item" href="#">{{'mdrtb.viewClosedReports'|get_message:request.session.locale}}</a>
-          </li>
-          <li>
-            <a class="tw-dropdown-item" href="#">{{'mdrtb.tb07u'|get_message:request.session.locale}}</a>
-          </li>
-          <li>
-            <a class="tw-dropdown-item" href="#">{{'mdrtb.tb08u'|get_message:request.session.locale}}</a>
-          </li>
-          <li>
-            <a class="tw-dropdown-item" href="#">{{'mdrtb.tb03uExport'|get_message:request.session.locale}}</a>
-          </li>
-          <li>
-            <a class="tw-dropdown-item"
-              href="#">{{'mdrtb.tb03uExportSingleLine'|get_message:request.session.locale}}</a>
-          </li>
-          <li>
-            <a class="tw-dropdown-item" href="#">{{'mdrtb.dq.title'|get_message:request.session.locale}}</a>
-          </li>
-          <li>
-            <a class="tw-dropdown-item" href="#">{{'mdrtb.sldreport'|get_message:request.session.locale}}</a>
-          </li>
-          <li>
-            <a class="tw-dropdown-item" href="#">{{'mdrtb.dq.missingtb03u'|get_message:request.session.locale}}</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div>
-      <div class="dropdown relative">
-        <a class="tw-dropdown-header" href="#" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown"
-          aria-expanded="false">
-          {{'mdrtb.otherreports'|get_message:request.session.locale}}
-          <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
-            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-            <path fill="currentColor"
-              d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z">
-            </path>
-          </svg>
-        </a>
-        <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="dropdownMenuButton2">
-          <li>
-            <a class="tw-dropdown-item" href="#">{{'mdrtb.form8.title'|get_message:request.session.locale}}</a>
-          </li>
-          <li>
-            <a class="tw-dropdown-item" href="#">{{'mdrtb.pv.qtrReportTitle'|get_message:request.session.locale}}</a>
-          </li>
-          <li>
-            <a class="tw-dropdown-item" href="#">{{'mdrtb.pv.register.title'|get_message:request.session.locale}}</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div>
-      <div class="dropdown relative">
-        <a class="tw-dropdown-header" href="#" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown"
-          aria-expanded="false">
-          Common Lab (For DEV)
-          <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
-            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-            <path fill="currentColor"
-              d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z">
-            </path>
-          </svg>
-        </a>
-        <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="dropdownMenuButton2">
-          <li>
-            <a class="tw-dropdown-item" href="{% url 'managetesttypes' %}">Manage Test Types</a>
-          </li>
+	<header class="base-header">
+		<div>
+			<a href="{% url 'searchPatientsView' %}"><img class="openmrs-logo"
+					src="https://openmrs.org/wp-content/uploads/2021/08/cropped-OpenMRSlogo-transparent.png"
+					alt="OpemMRS logo" /></a>
+		</div>
+		<div class="navbar">
+			{% if request.session.session_id %}
+			<a class="nav-item" href="#">Logged in as {{request.session.logged_user.person.display}}</a>
+			<a class="nav-item"
+				href="{% url 'profile' %}">{{'Navigation.options'|get_message_openMRS:request.session.locale}}</a>
+			<a class="nav-item"
+				href="{% url 'logout' %}">{{'header.logout'|get_message_openMRS:request.session.locale}}</a>
+			{% else %}
+			<a class="nav-item" href="{% url 'login' %}">Login</a>
+			{% endif %}
+		</div>
+	</header>
+	{% if messages %}
+	{% for message in messages %}
+	{% if message.tags %}
 
-        </ul>
-      </div>
-    </div>
-  </div>
-  {% endif %}
+	<div
+		class="left-0 transition-all animate-bounce duration-200 alert alert-danger m-4 w-fit flex-center space-x-4 alert-er">
+		<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" viewBox="0 0 16 16" role="img"
+			aria-label="Warning:">
+			<path
+				d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+		</svg>
+		<p>{{message}}</p>
+	</div>
+	<script>
+		$('.alert-er').each(() => {
+			setTimeout(() => {
+				$('.alert-er').removeClass('left-0')
+				$('.alert-er').addClass('-left-40')
 
-  {% if messages %}
-  {% for message in messages %}
-  {% if message.tags %}
-
-  <div
-    class="left-0 transition-all animate-bounce duration-200 alert alert-danger m-4 w-fit flex-center space-x-4 alert-er">
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" viewBox="0 0 16 16" role="img"
-      aria-label="Warning:">
-      <path
-        d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
-    </svg>
-    <p>{{message}}</p>
-  </div>
-  <script>
-    $('.alert-er').each(() => {
-      setTimeout(() => {
-        $('.alert-er').removeClass('left-0')
-        $('.alert-er').addClass('-left-40')
-
-      }, 2000)
-      setTimeout(() => {
-        $('.alert-er').remove()
+			}, 2000)
+			setTimeout(() => {
+				$('.alert-er').remove()
 
 
-      }, 2100)
-    })
+			}, 2100)
+		})
 
 
-  </script>
-  {% endif %}
-  {% endfor %}
-  {% endif %}
+	</script>
+	{% endif %}
+	{% endfor %}
+	{% endif %}
 
 
 
 
-  <div>
-    {%block content%} {% endblock %}
-
-    <script defer>
-      if ("{{locations}}") {
-        let locations = JSON.parse("{{locations | escapejs }}");
-        const locationByUuids = locations.reduce((acc, location) => {
-          acc[location.uuid] = location;
-          return acc;
-        }, {});
-
-        locations.forEach(location => {
-          if (location.level === "region".toUpperCase()) {
-            $('#region-select').append(`<option value=${location.uuid}>${location.name}</option>`)
-          }
-        })
-
-        const clearSubregions = () => {
-          $('#subregion-container') && $('#subregion-container').addClass('hidden')
-        }
-        const clearDistrictsAndFacilities = () => {
-          $('#district-select').html(`<option value="">Select</option>`)
-          $('#district-label').removeClass('required')
-          $('#district-select').prop('disabled', true)
-          $('#district-select').prop('required', false)
-          $('#facility-select').html(`<option value="">Select</option>`)
-          $('#facility-select').prop('disabled', true)
-          $('#facility-select').prop('required', false)
-          $('#district-label').removeClass('required')
-
-        }
-        const insertchildren = (selectedLocation, insertInto, level) => {
-          const selectedRegion = $('#region-select').val()
-          const districts = locationByUuids[selectedRegion]['children'].length > 0 ? locationByUuids[selectedRegion]['children'] : []
-          if (districts.length > 0) {
-            for (district of districts) {
-              if (district.uuid === selectedLocation && district.children.length > 0) {
-                for (facility of district.children) {
-                  $(insertInto).prop('required', true)
-                  $(insertInto).prop('disabled', false)
-                  $(insertInto.replace('select', 'label')).addClass('required')
-
-                  if (facility.level === level.toUpperCase()) {
-                    $(insertInto).append(`<option value=${facility.uuid}>${facility.name}</option>`)
-
-                  }
-                }
-              }
-            }
-
-          }
-        }
-
-        $('#region-select').change(region => {
-          clearDistrictsAndFacilities()
-          clearSubregions()
-          const children = locationByUuids[region.target.value]['children']
-          if (children.length > 0) {
-            for (district of children) {
-              if (district.level === 'district'.toUpperCase()) {
-                $('#district-select').prop('required', true)
-                $('#district-select').prop('disabled', false)
-                $('#district-label').addClass('required')
-                $('#district-select').append(`<option value=${district.uuid}>${district.name}</option>`)
-              }
-              if (district.level === 'subregion'.toUpperCase()) {
-                $('#subregion-container').removeClass('hidden')
-                $('#subregion-select').prop('required', true)
-                $('#subregion-select').prop('disabled', false)
-                $('#subregion-label').addClass('required')
-
-                $('#subregion-select').append(`<option value=${district.uuid}>${district.name}</option>`)
-              }
-            }
-          }
-        })
-
-
-
-
-        $('#district-select').change(selectedDistrict => {
-          insertchildren(selectedDistrict.target.value, '#facility-select', 'facility')
-        })
-        $('#subregion-select').change(selectedSubRegion => {
-          insertchildren(selectedSubRegion.target.value, '#district-select', 'district')
-        })
-      }
-
-
-
-
-
-
-
-
-    </script>
-  </div>
+	<div>
+		{%block content%}
+		{% endblock %}
+	</div>
 
 </body>
 
+<script>
+	var locationByUuids;
+	$(document).ready(() => {
+		$.ajax(
+			{
+				url: "{% url 'locations' %}",
+				method: 'GET',
+				success: (locations) => {
+					if (locations) {
+						locationByUuids = locations.reduce((acc, location) => {
+							acc[location.uuid] = location;
+							return acc;
+						}, {});
+
+						locations.forEach(location => {
+							if (location.level === "region".toUpperCase()) {
+								$('#region-select').append(`<option value=${location.uuid}>${location.name}</option>`)
+							}
+						})
+					}
+				},
+				error: (err) => { }
+			}
+		)
+	})
+
+
+	const clearSubregions = () => {
+		$('#subregion-container') && $('#subregion-container').addClass('hidden')
+	}
+	const clearDistrictsAndFacilities = () => {
+		$('#district-select').html(`<option value="">Select</option>`)
+		$('#district-select').prop('disabled', true)
+		$('#district-select').prop('required', false)
+		$('#facility-select').html(`<option value="">Select</option>`)
+		$('#facility-select').prop('disabled', true)
+		$('#facility-select').prop('required', false)
+
+	}
+	const insertchildren = (selectedLocation, insertInto, level) => {
+		const selectedRegion = $('#region-select').val()
+		const districts = locationByUuids[selectedRegion]['children'].length > 0 ? locationByUuids[selectedRegion]['children'] : []
+		if (districts.length > 0) {
+			for (district of districts) {
+				if (district.uuid === selectedLocation && district.children.length > 0) {
+					for (facility of district.children) {
+						$(insertInto).prop('required', true)
+						$(insertInto).prop('disabled', false)
+
+						if (facility.level === level.toUpperCase()) {
+							$(insertInto).append(`<option value=${facility.uuid}>${facility.name}</option>`)
+
+						}
+					}
+				}
+			}
+
+		}
+	}
+
+	$('#region-select').change(region => {
+		clearDistrictsAndFacilities()
+		clearSubregions()
+		const children = locationByUuids[region.target.value]['children']
+		if (children.length > 0) {
+			for (district of children) {
+				if (district.level === 'district'.toUpperCase()) {
+					$('#district-select').prop('required', true)
+					$('#district-select').prop('disabled', false)
+					$('#district-select').append(`<option value=${district.uuid}>${district.name}</option>`)
+				}
+				if (district.level === 'subregion'.toUpperCase()) {
+					$('#subregion-container').removeClass('hidden')
+					$('#subregion-select').prop('required', true)
+					$('#subregion-select').prop('disabled', false)
+					$('#subregion-select').append(`<option value=${district.uuid}>${district.name}</option>`)
+				}
+			}
+		}
+	})
+
+
+
+
+	$('#district-select').change(selectedDistrict => {
+		insertchildren(selectedDistrict.target.value, '#facility-select', 'facility')
+	})
+	$('#subregion-select').change(selectedSubRegion => {
+		insertchildren(selectedSubRegion.target.value, '#district-select', 'district')
+	})
+
+</script>
 
 </html>

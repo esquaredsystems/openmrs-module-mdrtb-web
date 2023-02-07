@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, HttpResponseRedirect, reverse
+from django.shortcuts import render, redirect, HttpResponse
 from django.http import JsonResponse
 import utilities.restapi_utils as ru
 import utilities.metadata_util as mu
@@ -8,8 +8,6 @@ import utilities.formsutil as fu
 import utilities.common_utils as util
 import utilities.locationsutil as lu
 import json
-import datetime
-from uuid import uuid4
 from django.contrib import messages
 from django.core.cache import cache
 from resources.mdrtbConcepts import Concepts
@@ -28,6 +26,16 @@ def check_if_session_alive(req):
 
 def index(req):
     return render(req, 'app/tbregister/reportmockup.html')
+
+
+def get_locations(req):
+    try:
+        locations = lu.create_location_hierarchy(req)
+        if locations:
+            return JsonResponse(locations, safe=False)
+    except Exception as e:
+        messages.error(req, str(e))
+        raise Exception(e)
 
 
 def login(req):
@@ -89,7 +97,6 @@ def search_patients_view(req):
 def enroll_patient(req):
     if not check_if_session_alive(req):
         return redirect('login')
-    req.session['redirect_url'] = req.META['HTTP_REFERER']
     if req.method == 'POST':
         try:
             status, response = pu.create_patient(req, req.POST)
@@ -99,21 +106,20 @@ def enroll_patient(req):
         except Exception as e:
             messages.error(req, str(e))
             return redirect('searchPatientsView')
-    else:
-        try:
-            identifiertypes = mu.get_patient_identifier_types(req)
-            locations = json.dumps(lu.create_location_hierarchy(req))
-            return render(req, 'app/tbregister/enroll_patients.html',
-                          context={'locations': locations, 'title': "Enroll new Patient", 'identifiertypes': identifiertypes})
-        except Exception as e:
-            messages.error(req, e)
-            return redirect('searchPatientsView')
+    try:
+        req.session['redirect_url'] = req.META['HTTP_REFERER']
+        identifiertypes = mu.get_patient_identifier_types(req)
+        return render(req, 'app/tbregister/enroll_patients.html',
+                      context={'title': "Enroll new Patient", 'identifiertypes': identifiertypes})
+    except Exception as e:
+        messages.error(req, e)
+        return redirect('searchPatientsView')
 
 
 def enroll_in_program(req, uuid):
     if not check_if_session_alive(req):
-        return redirect('login')
-    req.session['redirect_url'] = req.META['HTTP_REFERER']
+        return redirect('login', permanent=True)
+
     context = {'title': 'Add a new Program', 'uuid': uuid}
     if req.method == 'POST':
         body = {
@@ -141,17 +147,16 @@ def enroll_in_program(req, uuid):
                 }
                 req.session['current_date_enrolled'] = response['dateEnrolled']
                 req.session['current_patient_program'] = response['uuid']
-                return redirect(f'/patient/{uuid}/tb03'+'?program={}'.format(req.POST['program']))
+                return redirect('tb03', uuid=uuid, permanent=True)
         except Exception as e:
             messages.error(req, e)
-            return redirect('programenroll', uuid=uuid)
+            return redirect('programenroll', uuid=uuid, permanent=True)
     else:
         try:
+            req.session['redirect_url'] = req.META['HTTP_REFERER']
             programs = pu.get_programs(req)
-            locations = json.dumps(lu.create_location_hierarchy(req))
             context['programs'] = programs
             context['jsonprograms'] = json.dumps(programs)
-            context['locations'] = locations
         except Exception as e:
             messages.error(req, str(e))
             redirect('programenroll', uuid=uuid)
@@ -220,12 +225,16 @@ def patient_dashboard(req, uuid, mdrtb=None):
 def tb03_form(req, uuid):
     if not check_if_session_alive(req):
         return redirect('login')
-    req.session['redirect_url'] = req.META.get('HTTP_REFERER', None)
+
     if req.method == 'POST':
-        response = fu.create_tb03(req, uuid, req.POST)
-        if not response:
-            messages.error(req, 'Error creating TB03')
-        return redirect(req.session['redirect_url'])
+        try:
+            fu.create_tb03(req, uuid, req.POST)
+        except Exception as e:
+            messages.error(req, str(e))
+        finally:
+
+            return redirect(req.session['redirect_url'], permanent=True)
+
     tb03_concepts = [
         Concepts.TREATMENT_CENTER_FOR_IP.value,
         Concepts.TREATMENT_CENTER_FOR_CP.value,
@@ -236,6 +245,7 @@ def tb03_form(req, uuid):
         Concepts.TB_TREATMENT_OUTCOME.value,
         Concepts.CAUSE_OF_DEATH.value]
     try:
+        req.session['redirect_url'] = req.META.get('HTTP_REFERER', None)
         concepts = fu.get_form_concepts(tb03_concepts, req)
         context = {
             "concepts": concepts,

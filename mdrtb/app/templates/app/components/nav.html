@@ -1,0 +1,159 @@
+{% load static tailwind_tags %}
+{% load static %}
+{% tailwind_css %}
+
+{% if request.session.session_id %}
+  <div class="flex justify-center">
+    <div>
+      <div class="dropdown relative">
+        <a class="tw-dropdown-header" href="#" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown"
+          aria-expanded="false">
+          {{'mdrtb.general'|get_message:request.session.locale}}
+          <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
+            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <path fill="currentColor"
+              d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z">
+            </path>
+          </svg>
+        </a>
+        <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="dropdownMenuButton2">
+          <li>
+            <a class="tw-dropdown-item" href="#">
+              {{'mdrtb.mergePatients'|get_message:request.session.locale}}
+            </a>
+          </li>
+          <li>
+            <a class="tw-dropdown-item"
+              href="{% url 'patientlist' %}">{{'mdrtb.patientLists'|get_message:request.session.locale}}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="dropdown relative">
+        <a class="tw-dropdown-header" href="#" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown"
+          aria-expanded="false">
+          {{'mdrtb.dotsreports'|get_message:request.session.locale}}
+          <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
+            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <path fill="currentColor"
+              d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z">
+            </path>
+          </svg>
+        </a>
+        <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="dropdownMenuButton2">
+          <li>
+            <a class="tw-dropdown-item" href="#">{{'mdrtb.viewClosedReports'|get_message:request.session.locale}}</a>
+          </li>
+          <li>
+            <a class="tw-dropdown-item" href="#">{{'mdrtb.dotsreport07'|get_message:request.session.locale}}</a>
+          </li>
+          <li>
+            <a class="tw-dropdown-item" href="#">{{'mdrtb.dotsreport08'|get_message:request.session.locale}}</a>
+          </li>
+          <li>
+            <a class="tw-dropdown-item" href="#">{{'mdrtb.tb03Export'|get_message:request.session.locale}}</a>
+          </li>
+          <li>
+            <a class="tw-dropdown-item" href="#">{{'mdrtb.tb03ExportSingleLine'|get_message:request.session.locale}}</a>
+          </li>
+          <li>
+            <a class="tw-dropdown-item" href="#">{{'mdrtb.f89ExportSingleLine'|get_message:request.session.locale}}</a>
+          </li>
+          <li>
+            <a class="tw-dropdown-item" href="#">{{'mdrtb.dotsdq.title'|get_message:request.session.locale}}</a>
+          </li>
+          <li>
+            <a class="tw-dropdown-item" href="#">{{'mdrtb.dq.missingtb03'|get_message:request.session.locale}}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="dropdown relative">
+        <a class="tw-dropdown-header" href="#" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown"
+          aria-expanded="false">
+          {{'mdrtb.mdrreports'|get_message:request.session.locale}}
+          <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
+            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <path fill="currentColor"
+              d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z">
+            </path>
+          </svg>
+        </a>
+        <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="dropdownMenuButton2">
+          <li>
+            <a class="tw-dropdown-item" href="#">{{'mdrtb.viewClosedReports'|get_message:request.session.locale}}</a>
+          </li>
+          <li>
+            <a class="tw-dropdown-item" href="#">{{'mdrtb.tb07u'|get_message:request.session.locale}}</a>
+          </li>
+          <li>
+            <a class="tw-dropdown-item" href="#">{{'mdrtb.tb08u'|get_message:request.session.locale}}</a>
+          </li>
+          <li>
+            <a class="tw-dropdown-item" href="#">{{'mdrtb.tb03uExport'|get_message:request.session.locale}}</a>
+          </li>
+          <li>
+            <a class="tw-dropdown-item"
+              href="#">{{'mdrtb.tb03uExportSingleLine'|get_message:request.session.locale}}</a>
+          </li>
+          <li>
+            <a class="tw-dropdown-item" href="#">{{'mdrtb.dq.title'|get_message:request.session.locale}}</a>
+          </li>
+          <li>
+            <a class="tw-dropdown-item" href="#">{{'mdrtb.sldreport'|get_message:request.session.locale}}</a>
+          </li>
+          <li>
+            <a class="tw-dropdown-item" href="#">{{'mdrtb.dq.missingtb03u'|get_message:request.session.locale}}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="dropdown relative">
+        <a class="tw-dropdown-header" href="#" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown"
+          aria-expanded="false">
+          {{'mdrtb.otherreports'|get_message:request.session.locale}}
+          <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
+            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <path fill="currentColor"
+              d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z">
+            </path>
+          </svg>
+        </a>
+        <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="dropdownMenuButton2">
+          <li>
+            <a class="tw-dropdown-item" href="#">{{'mdrtb.form8.title'|get_message:request.session.locale}}</a>
+          </li>
+          <li>
+            <a class="tw-dropdown-item" href="#">{{'mdrtb.pv.qtrReportTitle'|get_message:request.session.locale}}</a>
+          </li>
+          <li>
+            <a class="tw-dropdown-item" href="#">{{'mdrtb.pv.register.title'|get_message:request.session.locale}}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="dropdown relative">
+        <a class="tw-dropdown-header" href="#" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown"
+          aria-expanded="false">
+          Common Lab (For DEV)
+          <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
+            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <path fill="currentColor"
+              d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z">
+            </path>
+          </svg>
+        </a>
+        <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="dropdownMenuButton2">
+          <li>
+            <a class="tw-dropdown-item" href="{% url 'managetesttypes' %}">Manage Test Types</a>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+  </div>
+  {% endif %}
