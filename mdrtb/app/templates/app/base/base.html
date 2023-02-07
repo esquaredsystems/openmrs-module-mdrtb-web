@@ -49,7 +49,7 @@
         href="{% url 'profile' %}">{{'Navigation.options'|get_message_openMRS:request.session.locale}}</a>
       <a class="nav-item" href="{% url 'logout' %}">{{'header.logout'|get_message_openMRS:request.session.locale}}</a>
       {% else %}
-      <a class="nav-item" href="{% url 'home' %}">Login</a>
+      <a class="nav-item" href="{% url 'login' %}">Login</a>
       {% endif %}
     </div>
   </header>

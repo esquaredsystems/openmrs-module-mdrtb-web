@@ -3,6 +3,7 @@ import enum
 
 class Concepts(enum.Enum):
 
+    # General
     YES = "31b27f6a-0370-102d-b0e3-001ec94a0cc1"
     NO = "31b2803c-0370-102d-b0e3-001ec94a0cc1"
     WEIGHT = "31c64f86-0370-102d-b0e3-001ec94a0cc1"
@@ -10,6 +11,8 @@ class Concepts(enum.Enum):
     TEMPERATURE = "31c64eb4-0370-102d-b0e3-001ec94a0cc1"
     RESPIRATORY_RATE = "31c7bd8a-0370-102d-b0e3-001ec94a0cc1"
     SYSTOLIC_BLOOD_PRESSURE = "31c64c34-0370-102d-b0e3-001ec94a0cc1"
+
+    # MDR-TB Drugs
     TUBERCULOSIS_DRUGS = "31bef3d0-0370-102d-b0e3-001ec94a0cc1"
     ISONIAZID = "31afed04-0370-102d-b0e3-001ec94a0cc1"
     RIFAMPICIN = "31b09a60-0370-102d-b0e3-001ec94a0cc1"
@@ -40,11 +43,15 @@ class Concepts(enum.Enum):
     DELAMANID = "e1236682-8451-4c75-b4ba-44457d1ebf43"
     LINEZOLID = "b4d9a4cc-a6cd-431f-8915-5dd96e7cf678"
     QUINOLONES = "31bef15a-0370-102d-b0e3-001ec94a0cc1"
+
+    # Drug-Related concepts
     CURRENT_MULTI_DRUG_RESISTANT_TUBERCULOSIS_TREATMENT_TYPE = "31ce35fc-0370-102d-b0e3-001ec94a0cc1"
     REASON_TUBERCULOSIS_TREATMENT_CHANGED_OR_STOPPED = "31b41c26-0370-102d-b0e3-001ec94a0cc1"
     STANDARDIZED = "31ce2dbe-0370-102d-b0e3-001ec94a0cc1"
     EMPIRIC = "31ce2f12-0370-102d-b0e3-001ec94a0cc1"
     INDIVIDUALIZED = "31ce3052-0370-102d-b0e3-001ec94a0cc1"
+
+    # Smear, Culture, and DSTs
     BACILLI = "31bf136a-0370-102d-b0e3-001ec94a0cc1"
     COLONIES = "31bef4ac-0370-102d-b0e3-001ec94a0cc1"
     CULTURE_CONSTRUCT = "31bf10e0-0370-102d-b0e3-001ec94a0cc1"
@@ -81,6 +88,8 @@ class Concepts(enum.Enum):
     SCANNED_LAB_REPORT = "72d8e563-e141-4a5f-ab2e-2f7e3448bdc5"
     DAYS_TO_POSITIVITY = "fbef36fd-8f0d-4bac-8b2d-0c6141c91382"
     CULTURE_GROWTH = "b7a7ebe3-e298-4dd7-b711-8fe659a8ce2f"
+
+    # GeneXpert and HAIN Test
     GENEXPERT = "d7f6fb0b-241a-4ac8-993b-a2942c549955"
     XPERT_CONSTRUCT = "6a6be4e0-9a56-4376-a8b3-9b6a9ec2d9bf"
     MTB_RESULT = "731bdb67-f216-477f-85c2-8af92d999121"
@@ -99,6 +108,8 @@ class Concepts(enum.Enum):
     ISONIAZID_RESISTANCE = "9446085c-86ae-4e06-b571-f8a88217b472"
     FQ_RESISTANCE = "200294f2-8b3e-4fb1-94fa-6755af9ed9c5"
     INJ_RESISTANCE = "eff9438b-f4c9-4b4c-aa82-1e5adc0fe09c"
+
+    # Lab Results
     STRONGLY_POSITIVE = "31b4a240-0370-102d-b0e3-001ec94a0cc1"
     MODERATELY_POSITIVE = "31b4a16e-0370-102d-b0e3-001ec94a0cc1"
     WEAKLY_POSITIVE = "31b4a312-0370-102d-b0e3-001ec94a0cc1"
@@ -107,6 +118,8 @@ class Concepts(enum.Enum):
     CONTAMINATED = "31b4a09c-0370-102d-b0e3-001ec94a0cc1"
     UNSATISFACTORY_SAMPLE = "31ccc80c-0370-102d-b0e3-001ec94a0cc1"
     LOWAFB = "bfa92f60-d34b-4ae5-acb6-bc7a705ae109"
+
+    # MDR-TB Classification
     NEW = "f7b5bf49-cb07-4fca-8c15-93ba92249344"
     PREVIOUSLY_TREATED_FIRST_LINE_DRUGS_ONLY = "31c2d4be-0370-102d-b0e3-001ec94a0cc1"
     PREVIOUSLY_TREATED_SECOND_LINE_DRUGS = "31c2d3ec-0370-102d-b0e3-001ec94a0cc1"
@@ -116,12 +129,16 @@ class Concepts(enum.Enum):
     OTHER = "31c9eb78-0370-102d-b0e3-001ec94a0cc1"
     PATIENT_TRANSFERRED_IN = "e58da80f-3adf-4a4d-8a7a-43482f9fa5a5"
     CANCELLED = "6ea6a201-0afa-4843-b0b6-212121c64f36"
+
+    # Custom classifications
     RELAPSE_AFTER_REGIMEN_1 = "31ce3b38-0370-102d-b0e3-001ec94a0cc1"
     RELAPSE_AFTER_REGIMEN_2 = "845257f4-642b-4f67-8c57-d82f8982c83c"
     DEFAULT_AFTER_REGIMEN_1 = "31b6b8aa-0370-102d-b0e3-001ec94a0cc1"
     DEFAULT_AFTER_REGIMEN_2 = "33741f7e-c104-44e5-a1d8-421c7b391ba5"
     FAILURE_AFTER_REGIMEN_1 = "31b5b644-0370-102d-b0e3-001ec94a0cc1"
     FAILURE_AFTER_REGIMEN_2 = "31b4fb78-0370-102d-b0e3-001ec94a0cc1"
+
+    # TB Resistenceses
     SUSPECTED_MDR_TB = "31c2d73e-0370-102d-b0e3-001ec94a0cc1"
     TB = "31ab3962-0370-102d-b0e3-001ec94a0cc1"
     RR_TB = "d78087db-6146-40d4-9dff-5b249e1b4eca"
@@ -129,6 +146,8 @@ class Concepts(enum.Enum):
     PRE_XDR_TB = "9e263164-586f-47a1-824b-a1d205cc51fe"
     MONO = "701b646d-a3e0-4556-9fbc-31d88e788464"
     TDR_TB = "a1021d1d-338c-48bc-9f0b-b7c4b0f8ee5a"
+
+    # Treatment Outcome
     MDR_TB_TREATMENT_OUTCOME = "31c2c834-0370-102d-b0e3-001ec94a0cc1"
     CURED = "31b6bb34-0370-102d-b0e3-001ec94a0cc1"
     DEFAULTED = "31b60f40-0370-102d-b0e3-001ec94a0cc1"
@@ -139,24 +158,38 @@ class Concepts(enum.Enum):
     TB_TREATMENT_OUTCOME = "a690e0c4-3371-49b3-9d52-b390fca3dd90"
     LOST_TO_FOLLOWUP = "31c7bbdc-0370-102d-b0e3-001ec94a0cc1"
     TREATMENT_OUTCOME_DATE = "5060d5ce-df8e-4090-b09e-62e40a29201a"
+
+    # TB Type
     PULMONARY_TB = "31b6002c-0370-102d-b0e3-001ec94a0cc1"
     EXTRA_PULMONARY_TB = "31b5fe7e-0370-102d-b0e3-001ec94a0cc1"
     ANATOMICAL_SITE_OF_TB = "31b4c61c-0370-102d-b0e3-001ec94a0cc1"
+
+    # Antiretrovirals (for HIV status section and HIV regimens)
     ANTIRETROVIRALS = "31b2955e-0370-102d-b0e3-001ec94a0cc1"
     REASON_HIV_TREATMENT_STOPPED = "31b3d3b0-0370-102d-b0e3-001ec94a0cc1"
+
+    # HIV Co-infection
     COINFECTED_ARVS = "31c2cfc8-0370-102d-b0e3-001ec94a0cc1"
     CD4_COUNT = "31c94434-0370-102d-b0e3-001ec94a0cc1"
     RESULT_OF_HIV_TEST = "31b94ef8-0370-102d-b0e3-001ec94a0cc1"
     DATE_OF_HIV_TEST = "a8f2eacc-2c36-4ddd-b3b8-d80ecfb27bf3"
     DATE_OF_ART_TREATMENT_START = "767fed8f-3e64-4567-a2c6-258444296787"
     DATE_OF_PCT_TREATMENT_START = "3458f801-1532-4055-b7f5-f3adf90ec7c7"
+
+    # Hospitalization states
     HOSPITALIZATION_WORKFLOW = "d3d3e1a7-7230-4085-af56-690977a479e5"
     PATIENT_HOSPITALIZED = "31c095fa-0370-102d-b0e3-001ec94a0cc1"
+
+    # Other
     CLINICIAN_NOTES = "31b474e6-0370-102d-b0e3-001ec94a0cc1"
     RETURN_VISIT_DATE = "31c6554e-0370-102d-b0e3-001ec94a0cc1"
     TELEPHONE_NUMBER = "31b4b064-0370-102d-b0e3-001ec94a0cc1"
     NONE = "31b2a94a-0370-102d-b0e3-001ec94a0cc1"
+
+    # Legacy (only used by migration controller)
     CULTURE_STATUS = "31c2c5fa-0370-102d-b0e3-001ec94a0cc1"
+
+    # Custom concepts for Tajikistan
     PREGNANT = "6462d5a2-0a83-4bad-98f8-95b36445dbb0"
     FIRST_LINE_DRUGS = "cb0f30f5-15d3-4eb4-b67e-0416cf940d88"
     SECOND_LINE_DRUGS = "8e6207d7-7ddc-4a2d-bf10-2f134e69e869"
@@ -303,6 +336,7 @@ class Concepts(enum.Enum):
     POSSIBLE = "8b7e59d1-1db2-4a46-91ed-93a04243d94e"
     SUSPECTED = "1c073184-15ad-4672-a49b-5330be0f397c"
     NOT_CLASSIFIED = "e81f9e85-995d-4ffa-a0da-edc10fe4a327"
+    ADVERSE_EVENT_ACTION = "7e97054b-cf92-49ec-9f68-54b095f5436e"
     ADVERSE_EVENT_ACTION_2 = "caa95b8f-86c3-4ec4-9397-933d880aba3e"
     ADVERSE_EVENT_ACTION_3 = "1d70fdcd-915d-4524-9ab5-1bdda1790508"
     ADVERSE_EVENT_ACTION_4 = "8d53d5ad-5477-4997-aadb-5c661c51b5e4"
@@ -320,6 +354,7 @@ class Concepts(enum.Enum):
     FATAL = "43897bbf-1a8d-4b5b-aa9b-8d8380e912c0"
     RESOLVING = "76fe4243-bac0-4a7b-8799-acdfe6affa13"
     NOT_RESOLVED = "97db90d6-c5f9-46b5-bae0-dfe8368673ae"
+    ADVERSE_EVENT_OUTCOME = "adbed9a8-29a6-4adb-8a5b-60619fa02c19"
     ADVERSE_EVENT_OUTCOME_DATE = "2e418adc-f3f2-4d49-bc4d-dcbe82dc5a17"
     DRUG_RECHALLENGE = "dead117a-53c3-40f8-879b-40c170b68037"
     NO_RECHALLENGE = "82bf4caa-944a-4024-ab46-69aca67591ab"
@@ -338,6 +373,8 @@ class Concepts(enum.Enum):
     METABOLIC_DISORDER = "4130c905-fde5-41bb-b363-8ef9551c8202"
     ENDOCRINE_DISORDER = "75399647-a578-43af-81fa-b83dbaeb991e"
     CARDIAC_DISORDER = "a2fd59aa-a304-490a-a496-4ec021b41a16"
+
+    # For DOTS Reports
     TB_CLINICAL_DIAGNOSIS = "e2e8dc4d-9ad2-45d4-9ae4-411388b725d3"
     DOTS_TREATMENT_START_DATE = "7b1d2c97-de39-4f98-b896-b6c3e78cba1e"
     AGE_AT_DOTS_REGISTRATION = "b84fabbc-d296-4efa-8629-e393fb27e21f"
@@ -487,3 +524,6 @@ class Concepts(enum.Enum):
     TABLESPOONS = "8181afee-dfc1-4488-9e02-c8a1c3d819ee"
     SYRINGES = "51a1bb37-cd63-43e9-89f6-2833044f383d"
     CAUSE_OF_DEATH = "0f7abf6d-e0bb-46ce-aa69-5214b0d2a295"
+    PRESCRIBED_TREATMENT = "4ce4d85b-a5f7-4e0a-ab42-24ebb8778086"
+    METHOD_OF_DETECTION = "207a0630-f0af-4208-9a81-326b8c37ebe2"
+    ACTION_TAKEN_IN_RESPONSE_TO_THE_EVENT = "d9cabe01-9c29-45b0-a071-0cd8d80fcb41"

@@ -77,6 +77,7 @@ def post(req, endpoint, data):
         if response.status_code == 201:
             return True, response.json()
     except Exception as e:
+        print(e)
         raise Exception(response.json()['error']['message'])
 
 

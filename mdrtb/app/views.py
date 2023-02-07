@@ -7,13 +7,14 @@ import utilities.patientutls as pu
 import utilities.formsutil as fu
 import utilities.common_utils as util
 import utilities.locationsutil as lu
-import utilities.privileges as p
 import json
 import datetime
 from uuid import uuid4
 from django.contrib import messages
 from django.core.cache import cache
 from resources.mdrtbConcepts import Concepts
+from resources.privileges import Privileges
+
 
 # start memcache if u havent
 
@@ -21,16 +22,12 @@ from resources.mdrtbConcepts import Concepts
 def check_if_session_alive(req):
     if 'session_id' not in req.session:
         return False
-    return True
+    else:
+        return True
 
 
 def index(req):
-    concepts = cache.get('concepts')
-    if concepts:
-        print('Cache present at', datetime.datetime.now())
-    else:
-        print('Cache expired at', datetime.datetime.now())
-    return render(req, 'app/tbregister/reportmockup.html', context={'c': json.dumps(concepts)})
+    return render(req, 'app/tbregister/reportmockup.html')
 
 
 def login(req):
@@ -64,16 +61,14 @@ def search_patients_query(req):
 
 
 def search_patients_view(req):
-    context = {'title': "Search Patients", 'add_patient_privilege': False}
     if not check_if_session_alive(req):
         return redirect('login')
+    context = {'title': "Search Patients", 'add_patient_privilege': False}
     keys_to_delete = ['current_patient',
                       'current_location', 'current_date_enrolled']
     for key in keys_to_delete:
         if key in req.session:
             del req.session[key]
-    req.session['redirect_url'] = req.META['HTTP_REFERER']
-    p.create_privileges_enum(req)
     try:
         minSearchCharacters = mu.get_global_properties(
             req, 'minSearchCharacters')
@@ -82,12 +77,11 @@ def search_patients_view(req):
         messages.error(req, 'Error finding global property')
         context['minSearchCharacters'] = 2
     finally:
-        privileges = p.get_privileges_enum()
         # Check if user is admin grant all privileges
         if req.session['logged_user']['systemId'] == 'admin':
             context['add_patient_privilege'] = True
         # Check if user has the privilege to Add patients
-        elif mu.check_if_user_has_privilege(privileges.ADD_PATIENTS, req.session['logged_user']['privileges']):
+        elif mu.check_if_user_has_privilege(Privileges.ADD_PATIENTS, req.session['logged_user']['privileges']):
             context['add_patient_privilege'] = True
         return render(req, 'app/tbregister/search_patients.html', context=context)
 
@@ -146,6 +140,7 @@ def enroll_in_program(req, uuid):
                     'name': response['location']['name']
                 }
                 req.session['current_date_enrolled'] = response['dateEnrolled']
+                req.session['current_patient_program'] = response['uuid']
                 return redirect(f'/patient/{uuid}/tb03'+'?program={}'.format(req.POST['program']))
         except Exception as e:
             messages.error(req, e)
@@ -206,6 +201,7 @@ def patient_dashboard(req, uuid, mdrtb=None):
                 'name': program_info['location']['name']
             }
             req.session['current_date_enrolled'] = program_info['dateEnrolled']
+            req.session['current_patient_program'] = program_info['uuid']
             if forms:
                 context['forms'] = forms
             if patient and program:
@@ -215,10 +211,10 @@ def patient_dashboard(req, uuid, mdrtb=None):
 
             else:
                 messages.error(req, 'Error fetching patient info')
-                return redirect('home')
+                return redirect(req.session['redirect_url'])
     except Exception as e:
         messages.error(req, str(e))
-        return redirect('home')
+        return redirect(req.session['redirect_url'])
 
 
 def tb03_form(req, uuid):
@@ -290,21 +286,21 @@ def transfer(req):
 
 
 def tb03u_form(req):
-    concept_ids = [
-        "31b4c61c-0370-102d-b0e3-001ec94a0cc1",
-        "69abc246-13a9-4cbf-92be-83ac59a8938c",
-        "4ce4d85b-a5f7-4e0a-ab42-24ebb8778086",
-        "37b2cf33-aa3d-4638-95e1-2f886d7eb06c",
-        "3f5a6930-5ead-4880-80ce-6ab79f4f6cb1",
-        "207a0630-f0af-4208-9a81-326b8c37ebe2",
-        "31b94ef8-0370-102d-b0e3-001ec94a0cc1",
-        "a690e0c4-3371-49b3-9d52-b390fca3dd90",
-        "0f7abf6d-e0bb-46ce-aa69-5214b0d2a295",
+    tb03u_concepts = [
+        Concepts.ANATOMICAL_SITE_OF_TB.value,
+        Concepts.MDR_STATUS.value,
+        Concepts.PRESCRIBED_TREATMENT.value,
+        Concepts.TREATMENT_LOCATION.value,
+        Concepts.RESISTANCE_TYPE.value,
+        Concepts.METHOD_OF_DETECTION.value,
+        Concepts.RESULT_OF_HIV_TEST.value,
+        Concepts.TB_TREATMENT_OUTCOME.value,
+        Concepts.CAUSE_OF_DEATH.value,
     ]
 
     return render(req, 'app/tbregister/mdr/tb03u.html', context={
         'title': "TB03u",
-        "concepts": fu.get_form_concepts(concept_ids, req)
+        "concepts": fu.get_form_concepts(tb03u_concepts, req)
     })
 
 
@@ -320,9 +316,27 @@ def adverse_events_form(req):
 
         return render(req, 'app/tbregister/mdr/adverse_events.html', context=context)
     else:
-        concept_ids = ["7047f880-b929-42fc-81f7-b9dbba2d1b15", "1051a25f-5609-40d1-9801-10c3b6fd74ab", "e31fb77b-3623-4c65-ac86-760a2248fc1b", "aa9cb2d0-a6d6-4fb7-bb02-9298235128b2", "aaeb7e1e-e2ea-445d-8c86-6d5eff7d45ad", "d5383d2c-ad69-489e-983d-938bc5356ecf", "34c3a6f2-adf4-4c1a-9e47-7fd9dc4f093d", "	0d5228b4-5891-4740-9b13-1b8898ba4957", "dfad56a0-6f69-437b-bc50-28195039a9e2",
-                       "a04a5e94-a584-4f03-b0c5-ea7acf0a28d7", "d9cabe01-9c29-45b0-a071-0cd8d80fcb41", "7e97054b-cf92-49ec-9f68-54b095f5436e", "caa95b8f-86c3-4ec4-9397-933d880aba3e", "1d70fdcd-915d-4524-9ab5-1bdda1790508", "c0592626-62a8-48f6-93b0-1e4f8ff671f3", "adbed9a8-29a6-4adb-8a5b-60619fa02c19", "c213828e-3d30-46a4-9245-485c9f78c233", "dead117a-53c3-40f8-879b-40c170b68037"]
-        concepts = fu.get_form_concepts(concept_ids, req)
+        adverse_event_concepts = [
+            Concepts.ADVERSE_EVENT.value,
+            Concepts.ADVERSE_EVENT_TYPE.value,
+            Concepts.SAE_TYPE.value,
+            Concepts.SPECIAL_INTEREST_EVENT_TYPE.value,
+            Concepts.CAUSALITY_DRUG_1.value,
+            Concepts.CAUSALITY_DRUG_2.value,
+            Concepts.CAUSALITY_DRUG_3.value,
+            Concepts.CAUSALITY_ASSESSMENT_RESULT_1.value,
+            Concepts.CAUSALITY_ASSESSMENT_RESULT_2.value,
+            Concepts.CAUSALITY_ASSESSMENT_RESULT_3.value,
+            Concepts.ACTION_TAKEN_IN_RESPONSE_TO_THE_EVENT.value,
+            Concepts.ADVERSE_EVENT_ACTION.value,
+            Concepts.ADVERSE_EVENT_ACTION_2.value,
+            Concepts.ADVERSE_EVENT_ACTION_3.value,
+            Concepts.ADVERSE_EVENT_ACTION_5.value,
+            Concepts.ADVERSE_EVENT_OUTCOME.value,
+            Concepts.MEDDRA_CODE.value,
+            Concepts.DRUG_RECHALLENGE.value
+        ]
+        concepts = fu.get_form_concepts(adverse_event_concepts, req)
         req.session['ae_concepts'] = concepts
         context['concepts'] = concepts
         return render(req, 'app/tbregister/mdr/adverse_events.html', context=context)
@@ -331,7 +345,7 @@ def adverse_events_form(req):
 def drug_resistence_form(req):
     context = {
         'title': "Drug Resistense",
-        'concepts': fu.get_form_concepts(["ccd094e6-ac27-418f-a30e-54e9a1bac362"], req)
+        'concepts': fu.get_form_concepts([Concepts.DRUG_RESISTANCE_DURING_TREATMENT.value], req)
 
     }
     return render(req, 'app/tbregister/mdr/drug_resistence.html', context=context)
@@ -343,8 +357,8 @@ def manage_regimens(req):
 
 
 def regimen_form(req):
-    concept_ids = ["483e6ca8-293d-4d00-b71b-4464c093a71d", "3f5a6930-5ead-4880-80ce-6ab79f4f6cb1",
-                   "e56514ed-1b3b-4d2e-89f1-564fd6265ebe", "cd9e240f-7860-4e37-a0d2-b922cbcc62d3"]
+    concept_ids = [Concepts.PLACE_OF_CENTRAL_COMMISSION.value, Concepts.RESISTANCE_TYPE.value,
+                   Concepts.FUNDING_SOURCE.value, Concepts.SLD_REGIMEN_TYPE.value]
     context = {
         "title": "Regimen Form",
         "concepts": fu.get_form_concepts(concept_ids, req)
@@ -357,17 +371,17 @@ def form_89(req):
     if 'form89_concepts' in req.session:
         context['concepts'] = req.session['form89_concepts']
         return render(req, 'app/tbregister/dots/form89.html', context=context)
-    concept_ids = [
-        "1304ac7c-7acb-4df9-864d-fc911fc00028",
-        "955fa978-f0a6-4252-bd6d-22b16fba3c1e",
-        "e2a0dc12-9af9-4b2d-9b4f-d89463021560",
-        "3d16500c-87be-431a-93e6-d517906bd20a",
-        "207a0630-f0af-4208-9a81-326b8c37ebe2",
-        "06cd622c-ba03-45ec-a65f-96536a14aece",
-        "4ce4d85b-a5f7-4e0a-ab42-24ebb8778086",
-        "483e6ca8-293d-4d00-b71b-4464c093a71d",
+    form89_concepts = [
+        Concepts.PROFESSION.value,
+        Concepts.POPULATION_CATEGORY.value,
+        Concepts.PLACE_OF_DETECTION.value,
+        Concepts.CIRCUMSTANCES_OF_DETECTION.value,
+        Concepts.METHOD_OF_DETECTION.value,
+        Concepts.SITE_OF_EPTB.value,
+        Concepts.PRESCRIBED_TREATMENT.value,
+        Concepts.PLACE_OF_CENTRAL_COMMISSION.value,
     ]
-    concepts = fu.get_form_concepts(concept_ids, req)
+    concepts = fu.get_form_concepts(form89_concepts, req)
     req.session['form89_concepts'] = concepts
     context['concepts'] = concepts
     return render(req, 'app/tbregister/dots/form89.html', context=context)

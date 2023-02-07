@@ -13,14 +13,19 @@
     {% csrf_token %}
 
     <div class="m-16 flex flex-col justify-center space-y-4">
-      <h1 class="text-[#2D9CDB] text-3xl font-bold">
-        {% if state == 'edit' %}
-        {{'mdrtb.edit'|get_message:request.session.locale}}
-        {{'mdrtb.tb03'|get_message:request.session.locale}}
-        {% else %}
-        {{'mdrtb.tb03'|get_message:request.session.locale}}
-        {% endif %}
-      </h1>
+      <div id="form-info" class="flex-center space-x-2">
+        <h1 class="text-[#2D9CDB] text-3xl font-bold">
+          {% if state == 'edit' %}
+          {{'mdrtb.edit'|get_message:request.session.locale}}
+          {{'mdrtb.tb03'|get_message:request.session.locale}}
+          {% else %}
+          {{'mdrtb.add'|get_message:request.session.locale}}
+          {{'mdrtb.tb03'|get_message:request.session.locale}}
+          {% endif %}
+        </h1>
+        <button hidden type="button" id="editbtn" class="cancel-button">Edit</button>
+        <button hidden type="button" id="canceleditbtn" class="cancel-button">Cancel</button>
+      </div>
       <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4">
         <div class="flex items-center space-x-12">
           <div class="space-x-3">
@@ -83,7 +88,7 @@
             <label class="tb03-form-label required"
               for="ipCenter">{{'mdrtb.tb03.treatmentSiteIP'|get_message:request.session.locale}}</label>
 
-            <select required class="input" name="ddf6e09c-f018-4048-a69f-436ff22308b5">
+            <select required class="input form-control" name="ddf6e09c-f018-4048-a69f-436ff22308b5">
               {% if state == 'edit' %}
               <option selected value="{{form.treatmentSiteIP.uuid}}">{{form.treatmentSiteIP.display}}</option>
               {% else %}
@@ -98,10 +103,10 @@
             <label class="tb03-form-label required"
               for="ipCenterName">{{'mdrtb.tb03.nameOfIPFacility'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input type="text" required class="input" value="{{form.nameOfIPFacility}}"
+            <input type="text" required class="input form-control" value="{{form.nameOfIPFacility}}"
               name="c34c30ab-ae45-4004-9dc7-926d5d0ed862">
             {% else %}
-            <input type="text" required class="input" name="c34c30ab-ae45-4004-9dc7-926d5d0ed862">
+            <input type="text" required class="input form-control" name="c34c30ab-ae45-4004-9dc7-926d5d0ed862">
             {% endif %}
 
           </div>
@@ -110,7 +115,7 @@
           <div class="input-container">
             <label class="tb03-form-label required"
               for="cpCenter">{{'mdrtb.tb03.treatmentSiteCP'|get_message:request.session.locale}}</label>
-            <select required class="input" name="2cd70c1e-955d-428e-86cd-3efc5ecbcabd">
+            <select required class="input form-control" name="2cd70c1e-955d-428e-86cd-3efc5ecbcabd">
               {% if state == 'edit' %}
               <option selected value="{{form.treatmentSiteCP.uuid}}">{{form.treatmentSiteCP.display}}</option>
               {% else %}
@@ -125,10 +130,10 @@
             <label class="tb03-form-label required"
               for="cpCenterName">{{'mdrtb.tb03.nameOfCPFacility'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input type="text" required class="input" value="{{form.nameOfCPFacility}}"
+            <input type="text" required class="input form-control" value="{{form.nameOfCPFacility}}"
               name="b4fb2f5a-2d8a-4bd7-a547-e6699aa6e592">
             {% else %}
-            <input type="text" required class="input" name="b4fb2f5a-2d8a-4bd7-a547-e6699aa6e592">
+            <input type="text" required class="input form-control" name="b4fb2f5a-2d8a-4bd7-a547-e6699aa6e592">
             {% endif %}
 
           </div>
@@ -137,7 +142,7 @@
           <div class="input-container">
             <label class="tb03-form-label required"
               for="regimenType">{{'mdrtb.tb03.patientCategory'|get_message:request.session.locale}}</label>
-            <select required class="input" name="ebde5ed8-4717-472d-9172-599af069e94d">
+            <select required class="input form-control" name="ebde5ed8-4717-472d-9172-599af069e94d">
               {% if state == 'edit' %}
               <option selected value="{{form.patientCategory.uuid}}">{{form.patientCategory.display}}</option>
               {% else %}
@@ -152,10 +157,10 @@
             <label class="tb03-form-label required"
               for="treatmentStartDate">{{'mdrtb.tb03.treatmentStartDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input type="date" required value="{{form.treatmentStartDate | iso_to_normal_date}}" class="input"
-              name="7b1d2c97-de39-4f98-b896-b6c3e78cba1e" />
+            <input type="date" required value="{{form.treatmentStartDate | iso_to_normal_date}}"
+              class="input form-control" name="7b1d2c97-de39-4f98-b896-b6c3e78cba1e" />
             {% else %}
-            <input type="date" required class="input" name="7b1d2c97-de39-4f98-b896-b6c3e78cba1e" />
+            <input type="date" required class="input form-control" name="7b1d2c97-de39-4f98-b896-b6c3e78cba1e" />
             {% endif %}
 
           </div>
@@ -164,7 +169,7 @@
           <div class="input-container">
             <label class="tb03-form-label required"
               for="siteOfTb">{{'mdrtb.tb03.siteOfDisease'|get_message:request.session.locale}}</label>
-            <select required class="input" name="31b4c61c-0370-102d-b0e3-001ec94a0cc1">
+            <select required class="input form-control" name="31b4c61c-0370-102d-b0e3-001ec94a0cc1">
               {% if state == 'edit' %}
               <option selected value="{{form.anatomicalSite.uuid}}">{{form.anatomicalSite.display}}</option>
               {% else %}
@@ -179,11 +184,11 @@
             <label class="tb03-form-label required"
               for="hivDate">{{'mdrtb.tb03.hivTestDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input type="date" required value="{{form.hivTestDate | iso_to_normal_date}}" class="input"
+            <input type="date" required value="{{form.hivTestDate | iso_to_normal_date}}" class="input form-control"
               name="a8f2eacc-2c36-4ddd-b3b8-d80ecfb27bf3" />
             {% else %}
 
-            <input type="date" required class="input" name="a8f2eacc-2c36-4ddd-b3b8-d80ecfb27bf3" />
+            <input type="date" required class="input form-control" name="a8f2eacc-2c36-4ddd-b3b8-d80ecfb27bf3" />
             {% endif %}
           </div>
         </div>
@@ -191,7 +196,7 @@
           <div class="input-container">
             <label class="tb03-form-label required"
               for="hivStatus">{{'mdrtb.tb03.hivStatus'|get_message:request.session.locale}}</label>
-            <select required class="input" name="31b94ef8-0370-102d-b0e3-001ec94a0cc1">
+            <select required class="input form-control" name="31b94ef8-0370-102d-b0e3-001ec94a0cc1">
               {% if state == 'edit' %}
               <option selected value="{{form.hivStatus.uuid}}">{{form.hivStatus.display}}</option>
               {% else %}
@@ -206,10 +211,10 @@
             <label class="tb03-form-label required"
               for="artDate">{{'mdrtb.tb03.artStartDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input type="date" required value="{{form.artStartDate | iso_to_normal_date}}" class="input"
+            <input type="date" required value="{{form.artStartDate | iso_to_normal_date}}" class="input form-control"
               name="767fed8f-3e64-4567-a2c6-258444296787" />
             {% else %}
-            <input type="date" required class="input" name="767fed8f-3e64-4567-a2c6-258444296787" />
+            <input type="date" required class="input form-control" name="767fed8f-3e64-4567-a2c6-258444296787" />
             {% endif %}
           </div>
         </div>
@@ -218,20 +223,20 @@
             <label class="tb03-form-label required"
               for="pctDate">{{'mdrtb.tb03.pctStartDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input type="date" required value="{{form.pctStartDate | iso_to_normal_date}}" class="input"
+            <input type="date" required value="{{form.pctStartDate | iso_to_normal_date}}" class="input form-control"
               name="3458f801-1532-4055-b7f5-f3adf90ec7c7" />
             {% else %}
-            <input type="date" required class="input" name="3458f801-1532-4055-b7f5-f3adf90ec7c7" />
+            <input type="date" required class="input form-control" name="3458f801-1532-4055-b7f5-f3adf90ec7c7" />
             {% endif %}
           </div>
           <div class="input-container">
             <label class="tb03-form-label required"
               for="xrayDate">{{'mdrtb.tb03.xrayDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input type="date" required value="{{form.xrayDate|iso_to_normal_date}}" class="input"
+            <input type="date" required value="{{form.xrayDate|iso_to_normal_date}}" class="input form-control"
               name="5539c878-497d-4a77-a173-e709e5b589f2" />
             {% else %}
-            <input type="date" required class="input" name="5539c878-497d-4a77-a173-e709e5b589f2" />
+            <input type="date" required class="input form-control" name="5539c878-497d-4a77-a173-e709e5b589f2" />
             {% endif %}
           </div>
         </div>
@@ -239,7 +244,7 @@
           <div class="input-container">
             <label class="tb03-form-label required"
               for="resistanceType">{{'mdrtb.tb03.resistanceType'|get_message:request.session.locale}}</label>
-            <select required class="input" name="3f5a6930-5ead-4880-80ce-6ab79f4f6cb1">
+            <select required class="input form-control" name="3f5a6930-5ead-4880-80ce-6ab79f4f6cb1">
               {% if state == 'edit' %}
               <option selected value="{{form.resistanceType.uuid}}">{{form.resistanceType.display}}</option>
               {% else %}
@@ -253,7 +258,7 @@
           <div class="input-container">
             <label class="tb03-form-label required"
               for="treatmentOutcome">{{'mdrtb.tb03.treatmentOutcome'|get_message:request.session.locale}}</label>
-            <select required class="input" name="a690e0c4-3371-49b3-9d52-b390fca3dd90">
+            <select required class="input form-control" name="a690e0c4-3371-49b3-9d52-b390fca3dd90">
               {% if state == 'edit' %}
               <option selected value="{{form.treatmentOutcome.uuid}}">{{form.treatmentOutcome.display}}</option>
               {% else %}
@@ -270,16 +275,16 @@
             <label class="tb03-form-label required"
               for="treatmentOutcomeDate">{{'mdrtb.tb03.treatmentOutcomeDateOnly'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input type="date" required value="{{form.treatmentOutcomeDate | iso_to_normal_date}}" class="input"
-              name="5060d5ce-df8e-4090-b09e-62e40a29201a">
+            <input type="date" required value="{{form.treatmentOutcomeDate | iso_to_normal_date}}"
+              class="input form-control" name="5060d5ce-df8e-4090-b09e-62e40a29201a">
             {% else %}
-            <input type="date" required class="input" name="5060d5ce-df8e-4090-b09e-62e40a29201a">
+            <input type="date" required class="input form-control" name="5060d5ce-df8e-4090-b09e-62e40a29201a">
             {% endif %}
           </div>
           <div class="input-container">
             <label class="tb03-form-label"
               for="causeOfDeath">{{'mdrtb.causeOfDeath'|get_message:request.session.locale}}</label>
-            <select class="input" name="0f7abf6d-e0bb-46ce-aa69-5214b0d2a295">
+            <select class="input form-control" name="0f7abf6d-e0bb-46ce-aa69-5214b0d2a295">
               {% if state == 'edit' %}
               <option selected value="{{form.causeOfDeath.uuid}}">{{form.causeOfDeath.display}}</option>
               {% else %}
@@ -296,20 +301,21 @@
             <label class="tb03-form-label"
               for="otherCauseOfdeath">{{'mdrtb.tb03.otherCauseOfDeath'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input type="text" class="input" value="{{form.otherCauseOfDeath}}"
+            <input type="text" class="input form-control" value="{{form.otherCauseOfDeath}}"
               name="bdac7716-d85b-4d12-a589-e04570644c26" />
             {% else %}
-            <input type="text" class="input" name="bdac7716-d85b-4d12-a589-e04570644c26" />
+            <input type="text" class="input form-control" name="bdac7716-d85b-4d12-a589-e04570644c26" />
             {% endif %}
           </div>
           <div class="input-container">
             <label class="tb03-form-label"
               for="deathDate">{{'mdrtb.tb03.afterOutcomeDeathDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input type="date" class="input" value="{{form.dateOfDeathAfterTreatmentOutcome|iso_to_normal_date}}"
+            <input type="date" class="input form-control"
+              value="{{form.dateOfDeathAfterTreatmentOutcome|iso_to_normal_date}}"
               name="3d2e4053-26d7-4f86-b88a-93011ae1725f" />
             {% else %}
-            <input type="date" class="input" name="3d2e4053-26d7-4f86-b88a-93011ae1725f" />
+            <input type="date" class="input form-control" name="3d2e4053-26d7-4f86-b88a-93011ae1725f" />
             {% endif %}
           </div>
 
@@ -319,11 +325,11 @@
             <label class="tb03-form-label required"
               for="clinicalNotes">{{'mdrtb.tb03.clinicalNotes'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <textarea required class="input" name="31b474e6-0370-102d-b0e3-001ec94a0cc1">
+            <textarea required class="input form-control" name="31b474e6-0370-102d-b0e3-001ec94a0cc1">
                 {{form.clinicalNotes}}
               </textarea>
             {% else %}
-            <textarea required class="input" name="31b474e6-0370-102d-b0e3-001ec94a0cc1"></textarea>
+            <textarea required class="input form-control" name="31b474e6-0370-102d-b0e3-001ec94a0cc1"></textarea>
             {% endif %}
           </div>
         </div>
@@ -342,6 +348,27 @@
   </form>
 </div>
 <script>
+  let state = "{{state}}"
+  if (state === 'edit') {
+    $('input').prop('disabled', true)
+    $('select').prop('disabled', true)
+    $('textarea').prop('disabled', true)
+    $('#canceleditbtn').prop('hidden', true)
+    $('#editbtn').prop('hidden', false)
+  }
+  $('#editbtn').click(function () {
+    $('input').prop('disabled', false)
+    $('select').prop('disabled', false)
+    $('textarea').prop('disabled', false)
+    $('#canceleditbtn').prop('hidden', false)
+  })
+  $('#canceleditbtn').click(function () {
+    $('input').prop('disabled', true)
+    $('select').prop('disabled', true)
+    $('textarea').prop('disabled', true)
+    $('#canceleditbtn').prop('hidden', true)
+  })
+
   let date = new Date();
   maxDate = date.toISOString().substring(0, 10);
   $('input[type="date"]').prop("max", maxDate)
