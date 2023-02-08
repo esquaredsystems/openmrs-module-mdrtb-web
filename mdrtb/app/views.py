@@ -37,8 +37,7 @@ def get_locations(req):
             messages.error(req, str(e))
             raise Exception(e)
     else:
-        messages.error(
-            req, 'Error fetching locations. Your session has expired.')
+
         raise Exception('Error fetching locations. Your session has expired.')
 
 
@@ -133,12 +132,13 @@ def enroll_in_program(req, uuid, mdrtb=None):
             "dateCompleted": req.POST['completiondate'] if not req.POST['completiondate'] == '' else None,
             "states": [
                 {
-                    "state": req.POST[work_flow_uuid],
+                    "state": req.POST.get(work_flow_uuid, None),
                     "startDate": req.POST['enrollmentdate'],
                     "endDate": req.POST['completiondate'] if not req.POST['completiondate'] == '' else None
-                } for work_flow_uuid in pu.get_programs(req, uuid=req.POST['program'], params={'v': 'custom:(allWorkflows)'}) if work_flow_uuid in req.POST
+                } for work_flow_uuid in pu.get_programs(req, uuid=req.POST['program'], params={'v': 'custom:(allWorkflows)'}) if work_flow_uuid != '' in req.POST
             ]
         }
+
         try:
             status, response = ru.post(req, 'programenrollment', body)
             if status:
@@ -146,13 +146,14 @@ def enroll_in_program(req, uuid, mdrtb=None):
                     req, uuid)
                 req.session['current_location'] = {
                     'uuid': response['location']['uuid'],
-                    'name': response['location']['name']
+                    'name': response['location'].get('name', response['location']['display'])
                 }
                 req.session['current_date_enrolled'] = response['dateEnrolled']
                 req.session['current_patient_program'] = response['uuid']
                 if mdrtb:
                     return redirect('tb03u', uuid=uuid, permanent=True)
                 return redirect('tb03', uuid=uuid, permanent=True)
+
         except Exception as e:
             messages.error(req, e)
             return redirect('programenroll', uuid=uuid, permanent=True)
@@ -324,6 +325,9 @@ def transfer(req):
 
 
 def tb03u_form(req, uuid):
+    print(req.META)
+    if not check_if_session_alive(req):
+        return redirect('login')
     tb03u_concepts = [
         Concepts.ANATOMICAL_SITE_OF_TB.value,
         Concepts.MDR_STATUS.value,
@@ -332,13 +336,14 @@ def tb03u_form(req, uuid):
         Concepts.RESISTANCE_TYPE.value,
         Concepts.METHOD_OF_DETECTION.value,
         Concepts.RESULT_OF_HIV_TEST.value,
-        Concepts.TB_TREATMENT_OUTCOME.value,
+        Concepts.MDR_TB_TREATMENT_OUTCOME.value,
         Concepts.CAUSE_OF_DEATH.value,
     ]
-
+    req.session['redirect_url'] = req.META.get('HTTP_REFERER', None)
     return render(req, 'app/tbregister/mdr/tb03u.html', context={
         'title': "TB03u",
         "concepts": fu.get_form_concepts(tb03u_concepts, req),
+        'jsonconcepts': json.dumps(fu.get_form_concepts(tb03u_concepts, req)),
         'patient': req.session['current_patient'],
         'location': req.session['current_location'],
         'enrollment_date': req.session['current_date_enrolled']

@@ -76,9 +76,18 @@ def post(req, endpoint, data):
                                  headers=get_auth_headers(req), json=data)
         if response.status_code == 201:
             return True, response.json()
-    except Exception as e:
-        print(e)
-        raise Exception(response.json()['error']['message'])
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as httperr:
+        print(httperr)
+        raise Exception(
+            "An error occured while processing your request. Please try again later")
+    except requests.exceptions.RequestException as err:
+        print(err)
+        raise Exception(
+            'An error occured while processing your request. Please try again later')
+    except requests.exceptions.ConnectionError as connection_err:
+        print(connection_err)
+        raise Exception('Please check your internet connection and try again')
 
 
 def delete(req, endpoint):

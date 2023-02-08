@@ -17,7 +17,7 @@ def get_form_concepts(concept_ids, req):
                     answers.append(
                         {'uuid': answer['uuid'], 'name': answer['display']})
                     concept_dict[response['display'].lower().replace(
-                        ' ', '')] = answers
+                        ' ', '').replace('-', '')] = answers
 
         except Exception as e:
             raise Exception(str(e))
