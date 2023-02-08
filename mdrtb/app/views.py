@@ -10,12 +10,11 @@ import utilities.locationsutil as lu
 import json
 from django.contrib import messages
 from django.core.cache import cache
-from resources.mdrtbConcepts import Concepts
-from resources.privileges import Privileges
+from resources.enums.mdrtbConcepts import Concepts
+from resources.enums.privileges import Privileges
 
 
 # start memcache if u havent
-
 
 def check_if_session_alive(req):
     if 'session_id' not in req.session:
@@ -29,13 +28,18 @@ def index(req):
 
 
 def get_locations(req):
-    try:
-        locations = lu.create_location_hierarchy(req)
-        if locations:
-            return JsonResponse(locations, safe=False)
-    except Exception as e:
-        messages.error(req, str(e))
-        raise Exception(e)
+    if check_if_session_alive(req):
+        try:
+            locations = lu.create_location_hierarchy(req)
+            if locations:
+                return JsonResponse(locations, safe=False)
+        except Exception as e:
+            messages.error(req, str(e))
+            raise Exception(e)
+    else:
+        messages.error(
+            req, 'Error fetching locations. Your session has expired.')
+        raise Exception('Error fetching locations. Your session has expired.')
 
 
 def login(req):
@@ -116,10 +120,9 @@ def enroll_patient(req):
         return redirect('searchPatientsView')
 
 
-def enroll_in_program(req, uuid):
+def enroll_in_program(req, uuid, mdrtb=None):
     if not check_if_session_alive(req):
         return redirect('login', permanent=True)
-
     context = {'title': 'Add a new Program', 'uuid': uuid}
     if req.method == 'POST':
         body = {
@@ -147,6 +150,8 @@ def enroll_in_program(req, uuid):
                 }
                 req.session['current_date_enrolled'] = response['dateEnrolled']
                 req.session['current_patient_program'] = response['uuid']
+                if mdrtb:
+                    return redirect('tb03u', uuid=uuid, permanent=True)
                 return redirect('tb03', uuid=uuid, permanent=True)
         except Exception as e:
             messages.error(req, e)
@@ -193,30 +198,29 @@ def patient_dashboard(req, uuid, mdrtb=None):
     context = {'uuid': uuid, 'title': 'Patient Dashboard'}
     try:
         if mdrtb:
-            patient, program_info = pu.get_patient_dashboard_info(
-                req, uuid, program)
+            patient, program_info, forms = pu.get_patient_dashboard_info(
+                req, uuid, program, isMdrtb=True)
             context['mdrtb'] = True
-            return render(req, 'app/tbregister/dashboard.html', context=context)
         else:
             patient, program_info, forms = pu.get_patient_dashboard_info(
                 req, uuid, program)
-            req.session['current_patient'] = patient
-            req.session['current_location'] = {
-                'uuid': program_info['location']['uuid'],
-                'name': program_info['location']['name']
-            }
-            req.session['current_date_enrolled'] = program_info['dateEnrolled']
-            req.session['current_patient_program'] = program_info['uuid']
-            if forms:
-                context['forms'] = forms
-            if patient and program:
-                context['patient'] = patient
-                context['program'] = program_info
-                return render(req, 'app/tbregister/dashboard.html', context=context)
+        req.session['current_patient'] = patient
+        req.session['current_location'] = {
+            'uuid': program_info['location']['uuid'],
+            'name': program_info['location']['name']
+        }
+        req.session['current_date_enrolled'] = program_info['dateEnrolled']
+        req.session['current_patient_program'] = program_info['uuid']
+        if forms:
+            context['forms'] = forms
+        if patient and program:
+            context['patient'] = patient
+            context['program'] = program_info
+            return render(req, 'app/tbregister/dashboard.html', context=context)
 
-            else:
-                messages.error(req, 'Error fetching patient info')
-                return redirect(req.session['redirect_url'])
+        else:
+            messages.error(req, 'Error fetching patient info')
+            return redirect(req.session['redirect_url'])
     except Exception as e:
         messages.error(req, str(e))
         return redirect(req.session['redirect_url'])
@@ -228,23 +232,23 @@ def tb03_form(req, uuid):
 
     if req.method == 'POST':
         try:
-            fu.create_tb03(req, uuid, req.POST)
+            fu.create_update_tb03(req, uuid, req.POST)
         except Exception as e:
             messages.error(req, str(e))
         finally:
 
             return redirect(req.session['redirect_url'], permanent=True)
-
-    tb03_concepts = [
-        Concepts.TREATMENT_CENTER_FOR_IP.value,
-        Concepts.TREATMENT_CENTER_FOR_CP.value,
-        Concepts.TUBERCULOSIS_PATIENT_CATEGORY.value,
-        Concepts.ANATOMICAL_SITE_OF_TB.value,
-        Concepts.RESULT_OF_HIV_TEST.value,
-        Concepts.RESISTANCE_TYPE.value,
-        Concepts.TB_TREATMENT_OUTCOME.value,
-        Concepts.CAUSE_OF_DEATH.value]
     try:
+        tb03_concepts = [
+            Concepts.TREATMENT_CENTER_FOR_IP.value,
+            Concepts.TREATMENT_CENTER_FOR_CP.value,
+            Concepts.TUBERCULOSIS_PATIENT_CATEGORY.value,
+            Concepts.ANATOMICAL_SITE_OF_TB.value,
+            Concepts.RESULT_OF_HIV_TEST.value,
+            Concepts.RESISTANCE_TYPE.value,
+            Concepts.TB_TREATMENT_OUTCOME.value,
+            Concepts.CAUSE_OF_DEATH.value
+        ]
         req.session['redirect_url'] = req.META.get('HTTP_REFERER', None)
         concepts = fu.get_form_concepts(tb03_concepts, req)
         context = {
@@ -265,20 +269,34 @@ def edit_tb03_form(req, uuid, formid):
     if not check_if_session_alive(req):
         req.session['redirect_url'] = req.META.get('HTTP_REFERER', None)
         return redirect('login')
-    context = {'title': 'Edit TB03', 'state': 'edit', 'uuid': uuid,
-               'patient': req.session['current_patient'],
-               'location': req.session['current_location'],
-               'enrollment_date': req.session['current_date_enrolled']}
-    tb03_concepts = [
-        Concepts.TREATMENT_CENTER_FOR_IP.value,
-        Concepts.TREATMENT_CENTER_FOR_CP.value,
-        Concepts.TUBERCULOSIS_PATIENT_CATEGORY.value,
-        Concepts.ANATOMICAL_SITE_OF_TB.value,
-        Concepts.RESULT_OF_HIV_TEST.value,
-        Concepts.RESISTANCE_TYPE.value,
-        Concepts.TB_TREATMENT_OUTCOME.value,
-        Concepts.CAUSE_OF_DEATH.value]
+
+    if req.method == 'POST':
+        try:
+            response = fu.create_update_tb03(
+                req, uuid, req.POST, formid=formid)
+        except Exception as e:
+            messages.error(req, str(e)),
+        finally:
+            return redirect(req.session['redirect_url'])
+
     try:
+        req.session['redirect_url'] = req.META.get('HTTP_REFERER', None)
+
+        context = {'title': 'Edit TB03', 'state': 'edit', 'uuid': uuid,
+                   'patient': req.session['current_patient'],
+                   'location': req.session['current_location'],
+                   'enrollment_date': req.session['current_date_enrolled']}
+        tb03_concepts = [
+            Concepts.TREATMENT_CENTER_FOR_IP.value,
+            Concepts.TREATMENT_CENTER_FOR_CP.value,
+            Concepts.TUBERCULOSIS_PATIENT_CATEGORY.value,
+            Concepts.ANATOMICAL_SITE_OF_TB.value,
+            Concepts.RESULT_OF_HIV_TEST.value,
+            Concepts.RESISTANCE_TYPE.value,
+            Concepts.TB_TREATMENT_OUTCOME.value,
+            Concepts.CAUSE_OF_DEATH.value]
+
+        req.session['redirect_url'] = req.META.get('HTTP_REFERER', None)
         form = fu.get_tb03_by_uuid(req, formid)
         concepts = fu.get_form_concepts(tb03_concepts, req)
         fu.remove_tb03_duplicates(concepts, form)
@@ -291,11 +309,21 @@ def edit_tb03_form(req, uuid, formid):
         return redirect(req.session['redirect_url'])
 
 
+def delete_tb03_form(req, formid):
+    if formid:
+        try:
+            status = ru.delete(req, f'mdrtb/tb03/{formid}')
+        except Exception as e:
+            messages.error(req, str(e))
+        finally:
+            return redirect(req.session['redirect_url'])
+
+
 def transfer(req):
     return render(req, 'app/tbregister/dots/transfer.html', context={'title': "Transfer"})
 
 
-def tb03u_form(req):
+def tb03u_form(req, uuid):
     tb03u_concepts = [
         Concepts.ANATOMICAL_SITE_OF_TB.value,
         Concepts.MDR_STATUS.value,
@@ -310,7 +338,11 @@ def tb03u_form(req):
 
     return render(req, 'app/tbregister/mdr/tb03u.html', context={
         'title': "TB03u",
-        "concepts": fu.get_form_concepts(tb03u_concepts, req)
+        "concepts": fu.get_form_concepts(tb03u_concepts, req),
+        'patient': req.session['current_patient'],
+        'location': req.session['current_location'],
+        'enrollment_date': req.session['current_date_enrolled']
+
     })
 
 

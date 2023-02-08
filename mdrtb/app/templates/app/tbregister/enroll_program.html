@@ -13,13 +13,14 @@
   <h1 class="text-[#2D9CDB] text-3xl font-bold">
     {{'Program.add'|get_message_openMRS:request.session.locale}}
   </h1>
-  <form action="{% url 'programenroll' uuid=uuid %}" method="post" class="flex flex-col">
+  <form id="enroll-form" action="{% url 'programenroll' uuid=uuid %}" method="post" class="flex flex-col">
     {% csrf_token %}
 
     <div id="enroll-form" class="p-4 flex flex-col justify-center space-y-4">
       {% if programs %}
       <div class="input-container">
-        <label class="input-label required">{{'Program.header'|get_message_openMRS:request.session.locale}}</label>
+        <label
+          class="input-label w-1/6 required">{{'Program.header'|get_message_openMRS:request.session.locale}}</label>
         <select class="input" name="program" id="program-select" required>
           <option selected value="">Choose a Program</option>
           {% for program in programs %}
@@ -32,12 +33,12 @@
       </div>
       {% endif %}
       <div class="input-container">
-        <label class="input-label required"
+        <label class="input-label w-1/6 required"
           for="">{{'mdrtb.enrollment.date'|get_message:request.session.locale}}</label>
         <input class="input" type="date" name="enrollmentdate" id="enrollmentdate" required />
       </div>
       <div class="input-container">
-        <label class="input-label"
+        <label class="input-label w-1/6"
           for="">{{'mdrtb.enrollment.completionDate'|get_message:request.session.locale}}</label>
         <input class="input" type="date" name="completiondate" id="completiondate" />
       </div>
@@ -58,6 +59,14 @@
   <script defer>
     let programs = JSON.parse("{{jsonprograms | escapejs }}")
     $('#program-select').change((selectProgram) => {
+      if (selectProgram.target.value === '34198d48-0370-102d-b0e3-001ec94a0cc1') {
+
+
+        $('#enroll-form').attr('action', "{% url 'mdrtbprogramenroll' uuid=uuid mdrtb='mdrtb' %}");
+
+      } else {
+        $('#enroll-form').attr('action', "{% url 'programenroll' uuid=uuid  %}");
+      }
       $('#states').html('')
       for (program of programs) {
         if (program.uuid === selectProgram.target.value) {

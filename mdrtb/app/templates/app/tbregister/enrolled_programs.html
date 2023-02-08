@@ -141,7 +141,7 @@
                   </td>
                   {% else %}
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
-                    <a href="{% url 'mdrtbashboard' uuid=uuid mdrtb=mdrtb %}?program={{program.uuid}}" type="button"
+                    <a href="{% url 'mdrdashboard' uuid=uuid mdrtb='mdrtb' %}?program={{program.uuid}}" type="button"
                       class="cancel-button">{{'Patient.dashboard.title'|get_message_openMRS:request.session.locale}}
                     </a>
                   </td>

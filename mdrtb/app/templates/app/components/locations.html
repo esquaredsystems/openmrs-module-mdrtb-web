@@ -4,7 +4,7 @@
 
 
 <div class="input-container">
-    <label class="input-label required"
+    <label class="input-label w-1/6  required"
         for="country">{{'Location.country'|get_message_openMRS:request.session.locale}}</label>
     <select required class="input form-control" name="country" id="country-select">
         <option selected value="Таджикистан">Таджикистан</option>
@@ -13,27 +13,27 @@
 </div>
 
 <div class="input-container">
-    <label class="input-label required" for="name">{{'mdrtb.region'|get_message:request.session.locale}}</label>
+    <label class="input-label w-1/6  required" for="name">{{'mdrtb.region'|get_message:request.session.locale}}</label>
     <select required class="input form-control" name="region" id="region-select">
         <option value="">Select</option>
     </select>
 </div>
 <div id="subregion-container" class="input-container hidden">
-    <label id="subregion-label" class="input-label" for="name">Sub region</label>
+    <label id="subregion-label" class="input-label w-1/6" for="name">Sub region</label>
     <select disabled required class="input form-control" name="subregion" id="subregion-select">
         <option value="">Select</option>
     </select>
 </div>
 
 <div class="input-container">
-    <label id="district-label" class="input-label"
+    <label id="district-label" class="input-label w-1/6"
         for="name">{{'mdrtb.district'|get_message:request.session.locale}}</label>
     <select disabled required class="input form-control" name="district" id="district-select">
         <option value="">Select</option>
     </select>
 </div>
 <div class="input-container">
-    <label id="facility-label" class="input-label"
+    <label id="facility-label" class="input-label w-1/6"
         for="name">{{'mdrtb.facility'|get_message:request.session.locale}}</label>
     <select disabled required class="input form-control" name="facility" id="facility-select">
         <option value="">Select</option>

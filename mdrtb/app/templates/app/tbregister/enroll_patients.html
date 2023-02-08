@@ -58,7 +58,7 @@
         </div>
       </div>
       <div class="input-container">
-        <label class="input-label required" for="name">{{'mdrtb.gender'|get_message:request.session.locale}}</label>
+        <label class="input-label  required" for="name">{{'mdrtb.gender'|get_message:request.session.locale}}</label>
         <div class="radios-container">
           <div class="radio-container">
             <label for="Male">{{'mdrtb.male'|get_message:request.session.locale}}</label>
@@ -74,11 +74,13 @@
     <div class="enroll_form_bg">
       {% include 'app/components/locations.html' %}
       <div class="input-container">
-        <label class="input-label required" for="name">{{'mdrtb.address'|get_message:request.session.locale}}</label>
+        <label class="input-label w-1/6 required"
+          for="name">{{'mdrtb.address'|get_message:request.session.locale}}</label>
         <input required class="input" type="text" name="address" />
       </div>
       <div class="input-container">
-        <label class="input-label opacity-0" for="name">{{'mdrtb.address'|get_message:request.session.locale}}</label>
+        <label class="input-label  w-1/6 opacity-0"
+          for="name">{{'mdrtb.address'|get_message:request.session.locale}}</label>
         <input class="input" type="text" name="address2" />
       </div>
     </div>

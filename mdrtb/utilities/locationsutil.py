@@ -59,5 +59,5 @@ def create_location_hierarchy(req):
                     } for child in location.get('childLocations', []) if not child.get('retired', location_by_uuids.get(child['uuid'], {'retired': True})['retired'])
                 ] if location.get('childLocations') else []
             })
-    cache.set('locations', location_hierarchy, timeout=0)
+    cache.set('locations', location_hierarchy, timeout=None)
     return location_hierarchy

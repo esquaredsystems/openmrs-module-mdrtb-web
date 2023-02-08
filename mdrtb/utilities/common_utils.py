@@ -1,6 +1,7 @@
 from pathlib import Path
 from datetime import datetime, date
 import utilities.constants as constants
+from dateutil.parser import parse
 
 
 def get_project_root() -> Path:
@@ -72,3 +73,18 @@ def remove_obj_from_objarr(obj, uuid_to_remove, key=None):
 
 def date_to_sql_format(date):
     return datetime.strptime(date, '%Y-%m-%d').strftime('%Y-%m-%d %H:%M:%S')
+
+
+def is_date(string, fuzzy=False):
+    """
+    Return whether the string can be interpreted as a date.
+
+    :param string: str, string to check for date
+    :param fuzzy: bool, ignore unknown tokens in string if True
+    """
+    try:
+        parse(string, fuzzy=fuzzy)
+        return True
+
+    except ValueError:
+        return False

@@ -109,7 +109,7 @@
         {% else %}
         <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="formsdropdown">
           <li>
-            <a class="tw-dropdown-item" href="{% url 'tb03' uuid=uuid %}">TB03u</a>
+            <a class="tw-dropdown-item" href="{% url 'tb03u' uuid=uuid %}">TB03u</a>
           </li>
 
         </ul>
@@ -122,8 +122,8 @@
       <div class="space-x-3">
         <span class="font-bold">{{'mdrtb.tb03'|get_message:request.session.locale}}: </span><a
           class="tb03-form-label underline" href="{% url 'edittb03' uuid=uuid formid=tb03.uuid %}">
-          {{tb03.encounter.encounterDatetime | iso_to_normal_date}} at
-          {{tb03.encounter.location.name}}</a>
+          {{tb03.encounterDatetime | iso_to_normal_date}} at
+          {{tb03.location.name}}</a>
       </div>
       {% endfor %}
     </div>

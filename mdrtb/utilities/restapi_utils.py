@@ -88,8 +88,7 @@ def delete(req, endpoint):
         response.raise_for_status()
         return True, response
     except Exception as e:
-        messages.error(req, str(e))
-        return False, str(e)
+        raise Exception(str(e))
 
 
 def get_auth_headers(req):

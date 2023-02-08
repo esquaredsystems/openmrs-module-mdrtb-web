@@ -14,6 +14,8 @@ urlpatterns = [
     path('enrollpatient', views.enroll_patient, name='enrollPatient'),
     path('patient/<str:uuid>/programenroll',
          views.enroll_in_program, name="programenroll"),
+    path('patient/<str:uuid>/<str:mdrtb>/programenroll',
+         views.enroll_in_program, name="mdrtbprogramenroll"),
     path('patient/<str:uuid>/enrolledprograms',
          views.enrolled_programs, name='enrolledprograms'),
     path('transfer', views.transfer, name='transfer'),
@@ -22,13 +24,18 @@ urlpatterns = [
     path('patient/<str:uuid>/tb03', views.tb03_form, name='tb03'),
     path('patient/<str:uuid>/tb03/<str:formid>',
          views.edit_tb03_form, name='edittb03'),
+    path('tb03/<str:formid>',
+         views.delete_tb03_form, name='deletetb03'),
     path('form89', views.form_89, name='form89'),
     path('regimen', views.regimen_form, name='regimen'),
     path('manageadverseevents', views.manage_adverse_events, name='manageae'),
     path('manageregimens', views.manage_regimens, name='manageregimens'),
     path('adverseevents', views.adverse_events_form, name='adverseevents'),
-    path('tb03u', views.tb03u_form, name='tb03u'),
-    path('logout', views.logout, name='logout'),
+    path('patient/<str:uuid>/tb03u', views.tb03u_form, name='tb03u'),
+    path('patient/<str:uuid>/tb03u/<str:formid>',
+         views.edit_tb03_form, name='edittb03u'),
+    path('tb03u/<str:formid>',
+         views.delete_tb03_form, name='deletetb03u'),
     path('patientlist', views.patientList, name='patientlist'),
     path('commonlab/managetesttypes',
          views.manage_test_types, name='managetesttypes'),
@@ -58,7 +65,9 @@ urlpatterns = [
     path('commonlab/retiretesttype/<str:uuid>',
          views.retire_test_type, name='retiretesttype'),
     path('commonlab/order/<str:orderid>/addtestresults',
-         views.add_test_results, name='addtestresults')
+         views.add_test_results, name='addtestresults'),
+    path('logout', views.logout, name='logout')
+
 
 
 

@@ -173,7 +173,7 @@ def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
         }
 
     if not isMdrtb:
-        forms = {'tb03s': fu.get_patient_tb03_forms(req, patientuuid)}
-        return patient, program_info, forms
+        forms = {'tb03s': fu.get_tb03_encounters_by_patient(req, patientuuid)}
     else:
-        return patient, program_info
+        forms = {'tb03us': fu.get_tb03_encounters_by_patient(req, patientuuid)}
+    return patient, program_info, forms

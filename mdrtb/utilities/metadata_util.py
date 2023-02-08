@@ -65,7 +65,7 @@ def get_concept(req, uuid):
         if status:
             concepts = cache.get('concepts', [])
             concepts.append(response)
-            cache.set('concepts', concepts, timeout=0)
+            cache.set('concepts', concepts, timeout=None)
             return response
     except Exception as e:
         print(e)
@@ -109,3 +109,12 @@ def check_if_user_has_privilege(privilege_to_check, user_privileges):
         if privilege['display'] == privilege_to_check:
             has_privilege = True
     return has_privilege
+
+
+def get_encounter_by_uuid(req, uuid):
+    try:
+        status, response = ru.get(req, f'encounter/{uuid}', {'v': 'full'})
+        if status:
+            return response
+    except Exception as e:
+        return None
