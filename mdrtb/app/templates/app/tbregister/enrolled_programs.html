@@ -113,14 +113,18 @@
 
                 {% for program in programs %}
                 <tr>
-                  <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">{{program.program.name}}</td>
+                  <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
+                    <a href="{% url 'editprogram' uuid=uuid programid=program.uuid %}"
+                      class="cancel-button">{{program.program.name}}
+                    </a>
+                  </td>
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
                     {{program.dateEnrolled|iso_to_normal_date}}</td>
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
                     {% if program.location %}
                     {{program.location.name}}
                     {% else %}
-                    None
+                    <p>None</p>
                     {% endif %}
                   </td>
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
@@ -171,14 +175,23 @@
   </section>
 </div>
 <script defer>
+  const stringToJson = (string) => {
+    return JSON.parse(string.replaceAll('None', 'null').replaceAll(`'`, `"`))
+  }
+
   if (!$(document.body).hasClass('modal-open')) {
     $('#modalBody').html('')
   }
+  const editProgram = (uuid) => {
+    let program = $('#editProgram').data('program')
+    let jsonProgram = stringToJson(program)
+    $('#statesModalScrollableLabel').html(`${jsonProgram.program.name}`)
 
+  }
   const showStatesModal = (name) => {
     let states = $('#modalOpenBtn').data('obj')
     $('#statesModalScrollableLabel').html(`${name} States`)
-    let jsonStates = JSON.parse(states.replaceAll(`'`, `"`).replaceAll(`None`, null))
+    let jsonStates = stringToJson(states)
     if (jsonStates.length > 0) {
       for (state of jsonStates) {
         $('#modalBody').append(

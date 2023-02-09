@@ -20,6 +20,7 @@ module.exports = {
     "../../**/*.js",
     // Include Python files that might contain Tailwind CSS classes
     "../../**/*.py",
+    "./node_modules/tw-elements/dist/js/**/*.js",
   ],
   theme: {
     extend: {},

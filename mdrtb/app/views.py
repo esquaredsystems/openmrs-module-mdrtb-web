@@ -8,6 +8,7 @@ import utilities.formsutil as fu
 import utilities.common_utils as util
 import utilities.locationsutil as lu
 import json
+import traceback
 from django.contrib import messages
 from django.core.cache import cache
 from resources.enums.mdrtbConcepts import Concepts
@@ -119,6 +120,29 @@ def enroll_patient(req):
         return redirect('searchPatientsView')
 
 
+def enrolled_programs(req, uuid):
+    if not check_if_session_alive(req):
+        return redirect('login')
+    req.session['redirect_url'] = req.META['HTTP_REFERER']
+    context = {
+        'title': 'Enrolled Programs',
+        'uuid': uuid
+    }
+
+    try:
+        programs = pu.get_enrolled_programs_by_patient(req, uuid)
+        patient = pu.get_patient(req, uuid)
+        if patient:
+            context['patient'] = patient
+        if programs:
+            print(programs)
+            context['programs'] = programs
+        return render(req, 'app/tbregister/enrolled_programs.html', context=context)
+    except Exception as e:
+        messages.error(req, str(e))
+        return redirect('searchPatientsView')
+
+
 def enroll_in_program(req, uuid, mdrtb=None):
     if not check_if_session_alive(req):
         return redirect('login', permanent=True)
@@ -128,7 +152,7 @@ def enroll_in_program(req, uuid, mdrtb=None):
             "patient": uuid,
             "program": req.POST['program'],
             "dateEnrolled": req.POST['enrollmentdate'],
-            "location": req.POST.get('district', req.POST.get('facility', None)),
+            "location": req.POST.get('facility', req.POST.get('district', None)),
             "dateCompleted": req.POST['completiondate'] if not req.POST['completiondate'] == '' else None,
             "states": [
                 {
@@ -161,34 +185,54 @@ def enroll_in_program(req, uuid, mdrtb=None):
         try:
             req.session['redirect_url'] = req.META['HTTP_REFERER']
             programs = pu.get_programs(req)
-            context['programs'] = programs
-            context['jsonprograms'] = json.dumps(programs)
+            if programs:
+                context['programs'] = programs
+                context['jsonprograms'] = json.dumps(programs)
+                return render(req, 'app/tbregister/enroll_program.html', context=context)
+            else:
+                messages.error(
+                    req, 'Error fetching programs. Please try again later')
+                return redirect('searchPatientsView')
+
         except Exception as e:
             messages.error(req, str(e))
-            redirect('programenroll', uuid=uuid)
-        return render(req, 'app/tbregister/enroll_program.html', context=context)
+            return redirect('programenroll', uuid=uuid)
 
 
-def enrolled_programs(req, uuid):
+def edit_program(req, uuid, programid):
     if not check_if_session_alive(req):
         return redirect('login')
-    req.session['redirect_url'] = req.META['HTTP_REFERER']
-    context = {
-        'title': 'Enrolled Programs',
-        'uuid': uuid
-    }
-
+    if req.method == 'POST':
+        body = {
+            "uuid": programid,
+            "dateEnrolled": req.POST['enrollmentdate'],
+            "location": req.POST.get('facility', req.POST.get('district', None)),
+            "dateCompleted": req.POST['completiondate'] if not req.POST['completiondate'] == '' else None,
+        }
+        print(body)
+        return redirect('enrolledprograms', uuid=uuid)
     try:
-        programs = pu.get_enrolled_programs_by_patient(req, uuid)
-        patient = pu.get_patient(req, uuid)
-        if patient:
-            context['patient'] = patient
-        if programs:
-            context['programs'] = programs
-        return render(req, 'app/tbregister/enrolled_programs.html', context=context)
+        context = {'title': 'Edit Program', 'uuid': uuid, 'state': 'edit'}
+        enrolled_program = pu.get_enrolled_program_by_uuid(req, programid)
+        context['enrolled_program'] = enrolled_program
+        return render(req, 'app/tbregister/enroll_program.html', context=context)
     except Exception as e:
+        print(traceback.format_exc())
         messages.error(req, str(e))
-        return redirect('searchPatientsView')
+        return redirect('editprogram', uuid=uuid, programid=programid)
+
+
+def delete_program(req, uuid, programid):
+    if programid:
+        try:
+            ru.delete(req, f'programenrollment/{programid}')
+        except Exception as e:
+            print(traceback.format_exc())
+            print(e)
+            messages.error(req, str(e))
+            return redirect('enrolledprograms', uuid=uuid)
+        finally:
+            return redirect('enrolledprograms', uuid=uuid)
 
 
 def patient_dashboard(req, uuid, mdrtb=None):

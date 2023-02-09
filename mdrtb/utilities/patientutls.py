@@ -177,3 +177,13 @@ def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
     else:
         forms = {'tb03us': fu.get_tb03_encounters_by_patient(req, patientuuid)}
     return patient, program_info, forms
+
+
+def get_enrolled_program_by_uuid(req, programid):
+    try:
+        status, response = ru.get(
+            req, f'programenrollment/{programid}', {'v': 'full'})
+        if status:
+            return response
+    except Exception as e:
+        raise Exception(str(e))
