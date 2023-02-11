@@ -74,7 +74,7 @@ def post(req, endpoint, data):
     try:
         response = requests.post(url=BASE_URL+endpoint,
                                  headers=get_auth_headers(req), json=data)
-        if response.status_code == 201:
+        if response.ok:
             return True, response.json()
         response.raise_for_status()
     except requests.exceptions.HTTPError as httperr:

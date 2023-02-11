@@ -123,19 +123,19 @@ def enroll_patient(req):
 def enrolled_programs(req, uuid):
     if not check_if_session_alive(req):
         return redirect('login')
-    req.session['redirect_url'] = req.META['HTTP_REFERER']
     context = {
         'title': 'Enrolled Programs',
         'uuid': uuid
     }
 
     try:
+        req.session['redirect_url'] = req.META['HTTP_REFERER']
+
         programs = pu.get_enrolled_programs_by_patient(req, uuid)
         patient = pu.get_patient(req, uuid)
         if patient:
             context['patient'] = patient
         if programs:
-            print(programs)
             context['programs'] = programs
         return render(req, 'app/tbregister/enrolled_programs.html', context=context)
     except Exception as e:
@@ -164,20 +164,23 @@ def enroll_in_program(req, uuid, mdrtb=None):
         }
 
         try:
-            status, response = ru.post(req, 'programenrollment', body)
-            if status:
-                req.session['current_patient'] = pu.get_patient(
-                    req, uuid)
-                req.session['current_location'] = {
-                    'uuid': response['location']['uuid'],
-                    'name': response['location'].get('name', response['location']['display'])
-                }
-                req.session['current_date_enrolled'] = response['dateEnrolled']
-                req.session['current_patient_program'] = response['uuid']
-                if mdrtb:
-                    return redirect('tb03u', uuid=uuid, permanent=True)
-                return redirect('tb03', uuid=uuid, permanent=True)
-
+            print("========================")
+            print(body)
+            print("========================")
+            # status, response = ru.post(req, 'programenrollment', body)
+            # if status:
+            #     req.session['current_patient'] = pu.get_patient(
+            #         req, uuid)
+            #     req.session['current_location'] = {
+            #         'uuid': response['location']['uuid'],
+            #         'name': response['location'].get('name', response['location']['display'])
+            #     }
+            #     req.session['current_date_enrolled'] = response['dateEnrolled']
+            #     req.session['current_patient_program'] = response['uuid']
+            #     if mdrtb:
+            #         return redirect('tb03u', uuid=uuid, permanent=True)
+            #     return redirect('tb03', uuid=uuid, permanent=True)
+            return redirect('programenroll', uuid=uuid, permanent=True)
         except Exception as e:
             messages.error(req, e)
             return redirect('programenroll', uuid=uuid, permanent=True)
@@ -204,13 +207,27 @@ def edit_program(req, uuid, programid):
         return redirect('login')
     if req.method == 'POST':
         body = {
-            "uuid": programid,
-            "dateEnrolled": req.POST['enrollmentdate'],
-            "location": req.POST.get('facility', req.POST.get('district', None)),
-            "dateCompleted": req.POST['completiondate'] if not req.POST['completiondate'] == '' else None,
+            "dateEnrolled": req.POST.get('enrollmentdate'),
+            "location": req.POST.get('facility') or req.POST.get('district'),
+            "dateCompleted": req.POST.get('completiondate'),
         }
-        print(body)
-        return redirect('enrolledprograms', uuid=uuid)
+        body = {key: value for key, value in body.items() if value}
+
+        try:
+            status, response = ru.post(
+                req, f'programenrollment/{programid}', body)
+            if status:
+                req.session['current_location'] = {
+                    'uuid': response['location']['uuid'],
+                    'name': response['location'].get('name', response['location']['display'])
+                }
+                req.session['current_date_enrolled'] = response['dateEnrolled']
+                req.session['current_patient_program'] = response['uuid']
+        except Exception as e:
+            print(traceback.format_exc())
+            messages.error(req, str(e))
+        finally:
+            return redirect('enrolledprograms', uuid=uuid)
     try:
         context = {'title': 'Edit Program', 'uuid': uuid, 'state': 'edit'}
         enrolled_program = pu.get_enrolled_program_by_uuid(req, programid)
@@ -369,30 +386,43 @@ def transfer(req):
 
 
 def tb03u_form(req, uuid):
-    print(req.META)
     if not check_if_session_alive(req):
         return redirect('login')
-    tb03u_concepts = [
-        Concepts.ANATOMICAL_SITE_OF_TB.value,
-        Concepts.MDR_STATUS.value,
-        Concepts.PRESCRIBED_TREATMENT.value,
-        Concepts.TREATMENT_LOCATION.value,
-        Concepts.RESISTANCE_TYPE.value,
-        Concepts.METHOD_OF_DETECTION.value,
-        Concepts.RESULT_OF_HIV_TEST.value,
-        Concepts.MDR_TB_TREATMENT_OUTCOME.value,
-        Concepts.CAUSE_OF_DEATH.value,
-    ]
-    req.session['redirect_url'] = req.META.get('HTTP_REFERER', None)
-    return render(req, 'app/tbregister/mdr/tb03u.html', context={
-        'title': "TB03u",
-        "concepts": fu.get_form_concepts(tb03u_concepts, req),
-        'jsonconcepts': json.dumps(fu.get_form_concepts(tb03u_concepts, req)),
-        'patient': req.session['current_patient'],
-        'location': req.session['current_location'],
-        'enrollment_date': req.session['current_date_enrolled']
+    if req.method == 'POST':
+        try:
+            fu.create_update_tb03u(req, uuid, req.POST)
+        except Exception as e:
+            print(traceback.format_exc())
+            messages.error(req, str(e))
+        finally:
+            return redirect(req.session['redirect_url'], permanent=True)
+    try:
+        req.session['redirect_url'] = req.META.get('HTTP_REFERER', None)
+        tb03u_concepts = [
+            Concepts.ANATOMICAL_SITE_OF_TB.value,
+            Concepts.MDR_STATUS.value,
+            Concepts.PRESCRIBED_TREATMENT.value,
+            Concepts.TREATMENT_LOCATION.value,
+            Concepts.RESISTANCE_TYPE.value,
+            Concepts.METHOD_OF_DETECTION.value,
+            Concepts.RESULT_OF_HIV_TEST.value,
+            Concepts.MDR_TB_TREATMENT_OUTCOME.value,
+            Concepts.CAUSE_OF_DEATH.value,
+        ]
+        concepts = fu.get_form_concepts(tb03u_concepts, req)
+        return render(req, 'app/tbregister/mdr/tb03u.html', context={
+            'title': "TB03u",
+            "concepts": concepts,
+            'uuid': uuid,
+            'patient': req.session['current_patient'],
+            'location': req.session['current_location'],
+            'enrollment_date': req.session['current_date_enrolled']
 
-    })
+        })
+    except Exception as e:
+        print(traceback.format_exc())
+        messages.error(req, str(e))
+        return redirect(req.session['redirect_url'])
 
 
 def manage_adverse_events(req):

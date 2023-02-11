@@ -72,7 +72,12 @@ def remove_obj_from_objarr(obj, uuid_to_remove, key=None):
 
 
 def date_to_sql_format(date):
-    return datetime.strptime(date, '%Y-%m-%d').strftime('%Y-%m-%d %H:%M:%S')
+    try:
+        formated = datetime.strptime(
+            date, '%Y-%m-%d').strftime('%Y-%m-%d %H:%M:%S')
+        return formated
+    except ValueError:
+        return date
 
 
 def is_date(string, fuzzy=False):
@@ -83,8 +88,9 @@ def is_date(string, fuzzy=False):
     :param fuzzy: bool, ignore unknown tokens in string if True
     """
     try:
-        parse(string, fuzzy=fuzzy)
-        return True
-
+        if type(string) == str:
+            parse(string, fuzzy=fuzzy)
+            return True
+        return string
     except ValueError:
         return False

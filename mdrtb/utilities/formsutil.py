@@ -158,3 +158,72 @@ def remove_tb03_duplicates(concepts, form_data):
         'tuberculosispatientcategory', []), form_data.get('patientCategory', None))
     remove_duplicate_concepts(concepts.get(
         'tuberculosistreatmentoutcome', []), form_data.get('treatmentOutcome', None))
+
+
+def create_update_tb03u(req, patientuuid, data, formid=None):
+    if formid:
+        try:
+            response = mu.get_encounter_by_uuid(req, formid)
+            if response:
+                tb03u = {
+                    "patientProgramUuid": req.session['current_patient_program'],
+                    "encounter": {
+                        "uuid": response['uuid'],
+                        "obs": [
+                            # Patient Program Id
+                            {
+                                "person": patientuuid,
+                                "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+                                "concept": Concepts.PATIENT_PROGRAM_ID.value
+                            }
+                        ]
+
+
+
+                    }
+                }
+        except Exception as e:
+            raise Exception(str(e))
+    else:
+        tb03u = {
+            "patientProgramUuid": req.session['current_patient_program'],
+            "encounter": {
+                "patient": patientuuid,
+                "encounterType": EncounterType.TB03.value,
+                "encounterDatetime": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                "location": req.session['current_location']['uuid'],
+                "obs": [
+                    # Patient Program Id
+                    {
+                        "person": patientuuid,
+                        "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+                        "concept": Concepts.PATIENT_PROGRAM_ID.value
+                    }
+                ]
+
+
+
+            }
+        }
+    for key, value in data.items():
+        if key == "csrfmiddlewaretoken":
+            continue
+        if value:
+            tb03u['encounter']['obs'].append(
+                {
+                    "person": patientuuid,
+                    "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+                    "concept": key,
+                    "value": value if not cu.is_date(value) else cu.date_to_sql_format(value)
+                }
+            )
+    try:
+        # This returns the newly created TB03 form
+        print("===================================")
+        print(tb03u)
+        print("===================================")
+        status, _ = ru.post(req, 'mdrtb/tb03u', tb03u)
+        if status:
+            return True
+    except Exception as e:
+        raise Exception(str(e))

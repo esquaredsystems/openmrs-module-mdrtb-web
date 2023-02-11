@@ -63,7 +63,10 @@
           class="tb03-form-label">{{program.dateCompleted | iso_to_normal_date}}</span>
       </div>
       <div class="space-x-3">
-        <span class="font-bold">{{'mdrtb.outcome'|get_message:request.session.locale}}: </span><span
+
+        <span class="font-bold">
+          {{'Program.program'|get_message_openMRS:request.session.locale}}
+          {{'mdrtb.outcome'|get_message:request.session.locale}}: </span><span
           class="tb03-form-label">{{program.outcome}}</span>
       </div>
 

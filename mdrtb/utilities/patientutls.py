@@ -88,19 +88,30 @@ def get_programs(req, uuid=None, params=None):
         return None
 
 
-def get_states(workflowstates, programstates):
-    for programstate in programstates:
-        state = programstate.get('state')
-        if state:
-            uuid = state.get('uuid')
-            if uuid:
-                display = next((ws['concept']['display']
-                               for ws in workflowstates if ws['uuid'] == uuid), None)
-                if display:
-                    return {
-                        "concept": display.title(),
-                        "start_date": programstate.get('startDate')
-                    }
+def sort_states(workflowstates, programstates):
+    if len(workflowstates) > 0:
+        for programstate in programstates:
+            state = programstate.get('state')
+            if state:
+                uuid = state.get('uuid')
+                if uuid:
+                    display = next((ws['concept']['display']
+                                    for ws in workflowstates if ws['uuid'] == uuid), None)
+                    if display:
+                        return {
+                            "concept": display.title(),
+                            "start_date": programstate.get('startDate')
+                        }
+
+
+def get_program_states(program=None):
+    states = [
+        {
+            "concept": workflow['concept']['display'].title(),
+            "answer":  sort_states(workflow['states'], program['states']),
+        } for workflow in program['program']['allWorkflows'] if not workflow['retired']
+    ]
+    return states
 
 
 def get_enrolled_programs_by_patient(req, uuid):
@@ -123,16 +134,7 @@ def get_enrolled_programs_by_patient(req, uuid):
                     "name": program['location']['name'],
                 },
                 "outcome": program['outcome'],
-                "states": [
-
-                    {
-                        "concept": workflow['concept']['display'],
-                        "answer":  get_states(workflow['states'], program['states']),
-                    } for workflow in program['program']['allWorkflows']
-
-
-
-                ]
+                "states": get_program_states(program=program)
 
             } for program in response['results']
         ]
@@ -160,16 +162,7 @@ def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
             'dateEnrolled': response['dateEnrolled'],
             'dateCompleted': response['dateCompleted'],
             'outcome': response['outcome'],
-            "states": [
-
-                {
-                    "concept": workflow['concept']['display'].title(),
-                    "answer":  get_states(workflow['states'], response['states']),
-                } for workflow in response['program']['allWorkflows']
-
-
-
-            ]
+            "states": get_program_states(program=response)
         }
 
     if not isMdrtb:

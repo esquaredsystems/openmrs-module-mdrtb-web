@@ -9,7 +9,8 @@
 {%block content%}
 
 <div>
-  <form class="flex flex-col">
+  <form action="{% url 'tb03u' uuid=uuid %}" method="post" class="flex flex-col">
+    {% csrf_token %}
     <div class="m-16 flex flex-col justify-center space-y-8">
       <h1 class="text-[#2D9CDB] text-3xl font-bold">
         {{'mdrtb.tb03u'|get_message:request.session.locale}} Form
@@ -100,12 +101,12 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="sldRegisterNumber">{{'mdrtb.tb03.sldRegisterNumber'|get_message:request.session.locale}}</label>
-            <input class="input form-control" type="text">
+            <input class="input form-control" type="number" name="6d79af1d-ae0c-4e68-8e0f-6cc84c4a9106">
           </div>
           <div class="input-container">
             <label class="tb03-form-label required w-full"
               for="name">{{'mdrtb.tb03.siteOfDisease'|get_message:request.session.locale}}</label>
-            <select class="input form-control">
+            <select name="31b4c61c-0370-102d-b0e3-001ec94a0cc1" class="input form-control">
               <option value="">Select</option>
               {% for concept in concepts.siteoftbdisease %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -117,7 +118,7 @@
           <div class="input-container">
             <label class="tb03-form-label required w-full"
               for="name">{{'mdrtb.tb03.mdrStatus'|get_message:request.session.locale}}</label>
-            <select class="input form-control">
+            <select name="69abc246-13a9-4cbf-92be-83ac59a8938c" class="input form-control">
               <option selected value="">Select</option>
               {% for concept in concepts.drtbstatus %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -127,14 +128,14 @@
           <div class="input-container">
             <label class="tb03-form-label required w-full"
               for="confirmationDate">{{'mdrtb.tb03.confirmationDate'|get_message:request.session.locale}}</label>
-            <input type="date" class="input form-control" />
+            <input name="c029cb31-867b-4e2e-b75d-e72ee584524a" type="date" class="input form-control" />
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label required w-full"
               for="patientCategory">{{'mdrtb.tb03.patientCategory'|get_message:request.session.locale}}</label>
-            <select class="input form-control">
+            <select name="ebde5ed8-4717-472d-9172-599af069e94d" class="input form-control">
               <option selected value="">Select</option>
               {% for concept in concepts.prescribedtreatment %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -144,14 +145,14 @@
           <div class="input-container">
             <label class="tb03-form-label required w-full"
               for="mdrTreatmentStartDate">{{'mdrtb.tb03.mdrTreatmentStartDate'|get_message:request.session.locale}}</label>
-            <input type="date" class="input form-control" />
+            <input name="8abe1e01-f167-4618-9f8e-e21ac3dcdf14" type="date" class="input form-control" />
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label required w-full"
               for="name">{{'mdrtb.tb03.txLocation'|get_message:request.session.locale}}</label>
-            <select class="input form-control">
+            <select name="37b2cf33-aa3d-4638-95e1-2f886d7eb06c" class="input form-control">
               <option selected value="">Select</option>
               {% for concept in concepts.treatmentlocation %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -161,14 +162,14 @@
           <div class="input-container">
             <label class="tb03-form-label required w-full"
               for="name">{{'mdrtb.tb03.nameOfTreatmentLocation'|get_message:request.session.locale}}</label>
-            <input type="date" class="input form-control" />
+            <input name="59289c40-8f75-4cee-a5f2-90cbc66fa0e6" type="text" class="input form-control" />
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label required w-full"
               for="resistancetype">{{'mdrtb.tb03.resistanceType'|get_message:request.session.locale}}</label>
-            <select class="input form-control">
+            <select name="3f5a6930-5ead-4880-80ce-6ab79f4f6cb1" class="input form-control">
               <option selected value="">Select</option>
               {% for concept in concepts.resistancetype %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -178,7 +179,7 @@
           <div class="input-container">
             <label class="tb03-form-label required w-full"
               for="basisForDiagnosis">{{'mdrtb.tb03.basisForDiagnosis'|get_message:request.session.locale}}</label>
-            <select class="input form-control">
+            <select name="207a0630-f0af-4208-9a81-326b8c37ebe2" class="input form-control">
               <option selected value="">Select</option>
               {% for concept in concepts.methodofdetection %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -187,33 +188,34 @@
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
-          <div class="input-container">
-            <label class="tb03-form-label required w-full"
-              for="name">{{'mdrtb.tb03.hivTestDate'|get_message:request.session.locale}}</label>
-            <input type="date" class="input form-control">
-          </div>
+
 
           <div class="input-container">
             <label class="tb03-form-label required w-full"
               for="name">{{'mdrtb.hivStatus'|get_message:request.session.locale}}</label>
-            <select class="input form-control">
+            <select name="31b94ef8-0370-102d-b0e3-001ec94a0cc1" class="input form-control">
               <option selected value="">Select</option>
               {% for concept in concepts.resultofhivtest %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
+          <div class="input-container">
+            <label class="tb03-form-label required w-full"
+              for="name">{{'mdrtb.tb03.hivTestDate'|get_message:request.session.locale}}</label>
+            <input name="a8f2eacc-2c36-4ddd-b3b8-d80ecfb27bf3" type="date" class="input form-control">
+          </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label required w-full"
               for="name">{{'mdrtb.tb03.artStartDate'|get_message:request.session.locale}}</label>
-            <input type="date" class="input form-control" />
+            <input name="767fed8f-3e64-4567-a2c6-258444296787" type="date" class="input form-control" />
           </div>
           <div class="input-container">
             <label class="tb03-form-label required w-full"
               for="name">{{'mdrtb.tb03.pctStartDate'|get_message:request.session.locale}}</label>
-            <input type="date" class="input form-control" />
+            <input name="3458f801-1532-4055-b7f5-f3adf90ec7c7" type="date" class="input form-control" />
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
@@ -221,7 +223,7 @@
           <div class="input-container">
             <label class="tb03-form-label required w-full"
               for="name">{{'mdrtb.tb03.treatmentOutcome'|get_message:request.session.locale}}</label>
-            <select class="input form-control">
+            <select name="31c2c834-0370-102d-b0e3-001ec94a0cc1" class="input form-control">
               <option selected value="">Select</option>
               {% for concept in concepts.outcome %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -231,7 +233,7 @@
           <div class="input-container">
             <label class="tb03-form-label required w-full"
               for="name">{{'mdrtb.tb03.treatmentOutcomeDateOnly'|get_message:request.session.locale}}</label>
-            <input type="date" class="input form-control" />
+            <input name="5060d5ce-df8e-4090-b09e-62e40a29201a" type="date" class="input form-control" />
           </div>
 
         </div>
@@ -242,18 +244,20 @@
             <div class="flex-center space-x-4">
               <div class="flex-center space-x-2">
                 <label for="yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required type="radio" value="M" />
+                <input name="53aaa4c7-49c0-4716-9af0-9098d35bacc5" required type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="53aaa4c7-49c0-4716-9af0-9098d35bacc5" required type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
           <div class="input-container">
             <label class="tb03-form-label required w-full"
               for="name">{{'mdrtb.tb03.relapseMonth'|get_message:request.session.locale}}</label>
-            <input type="date" class="input form-control" />
+            <input name="79dff4a3-4093-4df6-8547-8a85e2569d4c" type="date" class="input form-control" />
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
@@ -262,7 +266,7 @@
           <div class="input-container">
             <label class="tb03-form-label required w-full"
               for="name">{{'mdrtb.causeOfDeath'|get_message:request.session.locale}}</label>
-            <select class="input form-control">
+            <select name="0f7abf6d-e0bb-46ce-aa69-5214b0d2a295" class="input form-control">
               <option selected value="">Select</option>
               {% for concept in concepts.causeofdeath %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -274,7 +278,7 @@
           <div class="input-container">
             <label class="tb03-form-label required w-full"
               for="name">{{'mdrtb.tb03.otherCauseOfDeath'|get_message:request.session.locale}}</label>
-            <input type="date" class="input form-control" />
+            <input name="bdac7716-d85b-4d12-a589-e04570644c26" type="text" class="input form-control" />
           </div>
 
 
@@ -283,7 +287,7 @@
           <div class="input-container">
             <label style="width: 35%;" class="tb03-form-label required w-full"
               for="name">{{'mdrtb.tb03.afterOutcomeDeathDate'|get_message:request.session.locale}}</label>
-            <input type="date" class="input form-control" />
+            <input name="3d2e4053-26d7-4f86-b88a-93011ae1725f" type="date" class="input form-control" />
           </div>
 
 
@@ -293,7 +297,8 @@
           <div class="input-container">
             <label style="width: 8rem;" class="tb03-form-label required"
               for="name">{{'mdrtb.tb03.clinicalNotes'|get_message:request.session.locale}}</label>
-            <textarea class="input form-control" cols="10" rows="5"></textarea>
+            <textarea name="31b474e6-0370-102d-b0e3-001ec94a0cc1" class="input form-control" cols="10"
+              rows="5"></textarea>
           </div>
         </div>
       </div>

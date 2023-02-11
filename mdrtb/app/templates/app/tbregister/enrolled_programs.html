@@ -5,31 +5,25 @@
 {% block content %}
 
 
-<div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
-  id="statesModal" tabindex="-1" aria-labelledby="statesModalTitle" aria-modal="true" role="dialog">
-  <div class="modal-dialog modal-xl modal-dialog-centered relative w-auto pointer-events-none">
-    <div
-      class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
-      <div
-        class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
-        <h5 class="text-xl font-medium leading-normal text-gray-800" id="statesModalScrollableLabel">
-          Modal title
-        </h5>
-        <button id="closeModal" type="button" data-bs-dismiss="modal" aria-label="Close">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-            stroke="currentColor" class="w-6 h-6 text-black">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
+<section id="modal"
+  class="flex flex-col justify-center transition-opacity ease-in-out duration-500 opacity-0 backdrop-blur-3xl inset-0 z-50 shadow-2xl  m-10  bg-white w-fit mx-auto p-8 absolute top-0 left-0 right-0 bottom-0 h-min my-auto ">
+  <div class="flex items-center justify-between ">
+    <h3 id="modal-title" class="text-3xl"></h3>
+    <svg id="close-modal" onclick="closeModal()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+      stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white bg-red-700 cursor-pointer">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
 
-        </button>
-      </div>
-      <div id="modalBody" class="modal-body relative p-4">
 
-      </div>
+  </div>
+  <div class="m-4">
+    <div id="modal-body" class="flex-column-center space-y-2 h-min w-fit bg-gray-200 p-4 rounded-md shadow-md">
+
 
     </div>
-  </div>
-</div>
+
+
+</section>
 
 <div class="p-2">
   <div class="patient-banner-container">
@@ -112,6 +106,7 @@
               <tbody>
 
                 {% for program in programs %}
+
                 <tr>
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
                     <a href="{% url 'editprogram' uuid=uuid programid=program.uuid %}"
@@ -130,9 +125,8 @@
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
                     {{program.dateCompleted|iso_to_normal_date }}</td>
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
-                    <button id="modalOpenBtn" onclick="showStatesModal('{{program.program.name}}')"
-                      data-obj="{{program.states}}" data-bs-toggle="modal" data-bs-target="#statesModal" type="button"
-                      class="button-primary">
+                    <button onclick="showStatesModal(this,'{{program.program.name}}')"
+                      data-program-states="{{program.states}}" type="button" class="button-primary">
                       {{'general.view'|get_message_openMRS:request.session.locale}}
                       {{'Program.states'|get_message_openMRS:request.session.locale}}
                     </button>
@@ -174,32 +168,40 @@
     </div>
   </section>
 </div>
-<script defer>
+<script>
   const stringToJson = (string) => {
     return JSON.parse(string.replaceAll('None', 'null').replaceAll(`'`, `"`))
   }
 
-  if (!$(document.body).hasClass('modal-open')) {
-    $('#modalBody').html('')
-  }
-  const editProgram = (uuid) => {
-    let program = $('#editProgram').data('program')
-    let jsonProgram = stringToJson(program)
-    $('#statesModalScrollableLabel').html(`${jsonProgram.program.name}`)
-
-  }
-  const showStatesModal = (name) => {
-    let states = $('#modalOpenBtn').data('obj')
-    $('#statesModalScrollableLabel').html(`${name} States`)
+  const showStatesModal = (element, name) => {
+    $('#modal').removeClass('opacity-0')
+    let states = $(element).data('programStates')
+    $('#modal-title').html(`${name} States`)
     let jsonStates = stringToJson(states)
     if (jsonStates.length > 0) {
       for (state of jsonStates) {
-        $('#modalBody').append(
-          ` <div class="flex-center space-x-6">
-          <label class="input-label w-fit text-lg">${state.concept} : </label>
-          <span class="text-md font-bold">${state.answer.concept}   ( since ${state.answer.start_date ? state.answer.start_date.substring(0, 10) : 'None'})</span>
+        if (state) {
+          $('#modal-body').append(
+            ` <div class="flex-center space-x-6">
+          <label class="input-label w-fit text-lg flex-wrap">${state.concept} : </label>
+          ${state.answer != null ?
+              `<span class="text-md font-bold">${state.answer.concept}
+              ${state.answer.start_date != null ?
+                `
+              ( since ${state.answer.start_date.substring(0, 10)} )
+              `
+                : ''
+              }
+              
+              
+              </span>`
+              : '<span class="text-md font-bold">None</span>'
+            }
+          
         </div>`
-        )
+          )
+        }
+
       }
     } else {
       $('#modalBody').append(
@@ -212,8 +214,9 @@
 
 
   }
-  $('#closeModal').click(() => {
-    $('#modalBody').html('')
-  })
+  function closeModal() {
+    $('#modal').addClass('opacity-0')
+    $('#modal-body').html(``)
+  }
 </script>
 {% endblock %}
