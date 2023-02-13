@@ -1,6 +1,7 @@
 from utilities import common_utils as u
 from utilities import restapi_utils as ru
 from utilities import formsutil as fu
+from resources.enums.constants import Constants
 
 
 def get_patient(req, uuid):
@@ -95,11 +96,11 @@ def sort_states(workflowstates, programstates):
             if state:
                 uuid = state.get('uuid')
                 if uuid:
-                    display = next((ws['concept']['display']
+                    concept = next(({'uuid': ws['concept']['uuid'], 'name': ws['concept']['display'].title()}
                                     for ws in workflowstates if ws['uuid'] == uuid), None)
-                    if display:
+                    if concept:
                         return {
-                            "concept": display.title(),
+                            "concept": concept,
                             "start_date": programstate.get('startDate')
                         }
 
@@ -107,6 +108,7 @@ def sort_states(workflowstates, programstates):
 def get_program_states(program=None):
     states = [
         {
+            "uuid": workflow['concept']['uuid'],
             "concept": workflow['concept']['display'].title(),
             "answer":  sort_states(workflow['states'], program['states']),
         } for workflow in program['program']['allWorkflows'] if not workflow['retired']
@@ -165,10 +167,11 @@ def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
             "states": get_program_states(program=response)
         }
 
-    if not isMdrtb:
-        forms = {'tb03s': fu.get_tb03_encounters_by_patient(req, patientuuid)}
+    if isMdrtb:
+        forms = {'tb03us': fu.get_tb03u_encounters_by_patient(
+            req, patientuuid)}
     else:
-        forms = {'tb03us': fu.get_tb03_encounters_by_patient(req, patientuuid)}
+        forms = {'tb03s': fu.get_tb03_encounters_by_patient(req, patientuuid)}
     return patient, program_info, forms
 
 
@@ -180,3 +183,8 @@ def get_enrolled_program_by_uuid(req, programid):
             return response
     except Exception as e:
         raise Exception(str(e))
+
+
+def get_dots_registration_by_patient(req, patient_uuid):
+    dots_program_id = Constants.DOTS_PROGRAM.value
+    dots_identifier = Constants.DOTS_IDENTIFIER.value

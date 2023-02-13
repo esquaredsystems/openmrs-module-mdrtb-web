@@ -231,25 +231,6 @@
 
 
     })
-    // $('#editbtn').click(function () {
-    //   $('input').prop('disabled', false)
-    //   $('#program').prop('disabled', true)
-    //   $('select').prop('disabled', false)
-    //   $('#canceleditbtn').prop('hidden', false)
-    //   $('#prefilledlocation').prop('hidden', true)
-    //   $('#locations-container').prop('hidden', false)
-    //   $('button[type=submit]').prop('disabled', false)
-    // })
-    // $('#canceleditbtn').click(function () {
-    //   $('input').prop('disabled', true)
-    //   $('select').prop('disabled', true)
-    //   $('textarea').prop('disabled', true)
-    //   $('#canceleditbtn').prop('hidden', true)
-    //   $('#prefilledlocation').prop('hidden', false)
-    //   $('#locations-container').prop('hidden', true)
-    //   $('button[type=submit]').prop('disabled', true)
-
-    // })
 
     let programs = JSON.parse("{{jsonprograms | escapejs }}")
     $('#program-select').change((selectProgram) => {

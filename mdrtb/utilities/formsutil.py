@@ -8,9 +8,9 @@ import utilities.common_utils as cu
 
 def get_form_concepts(concept_ids, req):
     concept_dict = {}
-    for id in concept_ids:
+    for concept in concept_ids:
         try:
-            response = mu.get_concept(req, id)
+            response = mu.get_concept(req, concept)
             if response:
                 answers = []
                 for answer in response['answers']:
@@ -20,6 +20,7 @@ def get_form_concepts(concept_ids, req):
                         ' ', '').replace('-', '')] = answers
 
         except Exception as e:
+            print('FROM HERE EXCEPTION')
             raise Exception(str(e))
     return concept_dict
 
@@ -43,12 +44,17 @@ def get_tb03_by_uuid(req, uuid):
 
 
 def create_update_tb03(req, patientuuid, data, formid=None):
+    patient_program_uuid = req.session['current_patient_program_flow']['current_program']['uuid']
+    encounter_type = EncounterType.TB03.value
+    current_date_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    current_date_time_iso = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+    current_location = req.session['current_patient_program_flow']['current_program']['location']['uuid']
     if formid:
         try:
             response = mu.get_encounter_by_uuid(req, formid)
             if response:
                 tb03 = {
-                    "patientProgramUuid": req.session['current_patient_program'],
+                    "patientProgramUuid": patient_program_uuid,
                     "encounter": {
                         "uuid": response['uuid'],
                         "obs": [
@@ -68,17 +74,17 @@ def create_update_tb03(req, patientuuid, data, formid=None):
             raise Exception(str(e))
     else:
         tb03 = {
-            "patientProgramUuid": req.session['current_patient_program'],
+            "patientProgramUuid": patient_program_uuid,
             "encounter": {
                 "patient": patientuuid,
-                "encounterType": EncounterType.TB03.value,
-                "encounterDatetime": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                "location": req.session['current_location']['uuid'],
+                "encounterType": encounter_type,
+                "encounterDatetime": current_date_time,
+                "location": current_location,
                 "obs": [
                     # Patient Program Id
                     {
                         "person": patientuuid,
-                        "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+                        "obsDatetime": current_date_time_iso,
                         "concept": Concepts.PATIENT_PROGRAM_ID.value
                     }
                 ]
@@ -94,7 +100,7 @@ def create_update_tb03(req, patientuuid, data, formid=None):
             tb03['encounter']['obs'].append(
                 {
                     "person": patientuuid,
-                    "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+                    "obsDatetime": current_date_time_iso,
                     "concept": key,
                     "value": value if not cu.is_date(value) else cu.date_to_sql_format(value)
                 }
@@ -161,19 +167,24 @@ def remove_tb03_duplicates(concepts, form_data):
 
 
 def create_update_tb03u(req, patientuuid, data, formid=None):
+    patient_program_uuid = req.session['current_patient_program_flow']['current_program']['uuid']
+    encounter_type = EncounterType.TB03u_MDR.value
+    current_date_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    current_date_time_iso = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+    patient_location = req.session['current_patient_program_flow']['current_program']['location']['uuid']
     if formid:
         try:
             response = mu.get_encounter_by_uuid(req, formid)
             if response:
                 tb03u = {
-                    "patientProgramUuid": req.session['current_patient_program'],
+                    "patientProgramUuid": patient_program_uuid,
                     "encounter": {
                         "uuid": response['uuid'],
                         "obs": [
                             # Patient Program Id
                             {
                                 "person": patientuuid,
-                                "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+                                "obsDatetime": current_date_time_iso,
                                 "concept": Concepts.PATIENT_PROGRAM_ID.value
                             }
                         ]
@@ -186,17 +197,17 @@ def create_update_tb03u(req, patientuuid, data, formid=None):
             raise Exception(str(e))
     else:
         tb03u = {
-            "patientProgramUuid": req.session['current_patient_program'],
+            "patientProgramUuid": patient_program_uuid,
             "encounter": {
                 "patient": patientuuid,
-                "encounterType": EncounterType.TB03.value,
-                "encounterDatetime": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                "location": req.session['current_location']['uuid'],
+                "encounterType": encounter_type,
+                "encounterDatetime": current_date_time,
+                "location": patient_location,
                 "obs": [
                     # Patient Program Id
                     {
                         "person": patientuuid,
-                        "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+                        "obsDatetime": current_date_time_iso,
                         "concept": Concepts.PATIENT_PROGRAM_ID.value
                     }
                 ]
@@ -212,7 +223,7 @@ def create_update_tb03u(req, patientuuid, data, formid=None):
             tb03u['encounter']['obs'].append(
                 {
                     "person": patientuuid,
-                    "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+                    "obsDatetime": current_date_time_iso,
                     "concept": key,
                     "value": value if not cu.is_date(value) else cu.date_to_sql_format(value)
                 }
@@ -227,3 +238,34 @@ def create_update_tb03u(req, patientuuid, data, formid=None):
             return True
     except Exception as e:
         raise Exception(str(e))
+
+
+def get_tb03u_by_uuid(req, uuid):
+    status, response = ru.get(req, f'mdrtb/tb03u/{uuid}', {'v': 'full'})
+    if status:
+        return response
+    else:
+        return None
+
+
+def remove_tb03u_duplicates(concepts, form_data):
+    remove_duplicate_concepts(concepts.get(
+        'siteoftbdisease', []), form_data.get('anatomicalSite', None))
+    remove_duplicate_concepts(concepts.get(
+        'drtbstatus', []), form_data.get('mdrStatus', None))
+    remove_duplicate_concepts(concepts.get(
+        'prescribedtreatment', []), form_data.get('patientCategory', None))
+
+    remove_duplicate_concepts(concepts.get(
+        'treatmentlocation', []), form_data.get('treatmentLocation', None))
+    remove_duplicate_concepts(concepts.get(
+        'resistancetype', []), form_data.get('resistanceType', None))
+    remove_duplicate_concepts(concepts.get(
+        'methodofdetection', []), form_data.get('basisForDiagnosis', None))
+
+    remove_duplicate_concepts(concepts.get(
+        'resultofhivtest', []), form_data.get('hivStatus', None))
+    remove_duplicate_concepts(concepts.get(
+        'outcome', []), form_data.get('treatmentOutcome', None))
+    remove_duplicate_concepts(concepts.get(
+        'causeofdeath', []), form_data.get('causeOfDeath', None))
