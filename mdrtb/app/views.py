@@ -13,6 +13,7 @@ from django.contrib import messages
 from django.core.cache import cache
 from resources.enums.mdrtbConcepts import Concepts
 from resources.enums.privileges import Privileges
+from resources.enums.constants import Constants
 
 
 # start memcache if u havent
@@ -25,7 +26,6 @@ def check_if_session_alive(req):
 
 
 def index(req):
-    print(req.session['current_patient_program_flow'])
     return render(req, 'app/tbregister/reportmockup.html')
 
 
@@ -152,34 +152,20 @@ def enroll_in_program(req, uuid, mdrtb=None):
         return redirect('login', permanent=True)
     context = {'title': 'Add a new Program', 'uuid': uuid}
     if req.method == 'POST':
-        body = {
-            "patient": uuid,
-            "program": req.POST['program'],
-            "dateEnrolled": req.POST['enrollmentdate'],
-            "location": req.POST.get('facility', req.POST.get('district', None)),
-            "dateCompleted": req.POST['completiondate'] if not req.POST['completiondate'] == '' else None,
-            "states": [
-                {
-                    "state": req.POST.get(work_flow_uuid, None),
-                    "startDate": req.POST['enrollmentdate'],
-                    "endDate": req.POST['completiondate'] if not req.POST['completiondate'] == '' else None
-                } for work_flow_uuid in pu.get_programs(req, uuid=req.POST['program'], params={'v': 'custom:(allWorkflows)'}) if work_flow_uuid != '' in req.POST
-            ]
-        }
-
         try:
-            status, response = ru.post(req, 'programenrollment', body)
-            if status:
+            program_uuid = pu.enroll_patient_in_program(
+                req, uuid, req.POST)
+            if any(program_uuid):
                 req.session['current_patient_program_flow'] = {
                     'current_patient': pu.get_patient(req, uuid),
-                    'current_program': program_info
-
+                    'current_program': pu.get_enrolled_programs_by_patient(req, uuid, enrollment_id=program_uuid)
                 }
                 if mdrtb:
                     return redirect('tb03u', uuid=uuid, permanent=True)
                 return redirect('tb03', uuid=uuid, permanent=True)
             return redirect('programenroll', uuid=uuid, permanent=True)
         except Exception as e:
+            print(traceback.format_exc())
             messages.error(req, e)
             return redirect('programenroll', uuid=uuid, permanent=True)
     else:
@@ -278,6 +264,7 @@ def patient_dashboard(req, uuid, mdrtb=None):
             messages.error(req, 'Error fetching patient info')
             return redirect(req.session['redirect_url'])
     except Exception as e:
+        print(traceback.format_exc())
         messages.error(req, str(e))
         return redirect(req.session['redirect_url'])
 
@@ -405,7 +392,8 @@ def tb03u_form(req, uuid):
             'title': "TB03u",
             "concepts": concepts,
             'uuid': uuid,
-            'current_patient_program_flow': req.session['current_patient_program_flow']
+            'current_patient_program_flow': req.session['current_patient_program_flow'],
+            'identifiers': pu.get_patient_identifiers(req, uuid)
 
 
         })
@@ -420,6 +408,7 @@ def edit_tb03u_form(req, uuid, formid):
         return redirect('login')
 
     if req.method == 'POST':
+
         try:
             response = fu.create_update_tb03u(
                 req, uuid, req.POST, formid=formid)

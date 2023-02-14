@@ -32,3 +32,8 @@ def get_id_from_name(name):
 def parse_json(jsonstring):
     parsed_json = json.loads(jsonstring)
     return list(parsed_json)
+
+
+@register.filter
+def get_year(date):
+    return date[:4]

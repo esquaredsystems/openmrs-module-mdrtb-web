@@ -1,6 +1,5 @@
 from pathlib import Path
 from datetime import datetime, date
-import utilities.constants as constants
 from dateutil.parser import parse
 
 

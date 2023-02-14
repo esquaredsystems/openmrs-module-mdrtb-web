@@ -135,7 +135,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
-    ('tw-elements', os.path.join(BASE_DIR, 'theme/static_src/node_modules/tw-elements'))
+    BASE_DIR / 'theme/static_src/node_modules/tw-elements'
 
 ]
 

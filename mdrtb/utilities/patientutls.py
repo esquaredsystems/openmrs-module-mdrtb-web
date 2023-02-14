@@ -2,12 +2,13 @@ from utilities import common_utils as u
 from utilities import restapi_utils as ru
 from utilities import formsutil as fu
 from resources.enums.constants import Constants
+from resources.enums.mdrtbConcepts import Concepts
 
 
 def get_patient(req, uuid):
     patient = {}
     status, patient_data = ru.get(
-        req, f'patient/{uuid}', {'v': "custom:(identifiers,person)"})
+        req, f'patient/{uuid}', {'v': "full"})
     if status:
         patient['uuid'] = uuid
         patient['name'] = patient_data['person']['display']
@@ -15,7 +16,8 @@ def get_patient(req, uuid):
         patient['dob'] = patient_data['person']['birthdate']
         patient['gender'] = patient_data['person']['gender']
         patient['address'] = patient_data['person']['preferredAddress']['display']
-        patient['identifier'] = patient_data['identifiers'][0]['identifier']
+        patient['identifiers'] = patient_data['identifiers']
+        patient['auditInfo'] = patient_data['auditInfo']
         return patient
     else:
         print('PATIENT NOT FOUND')
@@ -70,6 +72,36 @@ def create_patient(req, data):
         raise Exception(str(e))
 
 
+def enroll_patient_in_program(req, patientid, data):
+    try:
+        program_body = {
+            "patient": patientid,
+            "program": data['program'],
+            "dateEnrolled": data['enrollmentdate'],
+            "location": data.get('facility', data.get('district', None)),
+            "dateCompleted": data['completiondate'] if not data['completiondate'] == '' else None,
+            "states": [
+                {
+                    "state": data.get(work_flow_uuid, None),
+                    "startDate": data['enrollmentdate'],
+                    "endDate": data['completiondate'] if not data['completiondate'] == '' else None
+                } for work_flow_uuid in get_programs(req, uuid=data['program'], params={'v': 'custom:(allWorkflows)'}) if work_flow_uuid in data
+            ]
+        }
+        patient_identifier = {
+            "identifier": data['identifier'],
+            "identifierType": data['identifierType'],
+            "location": data.get('facility', data.get('district', None))}
+
+        status, response = ru.post(req, 'programenrollment', program_body)
+        identifier_status, _ = ru.post(
+            req, f'patient/{patientid}/identifier', patient_identifier)
+        if status and identifier_status:
+            return response['uuid']
+    except Exception as e:
+        raise Exception(str(e))
+
+
 def get_programs(req, uuid=None, params=None):
     if uuid:
         status, response = ru.get(
@@ -116,63 +148,76 @@ def get_program_states(program=None):
     return states
 
 
-def get_enrolled_programs_by_patient(req, uuid):
-    status, response = ru.get(req, 'programenrollment', {
-                              'patient': uuid, 'v': 'custom:(uuid,program,states,dateEnrolled,dateCompleted,location,outcome)'})
-    if status:
-        if len(response['results']) <= 0:
-            return None
-        programs_info = [
-            {
-                "uuid": program['uuid'],
-                "program": {
-                    "uuid": program['program']['uuid'],
-                    "name": program['program']['name'],
-                },
-                "dateEnrolled": program['dateEnrolled'],
-                "dateCompleted": program['dateCompleted'],
-                "location":{
-                    "uuid": program['location']['uuid'],
-                    "name": program['location']['name'],
-                },
-                "outcome": program['outcome'],
-                "states": get_program_states(program=program)
+def get_enrolled_programs_by_patient(req, uuid, enrollment_id=None):
+    representation = 'custom:(uuid,program,states,dateEnrolled,dateCompleted,location,outcome)'
+    if enrollment_id:
+        try:
+            status, response = ru.get(
+                req, f'programenrollment/{enrollment_id}', {'v': "custom:(uuid,program,states,dateEnrolled,dateCompleted,location,outcome)"})
+            if status:
+                return {
+                    "uuid": response['uuid'],
+                    "program": {
+                        "uuid": response['program']['uuid'],
+                        "name": response['program']['name'],
+                    },
+                    "dateEnrolled": response['dateEnrolled'],
+                    "dateCompleted": response['dateCompleted'],
+                    "location": {
+                        "uuid": response['location']['uuid'],
+                        "name": response['location']['name'],
+                    },
+                    "outcome": response['outcome'],
+                    "states": get_program_states(program=response)
 
-            } for program in response['results']
-        ]
-        return programs_info
-    else:
-        return None
+                }
+        except Exception as e:
+            raise Exception(str(e))
+
+    try:
+        status, response = ru.get(req, 'programenrollment', {
+                                  'patient': uuid, 'v': representation})
+        if status:
+            if len(response['results']) <= 0:
+                return None
+            programs_info = [
+                {
+                    "uuid": program['uuid'],
+                    "program": {
+                        "uuid": program['program']['uuid'],
+                        "name": program['program']['name'],
+                    },
+                    "dateEnrolled": program['dateEnrolled'],
+                    "dateCompleted": program['dateCompleted'],
+                    "location":{
+                        "uuid": program['location']['uuid'],
+                        "name": program['location']['name'],
+                    },
+                    "outcome": program['outcome'],
+                    "states": get_program_states(program=program)
+
+                } for program in response['results']
+            ]
+            return programs_info
+    except Exception as e:
+        raise Exception(str(e))
 
 
 def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
     # this function will extend to other forms and laborders
-    patient = get_patient(req, patientuuid)
-    status, response = ru.get(req, f'programenrollment/{programuuid}', {
-        'v': 'custom:(uuid,program,states,dateEnrolled,dateCompleted,location,outcome)'})
-    if status:
-        program_info = {
-            "uuid": response['uuid'],
-            "program": {
-                'uuid': response['program']['uuid'],
-                'name': response['program']['name']
-            },
-            "location": {
-                "uuid": response['location']['uuid'],
-                "name": response['location']['name'],
-            },
-            'dateEnrolled': response['dateEnrolled'],
-            'dateCompleted': response['dateCompleted'],
-            'outcome': response['outcome'],
-            "states": get_program_states(program=response)
-        }
-
-    if isMdrtb:
-        forms = {'tb03us': fu.get_tb03u_encounters_by_patient(
-            req, patientuuid)}
-    else:
-        forms = {'tb03s': fu.get_tb03_encounters_by_patient(req, patientuuid)}
-    return patient, program_info, forms
+    try:
+        patient = get_patient(req, patientuuid)
+        program = get_enrolled_programs_by_patient(
+            req, patientuuid, enrollment_id=programuuid)
+        if isMdrtb:
+            forms = {'tb03us': fu.get_tb03u_encounters_by_patient(
+                req, patientuuid)}
+        else:
+            forms = {'tb03s': fu.get_tb03_encounters_by_patient(
+                req, patientuuid)}
+        return patient, program, forms
+    except Exception as e:
+        raise Exception(str(e))
 
 
 def get_enrolled_program_by_uuid(req, programid):
@@ -188,3 +233,25 @@ def get_enrolled_program_by_uuid(req, programid):
 def get_dots_registration_by_patient(req, patient_uuid):
     dots_program_id = Constants.DOTS_PROGRAM.value
     dots_identifier = Constants.DOTS_IDENTIFIER.value
+
+
+def get_patient_identifiers(req, patient_uuid):
+    identifiers = {}
+    try:
+        status, response = ru.get(
+            req, f'patient/{patient_uuid}/identifier', {})
+        if status:
+            for identifier in response['results']:
+                print(identifier['identifierType'])
+                if identifier['identifierType']['uuid'] == Constants.DOTS_IDENTIFIER.value:
+
+                    identifiers['dots'] = {
+                        'type': identifier['identifierType']['uuid'], 'identifier': identifier['identifier']}
+                else:
+
+                    identifiers['mdr'] = {
+                        'type': identifier['identifierType']['uuid'], 'identifier': identifier['identifier']}
+
+        return identifiers
+    except Exception as e:
+        raise Exception(str(e))

@@ -14,10 +14,7 @@ def initiate_session(req, username, password):
             f"{username}:{password}".encode('ascii')).decode('ascii')
         url = BASE_URL + 'session'
         headers = {'Authorization': f'Basic {encoded_credentials}'}
-        print('MAKING RESPONSE')
-
         response = requests.get(url, headers=headers)
-        print('RESPONSE', response)
         if response.status_code == 200 and response.json()['authenticated']:
             req.session['session_id'] = response.json()['sessionId']
             if 'user' in response.json():
@@ -29,10 +26,18 @@ def initiate_session(req, username, password):
             clear_session(req)
             messages.error(
                 req, mu.get_global_msgs('auth.password.invalid', source='OpenMRS'))
-    except Exception as e:
-        print(e)
-        messages.error(req, "Error loggin in. Please try again later")
-        return False
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as httperr:
+        print(httperr)
+        raise Exception(
+            "An error occured while processing your request. Please try again later")
+    except requests.exceptions.RequestException as err:
+        print(err)
+        raise Exception(
+            'An error occured while processing your request. Please try again later')
+    except requests.exceptions.ConnectionError as connection_err:
+        print(connection_err)
+        raise Exception('Please check your internet connection and try again')
 
 
 def clear_session(req):
@@ -43,7 +48,7 @@ def clear_session(req):
         del req.session['encoded_credentials']
         del req.session['locale']
         del req.session['logged_user']
-    except KeyError as e:
+    except KeyError:
         pass
 
 

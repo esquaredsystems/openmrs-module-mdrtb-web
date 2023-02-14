@@ -11,25 +11,7 @@
 
 
 <div class="flex flex-col space-y-6 m-2">
-  <div class="bg-[#9DC6DE] flex items-center justify-between p-4  text-xl">
-    <div class="flex items-center space-x-6">
-      <div>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
-          <path fill-rule="evenodd"
-            d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
-            clip-rule="evenodd" />
-        </svg>
-
-      </div>
-      <div class="font-bold">
-        <div>{{patient.name}}</div>
-        <div>{{patient.age}} yrs ({{patient.dob | iso_to_normal_date}})</div>
-      </div>
-    </div>
-    <div class="space-x-2 font-bold">
-      <span>Patient Id:</span><span>{{patient.identifier}}</span>
-    </div>
-  </div>
+  {% include 'app/components/patient_banner.html' %}
   <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
     <div class="flex items-center space-x-4">
       <h2 class="text-[#2D9CDB] text-3xl font-bold">{{program.program.name}}

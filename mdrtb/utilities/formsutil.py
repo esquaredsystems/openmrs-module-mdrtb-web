@@ -230,9 +230,9 @@ def create_update_tb03u(req, patientuuid, data, formid=None):
             )
     try:
         # This returns the newly created TB03 form
-        print("===================================")
-        print(tb03u)
-        print("===================================")
+        # print("===================================")
+        # print(tb03u)
+        # print("===================================")
         status, _ = ru.post(req, 'mdrtb/tb03u', tb03u)
         if status:
             return True

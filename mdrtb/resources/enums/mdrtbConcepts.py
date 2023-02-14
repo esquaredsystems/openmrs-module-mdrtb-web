@@ -6,6 +6,8 @@ class Concepts(enum.Enum):
     # General
     YES = "31b27f6a-0370-102d-b0e3-001ec94a0cc1"
     NO = "31b2803c-0370-102d-b0e3-001ec94a0cc1"
+    MALE = "5f1c76c0-28b6-4e95-bbcf-17afbb933c5d"
+    FEMALE = "ff22f976-af7d-4198-830a-a93e473cb4b1"
     WEIGHT = "31c64f86-0370-102d-b0e3-001ec94a0cc1"
     PULSE = "31c64dd8-0370-102d-b0e3-001ec94a0cc1"
     TEMPERATURE = "31c64eb4-0370-102d-b0e3-001ec94a0cc1"
