@@ -9,44 +9,34 @@
 {%block content%}
 
 <div>
-  <form class="flex flex-col">
+  <form action="{% url 'adverseevents' patientid=patient_id %}" method="post" class="flex flex-col">
+    {% csrf_token %}
     <div class="m-16 flex flex-col justify-center space-y-8">
       <h1 class="text-[#2D9CDB] text-3xl font-bold">
         {{'mdrtb.pv.aeForm'|get_message:request.session.locale}}
       </h1>
-      <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4">
+      <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 w-fit">
         <div class="flex items-center space-x-12">
           <div class="space-x-3">
             <span class="font-bold">
-              {{'mdrtb.oblast'|get_message:request.session.locale}}:
+              {{'mdrtb.location'|get_message:request.session.locale}}:
             </span>
-            <span class="tb03-form-label"> 22/01/22 </span>
-          </div>
-          <div class="space-x-3">
-            <span class="font-bold">
-              {{'mdrtb.district'|get_message:request.session.locale}}:
-            </span>
-            <span class="tb03-form-label"> Dushanbe </span>
-          </div>
-          <div class="space-x-3">
-            <span class="font-bold">
-              {{'mdrtb.facility'|get_message:request.session.locale}}:
-            </span>
-            <span class="tb03-form-label"> Cyao </span>
+            <span class="tb03-form-label w-full"> {{current_patient_program_flow.current_program.location.name}} </span>
           </div>
         </div>
       </div>
       <div class="p-4 flex flex-col justify-center space-y-4">
         <div class="flex-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">
+            <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.onsetDate'|get_message:request.session.locale}}</label>
             <input type="date" class="input" name="aeonsetdate">
           </div>
           <div class="input-container">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.adverseEvent'|get_message:request.session.locale}}</label>
-            <select class="input">
+            <select name="7047f880-b929-42fc-81f7-b9dbba2d1b15" class="input">
+              <option selected value="">Select</option>
               {% for concept in concepts.adverseevent %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
@@ -55,30 +45,34 @@
         </div>
         <div class="flex-center justify-end space-x-6">
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.clinicalScreen'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="dd3142e4-237b-46e0-a5fe-7e5c68ee1dfe" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="no">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="dd3142e4-237b-46e0-a5fe-7e5c68ee1dfe" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.visualAcuity'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="beb57526-334c-426a-af9b-9082be53f030" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="beb57526-334c-426a-af9b-9082be53f030" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
@@ -87,30 +81,34 @@
         </div>
         <div class="flex-center justify-between space-x-6">
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.hearingTest'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="dc585a17-bfd5-4b44-aa7b-ff326abf45d0" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="dc585a17-bfd5-4b44-aa7b-ff326abf45d0" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.audiogram'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="0e431270-5f1e-4b2e-ad08-bb15909ecd3c" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="0e431270-5f1e-4b2e-ad08-bb15909ecd3c" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
@@ -119,30 +117,34 @@
         </div>
         <div class="flex-center justify-between space-x-6">
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.neuroInvestigations'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="cb58ac47-7e2e-482d-b1ca-8f04641c9ad9" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="cb58ac47-7e2e-482d-b1ca-8f04641c9ad9" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.serumCreatnine'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="1bccf186-0695-4fed-8dd4-937a2660c927" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="1bccf186-0695-4fed-8dd4-937a2660c927" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
@@ -152,30 +154,34 @@
 
         <div class="flex-center justify-between space-x-6">
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.alt'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="7fea355e-0a14-4c64-af2f-4b6b96a7823d" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="7fea355e-0a14-4c64-af2f-4b6b96a7823d" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.ast'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="076bd99e-869b-4253-a2fa-5c3697227615" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="076bd99e-869b-4253-a2fa-5c3697227615" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
@@ -185,30 +191,34 @@
 
         <div class="flex-center justify-between space-x-6">
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.bilirubin'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="515f6786-1505-44a2-b216-2e22f31ab992" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="515f6786-1505-44a2-b216-2e22f31ab992" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.alkalinePhosphatase'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="56edff77-1933-4e62-845f-8399e3ade466" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="56edff77-1933-4e62-845f-8399e3ade466" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
@@ -218,30 +228,34 @@
 
         <div class="flex-center justify-between space-x-6">
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
-              for="name">{{'mdrtb.pv.γGT'|get_message:request.session.locale}}</label>
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.ygt'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="a667469d-5eb1-470d-ad93-e37086f187af" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="a667469d-5eb1-470d-ad93-e37086f187af" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.ecg'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="2d5df3ac-636f-4ad5-98c3-e4c7cf6f4782" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="2d5df3ac-636f-4ad5-98c3-e4c7cf6f4782" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
@@ -251,30 +265,34 @@
 
         <div class="flex-center justify-between space-x-6">
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.lipase'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="f8e5f193-0b6e-4ff3-91c8-84a3e06f7f75" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="f8e5f193-0b6e-4ff3-91c8-84a3e06f7f75" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.amylase'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="99c62c8f-0885-401e-8aeb-8e41dd9f4a0b" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="99c62c8f-0885-401e-8aeb-8e41dd9f4a0b" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
@@ -284,30 +302,34 @@
 
         <div class="flex-center justify-between space-x-6">
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.potassium'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="c8328edf-30eb-429a-8c95-3713ebf8cd5f" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="c8328edf-30eb-429a-8c95-3713ebf8cd5f" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.magnesium'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="6ef1bf66-4143-4290-8cf1-ae4d7a3aa911" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="6ef1bf66-4143-4290-8cf1-ae4d7a3aa911" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
@@ -317,30 +339,34 @@
 
         <div class="flex-center justify-between space-x-6">
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.calcium'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="315531c6-bd48-4789-9c34-8a52d5f85f6a" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="315531c6-bd48-4789-9c34-8a52d5f85f6a" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.albumin'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="a5228f9e-aaef-4835-8413-f6c4e89063aa" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="a5228f9e-aaef-4835-8413-f6c4e89063aa" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
@@ -349,30 +375,34 @@
         </div>
         <div class="flex-center justify-between space-x-6">
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.cbc'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="09e6fee5-8d20-4fb8-b636-7e92335fa3b2" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="09e6fee5-8d20-4fb8-b636-7e92335fa3b2" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.bloodGlucose'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="3cee56ec-4841-43e3-a7fd-afdd4d1fea2e" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="3cee56ec-4841-43e3-a7fd-afdd4d1fea2e" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
@@ -381,30 +411,34 @@
         </div>
         <div class="flex-center justify-between space-x-6">
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.thyroidTest'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="db064f00-5f8f-447f-ae4c-ccf46aabea1e" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="db064f00-5f8f-447f-ae4c-ccf46aabea1e" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.other'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="d3cadad5-bdd6-4a77-abc5-c752d9a56234" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="d3cadad5-bdd6-4a77-abc5-c752d9a56234" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
@@ -413,32 +447,34 @@
         </div>
         <div class="flex-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">
+            <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.treatmentRegimenAtOnset'|get_message:request.session.locale}}</label>
-              <input type="text" class="input">
+            <input name="4fd9f2ad-0515-41c9-a2e5-468b315bc707" type="text" class="input">
 
           </div>
           <div class="input-container">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.suspectedDrug'|get_message:request.session.locale}}</label>
-            <input type="text" class="input">
+            <input name="1975615d-78d2-4a66-9c13-b513939c6160" type="text" class="input">
           </div>
         </div>
         <div class="flex-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">
+            <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.typeOfEvent'|get_message:request.session.locale}}</label>
-            <select class="input">
-              {% for concept in concepts.adverseeventtype  %}
+            <select name="1051a25f-5609-40d1-9801-10c3b6fd74ab" class="input">
+              <option selected value="">Select</option>
+              {% for concept in concepts.adverseeventtype %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.typeOfSAE'|get_message:request.session.locale}}</label>
-            <select class="input">
-              {% for concept in concepts.saetype  %}
+            <select name="e31fb77b-3623-4c65-ac86-760a2248fc1b" class="input">
+              <option selected value="">Select</option>
+              {% for concept in concepts.saetype %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
@@ -446,25 +482,28 @@
         </div>
         <div class="flex-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">
+            <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.typeOfSpecialEvent'|get_message:request.session.locale}}</label>
-            <select class="input">
-              {% for concept in concepts.specialinteresteventtype  %}
+            <select name="aa9cb2d0-a6d6-4fb7-bb02-9298235128b2" class="input">
+              <option selected value="">Select</option>
+              {% for concept in concepts.specialinteresteventtype %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.requiresAncillaryDrugs'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="0b056d73-92e6-4d78-9948-5f14aa397127" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="0b056d73-92e6-4d78-9948-5f14aa397127" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
@@ -472,41 +511,45 @@
         </div>
         <div class="flex-center justify-between space-x-6">
           <div class="input-container space-x-14">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.requiresDoseChange'|get_message:request.session.locale}}</label>
             <div style="margin-left: 4rem;" class="flex-center space-x-4">
               <div class="flex-center space-x-2">
-                <label for="Male">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="M" />
+                <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                <input name="ac6e1e3c-f299-4cfb-bd9e-4c9679702db9" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
               </div>
               <div class="flex-center space-x-2">
-                <label for="Female">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                <input required name="gender" type="radio" value="F" />
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                <input name="ac6e1e3c-f299-4cfb-bd9e-4c9679702db9" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
               </div>
             </div>
           </div>
 
           <div class="input-container">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.yellowCardDate'|get_message:request.session.locale}}</label>
-            <input type="date" class="input">
+            <input name="8d9a0671-a39c-4592-861d-2184531fbd8c" type="date" class="input">
           </div>
         </div>
         <div class="flex-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">
+            <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.causalityDrug1'|get_message:request.session.locale}}</label>
-            <select class="input">
-              {% for concept in concepts.causalitydrug1  %}
+            <select name="aaeb7e1e-e2ea-445d-8c86-6d5eff7d45ad" class="input">
+              <option selected value="">Select</option>
+              {% for concept in concepts.causalitydrug1 %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.causalityAssessmentResult1'|get_message:request.session.locale}}</label>
-            <select class="input">
-              {% for concept in concepts.causalityassessmentresult1  %}
+            <select name="0d5228b4-5891-4740-9b13-1b8898ba4957" class="input">
+              <option selected value="">Select</option>
+              {% for concept in concepts.causalityassessmentresult1 %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
@@ -514,19 +557,21 @@
         </div>
         <div class="flex-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">
+            <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.causalityDrug2'|get_message:request.session.locale}}</label>
-            <select class="input">
-              {% for concept in concepts.causalitydrug2  %}
+            <select name="d5383d2c-ad69-489e-983d-938bc5356ecf" class="input">
+              <option selected value="">Select</option>
+              {% for concept in concepts.causalitydrug2 %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.causalityAssessmentResult2'|get_message:request.session.locale}}</label>
-            <select class="input">
-              {% for concept in concepts.causalityassessmentresult2  %}
+            <select name="dfad56a0-6f69-437b-bc50-28195039a9e2" class="input">
+              <option selected value="">Select</option>
+              {% for concept in concepts.causalityassessmentresult2 %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
@@ -534,19 +579,21 @@
         </div>
         <div class="flex-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">
+            <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.causalityDrug3'|get_message:request.session.locale}}</label>
-            <select class="input">
-              {% for concept in concepts.causalitydrug3  %}
+            <select name="34c3a6f2-adf4-4c1a-9e47-7fd9dc4f093d" class="input">
+              <option selected value="">Select</option>
+              {% for concept in concepts.causalitydrug3 %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.causalityAssessmentResult3'|get_message:request.session.locale}}</label>
-            <select class="input">
-              {% for concept in concepts.causalityassessmentresult3  %}
+            <select name="a04a5e94-a584-4f03-b0c5-ea7acf0a28d7" class="input">
+              <option selected value="">Select</option>
+              {% for concept in concepts.causalityassessmentresult3 %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
@@ -554,19 +601,22 @@
         </div>
         <div class="flex-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">
+            <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.actionTaken'|get_message:request.session.locale}}</label>
-            <select class="input">
-              {% for concept in concepts.actiontakeninresponsetotheevent  %}
+            <select name="7e97054b-cf92-49ec-9f68-54b095f5436e" class="input">
+              <option selected value="">Select</option>
+              {% for concept in concepts.actiontakeninresponsetotheevent %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label"
-              for="name">{{'mdrtb.pv.actionTaken'|get_message:request.session.locale}} 2</label>
-            <select class="input">
-              {% for concept in concepts.actiontakeninresponsetotheevent  %}
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.actionTaken'|get_message:request.session.locale}}
+              2</label>
+            <select name="caa95b8f-86c3-4ec4-9397-933d880aba3e" class="input">
+              <option selected value="">Select</option>
+              {% for concept in concepts.actiontakeninresponsetotheevent %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
@@ -574,19 +624,22 @@
         </div>
         <div class="flex-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">
+            <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.actionTaken'|get_message:request.session.locale}} 3</label>
-            <select class="input">
-              {% for concept in concepts.actiontakeninresponsetotheevent  %}
+            <select name="1d70fdcd-915d-4524-9ab5-1bdda1790508" class="input">
+              <option selected value="">Select</option>
+              {% for concept in concepts.actiontakeninresponsetotheevent %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label"
-              for="name">{{'mdrtb.pv.actionTaken'|get_message:request.session.locale}} 4</label>
-            <select class="input">
-              {% for concept in concepts.actiontakeninresponsetotheevent  %}
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.actionTaken'|get_message:request.session.locale}}
+              4</label>
+            <select name="8d53d5ad-5477-4997-aadb-5c661c51b5e4" class="input">
+              <option selected value="">Select</option>
+              {% for concept in concepts.actiontakeninresponsetotheevent %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
@@ -594,19 +647,21 @@
         </div>
         <div class="flex-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">
+            <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.actionTaken'|get_message:request.session.locale}} 5</label>
-            <select class="input">
-              {% for concept in concepts.actiontakeninresponsetotheevent  %}
+            <select name="c0592626-62a8-48f6-93b0-1e4f8ff671f3" class="input">
+              <option selected value="">Select</option>
+              {% for concept in concepts.actiontakeninresponsetotheevent %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.actionOutcome'|get_message:request.session.locale}}</label>
-            <select class="input">
-              {% for concept in concepts.adverseeventoutcome  %}
+            <select name="adbed9a8-29a6-4adb-8a5b-60619fa02c19" class="input">
+              <option selected value="">Select</option>
+              {% for concept in concepts.adverseeventoutcome %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
@@ -614,15 +669,16 @@
         </div>
         <div class="flex-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">
+            <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.outcomeDate'|get_message:request.session.locale}}</label>
-            <input type="date" class="input">
+            <input name="2e418adc-f3f2-4d49-bc4d-dcbe82dc5a17" type="date" class="input">
           </div>
           <div class="input-container">
-            <label class="tb03-form-label"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.meddraCode'|get_message:request.session.locale}}</label>
-            <select class="input">
-              {% for concept in concepts.meddracode  %}
+            <select name="c213828e-3d30-46a4-9245-485c9f78c233" class="input">
+              <option selected value="">Select</option>
+              {% for concept in concepts.meddracode %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
@@ -630,28 +686,29 @@
         </div>
         <div class="flex-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">
+            <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.drugRechallenge'|get_message:request.session.locale}}</label>
-            <select class="input">
-              {% for concept in concepts.drugrechallenge  %}
+            <select name="dead117a-53c3-40f8-879b-40c170b68037" class="input">
+              <option selected value="">Select</option>
+              {% for concept in concepts.drugrechallenge %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
-        </div>
-        <div class="flex-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">
+            <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.register.comments'|get_message:request.session.locale}}</label>
-            <textarea class="input"></textarea>
+            <textarea name="31b474e6-0370-102d-b0e3-001ec94a0cc1" class="input"></textarea>
           </div>
+
         </div>
+
 
 
 
 
         <div class="flex-center">
-          <button class="button-primary w-1/5">
+          <button type="submit" class="button-primary w-1/5">
             Save
           </button>
           <a href="javascript:history.go(-1)" class="cancel-button">

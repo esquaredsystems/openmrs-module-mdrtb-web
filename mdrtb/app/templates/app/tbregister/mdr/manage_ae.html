@@ -1,7 +1,7 @@
-{% extends 'app/base/base.html' %} 
+{% extends 'app/base/base.html' %}
 
 {% block title %}
-  {{title}}
+{{title}}
 {% endblock %}
 
 {% block content %}
@@ -57,7 +57,7 @@
         <div class="aeModalitems">
           <span class="font-bold w-2/5">
             {{'mdrtb.pv.yellowCardDate'|get_message:request.session.locale}}:
-            
+
           </span>
           <span class="w-3/5">
             12.10.2022
@@ -73,7 +73,7 @@
         </div>
         <div class="aeModalitems">
           <span class="font-bold w-2/5">
-            {{'mdrtb.pv.causalityAssessmentResult1'|get_message:request.session.locale}}:          </span>
+            {{'mdrtb.pv.causalityAssessmentResult1'|get_message:request.session.locale}}: </span>
           <span class="w-3/5">
             PROBABLE
           </span>
@@ -104,7 +104,7 @@
         </div>
         <div class="aeModalitems">
           <span class="font-bold w-2/5">
-            {{'mdrtb.pv.causalityAssessmentResult3'|get_message:request.session.locale}}:          </span>
+            {{'mdrtb.pv.causalityAssessmentResult3'|get_message:request.session.locale}}: </span>
           <span class="w-3/5">
             SUSPECTED
           </span>
@@ -175,9 +175,7 @@
   <div class="flex-center space-x-4">
     <h2 class="text-[#2D9CDB] text-2xl lg:text-3xl  font-bold ">Adverse Events
     </h2>
-    <a href="{% url 'adverseevents' %}"
-      class="text-[#044062] font-bold underline text-sm"
-    >
+    <a href="{% url 'adverseevents' patientid=patient_id %}" class="text-[#044062] font-bold underline text-sm">
       Add new
     </a>
   </div>

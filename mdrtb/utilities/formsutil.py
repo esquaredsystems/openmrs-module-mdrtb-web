@@ -114,24 +114,11 @@ def create_update_tb03(req, patientuuid, data, formid=None):
         raise Exception(str(e))
 
 
-def get_tb03_encounters_by_patient(req, patientid):
+def get_encounters_by_patient_and_type(req, patientid, encounterType):
     try:
         status, response = ru.get(req, 'encounter', {
             'v': 'custom:(uuid,location,encounterDatetime)',
-            'encounterType': EncounterType.TB03.value,
-            'patient': patientid
-        })
-        if status:
-            return response['results']
-    except Exception as e:
-        return None
-
-
-def get_tb03u_encounters_by_patient(req, patientid):
-    try:
-        status, response = ru.get(req, 'encounter', {
-            'v': 'custom:(uuid,location,encounterDatetime)',
-            'encounterType': EncounterType.TB03u_MDR.value,
+            'encounterType': encounterType,
             'patient': patientid
         })
         if status:
@@ -269,3 +256,69 @@ def remove_tb03u_duplicates(concepts, form_data):
         'outcome', []), form_data.get('treatmentOutcome', None))
     remove_duplicate_concepts(concepts.get(
         'causeofdeath', []), form_data.get('causeOfDeath', None))
+
+
+def create_update_adverse_event(req, patientuuid, data, formid=None):
+    patient_program_uuid = req.session['current_patient_program_flow']['current_program']['uuid']
+    encounter_type = EncounterType.ADVERSE_EVENT.value
+    current_date_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    current_date_time_iso = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+    patient_location = req.session['current_patient_program_flow']['current_program']['location']['uuid']
+    if formid:
+        try:
+            response = mu.get_encounter_by_uuid(req, formid)
+            if response:
+                ae = {
+                    "patientProgramUuid": patient_program_uuid,
+                    "encounter": {
+                        "uuid": response['uuid'],
+                        "obs": [
+                            {
+                                "person": patientuuid,
+                                "obsDatetime": current_date_time_iso,
+                                "concept": Concepts.PATIENT_PROGRAM_ID.value
+                            }
+                        ]
+                    }
+                }
+        except Exception as e:
+            raise Exception
+    else:
+        ae = {
+            "patientProgramUuid": patient_program_uuid,
+            "encounter": {
+                "patient": patientuuid,
+                "encounterType": encounter_type,
+                "encounterDatetime": current_date_time,
+                "location": patient_location,
+                "obs": [
+                    {
+                        "person": patientuuid,
+                        "obsDatetime": current_date_time_iso,
+                        "concept": Concepts.PATIENT_PROGRAM_ID.value
+                    }
+                ]
+
+            }
+        }
+    for key, value in data.items():
+        if key == "csrfmiddlewaretoken":
+            continue
+        if value:
+            ae['encounter']['obs'].append(
+                {
+                    "person": patientuuid,
+                    "obsDatetime": current_date_time_iso,
+                    "concept": key,
+                    "value": value if not cu.is_date(value) else cu.date_to_sql_format(value)
+                }
+            )
+    try:
+        print("===================================")
+        print(ae)
+        print("===================================")
+        status, _ = ru.post(req, 'mdrtb/adverseevents', ae)
+        if status:
+            return True
+    except Exception as e:
+        raise Exception(str(e))

@@ -3,6 +3,7 @@ from utilities import restapi_utils as ru
 from utilities import formsutil as fu
 from resources.enums.constants import Constants
 from resources.enums.mdrtbConcepts import Concepts
+from resources.enums.encounterType import EncounterType
 
 
 def get_patient(req, uuid):
@@ -210,11 +211,14 @@ def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
         program = get_enrolled_programs_by_patient(
             req, patientuuid, enrollment_id=programuuid)
         if isMdrtb:
-            forms = {'tb03us': fu.get_tb03u_encounters_by_patient(
-                req, patientuuid)}
+            forms = {
+                'tb03us': fu.get_encounters_by_patient_and_type(req, patientuuid, EncounterType.TB03u_MDR.value),
+                'ae': fu.get_encounters_by_patient_and_type(req, patientuuid, EncounterType.ADVERSE_EVENT.value),
+
+            }
         else:
-            forms = {'tb03s': fu.get_tb03_encounters_by_patient(
-                req, patientuuid)}
+            forms = {'tb03s': fu.get_encounters_by_patient_and_type(
+                req, patientuuid, EncounterType.TB03.value)}
         return patient, program, forms
     except Exception as e:
         raise Exception(str(e))

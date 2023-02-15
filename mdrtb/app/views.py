@@ -133,7 +133,6 @@ def enrolled_programs(req, uuid):
     }
 
     try:
-        req.session['redirect_url'] = req.META['HTTP_REFERER']
 
         programs = pu.get_enrolled_programs_by_patient(req, uuid)
         patient = pu.get_patient(req, uuid)
@@ -141,6 +140,8 @@ def enrolled_programs(req, uuid):
             context['patient'] = patient
         if programs:
             context['programs'] = programs
+        # req.session['redirect_url'] = req.META['HTTP_REFERER']
+        print(req.META.get('HTTP_REFERER'))
         return render(req, 'app/tbregister/enrolled_programs.html', context=context)
     except Exception as e:
         messages.error(req, str(e))
@@ -461,18 +462,28 @@ def delete_tb03u_form(req, formid):
             return redirect(req.session['redirect_url'])
 
 
-def manage_adverse_events(req):
-    context = {'title': 'Manage Adverse Events'}
+def manage_adverse_events(req, patientid):
+    context = {'title': 'Manage Adverse Events', 'patient_id': patientid}
     return render(req, 'app/tbregister/mdr/manage_ae.html', context=context)
 
 
-def adverse_events_form(req):
-    context = {'title': 'Add Adverse Event'}
-    if 'ae_concepts' in req.session:
-        context['concepts'] = req.session['ae_concepts']
+def adverse_events_form(req, patientid):
+    if not check_if_session_alive(req):
+        return redirect('login')
 
-        return render(req, 'app/tbregister/mdr/adverse_events.html', context=context)
-    else:
+    if req.method == 'POST':
+        try:
+            response = fu.create_update_adverse_event(req, patientid, req.POST)
+        except Exception as e:
+            print(traceback.format_exc())
+            messages.error(req, str(e))
+        finally:
+            return redirect(req.session['redirect_url'])
+
+    try:
+        req.session['redirect_url'] = req.META['HTTP_REFERER']
+        context = {'title': 'Add Adverse Event', 'patient_id': patientid,
+                   'current_patient_program_flow': req.session['current_patient_program_flow']}
         adverse_event_concepts = [
             Concepts.ADVERSE_EVENT.value,
             Concepts.ADVERSE_EVENT_TYPE.value,
@@ -494,9 +505,11 @@ def adverse_events_form(req):
             Concepts.DRUG_RECHALLENGE.value
         ]
         concepts = fu.get_form_concepts(adverse_event_concepts, req)
-        req.session['ae_concepts'] = concepts
         context['concepts'] = concepts
         return render(req, 'app/tbregister/mdr/adverse_events.html', context=context)
+    except Exception as e:
+        messages.error(req, str(e))
+        return redirect(req.session['redirect_url'])
 
 
 def drug_resistence_form(req):

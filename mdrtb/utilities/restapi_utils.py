@@ -42,7 +42,6 @@ def initiate_session(req, username, password):
 
 def clear_session(req):
     try:
-        cache.clear()
         auth.logout(req)
         del req.session['session_id']
         del req.session['encoded_credentials']
