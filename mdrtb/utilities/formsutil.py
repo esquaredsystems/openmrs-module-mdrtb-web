@@ -322,3 +322,52 @@ def create_update_adverse_event(req, patientuuid, data, formid=None):
             return True
     except Exception as e:
         raise Exception(str(e))
+
+
+def get_ae_by_uuid(req, uuid):
+    status, response = ru.get(
+        req, f'mdrtb/adverseevents/{uuid}', {'v': 'full'})
+    if status:
+        return response
+    else:
+        return None
+
+
+def remove_ae_duplicates(concepts, form_data):
+    remove_duplicate_concepts(concepts.get(
+        'adverseevent', []), form_data.get('advereEvent', None))
+    remove_duplicate_concepts(concepts.get(
+        'adverseeventaction', []), form_data.get('actionTaken', None))
+    remove_duplicate_concepts(concepts.get(
+        'adverseeventaction2', []), form_data.get('actionTaken2', None))
+
+    remove_duplicate_concepts(concepts.get(
+        'adverseeventaction3', []), form_data.get('actionTaken3', None))
+    remove_duplicate_concepts(concepts.get(
+        'adverseeventaction5', []), form_data.get('actionTaken5', None))
+    remove_duplicate_concepts(concepts.get(
+        'actiontakeninresponsetotheevent', []), form_data.get('actionTaken4', None))
+    remove_duplicate_concepts(concepts.get(
+        'adverseeventoutcome', []), form_data.get('actionOutcome', None))
+    remove_duplicate_concepts(concepts.get(
+        'adverseeventtype', []), form_data.get('typeOfEvent', None))
+    remove_duplicate_concepts(concepts.get(
+        'causalityassessmentresult1', []), form_data.get('casualityAssessmentResult', None))
+    remove_duplicate_concepts(concepts.get(
+        'causalityassessmentresult2', []), form_data.get('casualityAssessmentResult2', None))
+    remove_duplicate_concepts(concepts.get(
+        'causalityassessmentresult3', []), form_data.get('casualityAssessmentResult3', None))
+    remove_duplicate_concepts(concepts.get(
+        'causalitydrug1', []), form_data.get('casualityDrug', None))
+    remove_duplicate_concepts(concepts.get(
+        'causalitydrug2', []), form_data.get('casualityDrug2', None))
+    remove_duplicate_concepts(concepts.get(
+        'causalitydrug3', []), form_data.get('casualityDrug3', None))
+    remove_duplicate_concepts(concepts.get(
+        'drugrechallenge', []), form_data.get('drugRechallenge', None))
+    remove_duplicate_concepts(concepts.get(
+        'meddracode', []), form_data.get('meddraCode', None))
+    remove_duplicate_concepts(concepts.get(
+        'saetype', []), form_data.get('typeOfSAE', None))
+    remove_duplicate_concepts(concepts.get(
+        'specialinteresteventtype', []), form_data.get('typeOfSpecialEvent', None))

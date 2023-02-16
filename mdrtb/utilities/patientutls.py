@@ -243,18 +243,22 @@ def get_patient_identifiers(req, patient_uuid):
     identifiers = {}
     try:
         status, response = ru.get(
-            req, f'patient/{patient_uuid}/identifier', {})
+            req, f'patient/{patient_uuid}/identifier', {'v': 'full'})
         if status:
             for identifier in response['results']:
                 print(identifier['identifierType'])
                 if identifier['identifierType']['uuid'] == Constants.DOTS_IDENTIFIER.value:
 
                     identifiers['dots'] = {
-                        'type': identifier['identifierType']['uuid'], 'identifier': identifier['identifier']}
+                        'type': identifier['identifierType']['uuid'],
+                        'identifier': identifier['identifier'],
+                        'created_at': identifier['auditInfo']['dateCreated']
+
+                    }
                 else:
 
                     identifiers['mdr'] = {
-                        'type': identifier['identifierType']['uuid'], 'identifier': identifier['identifier']}
+                        'type': identifier['identifierType']['uuid'], 'identifier': identifier['identifier'], 'created_at': identifier['auditInfo']['dateCreated']}
 
         return identifiers
     except Exception as e:

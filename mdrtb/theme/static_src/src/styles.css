@@ -286,5 +286,16 @@
         focus:outline-none
     }
 
+    .adverse-event-form{
+        @apply p-4 flex flex-col justify-center space-y-4;
+    }
+
+    .adverse-event-form-readonly{
+        @apply bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 w-fit
+    }
+
+    .adverse-event-form-row {
+        @apply flex items-center justify-between space-x-6;
+    }
 
 }
