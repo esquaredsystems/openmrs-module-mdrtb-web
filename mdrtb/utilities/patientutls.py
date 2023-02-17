@@ -217,8 +217,10 @@ def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
 
             }
         else:
-            forms = {'tb03s': fu.get_encounters_by_patient_and_type(
-                req, patientuuid, EncounterType.TB03.value)}
+            forms = {
+                'tb03s': fu.get_encounters_by_patient_and_type(req, patientuuid, EncounterType.TB03.value),
+                'form89s': fu.get_encounters_by_patient_and_type(req, patientuuid, EncounterType.FROM_89.value)
+            }
         return patient, program, forms
     except Exception as e:
         raise Exception(str(e))
@@ -234,11 +236,6 @@ def get_enrolled_program_by_uuid(req, programid):
         raise Exception(str(e))
 
 
-def get_dots_registration_by_patient(req, patient_uuid):
-    dots_program_id = Constants.DOTS_PROGRAM.value
-    dots_identifier = Constants.DOTS_IDENTIFIER.value
-
-
 def get_patient_identifiers(req, patient_uuid):
     identifiers = {}
     try:
@@ -246,7 +243,6 @@ def get_patient_identifiers(req, patient_uuid):
             req, f'patient/{patient_uuid}/identifier', {'v': 'full'})
         if status:
             for identifier in response['results']:
-                print(identifier['identifierType'])
                 if identifier['identifierType']['uuid'] == Constants.DOTS_IDENTIFIER.value:
 
                     identifiers['dots'] = {

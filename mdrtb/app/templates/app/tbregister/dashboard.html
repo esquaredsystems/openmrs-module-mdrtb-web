@@ -116,7 +116,7 @@
       {% endfor %}
       {% for form89 in forms.form89s %}
       <div class="space-x-3">
-        <span class="font-bold">{{'mdrtb.tb03'|get_message:request.session.locale}}: </span><a
+        <span class="font-bold">{{'mdrtb.form89'|get_message:request.session.locale}}: </span><a
           class="tb03-form-label underline" href="{% url 'editform89' uuid=uuid formid=form89.uuid %}">
           {{form89.encounterDatetime | iso_to_normal_date}} at
           {{form89.location.name}}</a>

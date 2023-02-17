@@ -371,3 +371,104 @@ def remove_ae_duplicates(concepts, form_data):
         'saetype', []), form_data.get('typeOfSAE', None))
     remove_duplicate_concepts(concepts.get(
         'specialinteresteventtype', []), form_data.get('typeOfSpecialEvent', None))
+
+
+def create_update_form89(req, patientuuid, data, formid=None):
+    print(formid)
+    patient_program_uuid = req.session['current_patient_program_flow']['current_program']['uuid']
+    encounter_type = EncounterType.ADVERSE_EVENT.value
+    current_date_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    current_date_time_iso = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+    patient_location = req.session['current_patient_program_flow']['current_program']['location']['uuid']
+    if formid:
+        try:
+            response = mu.get_encounter_by_uuid(req, formid)
+            if response:
+                form89 = {
+                    "patientProgramUuid": patient_program_uuid,
+                    "encounter": {
+                        "uuid": response['uuid'],
+                        "obs": [
+                            {
+                                "person": patientuuid,
+                                "obsDatetime": current_date_time_iso,
+                                "concept": Concepts.PATIENT_PROGRAM_ID.value
+                            }
+                        ]
+                    }
+                }
+        except Exception as e:
+            raise Exception
+    else:
+        form89 = {
+            "patientProgramUuid": patient_program_uuid,
+            "encounter": {
+                "patient": patientuuid,
+                "encounterType": encounter_type,
+                "encounterDatetime": current_date_time,
+                "location": patient_location,
+                "obs": [
+                    {
+                        "person": patientuuid,
+                        "obsDatetime": current_date_time_iso,
+                        "concept": Concepts.PATIENT_PROGRAM_ID.value
+                    }
+                ]
+
+            }
+        }
+    for key, value in data.items():
+        if key == "csrfmiddlewaretoken":
+            continue
+        if value:
+            form89['encounter']['obs'].append(
+                {
+                    "person": patientuuid,
+                    "obsDatetime": current_date_time_iso,
+                    "concept": key,
+                    "value": value if not cu.is_date(value) else cu.date_to_sql_format(value)
+                }
+            )
+    try:
+        print("===================================")
+        print(form89)
+        print("===================================")
+        status, _ = ru.post(req, 'mdrtb/form89', form89)
+        if status:
+            return True
+    except Exception as e:
+        raise Exception(str(e))
+
+
+def get_form89_by_uuid(req, uuid):
+    try:
+        status, response = ru.get(req, f'mdrtb/form89/{uuid}', {'v': 'full'})
+        if status:
+            return response
+        else:
+            return None
+    except Exception as e:
+        raise Exception(str(e))
+
+
+def remove_form89_duplicates(concepts, form_data):
+    clone_concepts = concepts.copy()
+    remove_duplicate_concepts(clone_concepts.get(
+        'circumstancesofdetection', []), form_data.get('circumstancesOfDetection', None))
+    remove_duplicate_concepts(clone_concepts.get(
+        'cmacplace', []), form_data.get('placeOfCommission', None))
+    remove_duplicate_concepts(clone_concepts.get(
+        'locationtype', []), form_data.get('locationType', None))
+    remove_duplicate_concepts(clone_concepts.get(
+        'methodofdetection', []), form_data.get('methodOfDetection', None))
+    remove_duplicate_concepts(clone_concepts.get(
+        'placeofdetection', []), form_data.get('placeOfDetection', None))
+    remove_duplicate_concepts(clone_concepts.get(
+        'populationcategory', []), form_data.get('populationCategory', None))
+    remove_duplicate_concepts(clone_concepts.get(
+        'prescribedtreatment', []), form_data.get('prescribedTreatment', None))
+    remove_duplicate_concepts(clone_concepts.get(
+        'profession', []), form_data.get('profession', None))
+    remove_duplicate_concepts(clone_concepts.get(
+        'siteoftbdisease', []), form_data.get('pulSite', None))
+    return clone_concepts

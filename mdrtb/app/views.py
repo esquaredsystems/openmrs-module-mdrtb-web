@@ -26,7 +26,10 @@ def check_if_session_alive(req):
 
 
 def index(req):
-    return render(req, 'app/tbregister/reportmockup.html')
+    context = {}
+    concepts = cache.get('concepts')
+    context['concepts'] = json.dumps(concepts)
+    return render(req, 'app/tbregister/reportmockup.html', context=context)
 
 
 def get_locations(req):
@@ -601,7 +604,7 @@ def form_89(req, uuid):
 
     if req.method == 'POST':
         try:
-            fu.create_update_form89(req, patientid, req.POST)
+            fu.create_update_form89(req, uuid, req.POST)
         except Exception as e:
             messages.error(req, str(e))
         finally:
@@ -618,13 +621,12 @@ def form_89(req, uuid):
             Concepts.PLACE_OF_DETECTION.value,
             Concepts.CIRCUMSTANCES_OF_DETECTION.value,
             Concepts.METHOD_OF_DETECTION.value,
-            Concepts.SITE_OF_EPTB.value,
+            Concepts.ANATOMICAL_SITE_OF_TB.value,
             Concepts.PRESCRIBED_TREATMENT.value,
             Concepts.PLACE_OF_CENTRAL_COMMISSION.value,
         ]
         concepts = fu.get_form_concepts(form89_concepts, req)
         context['concepts'] = concepts
-        context['jsonconcepts'] = json.dumps(concepts)
         return render(req, 'app/tbregister/dots/form89.html', context=context)
     except Exception as e:
         messages.error(req, str(e))
@@ -637,7 +639,7 @@ def edit_form_89(req, uuid, formid):
 
     if req.method == 'POST':
         try:
-            response = fu.create_update_form89(
+            fu.create_update_form89(
                 req, uuid, req.POST, formid=formid)
         except Exception as e:
             messages.error(req, str(e)),
@@ -648,28 +650,30 @@ def edit_form_89(req, uuid, formid):
         req.session['redirect_url'] = req.META.get('HTTP_REFERER', None)
 
         context = {'title': 'Edit Form 89', 'state': 'edit', 'uuid': uuid,
-                   'current_patient_program_flow': req.session['current_patient_program_flow']
-
+                   'current_patient_program_flow': req.session['current_patient_program_flow'],
+                   'identifiers': pu.get_patient_identifiers(req, uuid)
 
                    }
         form89_concepts = [
+            Concepts.LOCATION_TYPE.value,
             Concepts.PROFESSION.value,
             Concepts.POPULATION_CATEGORY.value,
             Concepts.PLACE_OF_DETECTION.value,
             Concepts.CIRCUMSTANCES_OF_DETECTION.value,
             Concepts.METHOD_OF_DETECTION.value,
-            Concepts.SITE_OF_EPTB.value,
+            Concepts.ANATOMICAL_SITE_OF_TB.value,
             Concepts.PRESCRIBED_TREATMENT.value,
             Concepts.PLACE_OF_CENTRAL_COMMISSION.value,
         ]
         form = fu.get_form89_by_uuid(req, formid)
-        concepts = fu.get_form_concepts(form89_concepts, req)
-        fu.remove_form89_duplicates(concepts, form)
+        concepts = fu.remove_form89_duplicates(
+            fu.get_form_concepts(form89_concepts, req), form)
         if form:
             context['form'] = form
             context['concepts'] = concepts
-            return render(req, 'app/tbregister/mdr/form89.html', context=context)
+            return render(req, 'app/tbregister/dots/form89.html', context=context)
     except Exception as e:
+        print(traceback.format_exc())
         messages.error(req, str(e))
         return redirect(req.session['redirect_url'])
 
