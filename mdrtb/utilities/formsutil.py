@@ -317,8 +317,11 @@ def create_update_adverse_event(req, patientuuid, data, formid=None):
         print("===================================")
         print(ae)
         print("===================================")
-        status, _ = ru.post(req, 'mdrtb/adverseevents', ae)
+        status, response = ru.post(req, 'mdrtb/adverseevents', ae)
         if status:
+            print("===================================RESPONSE")
+            print(response)
+            print("===================================RESPONSE")
             return True
     except Exception as e:
         raise Exception(str(e))

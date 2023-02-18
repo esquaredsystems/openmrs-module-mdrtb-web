@@ -57,21 +57,21 @@ def get(req, endpoint, parameters):
             url=BASE_URL+endpoint, headers=get_auth_headers(req), params=parameters)
         if response.status_code == 403:
             clear_session(req)
-            messages.error(req, 'Your session has expired')
-            raise Exception('Your session has expired')
+            raise Exception(mu.get_global_msgs(
+                'auth.session.expired', source='OpenMRS'))
         response.raise_for_status()
         return True, response.json()
     except requests.exceptions.HTTPError as httperr:
         print(httperr)
         raise Exception(
             "An error occured while processing your request. Please try again later")
+    except requests.exceptions.ConnectionError as connection_err:
+        print(connection_err)
+        raise Exception('Please check your internet connection and try again')
     except requests.exceptions.RequestException as err:
         print(err)
         raise Exception(
             'An error occured while processing your request. Please try again later')
-    except requests.exceptions.ConnectionError as connection_err:
-        print(connection_err)
-        raise Exception('Please check your internet connection and try again')
 
 
 def post(req, endpoint, data):

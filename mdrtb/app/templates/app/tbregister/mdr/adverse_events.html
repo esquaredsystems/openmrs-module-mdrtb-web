@@ -1009,7 +1009,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.typeOfEvent'|get_message:request.session.locale}}</label>
-            <select name="1051a25f-5609-40d1-9801-10c3b6fd74ab" class="input form-control">
+            <select id="eventType" name="1051a25f-5609-40d1-9801-10c3b6fd74ab" class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.typeOfEvent.uuid}}">{{form.typeOfEvent.display}}</option>
@@ -1026,7 +1026,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.typeOfSAE'|get_message:request.session.locale}}</label>
-            <select name="e31fb77b-3623-4c65-ac86-760a2248fc1b" class="input form-control">
+            <select disabled id="saeType" name="e31fb77b-3623-4c65-ac86-760a2248fc1b" class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.typeOfSAE.uuid}}">{{form.typeOfSAE.display}}</option>
@@ -1044,7 +1044,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.typeOfSpecialEvent'|get_message:request.session.locale}}</label>
-            <select name="aa9cb2d0-a6d6-4fb7-bb02-9298235128b2" class="input form-control">
+            <select disabled id="specialType" name="aa9cb2d0-a6d6-4fb7-bb02-9298235128b2" class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.typeOfSpecialEvent.uuid}}">
@@ -1322,7 +1322,7 @@
 
               <option selected value="">Select</option>
               {% endif %}
-              {% for concept in concepts.actiontakeninresponsetotheevent %}
+              {% for concept in concepts.adverseeventaction4 %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
@@ -1348,7 +1348,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.actionOutcome'|get_message:request.session.locale}}</label>
-            <select name="adbed9a8-29a6-4adb-8a5b-60619fa02c19" class="input form-control">
+            <select id="actionOutcome" name="adbed9a8-29a6-4adb-8a5b-60619fa02c19" class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.actionOutcome.uuid}}">{{form.actionOutcome.display}}</option>
@@ -1367,8 +1367,8 @@
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.outcomeDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.outcomeDate | iso_to_normal_date}" name="2e418adc-f3f2-4d49-bc4d-dcbe82dc5a17"
-              type="date" class="input form-control">
+            <input id="outcomeDate" value="{{form.outcomeDate | iso_to_normal_date}"
+              name="2e418adc-f3f2-4d49-bc4d-dcbe82dc5a17" type="date" class="input form-control">
             {% else %}
 
             <input name="2e418adc-f3f2-4d49-bc4d-dcbe82dc5a17" type="date" class="input form-control">
@@ -1443,6 +1443,29 @@
 
   <script>
     console.log(JSON.parse("{{jsonconcepts|escapejs}}"))
+    $('#eventType').change((e) => {
+      let eventType = e.target.value
+      if (eventType === "937e3189-ebcb-4deb-a25b-836ef83b2727") {
+        $('#saeType').prop('disabled', false)
+        $('#specialType').prop('disabled', true)
+      } else if (eventType === "afd112d1-e7e8-4e21-81fa-f00490b4e0ef") {
+        console.log('DISABLE SAE')
+        $('#specialType').prop('disabled', false)
+        $('#saeType').prop('disabled', true)
+      }
+    })
+
+    $('#actionOutcome').change((e) => {
+      let outcome = e.target.value
+      if (outcome === "97db90d6-c5f9-46b5-bae0-dfe8368673ae") {
+        $('#outcomeDate').prop('disabled', true)
+      } else if (outcome === "76fe4243-bac0-4a7b-8799-acdfe6affa13") {
+        $('#outcomeDate').prop('disabled', true)
+      } else {
+        $('#outcomeDate').prop('disabled', false)
+      }
+    })
+
     let state = '{{state | escapejs}}'
     if (state === 'edit') {
       $('input').prop('disabled', true).prop('required', false)

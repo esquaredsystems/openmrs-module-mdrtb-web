@@ -19,16 +19,14 @@ from resources.enums.constants import Constants
 # start memcache if u havent
 
 def check_if_session_alive(req):
-    if 'session_id' not in req.session:
+    session_id = req.session.get('session_id')
+    if not session_id:
         return False
-    else:
-        return True
+    return True
 
 
 def index(req):
     context = {}
-    concepts = cache.get('concepts')
-    context['concepts'] = json.dumps(concepts)
     return render(req, 'app/tbregister/reportmockup.html', context=context)
 
 
@@ -80,25 +78,26 @@ def search_patients_view(req):
     if not check_if_session_alive(req):
         return redirect('login')
     context = {'title': "Search Patients", 'add_patient_privilege': False}
-    keys_to_delete = ['current_patient',
-                      'current_location', 'current_date_enrolled']
-    for key in keys_to_delete:
-        if key in req.session:
-            del req.session[key]
     try:
+        if 'current_patient_program_flow' in req.session:
+            del req.session['current_patient_program_flow']
         minSearchCharacters = mu.get_global_properties(
             req, 'minSearchCharacters')
         context['minSearchCharacters'] = minSearchCharacters
-    except Exception as e:
-        messages.error(req, 'Error finding global property')
-        context['minSearchCharacters'] = 2
-    finally:
         # Check if user is admin grant all privileges
         if req.session['logged_user']['systemId'] == 'admin':
             context['add_patient_privilege'] = True
         # Check if user has the privilege to Add patients
         elif mu.check_if_user_has_privilege(Privileges.ADD_PATIENTS, req.session['logged_user']['privileges']):
             context['add_patient_privilege'] = True
+        return render(req, 'app/tbregister/search_patients.html', context=context)
+    except Exception as e:
+        messages.error(req, str(e))
+        expired_session = mu.get_global_msgs(
+            'auth.session.expired', source='OpenMRS')
+        if str(e) == expired_session:
+            return redirect('login')
+        context['minSearchCharacters'] = 2
         return render(req, 'app/tbregister/search_patients.html', context=context)
 
 
@@ -136,19 +135,17 @@ def enrolled_programs(req, uuid):
     }
 
     try:
-
+        req.session['redirect_url'] = req.META['HTTP_REFERER']
         programs = pu.get_enrolled_programs_by_patient(req, uuid)
         patient = pu.get_patient(req, uuid)
         if patient:
             context['patient'] = patient
         if programs:
             context['programs'] = programs
-        # req.session['redirect_url'] = req.META['HTTP_REFERER']
-        print(req.META.get('HTTP_REFERER'))
         return render(req, 'app/tbregister/enrolled_programs.html', context=context)
     except Exception as e:
         messages.error(req, str(e))
-        return redirect('searchPatientsView')
+        return redirect(req.session['redirect_url'])
 
 
 def enroll_in_program(req, uuid, mdrtb=None):
@@ -241,6 +238,7 @@ def delete_program(req, uuid, programid):
 
 
 def patient_dashboard(req, uuid, mdrtb=None):
+
     if not check_if_session_alive(req):
         return redirect('login')
     req.session['redirect_url'] = req.META['HTTP_REFERER']
@@ -588,7 +586,9 @@ def manage_regimens(req):
     return render(req, 'app/tbregister/mdr/manage_regimens.html', context=context)
 
 
-def regimen_form(req):
+def regimen_form(req, patientid):
+    if not check_if_session_alive(req):
+        return redirect('login')
     concept_ids = [Concepts.PLACE_OF_CENTRAL_COMMISSION.value, Concepts.RESISTANCE_TYPE.value,
                    Concepts.FUNDING_SOURCE.value, Concepts.SLD_REGIMEN_TYPE.value]
     context = {
@@ -596,6 +596,21 @@ def regimen_form(req):
         "concepts": fu.get_form_concepts(concept_ids, req)
     }
     return render(req, 'app/tbregister/mdr/regimen.html', context=context)
+
+
+def edit_regimen_form(req, patientid, formid):
+    concept_ids = [Concepts.PLACE_OF_CENTRAL_COMMISSION.value, Concepts.RESISTANCE_TYPE.value,
+                   Concepts.FUNDING_SOURCE.value, Concepts.SLD_REGIMEN_TYPE.value]
+    context = {
+        "title": "Regimen Form",
+        "concepts": fu.get_form_concepts(concept_ids, req),
+        "patientid": patientid
+    }
+    return render(req, 'app/tbregister/mdr/regimen.html', context=context)
+
+
+def delete_regimen_form(req, formid):
+    pass
 
 
 def form_89(req, uuid):

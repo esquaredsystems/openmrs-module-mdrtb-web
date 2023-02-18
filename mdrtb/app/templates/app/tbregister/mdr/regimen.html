@@ -20,51 +20,47 @@
             <span class="font-bold">
               {{'mdrtb.oblast'|get_message:request.session.locale}}:
             </span>
-            <span class="tb03-form-label"> Dushanbe </span>
+            <span class="tb03-form-label w-full"> Dushanbe </span>
           </div>
           <div class="space-x-3">
             <span class="font-bold">
               {{'mdrtb.district'|get_message:request.session.locale}}:
             </span>
-            <span class="tb03-form-label"> Cyao </span>
+            <span class="tb03-form-label w-full"> Cyao </span>
           </div>
           <div class="space-x-3">
             <span class="font-bold">
               {{'mdrtb.facility'|get_message:request.session.locale}}:
             </span>
-            <span class="tb03-form-label"> MCW(01) </span>
+            <span class="tb03-form-label w-full"> MCW(01) </span>
           </div>
         </div>
-       
+
       </div>
       <div class="p-4 flex flex-col justify-center space-y-4">
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.date'|get_message:request.session.locale}}</label>
-            <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
-            </select>
+            <label class="tb03-form-label w-full" for="date">{{'mdrtb.date'|get_message:request.session.locale}}</label>
+            <input type="date" class="input form-control">
           </div>
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.pv.cmacDate'|get_message:request.session.locale}}</label>
-            <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
-            </select>
+            <label class="tb03-form-label w-full"
+              for="cmacDate">{{'mdrtb.pv.cmacDate'|get_message:request.session.locale}}</label>
+            <input type="date" class="input form-control">
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.form89.cmacNumber'|get_message:request.session.locale}}</label>
-            <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
-            </select>
+            <label class="tb03-form-label w-full"
+              for="cmacNumber">{{'mdrtb.form89.cmacNumber'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control">
+
           </div>
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.form89.placeOfCommission'|get_message:request.session.locale}}</label>
-            <select class="input">
+            <label class="tb03-form-label w-full"
+              for="placeOfCommission">{{'mdrtb.form89.placeOfCommission'|get_message:request.session.locale}}</label>
+            <select class="input form-control">
+              <option selected value="">Select</option>
               {% for concept in concepts.cmacplace %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
@@ -73,16 +69,20 @@
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.resistanceType'|get_message:request.session.locale}}</label>
-            <select class="input">
+            <label class="tb03-form-label w-full"
+              for="resistanceType">{{'mdrtb.resistanceType'|get_message:request.session.locale}}</label>
+            <select class="input form-control">
+              <option selected value="">Select</option>
+
               {% for concept in concepts.resistancetype %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.pv.fundingSource'|get_message:request.session.locale}}</label>
-            <select class="input">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.fundingSource'|get_message:request.session.locale}}</label>
+            <select class="input form-control">
               {% for concept in concepts.fundingsource %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
@@ -91,181 +91,192 @@
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.pv.sldRegimenType'|get_message:request.session.locale}}</label>
-            <select class="input">
+            <label class="tb03-form-label w-full"
+              for="sldRegimenType">{{'mdrtb.pv.sldRegimenType'|get_message:request.session.locale}}</label>
+            <select class="input form-control">
+              <option selected value="">Select</option>
+
               {% for concept in concepts.sldregimentype %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.tb03.hivTestDate'|get_message:request.session.locale}}</label>
-            <input type="date" class="input" />
+            <label class="tb03-form-label w-full"
+              for="hivTestDate">{{'mdrtb.tb03.hivTestDate'|get_message:request.session.locale}}</label>
+            <input type="date" class="input form-control" />
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.pv.otherRegimen'|get_message:request.session.locale}}</label>
-            <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
-            </select>
+            <label class="tb03-form-label w-full"
+              for="otherRegimen">{{'mdrtb.pv.otherRegimen'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control">
+
           </div>
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.pv.cmDose'|get_message:request.session.locale}}</label>
-            <input type="date" class="input" />
+            <label class="tb03-form-label w-full"
+              for="cmDose">{{'mdrtb.pv.cmDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control" />
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.pv.amDose'|get_message:request.session.locale}}</label>
-            <input type="date" class="input" />
+            <label class="tb03-form-label w-full"
+              for="amDose">{{'mdrtb.pv.amDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control" />
           </div>
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.pv.mfxDose'|get_message:request.session.locale}}</label>
-            <input type="date" class="input" />
+            <label class="tb03-form-label w-full"
+              for="mfxDose">{{'mdrtb.pv.mfxDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control" />
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.pv.lfxDose'|get_message:request.session.locale}}</label>
-            <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
-            </select>
+            <label class="tb03-form-label w-full"
+              for="lfxDose">{{'mdrtb.pv.lfxDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control">
+
           </div>
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.pv.ptoDose'|get_message:request.session.locale}}</label>
-            <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
-            </select>
+            <label class="tb03-form-label w-full"
+              for="ptoDose">{{'mdrtb.pv.ptoDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control">
+
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.pv.csDose'|get_message:request.session.locale}}</label>
-            <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
-            </select>
+            <label class="tb03-form-label w-full"
+              for="csDose">{{'mdrtb.pv.csDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control">
+
           </div>
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.pv.pasDose'|get_message:request.session.locale}}</label>
-            <select class="input">
-              <option value="">Tajikistan</option>
-              <option value="">Other</option>
-            </select>
+            <label class="tb03-form-label w-full"
+              for="pasDose">{{'mdrtb.pv.pasDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control">
+
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.pv.zDose'|get_message:request.session.locale}}</label>
-            <input type="date" class="input" />
+            <label class="tb03-form-label w-full"
+              for="zDose">{{'mdrtb.pv.zDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control" />
           </div>
           <div class="input-container">
-            <label class="tb03-form-label" for="name">{{'mdrtb.pv.eDose'|get_message:request.session.locale}}</label>
-            <input type="date" class="input" />
+            <label class="tb03-form-label w-full"
+              for="eDose">{{'mdrtb.pv.eDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control" />
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
-            <div class="input-container">
-              <label class="tb03-form-label" for="name">{{'mdrtb.pv.zDose'|get_message:request.session.locale}}</label>
-              <input type="date" class="input" />
-            </div>
-            <div class="input-container">
-              <label class="tb03-form-label" for="name">{{'mdrtb.pv.eDose'|get_message:request.session.locale}}</label>
-              <input type="date" class="input" />
-            </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="zDose">{{'mdrtb.pv.zDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control" />
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="eDose">{{'mdrtb.pv.eDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control" />
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="hDose">{{'mdrtb.pv.hDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control" />
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="lzdDose">{{'mdrtb.pv.lzdDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control" />
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="cfzDose">{{'mdrtb.pv.cfzDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control" />
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="bdqDose">{{'mdrtb.pv.bdqDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control" />
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="dlmDose">{{'mdrtb.pv.dlmDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control" />
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="impDose">{{'mdrtb.pv.impDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control" />
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="amxDose">{{'mdrtb.pv.amxDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control" />
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="hrDose">{{'mdrtb.pv.hrDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control" />
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="hrzeDose">{{'mdrtb.pv.hrzeDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control" />
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="sDose">{{'mdrtb.pv.sDose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control" />
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="other">{{'mdrtb.pv.otherDrug1Dose'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control" />
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="otherDrug1Dose">{{'mdrtb.pv.otherDrug1Name'|get_message:request.session.locale}}</label>
+            <input type="text" class="input form-control" />
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label style="width: 31%;" class="tb03-form-label"
+              for="comments">{{'mdrtb.pv.comments'|get_message:request.session.locale}}</label>
+            <textarea class="input form-control" cols="10" rows="5"></textarea>
           </div>
 
-          <div class="flex items-center justify-between space-x-6">
-            <div class="input-container">
-              <label class="tb03-form-label" for="name">{{'mdrtb.pv.hDose'|get_message:request.session.locale}}</label>
-              <input type="date" class="input" />
-            </div>
-            <div class="input-container">
-              <label class="tb03-form-label" for="name">{{'mdrtb.pv.lzdDose'|get_message:request.session.locale}}</label>
-              <input type="date" class="input" />
-            </div>
-          </div>
-          <div class="flex items-center justify-between space-x-6">
-            <div class="input-container">
-              <label class="tb03-form-label" for="name">{{'mdrtb.pv.cfzDose'|get_message:request.session.locale}}</label>
-              <input type="date" class="input" />
-            </div>
-            <div class="input-container">
-              <label class="tb03-form-label" for="name">{{'mdrtb.pv.bdqDose'|get_message:request.session.locale}}</label>
-              <input type="date" class="input" />
-            </div>
-          </div>
-          <div class="flex items-center justify-between space-x-6">
-            <div class="input-container">
-              <label class="tb03-form-label" for="name">{{'mdrtb.pv.dlmDose'|get_message:request.session.locale}}</label>
-              <input type="date" class="input" />
-            </div>
-            <div class="input-container">
-              <label class="tb03-form-label" for="name">{{'mdrtb.pv.impDose'|get_message:request.session.locale}}</label>
-              <input type="date" class="input" />
-            </div>
-          </div>
-          <div class="flex items-center justify-between space-x-6">
-            <div class="input-container">
-              <label class="tb03-form-label" for="name">{{'mdrtb.pv.amxDose'|get_message:request.session.locale}}</label>
-              <input type="date" class="input" />
-            </div>
-            <div class="input-container">
-              <label class="tb03-form-label" for="name">{{'mdrtb.pv.hrDose'|get_message:request.session.locale}}</label>
-              <input type="date" class="input" />
-            </div>
-          </div>
-          <div class="flex items-center justify-between space-x-6">
-            <div class="input-container">
-              <label class="tb03-form-label" for="name">{{'mdrtb.pv.hrzeDose'|get_message:request.session.locale}}</label>
-              <input type="date" class="input" />
-            </div>
-            <div class="input-container">
-              <label class="tb03-form-label" for="name">{{'mdrtb.pv.sDose'|get_message:request.session.locale}}</label>
-              <input type="date" class="input" />
-            </div>
-          </div>
-          <div class="flex items-center justify-between space-x-6">
-            <div class="input-container">
-              <label class="tb03-form-label" for="name">{{'mdrtb.pv.other'|get_message:request.session.locale}}</label>
-              <input type="date" class="input" />
-            </div>
-            <div class="input-container">
-              <label class="tb03-form-label" for="name">{{'mdrtb.pv.otherDrug1Dose'|get_message:request.session.locale}}</label>
-              <input type="date" class="input" />
-            </div>
-          </div>
-          <div class="flex items-center justify-between space-x-6">
-            <div class="input-container">
-              <label class="tb03-form-label" for="name">{{'mdrtb.pv.otherDrug1Name'|get_message:request.session.locale}}</label>
-              <input type="date" class="input" />
-            </div>
-            
-          </div>
-          <div class="flex items-center justify-between space-x-6">
-            <div class="input-container">
-              <label class="tb03-form-label" for="name">{{'mdrtb.pv.comments'|get_message:request.session.locale}}</label>
-              <textarea class="input" cols="10" rows="5"></textarea>
-            </div>
-          </div>
-          <div class="flex-center space-x-4 mt-4">
-            <button class="button-primary w-1/5">
-              Save
+        </div>
+        <div class="flex-center space-x-4 mt-4">
+          <button class="button-primary w-1/5">
+            Save
+          </button>
+          <a href="javascript:history.go(-1)" class="cancel-button">
+            Cancel
             </button>
-            <a 
-            href="javascript:history.go(-1)"
-              class="cancel-button">
-              Cancel
-            </button>
-          </div>
-          
+        </div>
+
       </div>
     </div>
-    
+
   </form>
 </div>
 
