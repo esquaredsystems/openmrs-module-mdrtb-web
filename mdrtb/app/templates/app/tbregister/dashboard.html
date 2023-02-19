@@ -275,6 +275,16 @@
         {{'mdrtb.add'|get_message:request.session.locale}} {{'mdrtb.new'|get_message:request.session.locale}}
       </a>
     </div>
+    <div class="ml-4 grid grid-cols-2 gap-3">
+      {% for regimen in forms.regimens %}
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.pv.regimen'|get_message:request.session.locale}}: </span><a
+          class="tb03-form-label underline" href="{% url 'editregimen' patientid=uuid formid=regimen.uuid %}">
+          {{regimen.encounterDatetime | iso_to_normal_date}} at
+          {{regimen.location.name}}</a>
+      </div>
+      {% endfor %}
+    </div>
 
   </div>
   <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4 mb-6">
@@ -287,7 +297,7 @@
         </a>
       </div>
       <div class="ml-4 grid grid-cols-2 gap-3">
-        {% for ae in forms.ae %}
+        {% for ae in forms.aes %}
         <div class="space-x-3">
           <span class="font-bold">{{'mdrtb.pv.aeForm'|get_message:request.session.locale}}: </span><a
             class="tb03-form-label underline" href="{% url 'editadverseevents' patientid=uuid formid=ae.uuid %}">

@@ -56,9 +56,10 @@ def get(req, endpoint, parameters):
         response = requests.get(
             url=BASE_URL+endpoint, headers=get_auth_headers(req), params=parameters)
         if response.status_code == 403:
+            redirect_url = req.session['redirect_url']
             clear_session(req)
             raise Exception(mu.get_global_msgs(
-                'auth.session.expired', source='OpenMRS'))
+                'auth.session.expired', source='OpenMRS'), redirect_url)
         response.raise_for_status()
         return True, response.json()
     except requests.exceptions.HTTPError as httperr:

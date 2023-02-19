@@ -213,7 +213,8 @@ def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
         if isMdrtb:
             forms = {
                 'tb03us': fu.get_encounters_by_patient_and_type(req, patientuuid, EncounterType.TB03u_MDR.value),
-                'ae': fu.get_encounters_by_patient_and_type(req, patientuuid, EncounterType.ADVERSE_EVENT.value),
+                'aes': fu.get_encounters_by_patient_and_type(req, patientuuid, EncounterType.ADVERSE_EVENT.value),
+                'regimens': fu.get_encounters_by_patient_and_type(req, patientuuid, EncounterType.PV_REGIMEN.value)
 
             }
         else:

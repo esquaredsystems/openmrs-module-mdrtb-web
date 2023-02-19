@@ -289,7 +289,7 @@ def create_update_adverse_event(req, patientuuid, data, formid=None):
             "encounter": {
                 "patient": patientuuid,
                 "encounterType": encounter_type,
-                "encounterDatetime": current_date_time,
+                "encounterDatetime": data.get('encounterDateTime', current_date_time),
                 "location": patient_location,
                 "obs": [
                     {
@@ -303,6 +303,8 @@ def create_update_adverse_event(req, patientuuid, data, formid=None):
         }
     for key, value in data.items():
         if key == "csrfmiddlewaretoken":
+            continue
+        if key == "encounterDateTime":
             continue
         if value:
             ae['encounter']['obs'].append(
@@ -337,47 +339,47 @@ def get_ae_by_uuid(req, uuid):
 
 
 def remove_ae_duplicates(concepts, form_data):
-    remove_duplicate_concepts(concepts.get(
+    clone_concepts = concepts.copy()
+    remove_duplicate_concepts(clone_concepts.get(
         'adverseevent', []), form_data.get('advereEvent', None))
-    remove_duplicate_concepts(concepts.get(
+    remove_duplicate_concepts(clone_concepts.get(
         'adverseeventaction', []), form_data.get('actionTaken', None))
-    remove_duplicate_concepts(concepts.get(
+    remove_duplicate_concepts(clone_concepts.get(
         'adverseeventaction2', []), form_data.get('actionTaken2', None))
-
-    remove_duplicate_concepts(concepts.get(
+    remove_duplicate_concepts(clone_concepts.get(
         'adverseeventaction3', []), form_data.get('actionTaken3', None))
-    remove_duplicate_concepts(concepts.get(
+    remove_duplicate_concepts(clone_concepts.get(
         'adverseeventaction5', []), form_data.get('actionTaken5', None))
-    remove_duplicate_concepts(concepts.get(
+    remove_duplicate_concepts(clone_concepts.get(
         'actiontakeninresponsetotheevent', []), form_data.get('actionTaken4', None))
-    remove_duplicate_concepts(concepts.get(
+    remove_duplicate_concepts(clone_concepts.get(
         'adverseeventoutcome', []), form_data.get('actionOutcome', None))
-    remove_duplicate_concepts(concepts.get(
+    remove_duplicate_concepts(clone_concepts.get(
         'adverseeventtype', []), form_data.get('typeOfEvent', None))
-    remove_duplicate_concepts(concepts.get(
+    remove_duplicate_concepts(clone_concepts.get(
         'causalityassessmentresult1', []), form_data.get('casualityAssessmentResult', None))
-    remove_duplicate_concepts(concepts.get(
+    remove_duplicate_concepts(clone_concepts.get(
         'causalityassessmentresult2', []), form_data.get('casualityAssessmentResult2', None))
-    remove_duplicate_concepts(concepts.get(
+    remove_duplicate_concepts(clone_concepts.get(
         'causalityassessmentresult3', []), form_data.get('casualityAssessmentResult3', None))
-    remove_duplicate_concepts(concepts.get(
+    remove_duplicate_concepts(clone_concepts.get(
         'causalitydrug1', []), form_data.get('casualityDrug', None))
-    remove_duplicate_concepts(concepts.get(
+    remove_duplicate_concepts(clone_concepts.get(
         'causalitydrug2', []), form_data.get('casualityDrug2', None))
-    remove_duplicate_concepts(concepts.get(
+    remove_duplicate_concepts(clone_concepts.get(
         'causalitydrug3', []), form_data.get('casualityDrug3', None))
-    remove_duplicate_concepts(concepts.get(
+    remove_duplicate_concepts(clone_concepts.get(
         'drugrechallenge', []), form_data.get('drugRechallenge', None))
-    remove_duplicate_concepts(concepts.get(
+    remove_duplicate_concepts(clone_concepts.get(
         'meddracode', []), form_data.get('meddraCode', None))
-    remove_duplicate_concepts(concepts.get(
+    remove_duplicate_concepts(clone_concepts.get(
         'saetype', []), form_data.get('typeOfSAE', None))
-    remove_duplicate_concepts(concepts.get(
+    remove_duplicate_concepts(clone_concepts.get(
         'specialinteresteventtype', []), form_data.get('typeOfSpecialEvent', None))
+    return clone_concepts
 
 
 def create_update_form89(req, patientuuid, data, formid=None):
-    print(formid)
     patient_program_uuid = req.session['current_patient_program_flow']['current_program']['uuid']
     encounter_type = EncounterType.ADVERSE_EVENT.value
     current_date_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -433,9 +435,9 @@ def create_update_form89(req, patientuuid, data, formid=None):
                 }
             )
     try:
-        print("===================================")
-        print(form89)
-        print("===================================")
+        # print("===================================")
+        # print(form89)
+        # print("===================================")
         status, _ = ru.post(req, 'mdrtb/form89', form89)
         if status:
             return True
@@ -474,4 +476,101 @@ def remove_form89_duplicates(concepts, form_data):
         'profession', []), form_data.get('profession', None))
     remove_duplicate_concepts(clone_concepts.get(
         'siteoftbdisease', []), form_data.get('pulSite', None))
+    return clone_concepts
+
+
+def create_update_regimen_form(req, patientuuid, data, formid=None):
+    patient_program_uuid = req.session['current_patient_program_flow']['current_program']['uuid']
+    encounter_type = EncounterType.PV_REGIMEN.value
+    current_date_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    current_date_time_iso = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+    patient_location = req.session['current_patient_program_flow']['current_program']['location']['uuid']
+    if formid:
+        try:
+            response = mu.get_encounter_by_uuid(req, formid)
+            if response:
+                regimen = {
+                    "patientProgramUuid": patient_program_uuid,
+                    "encounter": {
+                        "uuid": response['uuid'],
+                        "obs": [
+                            {
+                                "person": patientuuid,
+                                "obsDatetime": current_date_time_iso,
+                                "concept": Concepts.PATIENT_PROGRAM_ID.value
+                            }
+                        ]
+                    }
+                }
+        except Exception as e:
+            raise Exception(str(e))
+    else:
+        regimen = {
+            "patientProgramUuid": patient_program_uuid,
+            "encounter": {
+                "patient": patientuuid,
+                "encounterType": encounter_type,
+                "encounterDatetime": data.get('encounterDateTime', current_date_time),
+                "location": patient_location,
+                "obs": [
+                    {
+                        "person": patientuuid,
+                        "obsDatetime": current_date_time_iso,
+                        "concept": Concepts.PATIENT_PROGRAM_ID.value
+                    }
+                ]
+
+            }
+
+        }
+    for key, value in data.items():
+        if key == "csrfmiddlewaretoken":
+            continue
+        if key == "encounterDateTime":
+            continue
+        if value:
+            regimen['encounter']['obs'].append(
+                {
+                    "person": patientuuid,
+                    "obsDatetime": current_date_time_iso,
+                    "concept": key,
+                    "value": value if not cu.is_date(value) else cu.date_to_sql_format(value)
+                }
+            )
+    try:
+        print("===================================")
+        print(regimen)
+        print("===================================")
+        status, _ = ru.post(req, 'mdrtb/regimen', regimen)
+        if status:
+            return True
+    except Exception as e:
+        raise Exception(str(e))
+
+
+def get_regimen_by_uuid(req, uuid):
+    try:
+        status, response = ru.get(req, f'mdrtb/regimen/{uuid}', {'v': 'full'})
+        if status:
+            return response
+        else:
+            return None
+    except Exception as e:
+        raise Exception(str(e))
+
+
+def remove_regimen_duplicates(concepts, form_data):
+    clone_concepts = concepts.copy()
+    remove_duplicate_concepts(clone_concepts.get(
+        'fundingsource', []), form_data.get('fundingSource', None))
+    remove_duplicate_concepts(clone_concepts.get(
+        'resistancetype', []), form_data.get('resistanceType', None))
+    remove_duplicate_concepts(clone_concepts.get(
+        'sldregimentype', []), form_data.get('sldRegimen', None))
+
+    # CMAC PLACE MISSING FROM FORM
+
+    # remove_duplicate_concepts(clone_concepts.get(
+    #     'cmacplace', []), form_data.get('MISSING', None))
+
     return clone_concepts

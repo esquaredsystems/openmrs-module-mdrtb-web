@@ -25,6 +25,13 @@ def check_if_session_alive(req):
     return True
 
 
+def get_redirect_url_from_exception(exception):
+    if exception == mu.get_global_msgs('auth.session.expired', source='OpenMRS'):
+        redirect_url = exception.args[1]
+        return True, redirect_url
+    return False, None
+
+
 def index(req):
     context = {}
     return render(req, 'app/tbregister/reportmockup.html', context=context)
@@ -51,10 +58,8 @@ def login(req):
         password = req.POST['password']
         response = ru.initiate_session(req, username, password)
         if response:
-            if 'redirect_url' in req.session:
-                return redirect(req.session['redirect_url'])
-            else:
-                return redirect('searchPatientsView')
+            req.session['redirect_url'] = req.META.get('HTTP_REFERER')
+            return redirect(req.session('redirect_url', 'searchPatientsView'))
         else:
             return render(req, 'app/tbregister/login.html', context=context)
     else:
@@ -93,10 +98,9 @@ def search_patients_view(req):
         return render(req, 'app/tbregister/search_patients.html', context=context)
     except Exception as e:
         messages.error(req, str(e))
-        expired_session = mu.get_global_msgs(
-            'auth.session.expired', source='OpenMRS')
-        if str(e) == expired_session:
-            return redirect('login')
+        is_expired, redirect_url = get_redirect_url_from_exception(e)
+        if is_expired:
+            return redirect(redirect_url)
         context['minSearchCharacters'] = 2
         return render(req, 'app/tbregister/search_patients.html', context=context)
 
@@ -551,9 +555,10 @@ def edit_adverse_events_form(req, patientid, formid):
             Concepts.MEDDRA_CODE.value,
             Concepts.DRUG_RECHALLENGE.value
         ]
-        concepts = fu.get_form_concepts(adverse_event_concepts, req)
         form = fu.get_ae_by_uuid(req, formid)
-        fu.remove_ae_duplicates(concepts, form)
+        concepts = fu.remove_ae_duplicates(
+            fu.get_form_concepts(adverse_event_concepts, req), form)
+
         if form:
             context['form'] = form
             context['concepts'] = concepts
@@ -589,24 +594,70 @@ def manage_regimens(req):
 def regimen_form(req, patientid):
     if not check_if_session_alive(req):
         return redirect('login')
-    concept_ids = [Concepts.PLACE_OF_CENTRAL_COMMISSION.value, Concepts.RESISTANCE_TYPE.value,
-                   Concepts.FUNDING_SOURCE.value, Concepts.SLD_REGIMEN_TYPE.value]
-    context = {
-        "title": "Regimen Form",
-        "concepts": fu.get_form_concepts(concept_ids, req)
-    }
-    return render(req, 'app/tbregister/mdr/regimen.html', context=context)
+
+    if req.method == 'POST':
+        try:
+            response = fu.create_update_regimen_form(req, patientid, req.POST)
+            if response:
+                messages.success(req, 'Form created successfully')
+        except Exception as e:
+            messages.error(req, str(e))
+        finally:
+            return redirect(req.session['redirect_url'])
+
+    try:
+        req.session['redirect_url'] = req.META['HTTP_REFERER']
+        concept_ids = [Concepts.PLACE_OF_CENTRAL_COMMISSION.value, Concepts.RESISTANCE_TYPE.value,
+                       Concepts.FUNDING_SOURCE.value, Concepts.SLD_REGIMEN_TYPE.value]
+        context = {
+            "title": "Regimen Form",
+            "concepts": fu.get_form_concepts(concept_ids, req),
+            'current_patient_program_flow': req.session['current_patient_program_flow']
+        }
+        return render(req, 'app/tbregister/mdr/regimen.html', context=context)
+    except Exception as e:
+        messages.error(req, str(e))
+        return redirect(req.session['redirect_url'])
 
 
 def edit_regimen_form(req, patientid, formid):
-    concept_ids = [Concepts.PLACE_OF_CENTRAL_COMMISSION.value, Concepts.RESISTANCE_TYPE.value,
-                   Concepts.FUNDING_SOURCE.value, Concepts.SLD_REGIMEN_TYPE.value]
-    context = {
-        "title": "Regimen Form",
-        "concepts": fu.get_form_concepts(concept_ids, req),
-        "patientid": patientid
-    }
-    return render(req, 'app/tbregister/mdr/regimen.html', context=context)
+    if not check_if_session_alive(req):
+        return redirect('login')
+
+    if req.method == 'POST':
+        try:
+            response = fu.create_update_regimen_form(
+                req, patientid, req.POST, formid=formid)
+            if response:
+                messages.success(req, 'Form created successfully')
+        except Exception as e:
+            messages.error(req, str(e))
+        finally:
+            return redirect(req.session['redirect_url'])
+
+    try:
+        req.session['redirect_url'] = req.META['HTTP_REFERER']
+        concept_ids = [Concepts.PLACE_OF_CENTRAL_COMMISSION.value, Concepts.RESISTANCE_TYPE.value,
+                       Concepts.FUNDING_SOURCE.value, Concepts.SLD_REGIMEN_TYPE.value]
+        form = fu.get_regimen_by_uuid(req, formid)
+        context = {
+            "title": "Regimen Form",
+            "concepts": fu.remove_regimen_duplicates(fu.get_form_concepts(concept_ids, req), form),
+            'state': "edit",
+            'current_patient_program_flow': req.session['current_patient_program_flow']
+        }
+        if form:
+            context['form'] = form
+        else:
+            raise Exception("Regimen form not found")
+
+        return render(req, 'app/tbregister/mdr/regimen.html', context=context)
+    except Exception as e:
+        messages.error(req, str(e))
+        is_expired, redirect_url = get_redirect_url_from_exception(e)
+        if is_expired:
+            return redirect(redirect_url)
+        return redirect(req.session.get('redirect_url'))
 
 
 def delete_regimen_form(req, formid):
