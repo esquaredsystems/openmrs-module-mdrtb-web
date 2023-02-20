@@ -10,37 +10,63 @@
 
 
 <div class="m-16">
+  {% if state == 'edit' %}
+  <div id="form-info" class="flex-center space-x-4">
+    <h1 class="text-[#2D9CDB] text-3xl font-bold">
+      {{'mdrtb.edit'|get_message:request.session.locale}}
+      {{'mdrtb.drdt'|get_message:request.session.locale}}
+    </h1>
+    <button type="button" id="editbtn">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+      </svg>
+
+    </button>
+    <button hidden type="button" id="canceleditbtn" class="cancel-button">Cancel</button>
+    <a href="{% url 'deletedrugresistanse' formid=form.uuid %}" type="button" id="deletetb03">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+      </svg>
+    </a>
+
+
+  </div>
+  {% else %}
   <h1 class="text-[#2D9CDB] text-3xl font-bold">
     {{'mdrtb.drdt'|get_message:request.session.locale}}
   </h1>
-  <form action="{% url 'dotsEnroll' %}" method="post" class="flex flex-col">
+  {% endif %}
+  <form
+    action="{% if state == 'edit' %}{% url 'editdrugresistanse' patientid=patient_id formid=form.uuid %}{% else %}{% url 'drugresistanse' patientid=patient_id %}{% endif %}"
+    method="post" class="flex flex-col">
     {% csrf_token %}
 
     <div class="p-4 flex flex-col justify-center space-y-4">
       <div class="input-container">
-        <label class="font-bold text-[#9E9E9E] w-2/5" for=""
-          >{{'mdrtb.date'|get_message:request.session.locale}}</label
-        >
-        <input
-          class="input w-3/5"
-          type="date"
-          name="enrollmentdate"
-          id="enrollmentdate"
-          required
-        />
+        <label class="font-bold text-[#9E9E9E] w-1/5"
+          for="encounterDatetime">{{'mdrtb.date'|get_message:request.session.locale}}</label>
+        {% if state == 'edit' %}
+        <input class="input form-control w-4/5" type="date" name="encounterDatetime"
+          value="{{form.encounter.encounterDatetime | iso_to_normal_date}}" />
+        {% else %}
+        <input class="input w-3/5" type="date" name="encounterDatetime" />
+        {% endif %}
       </div>
       <div class="input-container">
-        <label class="font-bold text-[#9E9E9E] w-2/5" for=""
-          >{{'mdrtb.drdt'|get_message:request.session.locale}}</label
-        >
-        <select
-          class="input w-3/5 disabled:pointer-events-none"
-          name="oblast"
-          id="oblast-select"
-          required
-        >
+        <label class="font-bold text-[#9E9E9E] w-1/5" for="">{{'mdrtb.drdt'|get_message:request.session.locale}}</label>
+        <select name="ccd094e6-ac27-418f-a30e-54e9a1bac362" class="input form-control w-4/5">
+          {% if state == 'edit' %}
+          <option selected value="{{form.drugResistance.uuid}}">{{form.drugResistance.display}}</option>
+          {% else %}
+          <option selected value="">Select</option>
+          {% endif %}
+
           {% for answer in concepts.drugresistanceduringtreatment %}
-            <option value="{{answer.uuid}}">{{answer.name}}</option>
+          <option value="{{answer.uuid}}">{{answer.name}}</option>
           {% endfor %}
         </select>
       </div>
@@ -50,11 +76,37 @@
       <button class="bg-[#2D9CDB] p-2 w-1/5 rounded-md text-white">
         Save
       </button>
-      <button class="p-2 font-bold w-1/5 rounded-md underline text-[#044062]">
+      <a href="javascript:history.go(-1)" type="button" class="p-2 font-bold w-1/5 rounded-md underline text-[#044062]">
         Cancel
-      </button>
+      </a>
     </div>
   </form>
+  <script>
+    let state = '{{state | escapejs}}'
+    if (state === 'edit') {
+      $('input').prop('disabled', true).prop('required', false)
+      $('input[name=csrfmiddlewaretoken]').prop('disabled', false)
+      $('select').prop('disabled', true).prop('required', false)
+      $('textarea').prop('disabled', true).prop('required', false)
+      $('#canceleditbtn').prop('hidden', true)
+    }
+    $('#editbtn').click(function () {
+      $('input').prop('disabled', false)
+      $('select').prop('disabled', false)
+      $('textarea').prop('disabled', false)
+      $('#canceleditbtn').prop('hidden', false)
+    })
+    $('#canceleditbtn').click(function () {
+      $('input').prop('disabled', true)
+      $('select').prop('disabled', true)
+      $('textarea').prop('disabled', true)
+      $('#canceleditbtn').prop('hidden', true)
+    })
+
+    let date = new Date();
+    maxDate = date.toISOString().substring(0, 10);
+    $('input[type="date"]').prop("max", maxDate)
+  </script>
 
 </div>
 

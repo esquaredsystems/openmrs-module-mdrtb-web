@@ -217,9 +217,9 @@ def create_update_tb03u(req, patientuuid, data, formid=None):
             )
     try:
         # This returns the newly created TB03 form
-        # print("===================================")
-        # print(tb03u)
-        # print("===================================")
+        print("===================================")
+        print(tb03u)
+        print("===================================")
         status, _ = ru.post(req, 'mdrtb/tb03u', tb03u)
         if status:
             return True
@@ -239,7 +239,7 @@ def remove_tb03u_duplicates(concepts, form_data):
     remove_duplicate_concepts(concepts.get(
         'siteoftbdisease', []), form_data.get('anatomicalSite', None))
     remove_duplicate_concepts(concepts.get(
-        'drtbstatus', []), form_data.get('mdrStatus', None))
+        'mdrtbstatus', []), form_data.get('mdrStatus', None))
     remove_duplicate_concepts(concepts.get(
         'prescribedtreatment', []), form_data.get('patientCategory', None))
 
@@ -253,7 +253,7 @@ def remove_tb03u_duplicates(concepts, form_data):
     remove_duplicate_concepts(concepts.get(
         'resultofhivtest', []), form_data.get('hivStatus', None))
     remove_duplicate_concepts(concepts.get(
-        'outcome', []), form_data.get('treatmentOutcome', None))
+        'multidrugresistanttuberculosistreatmentoutcome', []), form_data.get('treatmentOutcome', None))
     remove_duplicate_concepts(concepts.get(
         'causeofdeath', []), form_data.get('causeOfDeath', None))
 
@@ -321,9 +321,6 @@ def create_update_adverse_event(req, patientuuid, data, formid=None):
         print("===================================")
         status, response = ru.post(req, 'mdrtb/adverseevents', ae)
         if status:
-            print("===================================RESPONSE")
-            print(response)
-            print("===================================RESPONSE")
             return True
     except Exception as e:
         raise Exception(str(e))
@@ -381,7 +378,7 @@ def remove_ae_duplicates(concepts, form_data):
 
 def create_update_form89(req, patientuuid, data, formid=None):
     patient_program_uuid = req.session['current_patient_program_flow']['current_program']['uuid']
-    encounter_type = EncounterType.ADVERSE_EVENT.value
+    encounter_type = EncounterType.FROM_89.value
     current_date_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     current_date_time_iso = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
     patient_location = req.session['current_patient_program_flow']['current_program']['location']['uuid']
@@ -435,10 +432,8 @@ def create_update_form89(req, patientuuid, data, formid=None):
                 }
             )
     try:
-        # print("===================================")
-        # print(form89)
-        # print("===================================")
-        status, _ = ru.post(req, 'mdrtb/form89', form89)
+        # url = f"mdrtb/form89/{formid}" if formid else "mdrtb/form89"
+        status, _ = ru.post(req, "mdrtb/form89", form89)
         if status:
             return True
     except Exception as e:
@@ -567,10 +562,88 @@ def remove_regimen_duplicates(concepts, form_data):
         'resistancetype', []), form_data.get('resistanceType', None))
     remove_duplicate_concepts(clone_concepts.get(
         'sldregimentype', []), form_data.get('sldRegimen', None))
+    remove_duplicate_concepts(clone_concepts.get(
+        'cmacplace', []), form_data.get('placeOfCommission', None))
 
-    # CMAC PLACE MISSING FROM FORM
+    return clone_concepts
 
-    # remove_duplicate_concepts(clone_concepts.get(
-    #     'cmacplace', []), form_data.get('MISSING', None))
 
+def get_drug_resistance_form_by_uuid(req, uuid):
+    try:
+        status, response = ru.get(
+            req, f'mdrtb/drugresistance/{uuid}', {'v': 'full'})
+        if status:
+            return response
+        else:
+            return None
+    except Exception as e:
+        raise Exception(str(e))
+
+
+def create_update_drug_resistence_form(req, patientuuid, data, formid=None):
+    patient_program_uuid = req.session['current_patient_program_flow']['current_program']['uuid']
+    encounter_type = EncounterType.RESISTANCE_DURING_TREATMENT.value
+    current_date_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    current_date_time_iso = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+    patient_location = req.session['current_patient_program_flow']['current_program']['location']['uuid']
+    if formid:
+        try:
+            response = mu.get_encounter_by_uuid(req, formid)
+            if response:
+                drug_resistance = {
+                    "patientProgramUuid": patient_program_uuid,
+                    "encounter": {
+                        "uuid": response['uuid'],
+                        "obs": [
+                            {
+                                "person": patientuuid,
+                                "obsDatetime": current_date_time_iso,
+                                "concept": Concepts.PATIENT_PROGRAM_ID.value
+                            }
+                        ]
+                    }
+                }
+        except Exception as e:
+            raise Exception(e)
+    else:
+        drug_resistance = {
+            "patientProgramUuid": patient_program_uuid,
+            "encounter": {
+                "patient": patientuuid,
+                "encounterType": encounter_type,
+                "encounterDatetime": data.get('encounterDateTime', current_date_time),
+                "location": patient_location,
+                "obs": [{
+                        "person": patientuuid,
+                        "obsDatetime": current_date_time_iso,
+                        "concept": Concepts.PATIENT_PROGRAM_ID.value}]}}
+    for key, value in data.items():
+        if key == "csrfmiddlewaretoken":
+            continue
+        if key == "encounterDatetime":
+            continue
+        if value:
+            drug_resistance['encounter']['obs'].append(
+                {
+                    "person": patientuuid,
+                    "obsDatetime": current_date_time_iso,
+                    "concept": key,
+                    "value": value if not cu.is_date(value) else cu.date_to_sql_format(value)
+                }
+            )
+    try:
+        print("===================================")
+        print(drug_resistance)
+        print("===================================")
+        status, _ = ru.post(req, 'mdrtb/drugresistance', drug_resistance)
+        if status:
+            return True
+    except Exception as e:
+        raise Exception(str(e))
+
+
+def remove_drug_resistance_duplicates(concepts, form_data):
+    clone_concepts = concepts.copy()
+    remove_duplicate_concepts(clone_concepts.get(
+        'drugresistanceduringtreatment', []), form_data.get('drugResistance', None))
     return clone_concepts

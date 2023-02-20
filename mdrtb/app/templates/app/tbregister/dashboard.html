@@ -96,8 +96,14 @@
         {% else %}
         <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="formsdropdown">
           <li>
-            <a class="tw-dropdown-item" href="{% url 'tb03u' uuid=uuid  %}">TB03u</a>
+            <a class="tw-dropdown-item" href="{% url 'tb03u' uuid=uuid  %}">
+              {{'mdrtb.tb03u'|get_message:request.session.locale}}</a>
           </li>
+          <li>
+            <a class="tw-dropdown-item" href="{% url 'drugresistanse' patientid=uuid  %}">
+              {{'mdrtb.drdt'|get_message:request.session.locale}}</a>
+          </li>
+
 
         </ul>
         {% endif %}
@@ -131,6 +137,14 @@
           class="tb03-form-label underline" href="{% url 'edittb03u' uuid=uuid formid=tb03u.uuid %}">
           {{tb03u.encounterDatetime | iso_to_normal_date}} at
           {{tb03u.location.name}}</a>
+      </div>
+      {% endfor %}
+      {% for drug_res in forms.drug_resistance_forms %}
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.drdt'|get_message:request.session.locale}}: </span><a
+          class="tb03-form-label underline" href="{% url 'editdrugresistanse' patientid=uuid formid=drug_res.uuid %}">
+          {{drug_res.encounterDatetime | iso_to_normal_date}} at
+          {{drug_res.location.name}}</a>
       </div>
       {% endfor %}
     </div>

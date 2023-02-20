@@ -81,7 +81,8 @@
             <label class="tb03-form-label w-full"
               for="cmacDate">{{'mdrtb.pv.cmacDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="MISSING" name="65a4fb0d-503f-4ce5-961e-e55234ff2b88" type="date" class="input form-control">
+            <input value="{{form.councilDate | iso_to_normal_date }}" name="65a4fb0d-503f-4ce5-961e-e55234ff2b88"
+              type="date" class="input form-control">
             {% else %}
             <input name="65a4fb0d-503f-4ce5-961e-e55234ff2b88" type="date" class="input form-control">
             {% endif %}
@@ -106,7 +107,7 @@
               for="placeOfCommission">{{'mdrtb.form89.placeOfCommission'|get_message:request.session.locale}}</label>
             <select name="483e6ca8-293d-4d00-b71b-4464c093a71d" class="input form-control">
               {% if state == 'edit' %}
-              <option selected value="">MISSING</option>
+              <option selected value="{{form.placeOfCommission.uuid}}">{{form.placeOfCommission.display}}</option>
               {% else %}
               <option selected value="">Select</option>
               {% endif %}

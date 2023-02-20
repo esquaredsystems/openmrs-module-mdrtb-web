@@ -27,11 +27,10 @@ def check_if_session_alive(req):
 
 
 def get_redirect_url_from_exception(exception):
-    message, redirect_url = exception.args
-    print(message)
-    if message == mu.get_global_msgs('auth.session.expired', source='OpenMRS'):
+    if exception.args[0] == mu.get_global_msgs('auth.session.expired', source='OpenMRS'):
+        message, redirect_url = exception.args
         return True, message, redirect_url
-    return False, None
+    return False, None, None
 
 
 def index(req):
@@ -264,6 +263,8 @@ def patient_dashboard(req, uuid, mdrtb=None):
     program = req.GET['program']
     context = {'uuid': uuid, 'title': 'Patient Dashboard'}
     try:
+        req.session['redirect_url'] = req.META['HTTP_REFERER']
+
         if mdrtb:
             context['mdrtb'] = True
         patient, program_info, forms = pu.get_patient_dashboard_info(
@@ -303,7 +304,8 @@ def tb03_form(req, uuid):
 
             return redirect(req.session['redirect_url'], permanent=True)
     try:
-        print(req.session['current_patient_program_flow']['current_patient'])
+        req.session['redirect_url'] = req.META['HTTP_REFERER']
+
         tb03_concepts = [
             Concepts.TREATMENT_CENTER_FOR_IP.value,
             Concepts.TREATMENT_CENTER_FOR_CP.value,
@@ -339,6 +341,8 @@ def edit_tb03_form(req, uuid, formid):
         try:
             response = fu.create_update_tb03(
                 req, uuid, req.POST, formid=formid)
+            if response:
+                messages.success(req, "Form updated successfully")
         except Exception as e:
             messages.error(req, str(e)),
         finally:
@@ -348,7 +352,9 @@ def edit_tb03_form(req, uuid, formid):
         req.session['redirect_url'] = req.META.get('HTTP_REFERER', None)
 
         context = {'title': 'Edit TB03', 'state': 'edit', 'uuid': uuid,
-                   'current_patient_program_flow': req.session['current_patient_program_flow']
+                   'current_patient_program_flow': req.session['current_patient_program_flow'],
+                   'identifiers': pu.get_patient_identifiers(req, uuid)
+
 
 
                    }
@@ -391,7 +397,9 @@ def tb03u_form(req, uuid):
         return redirect('login')
     if req.method == 'POST':
         try:
-            fu.create_update_tb03u(req, uuid, req.POST)
+            response = fu.create_update_tb03u(req, uuid, req.POST)
+            if response:
+                messages.success(req, "Form created successfully")
         except Exception as e:
             print(traceback.format_exc())
             messages.error(req, str(e))
@@ -414,6 +422,7 @@ def tb03u_form(req, uuid):
         return render(req, 'app/tbregister/mdr/tb03u.html', context={
             'title': "TB03u",
             "concepts": concepts,
+            'json': json.dumps(concepts),
             'uuid': uuid,
             'current_patient_program_flow': req.session['current_patient_program_flow'],
             'identifiers': pu.get_patient_identifiers(req, uuid)
@@ -444,7 +453,9 @@ def edit_tb03u_form(req, uuid, formid):
         req.session['redirect_url'] = req.META.get('HTTP_REFERER', None)
 
         context = {'title': 'Edit TB03', 'state': 'edit', 'uuid': uuid,
-                   'current_patient_program_flow': req.session['current_patient_program_flow']
+                   'current_patient_program_flow': req.session['current_patient_program_flow'],
+                   'identifiers': pu.get_patient_identifiers(req, uuid)
+
 
 
                    }
@@ -496,6 +507,8 @@ def adverse_events_form(req, patientid):
     if req.method == 'POST':
         try:
             response = fu.create_update_adverse_event(req, patientid, req.POST)
+            if response:
+                messages.success(req,"From created successfully")
         except Exception as e:
             print(traceback.format_exc())
             messages.error(req, str(e))
@@ -541,8 +554,10 @@ def edit_adverse_events_form(req, patientid, formid):
 
     if req.method == 'POST':
         try:
-            fu.create_update_adverse_event(
+            response = fu.create_update_adverse_event(
                 req, patientid, req.POST, formid=formid)
+            if response:
+                messages.success(req,"Form updated successfully")
         except Exception as e:
             messages.error(req, str(e))
         finally:
@@ -587,20 +602,96 @@ def edit_adverse_events_form(req, patientid, formid):
 
 def delete_adverse_events_form(req, formid):
     try:
-        ru.delete(req, f'mdrtb/adverseevents/{formid}')
+        status, _ = ru.delete(req, f'mdrtb/adverseevents/{formid}')
+        if status:
+            messages.success(req, "Form deleted successfully")
     except Exception as e:
         messages.error(req, str(e))
     finally:
         return redirect(req.session['redirect_url'])
 
 
-def drug_resistence_form(req):
-    context = {
-        'title': "Drug Resistense",
-        'concepts': fu.get_form_concepts([Concepts.DRUG_RESISTANCE_DURING_TREATMENT.value], req)
+def drug_resistence_form(req, patientid):
+    if not check_if_session_alive(req):
+        return redirect('login')
 
-    }
-    return render(req, 'app/tbregister/mdr/drug_resistence.html', context=context)
+    if req.method == 'POST':
+        try:
+            response = fu.create_update_drug_resistence_form(
+                req, patientid, req.POST)
+            if response:
+                messages.success(req, 'Form created successfully')
+        except Exception as e:
+            messages.error(req, str(e))
+        finally:
+            return redirect(req.session['redirect_url'])
+
+    try:
+        req.session['redirect_url'] = req.META.get('HTTP_REFERER')
+        drug_resistance_concepts = [
+            Concepts.DRUG_RESISTANCE_DURING_TREATMENT.value]
+        context = {
+            'title': "Drug Resistense", 'concepts': fu.get_form_concepts(drug_resistance_concepts, req),
+            'patient_id': patientid
+        }
+        return render(req, "app/tbregister/mdr/drug_resistence.html", context=context)
+    except Exception as e:
+        is_expired, message, redirect_url = get_redirect_url_from_exception(e)
+        if is_expired:
+            messages.error(req, message)
+            return redirect(redirect_url)
+        messages.error(req, str(e))
+        return redirect(req.session.get('redirect_url'))
+
+
+def edit_drug_resistence_form(req, patientid, formid):
+    if not check_if_session_alive(req):
+        return redirect('login')
+
+    if req.method == 'POST':
+        try:
+            response = fu.create_update_drug_resistence_form(
+                req, patientid, req.POST, formid=formid)
+            if response:
+                messages.success(req, 'Form created successfully')
+        except Exception as e:
+            messages.error(req, str(e))
+        finally:
+            return redirect(req.session['redirect_url'])
+
+    try:
+        context = {'title': "Drug Resistanse",
+                   'patient_id': patientid, 'state': 'edit'}
+        req.session['redirect_url'] = req.META.get('HTTP_REFERER')
+        drug_resistance_concepts = [
+            Concepts.DRUG_RESISTANCE_DURING_TREATMENT.value]
+        form = fu.get_drug_resistance_form_by_uuid(req, formid)
+        concepts = fu.remove_drug_resistance_duplicates(
+            fu.get_form_concepts(drug_resistance_concepts, req), form)
+        if form:
+            context['form'] = form
+            context['concepts'] = concepts
+
+        return render(req, 'app/tbregister/mdr/drug_resistence.html', context=context)
+    except Exception as e:
+        print(traceback.format_exc())
+        is_expired, message, redirect_url = get_redirect_url_from_exception(e)
+        if is_expired:
+            messages.error(req, message)
+            return redirect(redirect_url)
+        messages.error(req, str(e))
+        return redirect(req.session.get('redirect_url'))
+
+
+def delete_drug_resistence_form(req, formid):
+    try:
+        status, _ = ru.delete(req, f'mdrtb/drugresistance/{formid}')
+        if status:
+            messages.success(req, "Form deleted successfully")
+    except Exception as e:
+        messages.error(req, e)
+    finally:
+        return redirect(req.session.get('redirect_url'))
 
 
 def manage_regimens(req):
@@ -646,7 +737,7 @@ def edit_regimen_form(req, patientid, formid):
             response = fu.create_update_regimen_form(
                 req, patientid, req.POST, formid=formid)
             if response:
-                messages.success(req, 'Form created successfully')
+                messages.success(req, 'Form updated successfully')
         except Exception as e:
             messages.error(req, str(e))
         finally:
@@ -678,7 +769,14 @@ def edit_regimen_form(req, patientid, formid):
 
 
 def delete_regimen_form(req, formid):
-    pass
+    try:
+        status, _ = ru.delete(req, f'mdrtb/regimen/{formid}')
+        if status:
+            messages.success(req, "Form deleted successfully")
+    except Exception as e:
+        messages.error(req, e)
+    finally:
+        return redirect(req.session.get('redirect_url'))
 
 
 def form_89(req, uuid):
@@ -687,7 +785,9 @@ def form_89(req, uuid):
 
     if req.method == 'POST':
         try:
-            fu.create_update_form89(req, uuid, req.POST)
+            response = fu.create_update_form89(req, uuid, req.POST)
+            if response:
+                messages.success(req, "Form created successfully")
         except Exception as e:
             messages.error(req, str(e))
         finally:
@@ -722,8 +822,10 @@ def edit_form_89(req, uuid, formid):
 
     if req.method == 'POST':
         try:
-            fu.create_update_form89(
+            response = fu.create_update_form89(
                 req, uuid, req.POST, formid=formid)
+            if response:
+                messages.success(req, "Form updated successfully")
         except Exception as e:
             messages.error(req, str(e)),
         finally:

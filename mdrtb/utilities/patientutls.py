@@ -214,7 +214,8 @@ def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
             forms = {
                 'tb03us': fu.get_encounters_by_patient_and_type(req, patientuuid, EncounterType.TB03u_MDR.value),
                 'aes': fu.get_encounters_by_patient_and_type(req, patientuuid, EncounterType.ADVERSE_EVENT.value),
-                'regimens': fu.get_encounters_by_patient_and_type(req, patientuuid, EncounterType.PV_REGIMEN.value)
+                'regimens': fu.get_encounters_by_patient_and_type(req, patientuuid, EncounterType.PV_REGIMEN.value),
+                'drug_resistance_forms': fu.get_encounters_by_patient_and_type(req, patientuuid, EncounterType.RESISTANCE_DURING_TREATMENT.value)
 
             }
         else:
@@ -257,6 +258,7 @@ def get_patient_identifiers(req, patient_uuid):
                     identifiers['mdr'] = {
                         'type': identifier['identifierType']['uuid'], 'identifier': identifier['identifier'], 'created_at': identifier['auditInfo']['dateCreated']}
 
+        print(identifiers)
         return identifiers
     except Exception as e:
         raise Exception(str(e))

@@ -76,9 +76,12 @@ def post(req, endpoint, data):
     try:
         response = requests.post(url=REST_API_BASE_URL+endpoint,
                                  headers=get_auth_headers(req), json=data)
-        if response.ok:
-            return True, response.json()
         response.raise_for_status()
+        print(f'STATUS CODE FOR {endpoint} is {response.status_code}')
+        if response.status_code == 201:
+            return True, response.json()
+        return False, response.json()
+
     except requests.exceptions.HTTPError as httperr:
         print(httperr)
         raise Exception(
