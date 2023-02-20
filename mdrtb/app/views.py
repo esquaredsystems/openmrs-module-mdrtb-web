@@ -18,6 +18,7 @@ from resources.enums.constants import Constants
 
 # start memcache if u havent
 
+
 def check_if_session_alive(req):
     session_id = req.session.get('session_id')
     if not session_id:
@@ -26,15 +27,20 @@ def check_if_session_alive(req):
 
 
 def get_redirect_url_from_exception(exception):
-    if exception == mu.get_global_msgs('auth.session.expired', source='OpenMRS'):
-        redirect_url = exception.args[1]
-        return True, redirect_url
+    message, redirect_url = exception.args
+    print(message)
+    if message == mu.get_global_msgs('auth.session.expired', source='OpenMRS'):
+        return True, message, redirect_url
     return False, None
 
 
 def index(req):
-    context = {}
-    return render(req, 'app/tbregister/reportmockup.html', context=context)
+    try:
+        return render(req, 'app/tbregister/reportmockup.html')
+    except Exception as e:
+        *_, message, redirect_url = get_redirect_url_from_exception(e)
+        messages.info(req, message)
+        return redirect(redirect_url)
 
 
 def get_locations(req):
@@ -43,26 +49,34 @@ def get_locations(req):
             locations = lu.create_location_hierarchy(req)
             if locations:
                 return JsonResponse(locations, safe=False)
-        except Exception as e:
-            messages.error(req, str(e))
-            raise Exception(e)
-    else:
 
-        raise Exception('Error fetching locations. Your session has expired.')
+        except Exception as e:
+            print(e)
+            messages.error(req, e)
+            raise Exception(str(e))
+    else:
+        return JsonResponse(data={})
 
 
 def login(req):
+    if check_if_session_alive(req):
+        return redirect(req.session.get('redirect_url', 'searchPatientsView'))
     context = {'title': 'Login'}
     if req.method == 'POST':
         username = req.POST['username']
         password = req.POST['password']
-        response = ru.initiate_session(req, username, password)
-        if response:
-            req.session['redirect_url'] = req.META.get('HTTP_REFERER')
-            return redirect(req.session('redirect_url', 'searchPatientsView'))
-        else:
-            return render(req, 'app/tbregister/login.html', context=context)
+        try:
+            response = ru.initiate_session(req, username, password)
+            if response:
+                return redirect('searchPatientsView')
+            else:
+                return render(req, 'app/tbregister/login.html', context=context)
+        except Exception as e:
+            print(e)
+            messages.error(req, e)
+            return redirect('login')
     else:
+        req.session['redirect_url'] = req.META.get('HTTP_REFERER')
         context['title'] = 'Login'
         return render(req, 'app/tbregister/login.html', context=context)
 
@@ -72,9 +86,9 @@ def search_patients_query(req):
         return redirect('login')
     try:
         q = req.GET['q']
-        _, response = ru.get(req, 'patient', {'q': q, 'v': 'full'})
+        _, response = ru.get(req, 'patient', parameters={'q': q, 'v': 'full'})
     except Exception as e:
-        messages.error(req, str(e))
+        messages.error(req, e)
         response = {'error': str(e)}
     return JsonResponse(response)
 
@@ -127,9 +141,6 @@ def enroll_patient(req):
         return redirect('searchPatientsView')
 
 
-# TODO: make get_patient send all identifers instead of only dots
-
-
 def enrolled_programs(req, uuid):
     if not check_if_session_alive(req):
         return redirect('login')
@@ -158,12 +169,16 @@ def enroll_in_program(req, uuid, mdrtb=None):
     context = {'title': 'Add a new Program', 'uuid': uuid}
     if req.method == 'POST':
         try:
-            program_uuid = pu.enroll_patient_in_program(
+            patient_program = pu.enroll_patient_in_program(
                 req, uuid, req.POST)
-            if any(program_uuid):
+            if patient_program:
+                program = Constants(req.POST['program']).name.replace(
+                    '_', ' ').title()
+                messages.success(req,
+                                 "Patient Successfully enrolled in {}".format(program))
                 req.session['current_patient_program_flow'] = {
                     'current_patient': pu.get_patient(req, uuid),
-                    'current_program': pu.get_enrolled_programs_by_patient(req, uuid, enrollment_id=program_uuid)
+                    'current_program': pu.get_enrolled_programs_by_patient(req, uuid, enrollment_id=patient_program)
                 }
                 if mdrtb:
                     return redirect('tb03u', uuid=uuid, permanent=True)
@@ -288,6 +303,7 @@ def tb03_form(req, uuid):
 
             return redirect(req.session['redirect_url'], permanent=True)
     try:
+        print(req.session['current_patient_program_flow']['current_patient'])
         tb03_concepts = [
             Concepts.TREATMENT_CENTER_FOR_IP.value,
             Concepts.TREATMENT_CENTER_FOR_CP.value,
@@ -304,7 +320,8 @@ def tb03_form(req, uuid):
             "concepts": concepts,
             "title": "TB03",
             'uuid': uuid,
-            'current_patient_program_flow': req.session['current_patient_program_flow']
+            'current_patient_program_flow': req.session['current_patient_program_flow'],
+            'identifiers': pu.get_patient_identifiers(req, uuid)
         }
         return render(req, 'app/tbregister/dots/tb03.html', context=context)
     except Exception as e:
@@ -1149,7 +1166,11 @@ def add_test_results(req, orderid):
 
 
 def logout(req):
-    status, _ = ru.delete(req, 'session')
-    if status:
-        ru.clear_session(req)
-    return redirect('login')
+    try:
+        status, _ = ru.delete(req, 'session')
+        if status:
+            ru.clear_session(req)
+            return redirect('login')
+    except Exception as e:
+        messages.error(req, str(e))
+        return redirect(req.session.get('redirect_url'))

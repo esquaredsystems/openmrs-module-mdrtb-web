@@ -1,6 +1,5 @@
 import requests
 from django.http import JsonResponse
-from mdrtb.settings import BASE_URL
 from . import restapi_utils as ru
 from . import common_utils as u
 
@@ -222,14 +221,14 @@ def get_custom_attribute_for_labresults(req, orderid):
     datatypes = get_attributes_data_types()
     try:
         status, response = ru.get(
-        req, f'commonlab/labtestorder/{orderid}', {'v': 'custom:(labTestType)'})
+            req, f'commonlab/labtestorder/{orderid}', {'v': 'custom:(labTestType)'})
         attributes = get_attributes_of_labtest(
             req, response['labTestType']['uuid'])
         attrs = []
         for attribute in attributes:
             for datatype in datatypes:
-                
-                if datatype['value'].replace('.name','') == attribute['datatypeClassname'].replace('.name',''):
+
+                if datatype['value'].replace('.name', '') == attribute['datatypeClassname'].replace('.name', ''):
                     attrs.append({
                         'uuid': attribute['uuid'],
                         'name': attribute['name'],
@@ -237,7 +236,7 @@ def get_custom_attribute_for_labresults(req, orderid):
                         'inputType': datatype['inputType'],
                         'group': attribute['groupName'],
                     })
-        
-        return attrs , response['labTestType']['uuid']
+
+        return attrs, response['labTestType']['uuid']
     except Exception as e:
         raise Exception(e)

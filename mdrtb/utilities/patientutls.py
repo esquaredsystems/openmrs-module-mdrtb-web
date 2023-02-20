@@ -86,7 +86,7 @@ def enroll_patient_in_program(req, patientid, data):
                     "state": data.get(work_flow_uuid, None),
                     "startDate": data['enrollmentdate'],
                     "endDate": data['completiondate'] if not data['completiondate'] == '' else None
-                } for work_flow_uuid in get_programs(req, uuid=data['program'], params={'v': 'custom:(allWorkflows)'}) if work_flow_uuid in data
+                } for work_flow_uuid in get_programs(req, uuid=data['program'], params={'v': 'custom:(allWorkflows)'}) if data.get(work_flow_uuid)
             ]
         }
         patient_identifier = {

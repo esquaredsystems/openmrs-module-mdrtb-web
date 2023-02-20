@@ -148,4 +148,4 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 NPM_BIN_PATH = "C:\Program Files\\nodejs\\npm.cmd"
-BASE_URL = "http://46.20.206.173:38080/openmrs/ws/rest/v1/"
+REST_API_BASE_URL = "http://46.20.206.173:38080/openmrs/ws/rest/v1/"
