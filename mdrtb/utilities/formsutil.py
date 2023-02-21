@@ -56,20 +56,18 @@ def create_update_tb03(req, patientuuid, data, formid=None):
                 tb03 = {
                     "patientProgramUuid": patient_program_uuid,
                     "encounter": {
-                        "uuid": response['uuid'],
-                        "obs": [
-                            # Patient Program Id
-                            {
+                        "patient": response['patient']['uuid'],
+                        "encounterType": response['encounterType']['uuid'],
+                        "encounterDatetime": response['encounterDatetime'],
+                        "location": response['location']['uuid'],
+                        "obs": [{
                                 "person": patientuuid,
-                                "obsDatetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+                                "obsDatetime": current_date_time_iso,
                                 "concept": Concepts.PATIENT_PROGRAM_ID.value
-                            }
-                        ]
+                                }]}
 
-
-
-                    }
                 }
+
         except Exception as e:
             raise Exception(str(e))
     else:
@@ -106,8 +104,12 @@ def create_update_tb03(req, patientuuid, data, formid=None):
                 }
             )
     try:
+        url = f"mdrtb/tb03/{formid}" if formid else "mdrtb/tb03"
         # This returns the newly created TB03 form
-        status, _ = ru.post(req, 'mdrtb/tb03', tb03)
+        print("=========================tb03")
+        print(tb03)
+        print("=========================tb03")
+        status, _ = ru.post(req, url, tb03)
         if status:
             return True
     except Exception as e:

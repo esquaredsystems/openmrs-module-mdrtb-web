@@ -20,12 +20,12 @@
         <div class="input-container">
           <label class="input-label w-full required"
             for="name">{{'mdrtb.givenname'|get_message:request.session.locale}}</label>
-          <input required class="input" type="text" name="givenname" />
+          <input required class="input form-control" type="text" name="givenname" />
         </div>
         <div class="input-container">
           <label class="input-label w-full required"
             for="name">{{'mdrtb.familyname'|get_message:request.session.locale}}</label>
-          <input required class="input" type="text" name="familyname" />
+          <input required class="input form-control" type="text" name="familyname" />
         </div>
       </div>
       <div class="enrollform-section">
@@ -42,47 +42,40 @@
       </div>
       <div class="enrollform-section">
         <div class="input-container">
-          <label class="input-label w-full required"
-            for="patientidentifier">{{'mdrtb.patientidentifier'|get_message:request.session.locale}}</label>
-          <input required class="input" type="text" name="patientidentifier" />
+          <label class="input-label w-full required" for="patientidentifiertype">Регистрационный номер Дотc</label>
+          <input hidden required class="input form-control" type="text" value="8d79403a-c2cc-11de-8d13-0010c6dffd0f"
+            name="patientidentifiertype" />
+          <input required class="input form-control" type="text" name="patientidentifier" />
         </div>
         <div class="input-container">
-          <label class="input-label w-full required"
-            for="patientidentifiertype">{{'mdrtb.patientidentifiertype'|get_message:request.session.locale}}</label>
-          <select required class="input" name="patientidentifiertype">
-            <option selected value="">Select</option>
-            {% for idtype in identifiertypes %}
-            <option value="{{idtype.uuid}}">{{idtype.name}}</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
-      <div class="input-container">
-        <label style="width: 40%;" class="input-label required"
-          for="name">{{'mdrtb.gender'|get_message:request.session.locale}}</label>
-        <div class="radios-container">
-          <div class="radio-container">
-            <label for="Male">{{'mdrtb.male'|get_message:request.session.locale}}</label>
-            <input required name="gender" type="radio" value="M" />
-          </div>
-          <div class="radio-container">
-            <label for="Female">{{'mdrtb.female'|get_message:request.session.locale}}</label>
-            <input required name="gender" type="radio" value="F" />
+          <label class="input-label required w-full"
+            for="name">{{'mdrtb.gender'|get_message:request.session.locale}}</label>
+          <div class="radios-container">
+            <div class="radio-container">
+              <label for="Male">{{'mdrtb.male'|get_message:request.session.locale}}</label>
+              <input required name="gender" type="radio" value="M" />
+            </div>
+            <div class="radio-container">
+              <label for="Female">{{'mdrtb.female'|get_message:request.session.locale}}</label>
+              <input required name="gender" type="radio" value="F" />
+            </div>
           </div>
         </div>
+
       </div>
+
     </div>
     <div class="enroll_form_bg">
       {% include 'app/components/locations.html' %}
       <div class="input-container">
         <label class="input-label w-1/6 required"
           for="name">{{'mdrtb.address'|get_message:request.session.locale}}</label>
-        <input required class="input" type="text" name="address" />
+        <input required class="input form-control" type="text" name="address" />
       </div>
       <div class="input-container">
         <label class="input-label  w-1/6 opacity-0"
           for="name">{{'mdrtb.address'|get_message:request.session.locale}}</label>
-        <input class="input" type="text" name="address2" />
+        <input class="input form-control" type="text" name="address2" />
       </div>
     </div>
     <div class="enroll_form_bg">
@@ -95,12 +88,12 @@
         <div class="input-container">
           <label class="text-[#9E9E9E] font-bold"
             for="deceased">{{'mdrtb.deathDate'|get_message:request.session.locale}}</label>
-          <input type="date" class="input" name="deathdate" id="deathdate" />
+          <input type="date" class="input form-control" name="deathdate" id="deathdate" />
         </div>
         <div class="input-container">
           <label class="text-[#9E9E9E] font-bold"
             for="deceased">{{'mdrtb.causeOfDeath'|get_message:request.session.locale}}</label>
-          <input type="text" class="input" name="causeofdeath" />
+          <input type="text" class="input form-control" name="causeofdeath" />
         </div>
       </div>
       <div class="input-container">
@@ -109,7 +102,7 @@
       </div>
       <div id="voided-container" class="input-container hidden">
         <label class="text-[#9E9E9E] font-bold" for="Reason to void">Reason to Void</label>
-        <input type="text" class="input" name="reasontovoid" />
+        <input type="text" class="input form-control" name="reasontovoid" />
       </div>
     </div>
 

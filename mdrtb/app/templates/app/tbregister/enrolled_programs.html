@@ -33,10 +33,22 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-4">
             <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">Enrolled Programs</h2>
-            <a href="{% url 'programenroll' uuid=uuid %}" class="text-[#044062] font-bold underline">
-              {{'general.add'|get_message_openMRS:request.session.locale}}
-              {{'general.new'|get_message_openMRS:request.session.locale}}
-            </a>
+            <div class="dropdown">
+              <a class="tw-dropdown-header font-bold cancel-button" href="#" type="button" id="programsdropdown"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                {{'general.add'|get_message_openMRS:request.session.locale}}
+                {{'general.new'|get_message_openMRS:request.session.locale}}
+              </a>
+              <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="programsdropdown">
+                <li>
+                  <a class="tw-dropdown-item" href="{% url 'dotsprogramenroll' uuid=uuid %}">Dots</a>
+                </li>
+                <li>
+                  <a class="tw-dropdown-item" href="{% url 'mdrtbprogramenroll' uuid=uuid %}">MDRTB</a>
+                </li>
+
+              </ul>
+            </div>
 
           </div>
 
@@ -136,15 +148,6 @@
 
           </div>
         </div>
-        {% else %}
-        <div style="margin-top: 8rem;" class="flex-column-center space-y-6 mx-auto w-fit rounded-md bg-gray-100 p-4">
-          <h1 class="text-center mx-auto font-semibold text-3xl">No programs to display</h1>
-          <div class="flex-center justify-center space-x-3">
-            <a href="{% url 'programenroll' uuid=uuid %}" class="button-primary text-center flex-1 hover:text-white">Add
-              Program</a>
-            <a href="javascript:history.go(-1)" class="cancel-button">Go Back</a>
-          </div>
-        </div>
 
         {% endif %}
       </div>
@@ -168,7 +171,7 @@
             ` <div class="flex-center space-x-6">
           <label class="input-label w-fit text-lg flex-wrap">${state.concept} : </label>
           ${state.answer != null ?
-              `<span class="text-md font-bold">${state.answer.concept}
+              `<span class="text-md font-bold">${state.answer.concept.name}
               ${state.answer.start_date != null ?
                 `
               ( since ${state.answer.start_date.substring(0, 10)} )

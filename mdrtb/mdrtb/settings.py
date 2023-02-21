@@ -54,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'app.middleware.SessionCheckMiddleware'
 ]
 
 ROOT_URLCONF = 'mdrtb.urls'
@@ -78,6 +79,8 @@ WSGI_APPLICATION = 'mdrtb.wsgi.application'
 
 
 SESSIONS_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 1800
 
 CACHES = {
     'default': {

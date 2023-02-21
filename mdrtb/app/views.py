@@ -34,12 +34,17 @@ def get_redirect_url_from_exception(exception):
 
 
 def index(req):
+    context = {}
     try:
-        return render(req, 'app/tbregister/reportmockup.html')
+        context['url'] = req.session['redirect_url']
     except Exception as e:
-        *_, message, redirect_url = get_redirect_url_from_exception(e)
-        messages.info(req, message)
-        return redirect(redirect_url)
+        isexpired, message, redirect = get_redirect_url_from_exception(e)
+        if isexpired:
+            messages.error(req, message)
+            return redirect(redirect)
+        messages.error(req, e)
+    finally:
+        return render(req, 'app/tbregister/reportmockup.html', context=context)
 
 
 def get_locations(req):
@@ -110,11 +115,12 @@ def search_patients_view(req):
             context['add_patient_privilege'] = True
         return render(req, 'app/tbregister/search_patients.html', context=context)
     except Exception as e:
-        messages.error(req, str(e))
-        is_expired, redirect_url = get_redirect_url_from_exception(e)
+        is_expired, message, redirect_url = get_redirect_url_from_exception(e)
         if is_expired:
+            messages.error(req, message)
             return redirect(redirect_url)
         context['minSearchCharacters'] = 2
+        messages.error(req, str(e))
         return render(req, 'app/tbregister/search_patients.html', context=context)
 
 
@@ -125,7 +131,7 @@ def enroll_patient(req):
         try:
             status, response = pu.create_patient(req, req.POST)
             if status:
-                return redirect('programenroll', uuid=response['uuid'])
+                return redirect('dotsprogramenroll', uuid=response['uuid'])
 
         except Exception as e:
             messages.error(req, str(e))
@@ -158,11 +164,12 @@ def enrolled_programs(req, uuid):
             context['programs'] = programs
         return render(req, 'app/tbregister/enrolled_programs.html', context=context)
     except Exception as e:
+        print(traceback.format_exc())
         messages.error(req, str(e))
         return redirect(req.session['redirect_url'])
 
 
-def enroll_in_program(req, uuid, mdrtb=None):
+def enroll_in_dots_program(req, uuid):
     if not check_if_session_alive(req):
         return redirect('login', permanent=True)
     context = {'title': 'Add a new Program', 'uuid': uuid}
@@ -179,22 +186,19 @@ def enroll_in_program(req, uuid, mdrtb=None):
                     'current_patient': pu.get_patient(req, uuid),
                     'current_program': pu.get_enrolled_programs_by_patient(req, uuid, enrollment_id=patient_program)
                 }
-                if mdrtb:
-                    return redirect('tb03u', uuid=uuid, permanent=True)
                 return redirect('tb03', uuid=uuid, permanent=True)
-            return redirect('programenroll', uuid=uuid, permanent=True)
+            return redirect('dotsprogramenroll', uuid=uuid, permanent=True)
         except Exception as e:
             print(traceback.format_exc())
             messages.error(req, e)
-            return redirect('programenroll', uuid=uuid, permanent=True)
+            return redirect('dotsprogramenroll', uuid=uuid, permanent=True)
     else:
         try:
-            req.session['redirect_url'] = req.META['HTTP_REFERER']
-            programs = pu.get_programs(req)
-            if programs:
-                context['programs'] = programs
-                context['jsonprograms'] = json.dumps(programs)
-                return render(req, 'app/tbregister/enroll_program.html', context=context)
+            program = pu.get_program_by_uuid(
+                req, Constants.DOTS_PROGRAM.value)
+            if program:
+                context['jsonprogram'] = json.dumps(program)
+                return render(req, 'app/tbregister/dots/enroll_in_dots.html', context=context)
             else:
                 messages.error(
                     req, 'Error fetching programs. Please try again later')
@@ -202,7 +206,49 @@ def enroll_in_program(req, uuid, mdrtb=None):
 
         except Exception as e:
             messages.error(req, str(e))
-            return redirect('programenroll', uuid=uuid)
+            return redirect('/')
+
+
+def enroll_patient_in_mdrtb(req, uuid):
+    context = {'title': 'Enroll in MDRTB Program', 'uuid': uuid}
+    if req.method == 'POST':
+        try:
+            patient_program = pu.enroll_patient_in_program(
+                req, uuid, req.POST)
+            if patient_program:
+                program = Constants(req.POST['program']).name.replace(
+                    '_', ' ').title()
+                messages.success(req,
+                                 "Patient Successfully enrolled in {}".format(program))
+                req.session['current_patient_program_flow'] = {
+                    'current_patient': pu.get_patient(req, uuid),
+                    'current_program': pu.get_enrolled_programs_by_patient(req, uuid, enrollment_id=patient_program)
+                }
+
+                return redirect('tb03u', uuid=uuid, permanent=True)
+
+            return redirect('mdrtbprogramenroll', uuid=uuid, permanent=True)
+        except Exception as e:
+            print(traceback.format_exc())
+            messages.error(req, e)
+            return redirect('mdrtbprogramenroll', uuid=uuid, permanent=True)
+    else:
+        try:
+            req.session['redirect_url'] = req.META['HTTP_REFERER']
+            program = pu.get_program_by_uuid(
+                req, Constants.MDRTB_PROGRAM.value)
+            if program:
+                context['jsonprogram'] = json.dumps(program)
+                return render(req, 'app/tbregister/mdr/enroll_in_mdrtb.html', context=context)
+            else:
+                messages.error(
+                    req, 'Error fetching programs. Please try again later')
+                return redirect('searchPatientsView')
+
+        except Exception as e:
+            print(traceback.format_exc())
+            messages.error(req, str(e))
+            return redirect('mdrtbprogramenroll', uuid=uuid)
 
 
 def edit_program(req, uuid, programid):
@@ -299,6 +345,7 @@ def tb03_form(req, uuid):
         try:
             fu.create_update_tb03(req, uuid, req.POST)
         except Exception as e:
+            print(traceback.format_exc())
             messages.error(req, str(e))
         finally:
 
@@ -344,6 +391,7 @@ def edit_tb03_form(req, uuid, formid):
             if response:
                 messages.success(req, "Form updated successfully")
         except Exception as e:
+            print(traceback.format_exc())
             messages.error(req, str(e)),
         finally:
             return redirect(req.session['redirect_url'])
@@ -377,6 +425,7 @@ def edit_tb03_form(req, uuid, formid):
             context['concepts'] = concepts
             return render(req, 'app/tbregister/dots/tb03.html', context=context)
     except Exception as e:
+        print(traceback.format_exc())
         messages.error(req, str(e))
         return redirect(req.session['redirect_url'])
 
@@ -508,7 +557,7 @@ def adverse_events_form(req, patientid):
         try:
             response = fu.create_update_adverse_event(req, patientid, req.POST)
             if response:
-                messages.success(req,"From created successfully")
+                messages.success(req, "From created successfully")
         except Exception as e:
             print(traceback.format_exc())
             messages.error(req, str(e))
@@ -557,7 +606,7 @@ def edit_adverse_events_form(req, patientid, formid):
             response = fu.create_update_adverse_event(
                 req, patientid, req.POST, formid=formid)
             if response:
-                messages.success(req,"Form updated successfully")
+                messages.success(req, "Form updated successfully")
         except Exception as e:
             messages.error(req, str(e))
         finally:

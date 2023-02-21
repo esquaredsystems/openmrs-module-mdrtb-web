@@ -1,0 +1,282 @@
+{% extends 'app/base/base.html' %}
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+
+
+
+{% block content %}
+<div class="m-16">
+    {% if state == 'edit' %}
+    <div class="flex-center space-x-4">
+        <h1 class="text-[#2D9CDB] text-3xl font-bold">
+            {{'mdrtb.editProgram'|get_message:request.session.locale}}
+        </h1>
+        <a href="{% url 'deleteprogram' uuid=uuid programid=enrolled_program.uuid %}" type="button" id="deletetb03">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+            </svg>
+        </a>
+    </div>
+    {% else %}
+    <h1 class="text-[#2D9CDB] text-3xl font-bold">
+        {{'mdrtb.enrollment.enrollMdrtb'|get_message:request.session.locale}}
+    </h1>
+    {% endif %}
+    <form id="enroll-form" action="{% if state == 'edit' %}{% url 'editprogram' uuid=uuid programid=enrolled_program.uuid %}{% else %}
+        {% url 'mdrtbprogramenroll' uuid=uuid %}{% endif %}" method="post" class="flex flex-col">
+
+        {% csrf_token %}
+
+
+        <div id="enroll-form" class="p-4 flex flex-col justify-center space-y-4">
+            {% if state == 'edit' %}
+            <div class="input-container">
+                <label class="input-label w-1/6 required"
+                    for="">{{'Program.header'|get_message_openMRS:request.session.locale}}</label>
+                <h3 class="font-bold">{{enrolled_program.program.name}}</h3>
+
+
+            </div>
+            {% else %}
+            <div class="input-container">
+                <label class="input-label w-1/6 required"
+                    for="">{{'mdrtb.patientidentifier'|get_message:request.session.locale}}</label>
+                <input class="input form-control" type="text" name="identifier" id="identifier" required />
+                <input hidden type="text" name="identifierType" id="identifierType"
+                    value="5c4c9795-2a7a-4757-8585-fba3a7cafa90">
+            </div>
+
+            <div hidden class="input-container">
+                <label
+                    class="input-label w-1/6 required">{{'Program.header'|get_message_openMRS:request.session.locale}}</label>
+                <input disabled type="text" name="program" placeholder="Mdrtb Program"
+                    value="34198d48-0370-102d-b0e3-001ec94a0cc1">
+
+            </div>
+            {% endif %}
+
+            <div class="input-container">
+                <label class="input-label w-1/6 required "
+                    for="">{{'mdrtb.enrollment.date'|get_message:request.session.locale}}</label>
+                {% if state == 'edit' %}
+                <button id="editEnrollmentDate" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                    </svg>
+                </button>
+                <input class="input form-control" type="date" name="enrollmentdate" id="enrollmentdate" required
+                    value="{{enrolled_program.dateEnrolled | iso_to_normal_date}}" />
+
+                {% else %}
+                <input class="input form-control" type="date" name="enrollmentdate" id="enrollmentdate" required />
+                {% endif %}
+            </div>
+            <div class="input-container">
+                <label class="input-label w-1/6 "
+                    for="">{{'mdrtb.enrollment.completionDate'|get_message:request.session.locale}}</label>
+                {% if state == 'edit' %}
+                <button id="editCompletionDate" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                    </svg>
+                </button>
+                <input class="input form-control" type="date" name="completiondate" id="completiondate"
+                    value="{{enrolled_program.dateCompleted | iso_to_normal_date}}" />
+
+                {% else %}
+                <input class="input form-control" type="date" name="completiondate" id="completiondate" />
+                {% endif %}
+            </div>
+            {% if state == 'edit' %}
+            <div class="flex-column-center space-y-2">
+                <div id="prefilledlocation" class="input-container">
+                    <label class="input-label w-1/6 flex-center space-x-2" for="">
+                        {{'mdrtb.location'|get_message:request.session.locale}}
+                        <button class="ml-4" id="editLocations" type="button">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                            </svg>
+                        </button>
+
+                    </label>
+
+                    <input class="input form-control" type="text" name="location" id="location"
+                        value="{{enrolled_program.location.name}}" />
+                    <div hidden id="locations-container" class="flex-column-center space-y-4">
+                        {% include 'app/components/locations.html' %}
+                    </div>
+                </div>
+
+            </div>
+            {% else %}
+            {% include 'app/components/locations.html' %}
+            {% endif %}
+            <div id="states" class="flex-column-center space-y-4">
+                <h3 id="initialStates" class="primary-heading text-xl">
+                    {{'Program.initialStates' | get_message_openMRS:request.session.locale}}</h3>
+            </div>
+        </div>
+
+        <div class="flex items-center p-4 space-x-8">
+            <button type="submit" id="submitbtn"
+                class="bg-[#2D9CDB] p-2 w-1/5 rounded-md disabled:text-black text-white">
+                {% if state == 'edit' %}
+                Save
+                {% else %}
+                Enroll
+                {% endif %}
+            </button>
+            <a href="javascript:history.go(-1)" class="p-2 font-bold w-1/5 rounded-md underline text-[#044062]">
+                Cancel
+            </a>
+        </div>
+    </form>
+    <script>
+        let state = "{{state}}"
+
+        if (state === 'edit') {
+            $('input').prop('disabled', true).prop('required', false)
+            $('select').prop('disabled', true).prop('required', false)
+            $('button[type=submit]').prop('disabled', true)
+            $('input[name=csrfmiddlewaretoken]').prop('disabled', false)
+
+        }
+        $('#editEnrollmentDate').click(() => {
+            if ($('#enrollmentdate').prop('disabled')) {
+                $('button[type=submit]').prop('disabled', false)
+                $('#enrollmentdate').prop('disabled', false)
+                $('#editEnrollmentDate').html(
+                    `
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+</svg>
+
+          `
+                )
+            } else {
+                $('button[type=submit]').prop('disabled', true)
+                $('#enrollmentdate').prop('disabled', true)
+                $('#editEnrollmentDate').html(
+                    `
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+          </svg>
+
+          `
+                )
+            }
+
+        })
+        $('#editCompletionDate').click(() => {
+
+            if ($('#completiondate').prop('disabled')) {
+                $('button[type=submit]').prop('disabled', false)
+                $('#completiondate').prop('disabled', false)
+                $('#editCompletionDate').html(
+                    `
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+</svg>
+
+          `
+                )
+            } else {
+                $('button[type=submit]').prop('disabled', true)
+                $('#completiondate').prop('disabled', true)
+                $('#editCompletionDate').html(
+                    `
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+          </svg>
+
+          `
+                )
+            }
+
+        })
+        $('#editLocations').click(() => {
+            if ($('#locations-container').prop('hidden')) {
+                $('select').prop('disabled', false)
+                $('button[type=submit]').prop('disabled', false)
+                $('#prefilledlocation').removeClass('input-container').addClass('flex-column-center')
+                $('#location').prop('hidden', true)
+                $('#locations-container').prop('hidden', false)
+                $('#editLocations').html(
+                    `
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+</svg>
+          `
+                )
+            } else {
+                $('select').prop('disabled', true)
+                $('button[type=submit]').prop('disabled', true)
+                $('#location').prop('hidden', false)
+                $('#prefilledlocation').removeClass('flex-column-center').addClass('input-container')
+                $('#locations-container').prop('hidden', true)
+                $('#editLocations').html(
+                    `
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+          </svg>
+          `
+                )
+            }
+
+
+        })
+
+        let program = JSON.parse("{{jsonprogram|escapejs}}")
+        console.log(program)
+        $(document).ready(() => {
+            for (workFlow of program.allWorkflows) {
+                if (!workFlow.retired) {
+                    $('#states').append(
+                        ` <div class="input-container ">
+        <label class="font-bold normal-case text-sm text-[#9E9E9E] w-2/5 "
+          >${workFlow.concept.display}</label
+        >
+        <select class="input w-3/5 form-control" name=${workFlow.uuid} id=${workFlow.uuid}>
+          <option selected value="">Select</option></select>
+      </div>
+                  `
+                    )
+                    workFlow.states.forEach(item => {
+                        if (item.retired === false) {
+
+                            $(`#${workFlow.uuid}`).append(
+                                `<option value=${item.uuid}>${item.concept.display}</option>`
+                            )
+                        }
+                    })
+                }
+            }
+        })
+        let date = new Date();
+        let maxDate = date.toISOString().substring(0, 10);
+        $('input[type=date]').prop('max', maxDate)
+
+
+
+
+    </script>
+</div>
+
+{% endblock %}

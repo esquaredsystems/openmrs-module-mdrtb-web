@@ -89,18 +89,29 @@ def enroll_patient_in_program(req, patientid, data):
                 } for work_flow_uuid in get_programs(req, uuid=data['program'], params={'v': 'custom:(allWorkflows)'}) if data.get(work_flow_uuid)
             ]
         }
-        patient_identifier = {
-            "identifier": data['identifier'],
-            "identifierType": data['identifierType'],
-            "location": data.get('facility', data.get('district', None))}
+        if 'identifier' in data:
+            patient_identifier = {
+                "identifier": data['identifier'],
+                "identifierType": data['identifierType'],
+                "location": data.get('facility', data.get('district', None))}
+            identifier_status, _ = ru.post(
+                req, f'patient/{patientid}/identifier', patient_identifier)
 
         status, response = ru.post(req, 'programenrollment', program_body)
-        identifier_status, _ = ru.post(
-            req, f'patient/{patientid}/identifier', patient_identifier)
-        if status and identifier_status:
+        if status:
             return response['uuid']
     except Exception as e:
         raise Exception(str(e))
+
+
+def get_program_by_uuid(req, uuid):
+    try:
+        status, response = ru.get(
+            req, f'program/{uuid}', {'v': 'custom:(uuid,name,retired,allWorkflows)'})
+        if status:
+            return response
+    except Exception as e:
+        raise Exception(e)
 
 
 def get_programs(req, uuid=None, params=None):

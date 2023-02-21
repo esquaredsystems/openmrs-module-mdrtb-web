@@ -28,7 +28,7 @@
   </h1>
   {% endif %}
   <form id="enroll-form"
-    action="{% if state == 'edit' %}{% url 'editprogram' uuid=uuid programid=enrolled_program.uuid %}{% else %}{% url 'programenroll' uuid=uuid %}{% endif %}"
+    action="{% if state == 'edit' %}{% url 'editprogram' uuid=uuid programid=enrolled_program.uuid %}{% else %}{% url 'dotsprogramenroll' uuid=uuid %}{% endif %}"
     method="post" class="flex flex-col">
 
     {% csrf_token %}
@@ -44,27 +44,14 @@
 
       </div>
       {% else %}
-      <div class="input-container">
-        <label class="input-label w-1/6 required"
-          for="">{{'mdrtb.patientidentifier'|get_message:request.session.locale}}</label>
-        <input class="input form-control" type="text" name="identifier" id="identifier" required />
-        <input hidden type="text" name="identifierType" id="identifierType" value="">
-      </div>
-      {% if programs %}
-      <div class="input-container">
+
+      <div hidden class="input-container">
         <label
           class="input-label w-1/6 required">{{'Program.header'|get_message_openMRS:request.session.locale}}</label>
-        <select class="input form-control" name="program" id="program-select" required>
-          <option selected value="">Choose a Program</option>
-          {% for program in programs %}
-          <option value="{{program.uuid}}">{{program.name}}</option>
-
-
-          {% endfor %}
-        </select>
+        <input type="text" name="program" value="e80fec43-f2b5-45b0-aec1-eaf74be26ff9">
 
       </div>
-      {% endif %}
+
       {% endif %}
 
       <div class="input-container">
@@ -130,6 +117,8 @@
       {% include 'app/components/locations.html' %}
       {% endif %}
       <div id="states" class="flex-column-center space-y-4">
+        <h3 id="initialStates" class="primary-heading text-xl">
+          {{'Program.initialStates' | get_message_openMRS:request.session.locale}}</h3>
 
       </div>
     </div>
@@ -248,29 +237,13 @@
 
     })
 
-    let programs = JSON.parse("{{jsonprograms | escapejs }}")
-    $('#program-select').change((selectProgram) => {
-      if (selectProgram.target.value === '34198d48-0370-102d-b0e3-001ec94a0cc1') {
-        $('#identifierType').attr('value', "5c4c9795-2a7a-4757-8585-fba3a7cafa90")
-
-        $('#enroll-form').attr('action', "{% url 'mdrtbprogramenroll' uuid=uuid mdrtb='mdrtb' %}");
-
-
-      } else {
-        $('#identifierType').attr('value', "8d79403a-c2cc-11de-8d13-0010c6dffd0f")
-
-        $('#enroll-form').attr('action', "{% url 'programenroll' uuid=uuid  %}");
-      }
-      $('#states').html('')
-      for (program of programs) {
-        if (program.uuid === selectProgram.target.value) {
+    let program = JSON.parse("{{jsonprogram|escapejs}}")
+    console.log(program)
+    $(document).ready(() => {
+      for (workFlow of program.allWorkflows) {
+        if (!workFlow.retired) {
           $('#states').append(
-            ` <h3 id="initialStates" class="primary-heading text-xl" >{{'Program.initialStates' | get_message_openMRS:request.session.locale}}</h3>`
-          )
-          for (workFlow of program.allWorkflows) {
-            if (!workFlow.retired) {
-              $('#states').append(
-                ` <div class="input-container ">
+            ` <div class="input-container ">
         <label class="font-bold normal-case text-sm text-[#9E9E9E] w-2/5 "
           >${workFlow.concept.display}</label
         >
@@ -278,17 +251,15 @@
           <option selected value="">Select</option></select>
       </div>
                   `
-              )
-              workFlow.states.forEach(item => {
-                if (item.retired === false) {
+          )
+          workFlow.states.forEach(item => {
+            if (item.retired === false) {
 
-                  $(`#${workFlow.uuid}`).append(
-                    `<option value=${item.uuid}>${item.concept.display}</option>`
-                  )
-                }
-              })
+              $(`#${workFlow.uuid}`).append(
+                `<option value=${item.uuid}>${item.concept.display}</option>`
+              )
             }
-          }
+          })
         }
       }
     })

@@ -5,6 +5,7 @@ from mdrtb.settings import REST_API_BASE_URL
 from django.shortcuts import redirect
 from django.contrib import messages, auth
 from django.core.cache import cache
+from app.middleware import SessionCheckMiddleware
 
 
 def initiate_session(req, username, password):
@@ -54,22 +55,20 @@ def get(req, endpoint, parameters):
             url=REST_API_BASE_URL+endpoint, headers=get_auth_headers(req), params=parameters)
         if response.status_code == 403:
             redirect_url = req.session['redirect_url']
-            clear_session(req)
+            SessionCheckMiddleware(req).__call__(req)
             raise Exception(mu.get_global_msgs(
                 'auth.session.expired', source='OpenMRS'), redirect_url)
         response.raise_for_status()
         return True, response.json()
     except requests.exceptions.HTTPError as httperr:
         print(httperr)
-        raise Exception(
-            "An error occured while processing your request. Please try again later")
+        raise Exception(httperr)
     except requests.exceptions.ConnectionError as connection_err:
         print(connection_err)
-        raise Exception('Please check your internet connection and try again')
+        raise Exception(connection_err)
     except requests.exceptions.RequestException as err:
         print(err)
-        raise Exception(
-            'An error occured while processing your request. Please try again later')
+        raise Exception(err)
 
 
 def post(req, endpoint, data):
