@@ -134,8 +134,9 @@
 
 <script>
 	var locationByUuids;
-	$(document).ready(() => {
-		$.ajax(
+
+	const getLocations = async () => {
+		await $.ajax(
 			{
 				url: "{% url 'locations' %}",
 				method: 'GET',
@@ -156,9 +157,14 @@
 				error: (err) => { }
 			}
 		)
-	})
-
-
+	}
+	if (document.getElementById("locations-container")) {
+		try {
+			getLocations()
+		} catch (error) {
+			console.log(error)
+		}
+	}
 	const clearSubregions = () => {
 		$('#subregion-container') && $('#subregion-container').addClass('hidden')
 	}

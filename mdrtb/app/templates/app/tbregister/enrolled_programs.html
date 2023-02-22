@@ -33,22 +33,11 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-4">
             <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">Enrolled Programs</h2>
-            <div class="dropdown">
-              <a class="tw-dropdown-header font-bold cancel-button" href="#" type="button" id="programsdropdown"
-                data-bs-toggle="dropdown" aria-expanded="false">
-                {{'general.add'|get_message_openMRS:request.session.locale}}
-                {{'general.new'|get_message_openMRS:request.session.locale}}
-              </a>
-              <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="programsdropdown">
-                <li>
-                  <a class="tw-dropdown-item" href="{% url 'dotsprogramenroll' uuid=uuid %}">Dots</a>
-                </li>
-                <li>
-                  <a class="tw-dropdown-item" href="{% url 'mdrtbprogramenroll' uuid=uuid %}">MDRTB</a>
-                </li>
+            <a class="cancel-button" href="{% url 'dotsprogramenroll' uuid=uuid %}?flow=new" type="button">
+              {{'general.add'|get_message_openMRS:request.session.locale}}
+              {{'general.new'|get_message_openMRS:request.session.locale}}
+            </a>
 
-              </ul>
-            </div>
 
           </div>
 

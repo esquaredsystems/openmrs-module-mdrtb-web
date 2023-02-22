@@ -194,6 +194,9 @@ def enroll_in_dots_program(req, uuid):
             return redirect('dotsprogramenroll', uuid=uuid, permanent=True)
     else:
         try:
+            flow = req.GET.get('flow', None)
+            if flow:
+                context['flow'] = flow
             program = pu.get_program_by_uuid(
                 req, Constants.DOTS_PROGRAM.value)
             if program:
@@ -343,7 +346,9 @@ def tb03_form(req, uuid):
 
     if req.method == 'POST':
         try:
-            fu.create_update_tb03(req, uuid, req.POST)
+            response = fu.create_update_tb03(req, uuid, req.POST)
+            if response:
+                messages.success(req, "Form created successfully")
         except Exception as e:
             print(traceback.format_exc())
             messages.error(req, str(e))
@@ -433,8 +438,11 @@ def edit_tb03_form(req, uuid, formid):
 def delete_tb03_form(req, formid):
     if formid:
         try:
-            ru.delete(req, f'mdrtb/tb03/{formid}')
+            response = ru.delete(req, f'mdrtb/tb03/{formid}')
             ru.delete(req, f'encounter/{formid}')
+            if response:
+                messages.warning(req, "Form deleted")
+
         except Exception as e:
             messages.error(req, str(e))
         finally:
@@ -496,11 +504,11 @@ def edit_tb03u_form(req, uuid, formid):
         except Exception as e:
             messages.error(req, str(e)),
         finally:
-            return redirect(req.session['redirect_url'])
+            return redirect(req.session['redirect_url'], permanent=True)
 
     try:
         req.session['redirect_url'] = req.META.get('HTTP_REFERER', None)
-
+        print(req.session['redirect_url'])
         context = {'title': 'Edit TB03', 'state': 'edit', 'uuid': uuid,
                    'current_patient_program_flow': req.session['current_patient_program_flow'],
                    'identifiers': pu.get_patient_identifiers(req, uuid)
@@ -541,7 +549,7 @@ def delete_tb03u_form(req, formid):
         except Exception as e:
             messages.error(req, str(e))
         finally:
-            return redirect(req.session['redirect_url'])
+            return redirect(req.session['redirect_url'], permanent=True)
 
 
 def manage_adverse_events(req, patientid):
@@ -562,7 +570,7 @@ def adverse_events_form(req, patientid):
             print(traceback.format_exc())
             messages.error(req, str(e))
         finally:
-            return redirect(req.session['redirect_url'])
+            return redirect(req.session['redirect_url'], permanent=True)
 
     try:
         req.session['redirect_url'] = req.META['HTTP_REFERER']
@@ -610,7 +618,7 @@ def edit_adverse_events_form(req, patientid, formid):
         except Exception as e:
             messages.error(req, str(e))
         finally:
-            return redirect(req.session['redirect_url'])
+            return redirect(req.session['redirect_url'], permanent=True)
 
     try:
         req.session['redirect_url'] = req.META['HTTP_REFERER']
@@ -657,7 +665,7 @@ def delete_adverse_events_form(req, formid):
     except Exception as e:
         messages.error(req, str(e))
     finally:
-        return redirect(req.session['redirect_url'])
+        return redirect(req.session['redirect_url'], permanent=True)
 
 
 def drug_resistence_form(req, patientid):
@@ -673,7 +681,7 @@ def drug_resistence_form(req, patientid):
         except Exception as e:
             messages.error(req, str(e))
         finally:
-            return redirect(req.session['redirect_url'])
+            return redirect(req.session['redirect_url'], permanent=True)
 
     try:
         req.session['redirect_url'] = req.META.get('HTTP_REFERER')
@@ -702,11 +710,11 @@ def edit_drug_resistence_form(req, patientid, formid):
             response = fu.create_update_drug_resistence_form(
                 req, patientid, req.POST, formid=formid)
             if response:
-                messages.success(req, 'Form created successfully')
+                messages.success(req, 'Form updated successfully')
         except Exception as e:
             messages.error(req, str(e))
         finally:
-            return redirect(req.session['redirect_url'])
+            return redirect(req.session['redirect_url'], permanent=True)
 
     try:
         context = {'title': "Drug Resistanse",
@@ -740,7 +748,7 @@ def delete_drug_resistence_form(req, formid):
     except Exception as e:
         messages.error(req, e)
     finally:
-        return redirect(req.session.get('redirect_url'))
+        return redirect(req.session.get('redirect_url'), permanent=True)
 
 
 def manage_regimens(req):
@@ -840,7 +848,7 @@ def form_89(req, uuid):
         except Exception as e:
             messages.error(req, str(e))
         finally:
-            return redirect(req.session['redirect_url'])
+            return redirect(req.session['redirect_url'], permanent=True)
 
     try:
         req.session['redirect_url'] = req.META.get('HTTP_REFERER', None)
@@ -858,7 +866,10 @@ def form_89(req, uuid):
             Concepts.PLACE_OF_CENTRAL_COMMISSION.value,
         ]
         concepts = fu.get_form_concepts(form89_concepts, req)
+        site_of_TB = fu.get_patient_site_of_TB(req, uuid)
+
         context['concepts'] = concepts
+        context['site_of_TB'] = site_of_TB
         return render(req, 'app/tbregister/dots/form89.html', context=context)
     except Exception as e:
         messages.error(req, str(e))

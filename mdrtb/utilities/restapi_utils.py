@@ -77,7 +77,7 @@ def post(req, endpoint, data):
                                  headers=get_auth_headers(req), json=data)
         response.raise_for_status()
         print(f'STATUS CODE FOR {endpoint} is {response.status_code}')
-        if response.status_code == 201:
+        if response.ok:
             return True, response.json()
         return False, response.json()
 

@@ -269,7 +269,6 @@ def get_patient_identifiers(req, patient_uuid):
                     identifiers['mdr'] = {
                         'type': identifier['identifierType']['uuid'], 'identifier': identifier['identifier'], 'created_at': identifier['auditInfo']['dateCreated']}
 
-        print(identifiers)
         return identifiers
     except Exception as e:
         raise Exception(str(e))

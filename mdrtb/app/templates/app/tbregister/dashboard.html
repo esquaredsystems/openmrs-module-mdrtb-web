@@ -71,6 +71,9 @@
       <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.forms'|get_message:request.session.locale}}
       </h2>
       <div class="dropdown">
+        {% if not mdrtb %}
+        {% if not forms.tb03s or not forms.form89s %}
+
         <a class="tw-dropdown-header font-bold cancel-button" href="#" type="button" id="formsdropdown"
           data-bs-toggle="dropdown" aria-expanded="false">
           {{'mdrtb.add'|get_message:request.session.locale}} {{'mdrtb.new'|get_message:request.session.locale}}
@@ -81,28 +84,49 @@
             </path>
           </svg>
         </a>
+        {% endif %}
+        {% else %}
+        <a class="tw-dropdown-header font-bold cancel-button" href="#" type="button" id="formsdropdown"
+          data-bs-toggle="dropdown" aria-expanded="false">
+          {{'mdrtb.add'|get_message:request.session.locale}} {{'mdrtb.new'|get_message:request.session.locale}}
+          <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
+            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <path fill="currentColor"
+              d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z">
+            </path>
+          </svg>
+        </a>
+        {% endif %}
         {% if not mdrtb %}
         <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="formsdropdown">
+          {% if not forms.tb03s %}
           <li>
             <a class="tw-dropdown-item"
               href="{% url 'tb03' uuid=uuid %}">{{'mdrtb.tb03'|get_message:request.session.locale}}</a>
           </li>
+          {% endif %}
+          {% if not forms.form89s %}
           <li>
             <a class="tw-dropdown-item"
               href="{% url 'form89' uuid=uuid %}">{{'mdrtb.form89'|get_message:request.session.locale}}</a>
           </li>
+          {% endif %}
 
         </ul>
         {% else %}
         <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="formsdropdown">
+          {% if not forms.tb03us %}
           <li>
             <a class="tw-dropdown-item" href="{% url 'tb03u' uuid=uuid  %}">
               {{'mdrtb.tb03u'|get_message:request.session.locale}}</a>
           </li>
+          {% endif %}
+
           <li>
             <a class="tw-dropdown-item" href="{% url 'drugresistanse' patientid=uuid  %}">
               {{'mdrtb.drdt'|get_message:request.session.locale}}</a>
           </li>
+
 
 
         </ul>

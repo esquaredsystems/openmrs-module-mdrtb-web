@@ -10,6 +10,7 @@ class SessionCheckMiddleware:
         # Check if session_id is present in session
         if not request.session.get('session_id'):
             redirect = request.path
+            print('EXPIRED REDIRECT TO ', redirect)
             request.session.flush()
             messages.error(request, mu.get_global_msgs(
                 'auth.session.expired', source='OpenMRS'))

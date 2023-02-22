@@ -45,7 +45,7 @@
     method="post" class="flex flex-col">
     {% csrf_token %}
 
-    <div class="p-4 flex flex-col justify-center space-y-4">
+    <div class="p-4 flex flex-col justify-center space-y-4 w-4/5">
       <div class="input-container">
         <label class="font-bold text-[#9E9E9E] w-1/5"
           for="encounterDatetime">{{'mdrtb.date'|get_message:request.session.locale}}</label>
@@ -58,7 +58,7 @@
       </div>
       <div class="input-container">
         <label class="font-bold text-[#9E9E9E] w-1/5" for="">{{'mdrtb.drdt'|get_message:request.session.locale}}</label>
-        <select name="ccd094e6-ac27-418f-a30e-54e9a1bac362" class="input form-control w-4/5">
+        <select name="ccd094e6-ac27-418f-a30e-54e9a1bac362" class="input form-control w-3/5">
           {% if state == 'edit' %}
           <option selected value="{{form.drugResistance.uuid}}">{{form.drugResistance.display}}</option>
           {% else %}
@@ -72,11 +72,12 @@
       </div>
 
     </div>
-    <div class="flex items-center p-4 -space-x-8">
-      <button class="bg-[#2D9CDB] p-2 w-1/5 rounded-md text-white">
+    <div class="p-4 flex items-center space-x-4">
+      <button type="submit" class="button-primary w-1/5">
         Save
       </button>
-      <a href="javascript:history.go(-1)" type="button" class="p-2 font-bold w-1/5 rounded-md underline text-[#044062]">
+
+      <a href="javascript:history.go(-1)" class="cancel-button">
         Cancel
       </a>
     </div>
