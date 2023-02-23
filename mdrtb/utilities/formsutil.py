@@ -26,7 +26,6 @@ def get_form_concepts(concept_ids, req):
 
 
 def get_patient_tb03_forms(req, patientuuid):
-    # This full rep will change to custom:(uuid,encounter)
     status, response = ru.get(
         req, 'mdrtb/tb03', {'v': 'full', 'q': patientuuid})
     if status:
@@ -57,13 +56,30 @@ def create_update_tb03(req, patientuuid, data, formid=None):
                     "patientProgramUuid": patient_program_uuid,
                     "encounter": {
                         "uuid": response['uuid'],
-                        "obs": [{
-                                "person": patientuuid,
-                                "obsDatetime": current_date_time_iso,
-                                "concept": Concepts.PATIENT_PROGRAM_ID.value
-                                }]}
-
-                }
+                        "obs": []}}
+            for obs in response['obs']:
+                if obs['concept']['uuid'] == Concepts.PATIENT_PROGRAM_ID.value:
+                    tb03['encounter']['obs'].append(
+                        {
+                            "uuid": obs['uuid'],
+                            "person": obs['person']['uuid'],
+                            "obsDatetime": obs['obsDatetime'],
+                            "concept": obs['concept']['uuid'],
+                            "value": obs['value']
+                        }
+                    )
+                for key, value in data.items():
+                    if value:
+                        if key == obs['concept']['uuid']:
+                            tb03['encounter']['obs'].append(
+                                {
+                                    "uuid": obs['uuid'],
+                                    "person": obs['person']['uuid'],
+                                    "obsDatetime": obs['obsDatetime'],
+                                    "concept": obs['concept']['uuid'],
+                                    "value": value if not cu.is_date(value) else cu.date_to_sql_format(value)
+                                }
+                            )
 
         except Exception as e:
             raise Exception(e)
@@ -88,18 +104,18 @@ def create_update_tb03(req, patientuuid, data, formid=None):
 
             }
         }
-    for key, value in data.items():
-        if key == "csrfmiddlewaretoken":
-            continue
-        if value:
-            tb03['encounter']['obs'].append(
-                {
-                    "person": patientuuid,
-                    "obsDatetime": current_date_time_iso,
-                    "concept": key,
-                    "value": value if not cu.is_date(value) else cu.date_to_sql_format(value)
-                }
-            )
+        for key, value in data.items():
+            if key == "csrfmiddlewaretoken":
+                continue
+            if value:
+                tb03['encounter']['obs'].append(
+                    {
+                        "person": patientuuid,
+                        "obsDatetime": current_date_time_iso,
+                        "concept": key,
+                        "value": value if not cu.is_date(value) else cu.date_to_sql_format(value)
+                    }
+                )
     try:
         url = f"mdrtb/tb03/{formid}" if formid else "mdrtb/tb03"
         # This returns the newly created TB03 form
@@ -166,19 +182,30 @@ def create_update_tb03u(req, patientuuid, data, formid=None):
                     "patientProgramUuid": patient_program_uuid,
                     "encounter": {
                         "uuid": response['uuid'],
-                        "obs": [
-                            # Patient Program Id
-                            {
-                                "person": patientuuid,
-                                "obsDatetime": current_date_time_iso,
-                                "concept": Concepts.PATIENT_PROGRAM_ID.value
-                            }
-                        ]
-
-
-
-                    }
-                }
+                        "obs": []}}
+            for obs in response['obs']:
+                if obs['concept']['uuid'] == Concepts.PATIENT_PROGRAM_ID.value:
+                    tb03u['encounter']['obs'].append(
+                        {
+                            "uuid": obs['uuid'],
+                            "person": obs['person']['uuid'],
+                            "obsDatetime": obs['obsDatetime'],
+                            "concept": obs['concept']['uuid'],
+                            "value": obs['value']
+                        }
+                    )
+                for key, value in data.items():
+                    if value:
+                        if key == obs['concept']['uuid']:
+                            tb03u['encounter']['obs'].append(
+                                {
+                                    "uuid": obs['uuid'],
+                                    "person": obs['person']['uuid'],
+                                    "obsDatetime": obs['obsDatetime'],
+                                    "concept": obs['concept']['uuid'],
+                                    "value": value if not cu.is_date(value) else cu.date_to_sql_format(value)
+                                }
+                            )
         except Exception as e:
             raise Exception(str(e))
     else:
@@ -202,18 +229,18 @@ def create_update_tb03u(req, patientuuid, data, formid=None):
 
             }
         }
-    for key, value in data.items():
-        if key == "csrfmiddlewaretoken":
-            continue
-        if value:
-            tb03u['encounter']['obs'].append(
-                {
-                    "person": patientuuid,
-                    "obsDatetime": current_date_time_iso,
-                    "concept": key,
-                    "value": value if not cu.is_date(value) else cu.date_to_sql_format(value)
-                }
-            )
+        for key, value in data.items():
+            if key == "csrfmiddlewaretoken":
+                continue
+            if value:
+                tb03u['encounter']['obs'].append(
+                    {
+                        "person": patientuuid,
+                        "obsDatetime": current_date_time_iso,
+                        "concept": key,
+                        "value": value if not cu.is_date(value) else cu.date_to_sql_format(value)
+                    }
+                )
     try:
         # This returns the newly created TB03 form
         url = f"mdrtb/tb03u/{formid}" if formid else "mdrtb/tb03u"
@@ -275,19 +302,19 @@ def create_update_adverse_event(req, patientuuid, data, formid=None):
                         "obs": []
                     }
                 }
-            for key, value in data.items():
-                if value:
-                    for obs in response['obs']:
-                        if obs['concept']['uuid'] == Concepts.PATIENT_PROGRAM_ID.value:
-                            ae['encounter']['obs'].append(
-                                {
-                                    "uuid": obs['uuid'],
-                                    "person": obs['person']['uuid'],
-                                    "obsDatetime": obs['obsDatetime'],
-                                    "concept": obs['concept']['uuid'],
-                                    "value": obs['value']
-                                }
-                            )
+            for obs in response['obs']:
+                if obs['concept']['uuid'] == Concepts.PATIENT_PROGRAM_ID.value:
+                    ae['encounter']['obs'].append(
+                        {
+                            "uuid": obs['uuid'],
+                            "person": obs['person']['uuid'],
+                            "obsDatetime": obs['obsDatetime'],
+                            "concept": obs['concept']['uuid'],
+                            "value": obs['value']
+                        }
+                    )
+                for key, value in data.items():
+                    if value:
                         if key == obs['concept']['uuid']:
                             ae['encounter']['obs'].append(
                                 {
@@ -318,20 +345,20 @@ def create_update_adverse_event(req, patientuuid, data, formid=None):
 
             }
         }
-    for key, value in data.items():
-        if key == "csrfmiddlewaretoken":
-            continue
-        if key == "encounterDateTime":
-            continue
-        if value:
-            ae['encounter']['obs'].append(
-                {
-                    "person": patientuuid,
-                    "obsDatetime": current_date_time_iso,
-                    "concept": key,
-                    "value": value if not cu.is_date(value) else cu.date_to_sql_format(value)
-                }
-            )
+        for key, value in data.items():
+            if key == "csrfmiddlewaretoken":
+                continue
+            if key == "encounterDateTime":
+                continue
+            if value:
+                ae['encounter']['obs'].append(
+                    {
+                        "person": patientuuid,
+                        "obsDatetime": current_date_time_iso,
+                        "concept": key,
+                        "value": value if not cu.is_date(value) else cu.date_to_sql_format(value)
+                    }
+                )
     try:
         url = f"mdrtb/adverseevents/{formid}" if formid else "mdrtb/adverseevents"
         print("===================================")
@@ -411,19 +438,19 @@ def create_update_form89(req, patientuuid, data, formid=None):
                         "obs": []
                     }
                 }
-            for key, value in data.items():
-                if value:
-                    for obs in response['obs']:
-                        if obs['concept']['uuid'] == Concepts.PATIENT_PROGRAM_ID.value:
-                            form89['encounter']['obs'].append(
-                                {
-                                    "uuid": obs['uuid'],
-                                    "person": obs['person']['uuid'],
-                                    "obsDatetime": obs['obsDatetime'],
-                                    "concept": obs['concept']['uuid'],
-                                    "value": obs['value']
-                                }
-                            )
+            for obs in response['obs']:
+                if obs['concept']['uuid'] == Concepts.PATIENT_PROGRAM_ID.value:
+                    form89['encounter']['obs'].append(
+                        {
+                            "uuid": obs['uuid'],
+                            "person": obs['person']['uuid'],
+                            "obsDatetime": obs['obsDatetime'],
+                            "concept": obs['concept']['uuid'],
+                            "value": obs['value']
+                        }
+                    )
+                for key, value in data.items():
+                    if value:
                         if key == obs['concept']['uuid']:
                             form89['encounter']['obs'].append(
                                 {
@@ -526,19 +553,19 @@ def create_update_regimen_form(req, patientuuid, data, formid=None):
                         "obs": []
                     }
                 }
-            for key, value in data.items():
-                if value:
-                    for obs in response['obs']:
-                        if obs['concept']['uuid'] == Concepts.PATIENT_PROGRAM_ID.value:
-                            regimen['encounter']['obs'].append(
-                                {
-                                    "uuid": obs['uuid'],
-                                    "person": obs['person']['uuid'],
-                                    "obsDatetime": obs['obsDatetime'],
-                                    "concept": obs['concept']['uuid'],
-                                    "value": obs['value']
-                                }
-                            )
+            for obs in response['obs']:
+                if obs['concept']['uuid'] == Concepts.PATIENT_PROGRAM_ID.value:
+                    regimen['encounter']['obs'].append(
+                        {
+                            "uuid": obs['uuid'],
+                            "person": obs['person']['uuid'],
+                            "obsDatetime": obs['obsDatetime'],
+                            "concept": obs['concept']['uuid'],
+                            "value": obs['value']
+                        }
+                    )
+                for key, value in data.items():
+                    if value:
                         if key == obs['concept']['uuid']:
                             regimen['encounter']['obs'].append(
                                 {
@@ -650,19 +677,19 @@ def create_update_drug_resistence_form(req, patientuuid, data, formid=None):
                         "obs": []
                     }
                 }
-            for key, value in data.items():
-                if value:
-                    for obs in response['obs']:
-                        if obs['concept']['uuid'] == Concepts.PATIENT_PROGRAM_ID.value:
-                            drug_resistance['encounter']['obs'].append(
-                                {
-                                    "uuid": obs['uuid'],
-                                    "person": obs['person']['uuid'],
-                                    "obsDatetime": obs['obsDatetime'],
-                                    "concept": obs['concept']['uuid'],
-                                    "value": obs['value']
-                                }
-                            )
+            for obs in response['obs']:
+                if obs['concept']['uuid'] == Concepts.PATIENT_PROGRAM_ID.value:
+                    drug_resistance['encounter']['obs'].append(
+                        {
+                            "uuid": obs['uuid'],
+                            "person": obs['person']['uuid'],
+                            "obsDatetime": obs['obsDatetime'],
+                            "concept": obs['concept']['uuid'],
+                            "value": obs['value']
+                        }
+                    )
+                for key, value in data.items():
+                    if value:
                         if key == obs['concept']['uuid']:
                             drug_resistance['encounter']['obs'].append(
                                 {

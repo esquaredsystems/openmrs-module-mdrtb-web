@@ -50,10 +50,10 @@
         <label class="font-bold text-[#9E9E9E] w-1/5"
           for="encounterDatetime">{{'mdrtb.date'|get_message:request.session.locale}}</label>
         {% if state == 'edit' %}
-        <input class="input form-control w-4/5" type="date" name="encounterDatetime"
+        <input class="input form-control w-3/5" type="date" name="encounterDatetime"
           value="{{form.encounter.encounterDatetime | iso_to_normal_date}}" />
         {% else %}
-        <input class="input w-3/5" type="date" name="encounterDatetime" />
+        <input class="input form-control w-3/5" type="date" name="encounterDatetime" />
         {% endif %}
       </div>
       <div class="input-container">

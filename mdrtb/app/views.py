@@ -294,7 +294,9 @@ def edit_program(req, uuid, programid):
 def delete_program(req, uuid, programid):
     if programid:
         try:
-            ru.delete(req, f'programenrollment/{programid}')
+            status, _ = ru.delete(req, f'programenrollment/{programid}')
+            if status:
+                messages.warning(req, "Program deleted successfully")
         except Exception as e:
             print(traceback.format_exc())
             print(e)

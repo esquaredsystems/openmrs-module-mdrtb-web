@@ -9,7 +9,9 @@
 {%block content%}
 
 <div>
-  <form action="{% url 'adverseevents' patientid=patient_id %}" method="post" class="flex flex-col">
+  <form
+    action="{% if state == 'edit' %}{% url 'editadverseevents' patientid=patient_id formid=form.uuid %}{% else %}{% url 'adverseevents' patientid=patient_id %}{% endif %}"
+    method="post" class="flex flex-col">
     {% csrf_token %}
     <div class="m-16 flex flex-col justify-center space-y-8">
       {% if state == 'edit' %}
@@ -1211,8 +1213,8 @@
             <select name="dfad56a0-6f69-437b-bc50-28195039a9e2" class="input form-control">
               {% if state == 'edit' %}
 
-              <option selected value="{{form.causalityAssessmentResult2.uuid}}">
-                {{form.causalityAssessmentResult2.display}}</option>
+              <option selected value="{{form.casualityAssessmentResult2.uuid}}">
+                {{form.casualityAssessmentResult2.display}}</option>
               {% else %}
 
               <option selected value="">Select</option>
@@ -1367,11 +1369,11 @@
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.outcomeDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input id="outcomeDate" value="{{form.outcomeDate | iso_to_normal_date}"
+            <input id="outcomeDate" value="{{form.outcomeDate | iso_to_normal_date}}"
               name="2e418adc-f3f2-4d49-bc4d-dcbe82dc5a17" type="date" class="input form-control">
             {% else %}
 
-            <input name="2e418adc-f3f2-4d49-bc4d-dcbe82dc5a17" type="date" class="input form-control">
+            <input id="outcomeDate" name="2e418adc-f3f2-4d49-bc4d-dcbe82dc5a17" type="date" class="input form-control">
             {% endif %}
 
           </div>
@@ -1448,20 +1450,25 @@
         $('#saeType').prop('disabled', false)
         $('#specialType').prop('disabled', true)
       } else if (eventType === "afd112d1-e7e8-4e21-81fa-f00490b4e0ef") {
-        console.log('DISABLE SAE')
         $('#specialType').prop('disabled', false)
+        $('#saeType').prop('disabled', true)
+      } else {
+        $('#specialType').prop('disabled', true)
         $('#saeType').prop('disabled', true)
       }
     })
 
     $('#actionOutcome').change((e) => {
       let outcome = e.target.value
+      let outcomeDate = $('#outcomeDate')
       if (outcome === "97db90d6-c5f9-46b5-bae0-dfe8368673ae") {
-        $('#outcomeDate').prop('disabled', true)
+        outcomeDate.val("")
+        outcomeDate.prop('disabled', true)
       } else if (outcome === "76fe4243-bac0-4a7b-8799-acdfe6affa13") {
-        $('#outcomeDate').prop('disabled', true)
+        outcomeDate.val("")
+        outcomeDate.prop('disabled', true)
       } else {
-        $('#outcomeDate').prop('disabled', false)
+        outcomeDate.prop('disabled', false)
       }
     })
 
@@ -1478,6 +1485,16 @@
       $('select').prop('disabled', false)
       $('textarea').prop('disabled', false)
       $('#canceleditbtn').prop('hidden', false)
+      if ($('#eventType').val() === "937e3189-ebcb-4deb-a25b-836ef83b2727") {
+        $('#saeType').prop('disabled', false)
+        $('#specialType').prop('disabled', true)
+      } else if ($('#eventType').val() === "afd112d1-e7e8-4e21-81fa-f00490b4e0ef") {
+        $('#specialType').prop('disabled', false)
+        $('#saeType').prop('disabled', true)
+      } else {
+        $('#specialType').prop('disabled', true)
+        $('#saeType').prop('disabled', true)
+      }
     })
     $('#canceleditbtn').click(function () {
       $('input').prop('disabled', true)
