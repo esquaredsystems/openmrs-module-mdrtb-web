@@ -1,0 +1,105 @@
+{
+  "uuid": "6da0c77a-3f83-4191-bb53-43bde0effe60",
+  "display": "BRONCHUS",
+  "name": {
+    "display": "BRONCHUS",
+    "uuid": "0270e0fe-2e30-4d70-890f-0d8d38f7a758",
+    "name": "BRONCHUS",
+    "locale": "en",
+    "localePreferred": true,
+    "conceptNameType": "FULLY_SPECIFIED",
+    "links": [
+      {
+        "rel": "self",
+        "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/6da0c77a-3f83-4191-bb53-43bde0effe60/name/0270e0fe-2e30-4d70-890f-0d8d38f7a758"
+      },
+      {
+        "rel": "full",
+        "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/6da0c77a-3f83-4191-bb53-43bde0effe60/name/0270e0fe-2e30-4d70-890f-0d8d38f7a758?v=full"
+      }
+    ],
+    "resourceVersion": "1.9"
+  },
+  "datatype": {
+    "uuid": "8d4a4c94-c2cc-11de-8d13-0010c6dffd0f",
+    "display": "N/A",
+    "links": [
+      {
+        "rel": "self",
+        "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f"
+      }
+    ]
+  },
+  "conceptClass": {
+    "uuid": "8d492774-c2cc-11de-8d13-0010c6dffd0f",
+    "display": "Misc",
+    "links": [
+      {
+        "rel": "self",
+        "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f"
+      }
+    ]
+  },
+  "set": false,
+  "version": "",
+  "retired": false,
+  "names": [
+    {
+      "uuid": "bbcf5118-71cf-42df-a7e4-36829bc18f03",
+      "display": "NOT_ENTERED",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/6da0c77a-3f83-4191-bb53-43bde0effe60/name/bbcf5118-71cf-42df-a7e4-36829bc18f03"
+        }
+      ]
+    },
+    {
+      "uuid": "16dd3e8b-d2d3-4df6-90ec-52741379a9e5",
+      "display": "БРОНХ",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/6da0c77a-3f83-4191-bb53-43bde0effe60/name/16dd3e8b-d2d3-4df6-90ec-52741379a9e5"
+        }
+      ]
+    },
+    {
+      "uuid": "0270e0fe-2e30-4d70-890f-0d8d38f7a758",
+      "display": "BRONCHUS",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/6da0c77a-3f83-4191-bb53-43bde0effe60/name/0270e0fe-2e30-4d70-890f-0d8d38f7a758"
+        }
+      ]
+    }
+  ],
+  "descriptions": [],
+  "mappings": [
+    {
+      "uuid": "a4cb8208-ae0b-11ed-89cb-00155d694c4d",
+      "display": "org.openmrs.module.mdrtb: 594 (BRONCHUS)",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/6da0c77a-3f83-4191-bb53-43bde0effe60/mapping/a4cb8208-ae0b-11ed-89cb-00155d694c4d"
+        }
+      ]
+    }
+  ],
+  "answers": [],
+  "setMembers": [],
+  "attributes": [],
+  "links": [
+    {
+      "rel": "self",
+      "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/6da0c77a-3f83-4191-bb53-43bde0effe60"
+    },
+    {
+      "rel": "full",
+      "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/6da0c77a-3f83-4191-bb53-43bde0effe60?v=full"
+    }
+  ],
+  "resourceVersion": "2.0"
+}

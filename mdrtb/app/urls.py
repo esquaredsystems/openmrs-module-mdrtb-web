@@ -17,8 +17,10 @@ urlpatterns = [
     path('patient/<str:uuid>/mdrtbprogramenrollment',
          views.enroll_patient_in_mdrtb, name="mdrtbprogramenroll"),
 
-    path('patient/<str:uuid>/editprogram/<str:programid>',
-         views.edit_program, name="editprogram"),
+    path('patient/<str:uuid>/editdotsprogram/<str:programid>',
+         views.edit_dots_program, name="editdotsprogram"),
+    path('patient/<str:uuid>/editmdrtbprogram/<str:programid>',
+         views.edit_mdrtb_program, name="editmdrtbprogram"),
     path('patient/<str:uuid>/program/<str:programid>',
          views.delete_program, name="deleteprogram"),
     path('patient/<str:uuid>/enrolledprograms',

@@ -93,7 +93,7 @@
 
                 <tr>
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
-                    <a href="{% url 'editprogram' uuid=uuid programid=program.uuid %}"
+                    <a href="{% if program.program.uuid == 'e80fec43-f2b5-45b0-aec1-eaf74be26ff9' %}{% url 'editdotsprogram' uuid=uuid programid=program.uuid %}{% else %}{% url 'editmdrtbprogram' uuid=uuid programid=program.uuid %}{% endif %}"
                       class="cancel-button">{{program.program.name}}
                     </a>
                   </td>

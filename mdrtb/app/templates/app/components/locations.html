@@ -3,7 +3,7 @@
 {% tailwind_css %}
 
 
-<div id="locations-container">
+<div id="locations-container" class="flex-column-center space-y-4">
     <div class="input-container">
         <label class="input-label w-1/6  required"
             for="country">{{'Location.country'|get_message_openMRS:request.session.locale}}</label>

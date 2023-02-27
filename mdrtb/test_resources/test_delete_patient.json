@@ -1,0 +1,65 @@
+{
+  "uuid": "de286257-417e-41f6-9f9c-806420b0ad55",
+  "display": "",
+  "identifiers": [],
+  "person": {
+    "uuid": "de286257-417e-41f6-9f9c-806420b0ad55",
+    "display": "Unit Test Patient",
+    "gender": "F",
+    "age": 20,
+    "birthdate": "2003-01-01T00:00:00.000+0500",
+    "birthdateEstimated": true,
+    "dead": false,
+    "deathDate": null,
+    "causeOfDeath": null,
+    "preferredName": {
+      "uuid": "8e2ddd51-519b-45c3-818a-310c177a01f5",
+      "display": "Unit Test Patient",
+      "voided": true,
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/person/de286257-417e-41f6-9f9c-806420b0ad55/name/8e2ddd51-519b-45c3-818a-310c177a01f5"
+        }
+      ]
+    },
+    "preferredAddress": {
+      "uuid": "6a627d78-d379-4cc4-ae24-bb18fca46445",
+      "display": "Test Address",
+      "voided": true,
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/person/de286257-417e-41f6-9f9c-806420b0ad55/address/6a627d78-d379-4cc4-ae24-bb18fca46445"
+        }
+      ]
+    },
+    "attributes": [],
+    "voided": true,
+    "birthtime": null,
+    "deathdateEstimated": false,
+    "links": [
+      {
+        "rel": "self",
+        "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/person/de286257-417e-41f6-9f9c-806420b0ad55"
+      },
+      {
+        "rel": "full",
+        "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/person/de286257-417e-41f6-9f9c-806420b0ad55?v=full"
+      }
+    ],
+    "resourceVersion": "1.11"
+  },
+  "voided": true,
+  "links": [
+    {
+      "rel": "self",
+      "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/patient/de286257-417e-41f6-9f9c-806420b0ad55"
+    },
+    {
+      "rel": "full",
+      "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/patient/de286257-417e-41f6-9f9c-806420b0ad55?v=full"
+    }
+  ],
+  "resourceVersion": "1.8"
+}

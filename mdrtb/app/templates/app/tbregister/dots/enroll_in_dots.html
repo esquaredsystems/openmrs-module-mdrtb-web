@@ -28,9 +28,8 @@
     {{'Program.add'|get_message_openMRS:request.session.locale}}
   </h1>
   {% endif %}
-  <form id="enroll-form"
-    action="{% if state == 'edit' %}{% url 'editprogram' uuid=uuid programid=enrolled_program.uuid %}{% else %}{% url 'dotsprogramenroll' uuid=uuid %}{% endif %}"
-    method="post" class="flex flex-col">
+  <form id="enroll-form" action="{% if state == 'edit' %}{% url 'editdotsprogram' uuid=uuid programid=enrolled_program.uuid %}{% else %}
+    {% url 'dotsprogramenroll' uuid=uuid %}{% endif %}" method="post" class="flex flex-col">
 
     {% csrf_token %}
 
@@ -116,7 +115,7 @@
 
           <input class="input form-control" type="text" name="location" id="location"
             value="{{enrolled_program.location.name}}" />
-          <div hidden id="locations-container" class="flex-column-center space-y-4">
+          <div hidden id="locations" class="flex-column-center space-y-4">
             {% include 'app/components/locations.html' %}
           </div>
         </div>
@@ -126,8 +125,10 @@
       {% include 'app/components/locations.html' %}
       {% endif %}
       <div id="states" class="flex-column-center space-y-4">
+        {% if state != 'edit' %}
         <h3 id="initialStates" class="primary-heading text-xl">
           {{'Program.initialStates' | get_message_openMRS:request.session.locale}}</h3>
+        {% endif %}
 
       </div>
     </div>
@@ -213,12 +214,12 @@
 
     })
     $('#editLocations').click(() => {
-      if ($('#locations-container').prop('hidden')) {
+      if ($('#locations').prop('hidden')) {
         $('select').prop('disabled', false)
         $('button[type=submit]').prop('disabled', false)
         $('#prefilledlocation').removeClass('input-container').addClass('flex-column-center')
         $('#location').prop('hidden', true)
-        $('#locations-container').prop('hidden', false)
+        $('#locations').prop('hidden', false)
         $('#editLocations').html(
           `
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -231,7 +232,7 @@
         $('button[type=submit]').prop('disabled', true)
         $('#location').prop('hidden', false)
         $('#prefilledlocation').removeClass('flex-column-center').addClass('input-container')
-        $('#locations-container').prop('hidden', true)
+        $('#locations').prop('hidden', true)
         $('#editLocations').html(
           `
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
