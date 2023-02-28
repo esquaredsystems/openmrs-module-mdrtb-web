@@ -1,0 +1,512 @@
+{% extends 'app/base/base.html' %}
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+
+
+{%block content%}
+
+<div>
+  <form
+    action="{% if state == 'edit' %}{% url 'edittb03u' uuid=uuid formid=form.uuid %}{% else %}{% url 'tb03u' uuid=uuid %}{% endif %}"
+    method="post" class="flex flex-col">
+    {% csrf_token %}
+    <div class="m-16 flex flex-col justify-center space-y-8">
+      {% if state == 'edit' %}
+      <div id="form-info" class="flex-center space-x-4">
+        <h1 class="text-[#2D9CDB] text-3xl font-bold">
+          {{'mdrtb.edit'|get_message:request.session.locale}}
+          {{'mdrtb.tb03u'|get_message:request.session.locale}}
+        </h1>
+        <button type="button" id="editbtn">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+          </svg>
+
+        </button>
+        <button hidden type="button" id="canceleditbtn" class="cancel-button">Cancel</button>
+        <a class="cancel-button" href="{% url 'deletetb03u' formid=form.uuid %}" type="button" id="deletetb03">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+          </svg>
+        </a>
+
+
+      </div>
+      {% else %}
+      <h1 class="text-[#2D9CDB] text-3xl font-bold">
+        {{'mdrtb.tb03u'|get_message:request.session.locale}} Form
+      </h1>
+      {% endif %}
+
+      <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4">
+        <div class="flex items-center space-x-12">
+          <div class="space-x-3">
+            <span class="font-bold">
+              {{'mdrtb.name'|get_message:request.session.locale}}:
+            </span>
+            <span class="tb03-form-label"> {{current_patient_program_flow.current_patient.name}} </span>
+          </div>
+          <div class="space-x-3">
+            <span class="font-bold">
+              {{'mdrtb.tb03.tb03RegistrationNumber'|get_message:request.session.locale}}:
+            </span>
+            <span class="tb03-form-label"> {{identifiers.dots.identifier}} </span>
+          </div>
+          <div class="space-x-3">
+            <span class="font-bold">
+              {{'mdrtb.tb03.tb03RegistrationYear'|get_message:request.session.locale}}:
+            </span>
+            <span class="tb03-form-label  w-full">
+              {{current_patient_program_flow.current_patient.auditInfo.dateCreated|get_year}}
+            </span>
+          </div>
+
+        </div>
+        <div class="flex items-center space-x-12">
+          <div class="space-x-3">
+            <span class="font-bold">
+              {{'mdrtb.tb03.ageAtMdrRegistration'|get_message:request.session.locale}}:
+            </span>
+            <span class="tb03-form-label  w-full"> {{current_patient_program_flow.current_patient.age}} </span>
+          </div>
+          <div class="space-x-3">
+
+            <span class="font-bold">
+              {{'mdrtb.tb03.dateOfBirth'|get_message:request.session.locale}}:
+            </span>
+            <span class="tb03-form-label  w-full">
+              {{current_patient_program_flow.current_patient.dob | iso_to_normal_date}} </span>
+          </div>
+          <div class="space-x-3">
+            <span class="font-bold">
+              {{'mdrtb.tb03.gender'|get_message:request.session.locale}}:
+            </span>
+            <span class="tb03-form-label  w-full"> {{current_patient_program_flow.current_patient.gender}} </span>
+          </div>
+          <div class="space-x-3">
+            <span class="font-bold">
+              {{'mdrtb.tb03.address'|get_message:request.session.locale}}:
+
+            </span>
+            <span class="tb03-form-label  w-full">
+              {{current_patient_program_flow.current_patient.address}} </span>
+          </div>
+        </div>
+      </div>
+      <div class="p-4 flex flex-col justify-center space-y-4">
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full" for="dateOfResistance">
+              {{'mdrtb.tb03u.dateOfResistanceTypeDuringTreatment'|get_message:request.session.locale}}</label>
+            <input class="input form-control" type="date" disabled
+              value="{{current_patient_program_flow.current_program.dateEnrolled | iso_to_normal_date}}">
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="region">{{'mdrtb.region'|get_message:request.session.locale}}</label>
+            <select id="region-select" class="input form-control" name="region">
+              <option selected value="">Select</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.district'|get_message:request.session.locale}}</label>
+            <select disabled id="district-select" class="input form-control" name="district">
+              <option selected value="">Select</option>
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.facility'|get_message:request.session.locale}}</label>
+            <select disabled id="facility-select" class="input form-control" name="facility">
+              <option selected value="">Select</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="sldRegisterNumber">{{'mdrtb.tb03.sldRegisterNumber'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input class="input form-control" type="number" value="{{form.sldRegisterNumber}}"
+              name="6d79af1d-ae0c-4e68-8e0f-6cc84c4a9106">
+            {% else %}
+            <input class="input form-control" type="number" name="6d79af1d-ae0c-4e68-8e0f-6cc84c4a9106">
+            {% endif %}
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.tb03.siteOfDisease'|get_message:request.session.locale}}</label>
+            <select name="31b4c61c-0370-102d-b0e3-001ec94a0cc1" class="input form-control">
+              {% if state == 'edit' %}
+              <option selected value="{{form.anatomicalSite.uuid}}">{{form.anatomicalSite.display}}</option>
+              {% else %}
+              <option selected value="">Select</option>
+              {% endif %}
+              {% for concept in concepts.siteoftbdisease %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label  w-full"
+              for="name">{{'mdrtb.tb03.mdrStatus'|get_message:request.session.locale}}</label>
+            <select name="69abc246-13a9-4cbf-92be-83ac59a8938c" class="input form-control">
+              {% if state == 'edit' %}
+              <option selected value="{{form.mdrStatus.uuid}}">{{form.mdrStatus.display}}</option>
+              {% else %}
+              <option selected value="">Select</option>
+              {% endif %}
+              {% for concept in concepts.mdrtbstatus %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="confirmationDate">{{'mdrtb.tb03.confirmationDate'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input name="c029cb31-867b-4e2e-b75d-e72ee584524a" value="{{form.confirmationDate | iso_to_normal_date}}"
+              type="date" class="input form-control" />
+            {% else %}
+            <input name="c029cb31-867b-4e2e-b75d-e72ee584524a" type="date" class="input form-control" />
+            {% endif %}
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="patientCategory">{{'mdrtb.tb03.patientCategory'|get_message:request.session.locale}}</label>
+            <select name="ebde5ed8-4717-472d-9172-599af069e94d" class="input form-control">
+              {% if state == 'edit' %}
+              <option selected value="{{form.patientCategory.uuid}}">{{form.patientCategory.display}}</option>
+              {% else %}
+              <option selected value="">Select</option>
+              {% endif %}
+              {% for concept in concepts.prescribedtreatment %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="mdrTreatmentStartDate">{{'mdrtb.tb03.mdrTreatmentStartDate'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input name="8abe1e01-f167-4618-9f8e-e21ac3dcdf14"
+              value="{{form.mdrTreatmentStartDate | iso_to_normal_date}}" type="date" class="input form-control" />
+            {% else %}
+            <input name="8abe1e01-f167-4618-9f8e-e21ac3dcdf14" type="date" class="input form-control" />
+            {% endif %}
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label  w-full"
+              for="name">{{'mdrtb.tb03.txLocation'|get_message:request.session.locale}}</label>
+            <select name="37b2cf33-aa3d-4638-95e1-2f886d7eb06c" class="input form-control">
+              {% if state == 'edit' %}
+              <option selected value="{{form.treatmentLocation.uuid}}">{{form.treatmentLocation.display}}</option>
+              {% else %}
+              <option selected value="">Select</option>
+              {% endif %}
+              {% for concept in concepts.treatmentlocation %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label  w-full"
+              for="name">{{'mdrtb.tb03.nameOfTreatmentLocation'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input name="59289c40-8f75-4cee-a5f2-90cbc66fa0e6" value="{{form.nameOfTreatmentLocation}}" type="text"
+              class="input form-control" />
+            {% else %}
+            <input name="59289c40-8f75-4cee-a5f2-90cbc66fa0e6" type="text" class="input form-control" />
+            {% endif %}
+
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label  w-full"
+              for="resistancetype">{{'mdrtb.tb03.resistanceType'|get_message:request.session.locale}}</label>
+            <select name="3f5a6930-5ead-4880-80ce-6ab79f4f6cb1" class="input form-control">
+              {% if state == 'edit' %}
+              <option selected value="{{form.resistanceType.uuid}}">{{form.resistanceType.display}}</option>
+              {% else %}
+              <option selected value="">Select</option>
+              {% endif %}
+              {% for concept in concepts.resistancetype %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label  w-full"
+              for="basisForDiagnosis">{{'mdrtb.tb03.basisForDiagnosis'|get_message:request.session.locale}}</label>
+            <select name="207a0630-f0af-4208-9a81-326b8c37ebe2" class="input form-control">
+              {% if state == 'edit' %}
+              <option selected value="{{form.basisForDiagnosis.uuid}}">{{form.basisForDiagnosis.display}}</option>
+              {% else %}
+              <option selected value="">Select</option>
+              {% endif %}
+              {% for concept in concepts.methodofdetection %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+
+
+          <div class="input-container">
+            <label class="tb03-form-label  w-full"
+              for="name">{{'mdrtb.hivStatus'|get_message:request.session.locale}}</label>
+            <select name="31b94ef8-0370-102d-b0e3-001ec94a0cc1" class="input form-control">
+              {% if state == 'edit' %}
+              <option selected value="{{form.hivStatus.uuid}}">{{form.hivStatus.display}}</option>
+              {% else %}
+              <option selected value="">Select</option>
+              {% endif %}
+              {% for concept in concepts.resultofhivtest %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label  w-full"
+              for="name">{{'mdrtb.tb03.hivTestDate'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input name="a8f2eacc-2c36-4ddd-b3b8-d80ecfb27bf3" value="{{form.hivTestDate | iso_to_normal_date}}"
+              type="date" class="input form-control">
+            {% else %}
+            <input name="a8f2eacc-2c36-4ddd-b3b8-d80ecfb27bf3" type="date" class="input form-control">
+            {% endif %}
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label  w-full"
+              for="name">{{'mdrtb.tb03.artStartDate'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input name="767fed8f-3e64-4567-a2c6-258444296787" type="date" class="input form-control"
+              value="{{form.artStartDate|iso_to_normal_date}}" />
+            {% else %}
+            <input name="767fed8f-3e64-4567-a2c6-258444296787" type="date" class="input form-control" />
+            {% endif %}
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label  w-full"
+              for="name">{{'mdrtb.tb03.pctStartDate'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input name="3458f801-1532-4055-b7f5-f3adf90ec7c7" type="date" class="input form-control"
+              value="{{form.pctStartDate | iso_to_normal_date}}" />
+            {% else %}
+            <input name="3458f801-1532-4055-b7f5-f3adf90ec7c7" type="date" class="input form-control" />
+            {% endif %}
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+
+          <div class="input-container">
+            <label class="tb03-form-label  w-full"
+              for="name">{{'mdrtb.tb03.treatmentOutcome'|get_message:request.session.locale}}</label>
+            <select id="outcome-select" name="31c2c834-0370-102d-b0e3-001ec94a0cc1" class="input form-control">
+              {% if state == 'edit' %}
+              <option selected value="{{form.treatmentOutcome.uuid}}">{{form.treatmentOutcome.display}}</option>
+              {% else %}
+              <option selected value="">Select</option>
+              {% endif %}
+              {% for concept in concepts.multidrugresistanttuberculosistreatmentoutcome %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label  w-full"
+              for="name">{{'mdrtb.tb03.treatmentOutcomeDateOnly'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input name="5060d5ce-df8e-4090-b09e-62e40a29201a" type="date" class="input form-control"
+              value="{{form.treatmentOutcomeDate | iso_to_normal_date}}" />
+            {% else %}
+            <input name="5060d5ce-df8e-4090-b09e-62e40a29201a" type="date" class="input form-control" />
+            {% endif %}
+
+          </div>
+
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label  w-full"
+              for="name">{{'mdrtb.relapsed'|get_message:request.session.locale}}</label>
+            <div class="flex-center space-x-4">
+              <div class="flex-center space-x-2">
+                <label for="yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
+                {% if state == 'edit' %}
+                {% if form.relapsed.uuid == '31b27f6a-0370-102d-b0e3-001ec94a0cc1' %}
+                <input checked name="53aaa4c7-49c0-4716-9af0-9098d35bacc5" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
+                {% else %}
+                <input name="53aaa4c7-49c0-4716-9af0-9098d35bacc5" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
+                {% endif %}
+                {% else %}
+                <input name="53aaa4c7-49c0-4716-9af0-9098d35bacc5" type="radio"
+                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
+                {% endif %}
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
+                {% if state == 'edit' %}
+                {% if form.relapsed.uuid == '31b2803c-0370-102d-b0e3-001ec94a0cc1' %}
+                <input checked name="53aaa4c7-49c0-4716-9af0-9098d35bacc5" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
+                {% else %}
+                <input name="53aaa4c7-49c0-4716-9af0-9098d35bacc5" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
+                {% endif %}
+                {% else %}
+                <input name="53aaa4c7-49c0-4716-9af0-9098d35bacc5" type="radio"
+                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label  w-full"
+              for="name">{{'mdrtb.tb03.relapseMonth'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input name="79dff4a3-4093-4df6-8547-8a85e2569d4c" type="number" pattern="[1-12]{12}"
+              title="Enter month number" class="input form-control" value="{{form.relapseMonth}}" />
+            {% else %}
+            <input name="79dff4a3-4093-4df6-8547-8a85e2569d4c" type="number" pattern="[1-12]{12}"
+              title="Enter month number" class="input form-control" />
+            {% endif %}
+
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+
+
+          <div class="input-container">
+            <label class="tb03-form-label  w-full"
+              for="name">{{'mdrtb.causeOfDeath'|get_message:request.session.locale}}</label>
+            <select id="cause-of-death" name="0f7abf6d-e0bb-46ce-aa69-5214b0d2a295" class="input form-control">
+              {% if state == 'edit' %}
+              <option selected value="{{form.causeOfDeath.uuid}}">{{form.causeOfDeath.display}}</option>
+              {% else %}
+              <option selected value="">Select</option>
+              {% endif %}
+              {% for concept in concepts.causeofdeath %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+
+
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label  w-full"
+              for="name">{{'mdrtb.tb03.otherCauseOfDeath'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.otherCauseOfDeath}}" name="bdac7716-d85b-4d12-a589-e04570644c26" type="text"
+              class="input form-control" />
+            {% else %}
+            <input name="bdac7716-d85b-4d12-a589-e04570644c26" type="text" class="input form-control" />
+            {% endif %}
+          </div>
+
+
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label style="width: 35%;" class="tb03-form-label  w-full"
+              for="name">{{'mdrtb.tb03.afterOutcomeDeathDate'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input id="date-of-death" value="{{form.dateOfDeathAfterTreatmentOutcome | iso_to_normal_date }}"
+              name="3d2e4053-26d7-4f86-b88a-93011ae1725f" type="date" class="input form-control" />
+            {% else %}
+            <input id="date-of-death" name="3d2e4053-26d7-4f86-b88a-93011ae1725f" type="date"
+              class="input form-control" />
+            {% endif %}
+
+          </div>
+
+
+
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label style="width: 8rem;" class="tb03-form-label "
+              for="name">{{'mdrtb.tb03.clinicalNotes'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <textarea name="31b474e6-0370-102d-b0e3-001ec94a0cc1" class="input form-control" cols="10"
+              rows="5">{{form.clinicalNotes}}</textarea>
+            {% else %}
+            <textarea name="31b474e6-0370-102d-b0e3-001ec94a0cc1" class="input form-control" cols="10"
+              rows="5"></textarea>
+            {% endif %}
+
+          </div>
+        </div>
+      </div>
+      <div class="p-4 flex items-center">
+        <button type="submit" class="button-primary w-1/5">
+          Save
+        </button>
+
+        <a href="javascript:history.go(-1)" class="cancel-button">
+          Cancel
+        </a>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  let state = "{{state}}";
+  if (state === 'edit') {
+    $('input').prop('disabled', true).prop('', false)
+    $('input[name=csrfmiddlewaretoken]').prop('disabled', false)
+    $('select').prop('disabled', true).prop('', false)
+    $('textarea').prop('disabled', true).prop('', false)
+    $('#canceleditbtn').prop('hidden', true)
+  }
+  $('#editbtn').click(function () {
+    $('input').prop('disabled', false)
+    $('select').prop('disabled', false)
+    $('textarea').prop('disabled', false)
+    $('#canceleditbtn').prop('hidden', false)
+  })
+  $('#canceleditbtn').click(function () {
+    $('input').prop('disabled', true)
+    $('select').prop('disabled', true)
+    $('textarea').prop('disabled', true)
+    $('#canceleditbtn').prop('hidden', true)
+  })
+
+  $('#outcome-select').change((e) => {
+    let selected = e.target.value
+    if (selected === "31b6b7d8-0370-102d-b0e3-001ec94a0cc1") {
+      $('#cause-of-death').prop('required', true);
+      $('#date-of-death').prop('required', true);
+    }
+  })
+
+  let date = new Date();
+  maxDate = date.toISOString().substring(0, 10);
+  $('input[type="date"]').prop("max", maxDate)
+</script>
+
+{% endblock %}

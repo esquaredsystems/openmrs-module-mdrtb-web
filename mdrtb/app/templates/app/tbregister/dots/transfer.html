@@ -1,0 +1,119 @@
+{% extends 'app/base/base.html' %}
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="m-16">
+  <h1 class="text-[#2D9CDB] text-3xl font-bold">
+    {{'mdrtb.transferIn'|get_message:request.session.locale}}
+  </h1>
+  <form action="{% url 'dotsEnroll' %}" method="post" class="flex flex-col">
+    {% csrf_token %}
+
+    <div class="p-4 flex flex-col justify-center space-y-4">
+      <div class="input-container">
+        <label class="font-bold text-[#9E9E9E] w-2/5" for="">{{'mdrtb.date'|get_message:request.session.locale}}</label>
+        <input class="input w-3/5" type="date" name="enrollmentdate" id="enrollmentdate" required />
+      </div>
+      <div class="input-container">
+        <label class="font-bold text-[#9E9E9E] w-2/5"
+          for="">{{'mdrtb.oblast'|get_message:request.session.locale}}</label>
+        <select class="input w-3/5 disabled:pointer-events-none" name="oblast" id="oblast-select" required>
+          <option value="None">Select</option>
+        </select>
+      </div>
+      <div class="input-container">
+        <label class="font-bold text-[#9E9E9E] w-2/5"
+          for="">{{'mdrtb.district'|get_message:request.session.locale}}</label>
+        <select class="input w-3/5" name="district" id="district-select" required>
+
+        </select>
+      </div>
+      <div class="input-container">
+        <label class="font-bold text-[#9E9E9E] w-2/5"
+          for="">{{'mdrtb.facility'|get_message:request.session.locale}}</label>
+        <select class="input w-3/5" name="facility" id="facility-select">
+
+        </select>
+      </div>
+    </div>
+    <div class="flex items-center p-4 -space-x-8">
+      <button class="bg-[#2D9CDB] p-2 w-1/5 rounded-md text-white">
+        Register
+      </button>
+      <button class="p-2 font-bold w-1/5 rounded-md underline text-[#044062]">
+        Cancel
+      </button>
+    </div>
+  </form>
+
+  <script>
+    const setMaxDate = () => {
+      let date = new Date();
+      maxDate = date.toISOString().substring(0, 10);
+      $("#enrollmentdate").prop("max", maxDate);
+    };
+
+    setMaxDate();
+    var locations = JSON.parse("{{locations | escapejs }}");
+    let tjkRegions = locations[0].children;
+    function setLocations(tjkRegions) {
+
+      for (let location of tjkRegions) {
+
+        if (location.level === "region") {
+
+          $("#oblast-select").append(
+            $("<option>", {
+              value: location.name,
+              text: location.name,
+            })
+          );
+        }
+      }
+
+    }
+
+
+    $("#oblast-select").change(function () {
+      $("#district-select").prop("disabled", false);
+
+      let selectedCountry = $("#oblast-select").val();
+      for (let location of tjkRegions) {
+        if (location.name === selectedCountry) {
+          if (location.children != undefined) {
+            for (child of location.children) {
+              if (child.level === "district") {
+                $("#district-select").append(
+                  $("<option>", {
+                    value: child.name,
+                    text: child.name,
+                  })
+                );
+              }
+            }
+          }
+        }
+      }
+    });
+
+
+
+
+
+
+    function disableLocationsInput() {
+      $('#district-select').prop('disabled', true)
+      $('#facility-select').prop('disabled', true)
+    }
+    disableLocationsInput()
+    setLocations(tjkRegions);
+
+  </script>
+</div>
+
+{% endblock %}

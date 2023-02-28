@@ -1,0 +1,15 @@
+import enum
+
+
+class EncounterType(enum.Enum):
+    ADVERSE_EVENT = "bfa6ef9f-a8fe-4bd3-ab8c-ec6bbfc85457"
+    FROM_89 = "44539237-5401-424c-84d7-6694436ed2a0"
+    LAB_RESULT = "d8194104-04af-455f-a623-4d9302f38ea3"
+    PV_REGIMEN = "99f4f9d8-b23f-4406-bb03-03e1237634aa"
+    RESISTANCE_DURING_TREATMENT = "a3ca01a4-6ff8-4909-b483-1ceb0f354d40"
+    SPECIMEN_COLLECTION = "327e85ce-0370-102d-b0e3-001ec94a0cc1"
+    TB03 = "0479de9f-e5ea-45d7-b7a8-cda85bc8bc3d"
+    TB03u_MDR = "d25e1cb2-ef3b-40bb-a8d8-6010d1d431c0"
+    TB03u_XDR = "e7b10822-b5de-468b-9924-600c9fc4296d"
+    TRANSFER_IN = "1eb25540-552c-4641-9913-c7545fe0777f"
+    TRANSFER_OUT = "e27d997c-3f93-460b-ad84-77db79e2661e"

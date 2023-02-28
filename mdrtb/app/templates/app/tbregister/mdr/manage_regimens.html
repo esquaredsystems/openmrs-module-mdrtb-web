@@ -1,0 +1,283 @@
+{% extends 'app/base/base.html' %} 
+{% block title %}
+{{title}}
+{% endblock %}
+
+{% block content %}
+
+<div id="modal-parent" style="margin: 3rem">
+  <section id="modal"
+    class="flex flex-col justify-center space-y-8 h-4/5 transition-opacity ease-in-out duration-500 opacity-0 backdrop-blur-3xl inset-0 z-50 shadow-2xl m-10 bg-white w-3/5 mx-auto p-8 fixed top-0 left-0 right-0 bottom-0 my-auto">
+    <div class="flex items-center justify-between">
+      <h3 id="modal-testType" class="text-3xl">Regimen 1</h3>
+      <svg id="close-modal" onclick="closeModal()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+        stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white bg-red-700 cursor-pointer">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </div>
+    <div class="flex flex-col flex-nowrap overflow-y-auto gap-5 p-3">
+      <div class="flex-column-center space-y-4 flex-none h-min w-full bg-gray-200 p-4 rounded-md shadow-md">
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            {{'mdrtb.pv.cmDose'|get_message:request.session.locale}}:
+
+          </span>
+          <span class="w-3/5">
+            1.0
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            {{'mdrtb.pv.amDose'|get_message:request.session.locale}}:
+          </span>
+          <span class="w-3/5">
+            5.0
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            {{'mdrtb.pv.mfxDose'|get_message:request.session.locale}}:
+
+          </span>
+          <span class="w-3/5">
+            24.0
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            {{'mdrtb.pv.lfxDose'|get_message:request.session.locale}}:
+          </span>
+          <span class="w-3/5">
+            52.0
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            {{'mdrtb.pv.ptoDose'|get_message:request.session.locale}}: </span>
+          <span class="w-3/5">
+            2.0
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            {{'mdrtb.pv.csDose'|get_message:request.session.locale}}:
+          </span>
+          <span class="w-3/5">
+            215.0
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            {{'mdrtb.pv.zDose'|get_message:request.session.locale}}:
+          </span>
+          <span class="w-3/5">
+            1.0
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            {{'mdrtb.pv.eDose'|get_message:request.session.locale}}:
+          </span>
+          <span class="w-3/5">
+            11.0
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            {{'mdrtb.pv.hDose'|get_message:request.session.locale}}: </span>
+          <span class="w-3/5">
+            55.0
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            {{'mdrtb.pv.lzdDose'|get_message:request.session.locale}}:
+          </span>
+          <span class="w-3/5">
+            58.0
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            {{'mdrtb.pv.cfzDose'|get_message:request.session.locale}}:
+          </span>
+          <span class="w-3/5">
+            554.0
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            {{'mdrtb.pv.bdqDose'|get_message:request.session.locale}}:
+          </span>
+          <span class="w-3/5">
+            51.0
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            {{'mdrtb.pv.dlmDose'|get_message:request.session.locale}}
+          </span>
+          <span class="w-3/5">
+            2.0
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            {{'mdrtb.pv.impDose'|get_message:request.session.locale}}:
+          </span>
+          <span class="w-3/5">
+            4.0
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            {{'mdrtb.pv.amxDose'|get_message:request.session.locale}}:
+          </span>
+          <span class="w-3/5">
+            2.0
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            {{'mdrtb.pv.hrDose'|get_message:request.session.locale}}:
+          </span>
+          <span class="w-3/5">
+            2.0
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            {{'mdrtb.pv.hrzeDose'|get_message:request.session.locale}}:
+          </span>
+          <span class="w-3/5">
+            2.0
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            {{'mdrtb.pv.sDose'|get_message:request.session.locale}}:
+          </span>
+          <span class="w-3/5">
+            3.0
+          </span>
+        </div>
+        <div class="flex-center border-b space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            {{'mdrtb.pv.otherDose'|get_message:request.session.locale}}:
+          </span>
+          <span class="w-3/5">
+            3.0
+          </span>
+        </div>
+        
+
+      </div>
+
+    </div>
+  </section>
+
+  <div class="flex-center space-x-4">
+    <h2 class="text-[#2D9CDB] text-3xl font-bold ">
+      {{'mdrtb.pv.regimen'|get_message:request.session.locale}}</label>
+
+    </h2>
+    <a href="{% url 'regimen' %}" class="text-[#044062] font-bold underline text-sm">
+      Add new
+    </a>
+  </div>
+
+
+  <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
+    <div class="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
+      <table class="min-w-full leading-normal">
+        <thead>
+          <tr>
+
+            <th
+              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
+              {{'mdrtb.resistanceType'|get_message:request.session.locale}}</label>
+
+            </th>
+            <th
+              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
+              {{'mdrtb.pv.sldRegimenType'|get_message:request.session.locale}}</label>
+
+            </th>
+            <th
+              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
+              {{'mdrtb.pv.fundingSource'|get_message:request.session.locale}}</label>
+
+            </th>
+            <th
+              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
+              {{'mdrtb.pv.cmacDate'|get_message:request.session.locale}}</label>
+
+            </th>
+            <th
+              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
+              {{'mdrtb.form89.cmacNumber'|get_message:request.session.locale}}</label>
+
+            </th>
+
+
+            <th
+              class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
+              {{'general.view'|get_message_openMRS:request.session.locale}} {{'DrugOrder.dose'|get_message_openMRS:request.session.locale}}s
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+
+            <td class="px-5 py-5 border-b border-gray-200  text-sm">
+              XDR-TB
+            </td>
+            <td class="px-5 py-5 border-b border-gray-200  text-sm">
+              INDIVIDUAL WITH CLOFAZIMIN AND LINEZOLID
+            </td>
+            <td class="px-5 py-5 border-b border-gray-200  text-sm">
+
+              PROJECT HOPE
+            </td>
+            <td class="px-5 py-5 border-b border-gray-200   text-sm">
+              09.11.2022
+            </td>
+            <td class="px-5 py-5 border-b border-gray-200 text-sm">
+              091120220001524
+            </td>
+
+            <td class="px-5 py-5 border-b border-gray-200  text-sm">
+              <div class="flex items-center space-x-4">
+                <svg onclick="showModal()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                  stroke-width="1.5" stroke="currentColor" class="w-5 h-5 cursor-pointer">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+
+              </div>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script defer>
+  $("#action").click(function () {
+    showModal();
+  })
+
+
+  function showModal() {
+    $("#modal").addClass("opacity-100");
+    $("#modal").removeClass("opacity-0");
+  }
+
+  function closeModal() {
+    $("#modal").removeClass("opacity-100");
+    $("#modal").addClass("opacity-0");
+  }
+</script>
+
+{% endblock %}

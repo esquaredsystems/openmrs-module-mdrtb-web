@@ -1,0 +1,136 @@
+{% extends 'app/base/base.html' %}
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+
+{%block content%}
+
+{% include 'app/components/nav.html' %}
+
+<div class="search-page-container">
+  <div class="search-input-container">
+    <div class="search-box">
+      <input class="search-page-input" type="text" id="search-input" name="search" placeholder="Search for Patients"
+        title="Enter 2 or more characters" />
+      <svg id="search-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+        stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+      </svg>
+    </div>
+    <div id="search-results" class="search-result-container">
+      <div id="search-results" class="search-results-box">
+
+
+
+
+      </div>
+    </div>
+    {% if add_patient_privilege %}
+    <div class="patient-create-new-box">
+      <p>Can't find the partient ? </p>
+      <a href="{% url 'enrollPatient' %}"><button class="button-primary">Create One</button></a>
+    </div>
+    {% endif %}
+  </div>
+  <script src="https://cdn.lordicon.com/qjzruarw.js"></script>
+
+  <script type="text/javascript">
+    var minSearchCharacters = "{{ minSearchCharacters}}"
+    $('#search-input').keyup(function () {
+
+
+      if ($('#search-input').val() === '') {
+
+        $('#search-results').addClass('hidden')
+        $('#search-results').removeClass('flex')
+        $('#search-results').html("")
+
+      } else if ($('#search-input').val().length >= Number(minSearchCharacters)) {
+        $('#search-results').html("")
+        $('#search-results').append(`
+        
+                  <div class="loader-box">
+          <lord-icon
+              src="https://cdn.lordicon.com/xjovhxra.json"
+              trigger="loop"
+              colors="primary:#121331,secondary:#2d9cdb"
+              style="width:50px;height:50px">
+          </lord-icon>
+                    </div>
+        
+        `)
+
+        let val = $('#search-input').val()
+        setTimeout(() => {
+          $.ajax({
+            url: "{% url 'search'%}?q=" + `${val}`,
+            method: 'GET',
+            success: function (data) {
+              if (data.error) {
+                $('#search-results').html(
+                  `
+              <div class="patient-notfound-box">
+                <h3>
+                  Error finding patient
+                  </h3>
+            </div>
+              `
+                )
+              }
+              else if (data.results.length === 0) {
+
+                $('#search-results').html("")
+                $('#search-results').append(
+                  `
+              <div class="patient-notfound-box">
+                <h3>
+                  Could not find any patient according to your search
+                  </h3>
+            </div>
+              `
+                )
+              } else {
+                $('#search-results').html("")
+
+                $('#search-results').append(
+                  `<div class="search-result-items font-bold">
+              <p>Identifier</p>
+              <p class="col-span-2">Given Name</p>
+              <p>Age</p>
+              <p>Gender</p>
+            </div>`
+                )
+                for (i = 0; i < data.results.length; i++) {
+                  console.log(data.results[i].uuid)
+                  const path = `patient/${data.results[i].uuid}/enrolledprograms`
+                  $('#search-results').append(
+                    `
+                <a href="${path}">
+                  <div class="search-result-items">
+                <p>${data.results[i].identifiers[0].identifier}</p>
+                <p class="text-wrap col-span-2">${data.results[i].person.display}</p>
+                <p>${data.results[i].person.age}</p>
+                <p>${data.results[i].person.gender}</p>
+            </div></a>
+                  
+                  `
+                  )
+                }
+              }
+
+            }
+
+
+          })
+        }, 500)
+        $('#search-results').removeClass('hidden')
+        $('#search-results').addClass('flex')
+      }
+    })
+  </script>
+
+</div>
+{% endblock %}

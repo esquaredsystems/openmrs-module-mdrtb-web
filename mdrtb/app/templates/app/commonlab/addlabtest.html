@@ -1,0 +1,142 @@
+{% extends 'app/base/base_without_menu.html' %}
+
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+
+{% block content %}
+
+
+
+<div class="m-4">
+    <h1 class="primary-heading">
+        {% if state == 'edit' %}
+        {{'commonlabtest.order.edit'|get_message_commonlab:request.session.locale}}
+        {% else %}
+        {{'commonlabtest.order.add'|get_message_commonlab:request.session.locale}}
+        {% endif %}
+    </h1>
+    <form
+        action="{% if state == 'edit' %} {% url 'editlabtest' orderid=orderid patientid=patientid %}{% else %}{% url 'addlabtest' uuid=patient %}{% endif %}"
+        method="post" class="m-10 flex-column-center space-y-6" action="">
+        {% csrf_token %}
+
+        <div class="input-container">
+            <label class="input-label">
+                {{'ConceptProposal.encounter'|get_message_openMRS:request.session.locale}}
+
+            </label>
+            <select name="encounter" class="input">
+                {% if state == 'edit' %}
+                <option selected value="{{laborder.order.encounter.uuid}}">{{laborder.order.encounter.name}}</option>
+                {% endif %}
+                {% for encounter in encounters %}
+                <option value="{{ encounter.uuid }}">{{ encounter.display }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="input-container">
+            <label class="input-label" for="">
+                {{'general.testGroup'|get_message_commonlab:request.session.locale}}
+
+            </label>
+            <select name="testGroup" id="group-select" class="input">
+                {% if state == 'edit' %}
+                <option selected value="{{laborder.labtesttype.testGroup}}">{{laborder.labtesttype.testGroup}}</option>
+                {% else %}
+                <option selected value="None">Select</option>
+                {% endif %}
+
+                {% for group in testgroups %}
+                <option value="{{ group }}">{{ group }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="input-container">
+            <label class="input-label" for="">
+                {{'general.testType'|get_message_commonlab:request.session.locale}}
+
+            </label>
+            {% if state == 'edit' %}
+            <select name="testType" id="test-select" class="input">
+                <option selected value="{{laborder.labtesttype.uuid}}">{{laborder.labtesttype.name}}</option>
+            </select>
+            {% else %}
+            <select disabled name="testType" id="test-select" class="input">
+            </select>
+            {% endif %}
+
+
+
+        </div>
+        <div class="input-container">
+            <label class="input-label" for="">
+                {{'commonlabtest.order.labReferenceNo'|get_message_commonlab:request.session.locale}}
+
+            </label>
+            {% if state == 'edit' %}
+            <input name="labref" id="labref" class="input" type="text" value="{{laborder.labref}}">
+            {% else %}
+            <input name="labref" id="labref" class="input" type="text" value="{{'placeholder' | get_datenow}}">
+            {% endif %}
+        </div>
+        <div class="input-container">
+            <label class="input-label" for="">
+                {{'general.instructions'|get_message_commonlab:request.session.locale}}
+
+            </label>
+            {% if state == 'edit' %}
+            <textarea name="instructions" class="input">{{laborder.order.instructions}}</textarea>
+            {% else %}
+            <textarea name="instructions" id="" class="input"></textarea>
+            {% endif %}
+        </div>
+        <div class="flex-center space-x-4">
+            <button type="submit"
+                class="button-primary w-1/5">{{'general.save'|get_message_openMRS:request.session.locale}}</button>
+            <a href="javascript:history.go(-1)"
+                class="cancel-button">{{'general.cancel'|get_message_openMRS:request.session.locale}}</a>
+        </div>
+
+    </form>
+</div>
+
+<script>
+    let labtests = JSON.parse("{{labtests | escapejs}}")
+    $('#group-select').change(function () {
+        $('#test-select').html('')
+        let group = $('#group-select').val()
+        if (group != 'None') {
+            let testsByGroup = labtests.filter(test => test.testGroup === group)
+            $('#test-select').prop('disabled', false)
+            if (testsByGroup.length === 1) {
+                $('#test-select').append(
+                    $("<option>", {
+                        value: testsByGroup[0].uuid,
+                        text: testsByGroup[0].name,
+                        selected: true
+                    })
+                )
+            } else {
+                testsByGroup.forEach(item => {
+                    $('#test-select').append(
+                        $("<option>", {
+                            value: item.uuid,
+                            text: item.name,
+                        })
+                    )
+                })
+            }
+        } else {
+            $('#test-select').prop('disabled', true)
+
+        }
+
+    })
+
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends 'app/base/base_without_menu.html' %} {% block title %} {{title}}
+{%endblock %} {% block content %}
+
+<div class="m-4">
+  <h1 class="primary-heading">
+    {{'commonlabtest.result.add'|get_message_commonlab:request.session.locale}}
+  </h1>
+  <form id="results-form" class="m-10 flex-column-center space-y-8"
+    action="{% url 'addtestresults' orderid=orderid %}?patient={{request.GET.patient}}" method="post">
+    {% csrf_token %}
+    <div class="flex-column-center space-y-6" id="attributes-container">
+      <div class="input-container">
+        <label class="input-label">Attachment</label>
+        <input type="file"
+          class="ml-4 w-full text-sm rounded-md leading-6 file:bg-gray-200 file:text-black file:font-semi-bold file:border-none file:px-4 file:py-1 file:mr-6 file:border-gray-200 border border-gray-300" />
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+  let attributes = JSON.parse("{{attributes | escapejs}}");
+  let groups = [];
+  if (attributes.length <= 0) {
+    let url = "{% url 'manageattr' uuid=testType %}";
+    $("#results-form").html(
+      `
+               <div class="m-10 space-y-6 flex flex-col items-center justify-center">
+                <h3 class="font-bold text-3xl">NO ATTRIBUTES FOUND</h3>
+                <div class="flex items-center space-x-4">
+                  <a class="button-primary hover:text-white" href=${url}>Add Attributes</a>
+               <a class="cancel-button" href="javascript:history.go(-1)">Go Back</a>
+                  </div>
+                </div>
+               `
+    );
+  }
+  for (attribute of attributes) {
+    if (attribute.group === null) {
+      if (attribute.inputType === "checkbox") {
+        $("#attributes-container").append(
+          ` <div class="input-container">
+            <label class="input-label">${attribute.name}</label>
+            <input type=${attribute.inputType} name=${attribute.uuid} />
+            </div>
+          `
+        );
+      } else if (attribute.inputType === "textarea") {
+        $("#attributes-container").append(
+          ` <div class="input-container">
+            <label class="input-label">${attribute.name}</label>
+            <textarea class="input" type=${attribute.inputType} name=${attribute.uuid}> </textarea>
+            </div>
+          `
+        );
+      } else {
+        $("#attributes-container").append(
+          ` <div class="input-container">
+            <label class="input-label">${attribute.name}</label>
+            <input class="input" type=${attribute.inputType} name=${attribute.uuid} /input>
+            </div>
+          `
+        );
+      }
+    } else {
+      groups.push(attribute.group);
+    }
+  }
+  let duplicatesRemovedGroups = [...new Set(groups)];
+  for (group of duplicatesRemovedGroups) {
+    $("#results-form").append(
+      `
+      <div class="accordion" id="${group.replace(/\s/g, '')}Accordian">
+      <div class="accordion-item bg-white border border-gray-200">
+        <h2 class="accordion-header mb-0" id="heading${group.replace(
+        /\s/g,
+        ""
+      )}">
+            <button class=" accordion-button collapsed tw-accordian-btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${group.replace(
+        /\s/g,
+        ""
+      )}" aria-expanded="false"
+        aria-controls="collapse${group.replace(/\s/g, "")}">
+        ${group}
+      </button>
+    </h2>
+    <div id="collapse${group.replace(
+        /\s/g,
+        ""
+      )}" class="accordion-collapse collapse" aria-labelledby="heading${group.replace(
+        /\s/g,
+        ""
+      )}"
+      data-bs-parent="#${group.replace(/\s/g, '')}Accordian">
+      <div id="${group.replace(
+        /\s/g,
+        ""
+      )}body" class="accordion-body py-4 px-5 flex-column-center space-y-6">
+        
+      </div>
+    </div></div>
+      `
+    );
+  }
+  for (attribute of attributes) {
+    if (attribute.group != null) {
+      if (attribute.inputType === "checkbox") {
+        $(`#${attribute.group.replace(/\s/g, "")}body`).append(
+          ` <div class="input-container">
+            <label class="input-label">${attribute.name}</label>
+            <input type=${attribute.inputType} name=${attribute.uuid} />
+            </div>
+          `
+        );
+      } else if (attribute.inputType === "textarea") {
+        $(`#${attribute.group.replace(/\s/g, "")}body`).append(
+          ` <div class="input-container">
+            <label class="input-label">${attribute.name}</label>
+            <textarea class="input" type=${attribute.inputType} name=${attribute.uuid}> </textarea>
+            </div>
+          `
+        );
+      } else {
+        $(`#${attribute.group.replace(/\s/g, "")}body`).append(
+          ` <div class="input-container">
+            <label class="input-label">${attribute.name}</label>
+            <input class="input" type=${attribute.inputType} name=${attribute.uuid} /input>
+            </div>
+          `
+        );
+      }
+    }
+  }
+
+  if (attributes.length > 0) {
+    $("#results-form").append(
+      `
+        <div class="flex-center space-x-3">
+            <input type="submit" class="button-primary w-1/5" value="Submit">
+            <a class="cancel-button" href="javascript:history.go(-1)">Cancel</a>
+        </div>
+        `
+    );
+  }
+</script>
+{% endblock %}

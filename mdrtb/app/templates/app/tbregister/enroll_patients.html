@@ -1,0 +1,158 @@
+{% extends 'app/base/base.html' %}
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+
+{%block content%}
+
+
+
+<form action="{% url 'enrollPatient' %}" method="post" class="enroll-form">
+  {% csrf_token %}
+  <div class="enrollform-sections-container">
+    <h1 class="page-title">
+      {{'mdrtb.enrollNewPatient'|get_message:request.session.locale}}
+    </h1>
+    <div class="enroll_form_bg">
+      <div class="enrollform-section">
+        <div class="input-container">
+          <label class="input-label w-full required"
+            for="name">{{'mdrtb.givenname'|get_message:request.session.locale}}</label>
+          <input required class="input form-control" type="text" name="givenname" />
+        </div>
+        <div class="input-container">
+          <label class="input-label w-full required"
+            for="name">{{'mdrtb.familyname'|get_message:request.session.locale}}</label>
+          <input required class="input form-control" type="text" name="familyname" />
+        </div>
+      </div>
+      <div class="enrollform-section">
+        <div class="input-container">
+          <label id="dob-label" class="input-label w-full required"
+            for="name">{{'mdrtb.birthdate'|get_message:request.session.locale}}</label>
+          <input required class="disabled:pointer-events-none input" type="date" max="2022-12-31" name="dob" id="dob" />
+        </div>
+        <div class="input-container ">
+          <label id="age-label" class="input-label w-full required"
+            for="name">{{'mdrtb.age'|get_message:request.session.locale}}</label>
+          <input required class="input disabled:pointer-events-none" type="number" name="age" id="age" min="1" />
+        </div>
+      </div>
+      <div class="enrollform-section">
+        <div class="input-container">
+          <label class="input-label w-full required" for="patientidentifiertype">Регистрационный номер Дотc</label>
+          <input hidden required class="input form-control" type="text" value="8d79403a-c2cc-11de-8d13-0010c6dffd0f"
+            name="patientidentifiertype" />
+          <input required class="input form-control" type="text" name="patientidentifier" />
+        </div>
+        <div class="input-container">
+          <label class="input-label required w-full"
+            for="name">{{'mdrtb.gender'|get_message:request.session.locale}}</label>
+          <div class="radios-container">
+            <div class="radio-container">
+              <label for="Male">{{'mdrtb.male'|get_message:request.session.locale}}</label>
+              <input required name="gender" type="radio" value="M" />
+            </div>
+            <div class="radio-container">
+              <label for="Female">{{'mdrtb.female'|get_message:request.session.locale}}</label>
+              <input required name="gender" type="radio" value="F" />
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    <div class="enroll_form_bg">
+      {% include 'app/components/locations.html' %}
+      <div class="input-container">
+        <label class="input-label w-1/6 required"
+          for="name">{{'mdrtb.address'|get_message:request.session.locale}}</label>
+        <input required class="input form-control" type="text" name="address" />
+      </div>
+      <div class="input-container">
+        <label class="input-label  w-1/6 opacity-0"
+          for="name">{{'mdrtb.address'|get_message:request.session.locale}}</label>
+        <input class="input form-control" type="text" name="address2" />
+      </div>
+    </div>
+    <div class="enroll_form_bg">
+      <div class="input-container">
+        <label class="input-label md:w-16"
+          for="deceased">{{'mdrtb.deceased'|get_message:request.session.locale}}</label>
+        <input id="deceased" type="checkbox" class="border-none shadow-sm cursor-pointer" name="deceased" />
+      </div>
+      <div id="deceased-container" class="hidden items-center space-x-8">
+        <div class="input-container">
+          <label class="text-[#9E9E9E] font-bold"
+            for="deceased">{{'mdrtb.deathDate'|get_message:request.session.locale}}</label>
+          <input type="date" class="input form-control" name="deathdate" id="deathdate" />
+        </div>
+        <div class="input-container">
+          <label class="text-[#9E9E9E] font-bold"
+            for="deceased">{{'mdrtb.causeOfDeath'|get_message:request.session.locale}}</label>
+          <input type="text" class="input form-control" name="causeofdeath" />
+        </div>
+      </div>
+      <div class="input-container">
+        <label class="input-label md:w-16" for="deceased">Voided</label>
+        <input id="voided" type="checkbox" class="border-none shadow-sm cursor-pointer" name="voided" />
+      </div>
+      <div id="voided-container" class="input-container hidden">
+        <label class="text-[#9E9E9E] font-bold" for="Reason to void">Reason to Void</label>
+        <input type="text" class="input form-control" name="reasontovoid" />
+      </div>
+    </div>
+
+    <div class="flex-center">
+      <input type="submit" class="button-primary w-1/5" value="Register" />
+
+      <a href="javascript:history.go(-1)" class="cancel-button"> Cancel </a>
+    </div>
+  </div>
+</form>
+<script defer>
+  let date = new Date();
+  let maxDate = date.toISOString().substring(0, 10);
+  $('input[type="date"]').prop('max', maxDate)
+  $("#dob").change(function () {
+    if ($("#dob").val() != "") {
+      $("#age").prop("disabled", true);
+      $("#age-label").removeClass("required");
+      $("#age").prop("title", "You can either enter age or date of birth");
+    } else {
+      $("#age").prop("disabled", false);
+    }
+  });
+  $("#age").change(function () {
+    if ($("#age").val() != "") {
+      $("#dob").prop("disabled", true);
+      $("#dob-label").removeClass("required");
+    } else {
+      $("#dob").prop("disabled", false);
+    }
+  });
+
+  $("#deceased").change(function () {
+    if ($("#deceased").prop("checked")) {
+      $("#deceased-container").removeClass("hidden");
+      $("#deceased-container").addClass("flex");
+    } else {
+      $("#deceased-container").addClass("hidden");
+      $("#deceased-container").removeClass("flex");
+    }
+  });
+  $("#voided").change(function () {
+    if ($("#voided").prop("checked")) {
+      $("#voided-container").removeClass("hidden");
+      $("#voided-container").addClass("flex");
+    } else {
+      $("#voided-container").addClass("hidden");
+      $("#voided-container").removeClass("flex");
+    }
+  });
+</script>
+</div>
+{% endblock %}

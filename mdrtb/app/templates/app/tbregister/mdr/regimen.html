@@ -1,0 +1,511 @@
+{% extends 'app/base/base.html' %}
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+
+
+{%block content%}
+
+<div>
+  <form method="post" action="{% if state == 'edit' %}
+  {% url 'editregimen' patientid=current_patient_program_flow.current_patient.uuid formid=form.uuid %}
+  {% else %}
+  {% url 'regimen' patientid=current_patient_program_flow.current_patient.uuid %}
+  {% endif %}" class="flex flex-col">
+    {% csrf_token %}
+    <div class="m-16 flex flex-col justify-center space-y-8">
+      {% if state == 'edit' %}
+      <div id="form-info" class="flex-center space-x-4">
+        <h1 class="text-[#2D9CDB] text-3xl font-bold">
+          {{'mdrtb.edit'|get_message:request.session.locale}}
+          {{'mdrtb.pv.regimenForm'|get_message:request.session.locale}}
+        </h1>
+        <button type="button" id="editbtn">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+          </svg>
+
+        </button>
+        <button hidden type="button" id="canceleditbtn" class="cancel-button">Cancel</button>
+        <a href="{% url 'deleteregimen' formid=form.uuid %}" type="button" id="deletetb03">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+          </svg>
+        </a>
+
+
+      </div>
+      {% else %}
+      <h1 class="text-[#2D9CDB] text-3xl font-bold">
+        {{'mdrtb.pv.regimenForm'|get_message:request.session.locale}}
+      </h1>
+      {% endif %}
+
+      <div class="bg-[#9e9e9e28] shadow-md p-4 w-fit flex flex-col justify-center space-y-4">
+        <div class="flex items-center space-x-12">
+          <div class="space-x-3">
+            <span class="font-bold">
+              {{'mdrtb.location'|get_message:request.session.locale}}:
+            </span>
+            <span class="tb03-form-label w-full">
+              {% if state == 'edit' %}
+              {{form.encounter.location.name}}
+              {% else %}
+              {{current_patient_program_flow.current_program.location.name}}
+              {% endif %}
+
+            </span>
+          </div>
+        </div>
+
+      </div>
+      <div class="p-4 flex flex-col justify-center space-y-4">
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full" for="date">{{'mdrtb.date'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input disabled name="encounterDateTime" value="{{form.encounter.encounterDatetime | iso_to_normal_date}}"
+              type="date" class="input form-control">
+            {% else %}
+            <input name="encounterDateTime" type="date" class="input form-control">
+            {% endif %}
+
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="cmacDate">{{'mdrtb.pv.cmacDate'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.councilDate | iso_to_normal_date }}" name="65a4fb0d-503f-4ce5-961e-e55234ff2b88"
+              type="date" class="input form-control">
+            {% else %}
+            <input name="65a4fb0d-503f-4ce5-961e-e55234ff2b88" type="date" class="input form-control">
+            {% endif %}
+
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="cmacNumber">{{'mdrtb.form89.cmacNumber'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.cmacNumber}}" name="677e0452-e795-4299-8e57-ba68a49f0ad0" type="text"
+              class="input form-control">
+            {% else %}
+            <input name="677e0452-e795-4299-8e57-ba68a49f0ad0" type="text" class="input form-control">
+            {% endif %}
+
+
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="placeOfCommission">{{'mdrtb.form89.placeOfCommission'|get_message:request.session.locale}}</label>
+            <select name="483e6ca8-293d-4d00-b71b-4464c093a71d" class="input form-control">
+              {% if state == 'edit' %}
+              <option selected value="{{form.placeOfCommission.uuid}}">{{form.placeOfCommission.display}}</option>
+              {% else %}
+              <option selected value="">Select</option>
+              {% endif %}
+
+              {% for concept in concepts.cmacplace %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="resistanceType">{{'mdrtb.resistanceType'|get_message:request.session.locale}}</label>
+            <select name="3f5a6930-5ead-4880-80ce-6ab79f4f6cb1" class="input form-control">
+              {% if state == 'edit' %}
+              <option selected value="{{form.resistanceType.uuid}}">
+                {{form.resistanceType.display}}</option>
+              {% else %}
+              <option selected value="">Select</option>
+              {% endif %}
+
+
+              {% for concept in concepts.resistancetype %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="fundingSource">{{'mdrtb.pv.fundingSource'|get_message:request.session.locale}}</label>
+            <select name="e56514ed-1b3b-4d2e-89f1-564fd6265ebe" class="input form-control">
+              {% if state == 'edit' %}
+              <option selected value="{{form.fundingSource.uuid}}">
+                {{form.fundingSource.display}}</option>
+              {% else %}
+              <option selected value="">Select</option>
+              {% endif %}
+
+              {% for concept in concepts.fundingsource %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="sldRegimenType">{{'mdrtb.pv.sldRegimenType'|get_message:request.session.locale}}</label>
+            <select name="cd9e240f-7860-4e37-a0d2-b922cbcc62d3" id="regimenType" class="input form-control">
+              {% if state == 'edit' %}
+              <option selected value="{{form.sldRegimen.uuid}}">
+                {{form.sldRegimen.display}}</option>
+              {% else %}
+              <option selected value="">Select</option>
+              {% endif %}
+
+
+              {% for concept in concepts.sldregimentype %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="otherRegimen">{{'mdrtb.pv.otherRegimen'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.otherRegimen}}" name="f64d7ce4-c3b9-43a3-9614-308f1723e8f6" disabled id="otherRegimen"
+              type="text" class="input form-control">
+            {% else %}
+            <input name="f64d7ce4-c3b9-43a3-9614-308f1723e8f6" disabled id="otherRegimen" type="text"
+              class="input form-control">
+            {% endif %}
+
+
+
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="cmDose">{{'mdrtb.pv.cmDose'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.cmDose}}" name="59e4cba5-2343-482d-b08e-bb8b84890839" type="text"
+              class="input form-control" />
+            {% else %}
+            <input name="59e4cba5-2343-482d-b08e-bb8b84890839" type="text" class="input form-control" />
+            {% endif %}
+
+
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="mfxDose">{{'mdrtb.pv.mfxDose'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.mfxDose}}" name="9e809189-f7b0-424a-a018-f6dbd5bf1127" type="text"
+              class="input form-control" />
+            {% else %}
+            <input name="9e809189-f7b0-424a-a018-f6dbd5bf1127" type="text" class="input form-control" />
+            {% endif %}
+
+
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="amDose">{{'mdrtb.pv.amDose'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.amDose}}" name="f265c34d-614c-4af4-b279-fe885eafc6f4" type="text"
+              class="input form-control" />
+            {% else %}
+            <input name="f265c34d-614c-4af4-b279-fe885eafc6f4" type="text" class="input form-control" />
+            {% endif %}
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="ptoDose">{{'mdrtb.pv.ptoDose'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.ptoDose}}" name="645117db-d6be-4dd9-b2d5-21c5fbf9249e" type="text"
+              class="input form-control">
+            {% else %}
+            <input name="645117db-d6be-4dd9-b2d5-21c5fbf9249e" type="text" class="input form-control">
+            {% endif %}
+
+
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="lfxDose">{{'mdrtb.pv.lfxDose'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.lfxDose}}" name="e5266c3f-e07e-4502-9e2b-892b00383ff9" type="text"
+              class="input form-control">
+            {% else %}
+            <input name="e5266c3f-e07e-4502-9e2b-892b00383ff9" type="text" class="input form-control">
+            {% endif %}
+
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="pasDose">{{'mdrtb.pv.pasDose'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.pasDose}}" name="c3bd56cf-ac50-4d10-b6ac-3f4314cf0077" type="text"
+              class="input form-control">
+            {% else %}
+            <input name="c3bd56cf-ac50-4d10-b6ac-3f4314cf0077" type="text" class="input form-control">
+            {% endif %}
+
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="csDose">{{'mdrtb.pv.csDose'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.csDose}}" name="5be32a1d-295c-44d5-9f86-ec28e8e49777" type="text"
+              class="input form-control">
+            {% else %}
+            <input name="5be32a1d-295c-44d5-9f86-ec28e8e49777" type="text" class="input form-control">
+            {% endif %}
+
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="eDose">{{'mdrtb.pv.eDose'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.eDose}}" name="a28051b7-303c-40a8-a09f-137a40b50696" type="text"
+              class="input form-control" />
+            {% else %}
+            <input name="a28051b7-303c-40a8-a09f-137a40b50696" type="text" class="input form-control" />
+            {% endif %}
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="zDose">{{'mdrtb.pv.zDose'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.zDose}}" name="d7c20112-06f3-46dc-8bd5-ac271be894aa" type="text"
+              class="input form-control" />
+            {% else %}
+            <input name="d7c20112-06f3-46dc-8bd5-ac271be894aa" type="text" class="input form-control" />
+            {% endif %}
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="lzdDose">{{'mdrtb.pv.lzdDose'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.lzdDose}}" name="4148d306-41df-4c3d-acad-61874fe84594" type="text"
+              class="input form-control" />
+            {% else %}
+            <input name="4148d306-41df-4c3d-acad-61874fe84594" type="text" class="input form-control" />
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="hDose">{{'mdrtb.pv.hDose'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.hDose}}" name="c20ff49c-06f8-4ce6-b5ff-5ec3cdd4a436" type="text"
+              class="input form-control" />
+            {% else %}
+            <input name="c20ff49c-06f8-4ce6-b5ff-5ec3cdd4a436" type="text" class="input form-control" />
+            {% endif %}
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="bdqDose">{{'mdrtb.pv.bdqDose'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.bdqDose}}" name="46f5877e-b35a-4329-9842-c8e4d236223b" type="text"
+              class="input form-control" />
+            {% else %}
+            <input name="46f5877e-b35a-4329-9842-c8e4d236223b" type="text" class="input form-control" />
+            {% endif %}
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="cfzDose">{{'mdrtb.pv.cfzDose'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.cfzDose}}" name="acb52757-8d76-45c5-97f9-e50cc28b2088" type="text"
+              class="input form-control" />
+            {% else %}
+            <input name="acb52757-8d76-45c5-97f9-e50cc28b2088" type="text" class="input form-control" />
+            {% endif %}
+
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="impDose">{{'mdrtb.pv.impDose'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.impDose}}" name="fef19b50-283b-437d-902f-7d1c5977ee4e" type="text"
+              class="input form-control" />
+            {% else %}
+            <input name="fef19b50-283b-437d-902f-7d1c5977ee4e" type="text" class="input form-control" />
+            {% endif %}
+
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="dlmDose">{{'mdrtb.pv.dlmDose'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.dlmDose}}" name="0464131c-5758-4bcc-9c60-f9bd84aa9738" type="text"
+              class="input form-control" />
+            {% else %}
+            <input name="0464131c-5758-4bcc-9c60-f9bd84aa9738" type="text" class="input form-control" />
+            {% endif %}
+
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="amxDose">{{'mdrtb.pv.amxDose'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.amxDose}}" name="78448ebb-79eb-41e0-a9fa-8f801da2b5ff" type="text"
+              class="input form-control" />
+            {% else %}
+            <input name="78448ebb-79eb-41e0-a9fa-8f801da2b5ff" type="text" class="input form-control" />
+            {% endif %}
+
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="hrzeDose">{{'mdrtb.pv.hrzeDose'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.hrzeDose}}" name="5eec397a-c366-4cf0-8f1d-d355e068d4b6" type="text"
+              class="input form-control" />
+            {% else %}
+            <input name="5eec397a-c366-4cf0-8f1d-d355e068d4b6" type="text" class="input form-control" />
+            {% endif %}
+
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="hrDose">{{'mdrtb.pv.hrDose'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.hrDose}}" name="3d9d4903-35fe-4dd3-be83-abe7fec6106c" type="text"
+              class="input form-control" />
+            {% else %}
+            <input name="3d9d4903-35fe-4dd3-be83-abe7fec6106c" type="text" class="input form-control" />
+            {% endif %}
+
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="sDose">{{'mdrtb.pv.sDose'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.sDose}}" name="6f81017a-6454-4077-a830-17b6643a7b62" type="text"
+              class="input form-control" />
+            {% else %}
+            <input name="6f81017a-6454-4077-a830-17b6643a7b62" type="text" class="input form-control" />
+            {% endif %}
+
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="otherDrug1Name">{{'mdrtb.pv.otherDrug1Name'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.otherDrug1Name}}" name="975233be-8f88-417b-a54c-1dceedea6737" type="text"
+              class="input form-control" />
+            {% else %}
+            <input name="975233be-8f88-417b-a54c-1dceedea6737" type="text" class="input form-control" />
+            {% endif %}
+
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+
+
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="otherDrug1Dose">{{'mdrtb.pv.otherDrug1Dose'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.otherDrug1Dose}}" name="968b15e0-1c70-4347-af4c-7e8d9b374d90" type="text"
+              class="input form-control" />
+            {% else %}
+            <input name="968b15e0-1c70-4347-af4c-7e8d9b374d90" type="text" class="input form-control" />
+            {% endif %}
+
+          </div>
+          <div class="input-container">
+            <label style="width: 31%;" class="tb03-form-label"
+              for="comments">{{'mdrtb.pv.comments'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+
+            <textarea name="31b474e6-0370-102d-b0e3-001ec94a0cc1" class="input form-control" cols="10"
+              rows="5">{{form.comment}}</textarea>
+            {% else %}
+            <textarea name="31b474e6-0370-102d-b0e3-001ec94a0cc1" class="input form-control" cols="10"
+              rows="5"></textarea>
+            {% endif %}
+
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+
+
+        </div>
+        <div class="flex-center space-x-4 mt-4">
+          <button class="button-primary w-1/5">
+            Save
+          </button>
+          <a href="javascript:history.go(-1)" class="cancel-button">
+            Cancel
+            </button>
+        </div>
+
+      </div>
+    </div>
+
+  </form>
+  <script>
+    let date = new Date();
+    maxDate = date.toISOString().substring(0, 10);
+    $('input[type="date"]').prop("max", maxDate)
+
+    $('#regimenType').change((e) => {
+      let regimenType = e.target.value
+      if (regimenType === "79838176-04c9-419e-bf75-3658c220ff34") {
+        $('#otherRegimen').prop('disabled', false)
+      } else {
+        $('#otherRegimen').prop('disabled', true)
+      }
+    })
+    let state = '{{state | escapejs}}'
+    if (state === 'edit') {
+      $('input').prop('disabled', true).prop('required', false)
+      $('input[name=csrfmiddlewaretoken]').prop('disabled', false)
+      $('select').prop('disabled', true).prop('required', false)
+      $('textarea').prop('disabled', true).prop('required', false)
+      $('#canceleditbtn').prop('hidden', true)
+    }
+    $('#editbtn').click(function () {
+      $('input').prop('disabled', false)
+      $('select').prop('disabled', false)
+      $('textarea').prop('disabled', false)
+      $('#canceleditbtn').prop('hidden', false)
+    })
+    $('#canceleditbtn').click(function () {
+      $('input').prop('disabled', true)
+      $('input[name=csrfmiddlewaretoken]').prop('disabled', false)
+      $('select').prop('disabled', true)
+      $('textarea').prop('disabled', true)
+      $('#canceleditbtn').prop('hidden', true)
+    })
+  </script>
+</div>
+
+{% endblock %}

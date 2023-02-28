@@ -1,0 +1,128 @@
+{% extends 'app/base/base_without_menu.html' %}
+{% block title %}
+{{title}}
+{% endblock %}
+{% block content %}
+
+
+
+
+
+<div>
+  <section>
+    <div class="m-5 md:m-2">
+      <div class="py-8">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
+              {{'commonlabtest.labtestsample.manage'|get_message_commonlab:request.session.locale}}</h2>
+            <a href="{% url 'addtestsample' orderid=orderid %}" class="text-[#044062] font-bold underline">
+              {{'general.add'|get_message_openMRS:request.session.locale}}
+              {{'general.new'|get_message_openMRS:request.session.locale}}
+            </a>
+
+          </div>
+          <div class="flex items-center rounded-md cursor-pointer shadow-sm bg-gray-200 justify-between px-2">
+            <input class="border-none focus:ring-0 bg-transparent" type="text" placeholder="Search for Test Samples" />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+          </div>
+        </div>
+        <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
+          <div class="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
+            <table class="min-w-full leading-normal">
+              <thead>
+                <tr class="">
+                  <th
+                    class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
+                    {{'general.specimenType'|get_message_commonlab:request.session.locale}}
+                  </th>
+                  <th
+                    class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
+                    {{'general.specimenSite'|get_message_commonlab:request.session.locale}}
+                  </th>
+
+                  <th
+                    class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
+                    {{'commonlabtest.labtestsample.collectionDate'|get_message_commonlab:request.session.locale}}
+                  </th>
+                  <th
+                    class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
+                    {{'general.status'|get_message_commonlab:request.session.locale}}
+                  </th>
+                  <th
+                    class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
+                    Actions
+                  </th>
+                  <th
+                    class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
+
+                  </th>
+
+
+
+
+
+
+
+
+
+                </tr>
+              </thead>
+              <tbody>
+                {% for sample in samples %}
+                <tr>
+                  <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
+                    <p class="text-gray-900 whitespace-no-wrap">
+                      {{sample.specimenType.display}}
+                    </p>
+                  </td>
+                  <td class="px-5 py-5 border-b border-gray-200 w-min text-sm">
+                    <p class="text-gray-900 whitespace-no-wrap">{{sample.specimenSite.display}}</p>
+                  </td>
+                  <td class=" px-5 py-5 border-b border-gray-200 w-min text-sm">
+                    <p class="text-gray-900 whitespace-no-wrap">
+                      {{sample.collectionDate |iso_to_normal_date}}
+                    </p>
+                  </td>
+                  <td class="px-5 py-5 border-b border-gray-200 w-min text-sm">
+                    <p class="text-gray-900 whitespace-no-wrap">
+                      {{sample.status}}
+                    </p>
+                  </td>
+                  <td class="px-5 py-5 border-b w-min border-gray-200 bg-white text-sm">
+                    <div class="flex space-x-4">
+
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                      </svg>
+                    </div>
+                  </td>
+                  {% if sample.status == 'COLLECTED' %}
+                  <td class="px-5 py-5 border-b w-min border-gray-200  text-sm">
+                    <div class="flex-center justify-center space-x-2">
+                      <button
+                        class="p-2 w-full rounded-md font-bold cursor-pointer text-white button-primary">Accept</button>
+                      <button class="p-2 underline text-md w-full rounded-md font-bold cursor-pointer">Reject</button>
+                    </div>
+                  </td>
+                  {% endif %}
+
+                </tr>
+                {% endfor %}
+
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

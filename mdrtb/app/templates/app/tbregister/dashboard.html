@@ -1,0 +1,354 @@
+{% extends 'app/base/base.html' %}
+
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+
+{%block content%}
+
+
+
+<div class="flex flex-col space-y-6 m-6">
+  {% include 'app/components/patient_banner.html' %}
+  <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
+    <div class="flex items-center space-x-4">
+      <h2 class="text-[#2D9CDB] text-3xl font-bold">{{program.program.name}}
+      </h2>
+    </div>
+    <div class="ml-4 grid grid-cols-2 gap-3">
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.enrollment.date'|get_message:request.session.locale}}: </span><span
+          class="tb03-form-label">{{program.dateEnrolled | iso_to_normal_date}}</span>
+      </div>
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.enrollment.location'|get_message:request.session.locale}}: </span><span
+          class="tb03-form-label">{{program.location.name}}</span>
+      </div>
+      {% for state in program.states %}
+      <div class="space-x-3">
+        <span class="font-bold">{{state.concept}}: </span>
+        {% if state.answer.concept %}
+        <span class="tb03-form-label">{{state.answer.concept.name}}</span>
+        {% else %}
+        <span class="tb03-form-label">None</span>
+        {% endif %}
+      </div>
+      {% endfor %}
+
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.completionDate'|get_message:request.session.locale}}: </span><span
+          class="tb03-form-label">{{program.dateCompleted | iso_to_normal_date}}</span>
+      </div>
+      <div class="space-x-3">
+
+        <span class="font-bold">
+          {{'Program.program'|get_message_openMRS:request.session.locale}}
+          {{'mdrtb.outcome'|get_message:request.session.locale}}: </span><span
+          class="tb03-form-label">{{program.outcome}}</span>
+      </div>
+
+    </div>
+    <div class="ml-4 flex items-center space-x-4">
+      {% if not mdrtb %}
+
+      <a href="{% url 'mdrtbprogramenroll' uuid=uuid %}" class="font-bold underline text-[#044062]">
+        {{'mdrtb.enrollment.enrollMdrtb'|get_message:request.session.locale}}
+      </a>
+      {% endif %}
+
+      <a href="{% url 'transfer' %}" class="font-bold underline text-[#044062]">
+        Transfer In
+      </a>
+      <a href="{% url 'transfer' %}" class="font-bold underline text-[#044062]">
+        Transfer Out
+      </a>
+    </div>
+  </div>
+  <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
+    <div class="flex items-center space-x-2">
+      <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.forms'|get_message:request.session.locale}}
+      </h2>
+      <div class="dropdown">
+        {% if not mdrtb %}
+        {% if not forms.tb03s or not forms.form89s %}
+
+        <a class="tw-dropdown-header font-bold cancel-button" href="#" type="button" id="formsdropdown"
+          data-bs-toggle="dropdown" aria-expanded="false">
+          {{'mdrtb.add'|get_message:request.session.locale}} {{'mdrtb.new'|get_message:request.session.locale}}
+          <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
+            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <path fill="currentColor"
+              d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z">
+            </path>
+          </svg>
+        </a>
+        {% endif %}
+        {% else %}
+        <a class="tw-dropdown-header font-bold cancel-button" href="#" type="button" id="formsdropdown"
+          data-bs-toggle="dropdown" aria-expanded="false">
+          {{'mdrtb.add'|get_message:request.session.locale}} {{'mdrtb.new'|get_message:request.session.locale}}
+          <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
+            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <path fill="currentColor"
+              d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z">
+            </path>
+          </svg>
+        </a>
+        {% endif %}
+        {% if not mdrtb %}
+        <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="formsdropdown">
+          {% if not forms.tb03s %}
+          <li>
+            <a class="tw-dropdown-item"
+              href="{% url 'tb03' uuid=uuid %}">{{'mdrtb.tb03'|get_message:request.session.locale}}</a>
+          </li>
+          {% endif %}
+          {% if not forms.form89s %}
+          <li>
+            <a class="tw-dropdown-item"
+              href="{% url 'form89' uuid=uuid %}">{{'mdrtb.form89'|get_message:request.session.locale}}</a>
+          </li>
+          {% endif %}
+
+        </ul>
+        {% else %}
+        <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="formsdropdown">
+          {% if not forms.tb03us %}
+          <li>
+            <a class="tw-dropdown-item" href="{% url 'tb03u' uuid=uuid  %}">
+              {{'mdrtb.tb03u'|get_message:request.session.locale}}</a>
+          </li>
+          {% endif %}
+
+          <li>
+            <a class="tw-dropdown-item" href="{% url 'drugresistanse' patientid=uuid  %}">
+              {{'mdrtb.drdt'|get_message:request.session.locale}}</a>
+          </li>
+
+
+
+        </ul>
+        {% endif %}
+      </div>
+
+    </div>
+    {% if not mdrtb %}
+    <div class="ml-4 grid grid-cols-2 gap-3">
+      {% for tb03 in forms.tb03s %}
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.tb03'|get_message:request.session.locale}}: </span><a
+          class="tb03-form-label underline" href="{% url 'edittb03' uuid=uuid formid=tb03.uuid %}">
+          {{tb03.encounterDatetime | iso_to_normal_date}} at
+          {{tb03.location.name}}</a>
+      </div>
+      {% endfor %}
+      {% for form89 in forms.form89s %}
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.form89'|get_message:request.session.locale}}: </span><a
+          class="tb03-form-label underline" href="{% url 'editform89' uuid=uuid formid=form89.uuid %}">
+          {{form89.encounterDatetime | iso_to_normal_date}} at
+          {{form89.location.name}}</a>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="ml-4 grid grid-cols-2 gap-3">
+      {% for tb03u in forms.tb03us %}
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.tb03u'|get_message:request.session.locale}}: </span><a
+          class="tb03-form-label underline" href="{% url 'edittb03u' uuid=uuid formid=tb03u.uuid %}">
+          {{tb03u.encounterDatetime | iso_to_normal_date}} at
+          {{tb03u.location.name}}</a>
+      </div>
+      {% endfor %}
+      {% for drug_res in forms.drug_resistance_forms %}
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.drdt'|get_message:request.session.locale}}: </span><a
+          class="tb03-form-label underline" href="{% url 'editdrugresistanse' patientid=uuid formid=drug_res.uuid %}">
+          {{drug_res.encounterDatetime | iso_to_normal_date}} at
+          {{drug_res.location.name}}</a>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
+    <div class="flex items-center justify-between space-x-4">
+      <div class="flex-center space-x-4">
+        <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.labResults'|get_message:request.session.locale}}
+        </h2>
+        <a href="{% url 'managetestorders' uuid=uuid %}" class="cancel-button">
+          View All Lab Tests
+        </a>
+      </div>
+
+    </div>
+    <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
+      <div class="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
+        <table class="min-w-full leading-normal">
+          <thead>
+            <tr>
+              <th
+                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                Name
+              </th>
+              <th
+                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                Result
+              </th>
+              <th
+                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                Collected On
+              </th>
+
+              <th
+                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                {{'mdrtb.mostRecentSmear'|get_message:request.session.locale}}
+              </td>
+              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                Failed
+              </td>
+              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                11/11/2022
+              </td>
+              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                <div class="flex items-center space-x-4 cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-5 h-5 cursor-pointer">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                    </svg>
+                  </a>
+
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                {{'mdrtb.mostRecentHAIN'|get_message:request.session.locale}}
+              </td>
+              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                Success
+              </td>
+              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                11/11/2022
+              </td>
+              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                <div class="flex items-center space-x-4 cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-5 h-5 cursor-pointer">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                    </svg>
+                  </a>
+
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                {{'mdrtb.mostRecentHAIN2'|get_message:request.session.locale}}
+              </td>
+              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                Failed
+              </td>
+              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                11/11/2022
+              </td>
+              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                <div class="flex items-center space-x-4 cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-5 h-5 cursor-pointer">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                    </svg>
+                  </a>
+
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+  {% if mdrtb %}
+  <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
+    <div class="flex items-center space-x-4">
+      <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.pv.regimens'|get_message:request.session.locale}}
+      </h2>
+      <a href="{% url 'regimen' patientid=uuid %}" class="text-[#044062] font-bold underline p-2">
+        {{'mdrtb.add'|get_message:request.session.locale}} {{'mdrtb.new'|get_message:request.session.locale}}
+      </a>
+    </div>
+    <div class="ml-4 grid grid-cols-2 gap-3">
+      {% for regimen in forms.regimens %}
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.pv.regimen'|get_message:request.session.locale}}: </span><a
+          class="tb03-form-label underline" href="{% url 'editregimen' patientid=uuid formid=regimen.uuid %}">
+          {{regimen.encounterDatetime | iso_to_normal_date}} at
+          {{regimen.location.name}}</a>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+  <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4 mb-6">
+    <div class="flex-column-center space-y-4">
+      <div class="flex items-center space-x-4">
+        <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.pv.pv'|get_message:request.session.locale}}
+        </h2>
+        <a href="{% url 'adverseevents' patientid=uuid %}" class="text-[#044062] font-bold underline p-2">
+          {{'mdrtb.add'|get_message:request.session.locale}} {{'mdrtb.new'|get_message:request.session.locale}}
+        </a>
+      </div>
+      <div class="ml-4 grid grid-cols-2 gap-3">
+        {% for ae in forms.aes %}
+        <div class="space-x-3">
+          <span class="font-bold">{{'mdrtb.pv.aeForm'|get_message:request.session.locale}}: </span><a
+            class="tb03-form-label underline" href="{% url 'editadverseevents' patientid=uuid formid=ae.uuid %}">
+            {{ae.encounterDatetime | iso_to_normal_date}} at
+            {{ae.location.name}}</a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,163 @@
+{% extends 'app/base/base_without_menu.html' %}
+
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+{% block content %}
+
+
+<div class="m-16">
+  <div class="flex flex-col">
+    <div class="flex items-center justify-between">
+      {% if state == 'edit' %}
+      <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
+        {{'commonlabtest.labtesttype.edit'|get_message_commonlab:request.session.locale}}
+      </h2>
+      <a href="{% url 'manageattr' uuid=testType.uuid %}" class="text-[#044062] font-bold underline">
+        {{'commonlabtest.labtestattributetype.manage'|get_message_commonlab:request.session.locale}}
+      </a>
+      {% else %}
+      <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
+        {{'commonlabtest.labtesttype.add'|get_message_commonlab:request.session.locale}}
+      </h2>
+      {% endif %}
+    </div>
+
+    <div class="m-4">
+      <form method="post"
+        action="{% if state == 'edit' %} {% url 'edittesttype' uuid=testType.uuid %} {% else %} {% url 'addtesttype' %} {% endif %}"
+        class="flex flex-col p-4">
+        {% csrf_token %}
+        <div class="flex py-4 space-x-12">
+          <div class="space-y-3 w-3/4">
+            <div class="input-container">
+              <label class="input-label w-4/5" for="gender">
+                {{'general.referenceConcept'|get_message_commonlab:request.session.locale}}
+              </label>
+              <select class="input" name="referenceconcept" required>
+                <option value="{{testType.referenceConcept.uuid}}">
+                  {{testType.referenceConcept.name}}
+                </option>
+
+                {% for concept in referenceConcepts %}
+                <option value="{{concept.uuid}}">{{concept.name}}</option>
+
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="input-container">
+              <label class="input-label w-4/5"
+                for="testname">{{'general.testName'|get_message_commonlab:request.session.locale}}</label>
+              {% if state == 'edit' %}
+              <input required class="input" value="{{testType.name}}" type="text" name="testname" />
+              {% else %}
+              <input required class="input" type="text" name="testname" />
+              {% endif %}
+            </div>
+
+            <div class="input-container group">
+              <label class="input-label w-4/5"
+                for="shortname">{{'general.shortName'|get_message_commonlab:request.session.locale}}</label>
+              {% if state == 'edit' %}
+              <input class="input" type="text" value="{{testType.shortName}}" name="shortname" />
+              {% else %}
+              <input class="input" type="text" name="shortname" />
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="space-y-3 w-2/4">
+            <div class="input-container">
+              <label class="input-label w-4/5"
+                for="testgroup">{{'general.testGroup'|get_message_commonlab:request.session.locale}}</label>
+
+              <select class="input" name="testgroup">
+                <option selected value="{{testType.testGroup}}">
+                  {{testType.testGroup}}
+                </option>
+                {% for item in testGroups %}
+                <option value="{{item}}">{{item}}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="input-container mt-4">
+              <label class="input-label w-4/5 "
+                for="specimen">{{'general.requiresSpecimen'|get_message_commonlab:request.session.locale}}</label>
+              <div class="flex items-center justify-around space-x-6">
+                <div class="flex items-center space-x-8">
+                  <label class="input-label" for="requirespecimen">Yes</label>
+                  {% if state == 'edit' %}
+                  {% if testType.requiresSpecimen == True %}
+                  <input name="requirespecimen" checked type="radio" value="Yes" />
+                  {% else %}
+                  <input name="requirespecimen" checked type="radio" value="Yes" />
+                  {% endif %}
+                  {% else %}
+                  <input name="requirespecimen" type="radio" value="Yes" />
+
+                  {% endif %}
+                </div>
+                <div class="flex items-center space-x-8">
+                  <label class="input-label" for="requirespecimen">No</label>
+                  {% if state == 'edit' %}
+                  {% if testType.requiresSpecimen == False %}
+                  <input name="requirespecimen" checked type="radio" value="No" />
+                  {% else %}
+                  <input name="requirespecimen" type="radio" value="No" />
+                  {% endif %}
+                  {% else %}
+                  <input name="requirespecimen" type="radio" value="No" />
+
+                  {% endif %}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <div class="input-container space-x-4 -mt-3 mb-4">
+          <label class="w-1/6 text-[#9E9E9E] input-label"
+            for="testname">{{'general.description'|get_message_commonlab:request.session.locale}}</label>
+          {% if state == 'edit' %}
+          <input class="input ml-4" type="text" value="{{testType.description}}" name="description" />
+          {% else %}
+          <input class="input" type="text" name="description" />
+          {% endif %}
+        </div>
+        <div class="flex-center space-x-4">
+          <button type="submit" class="bg-[#2D9CDB] text-white rounded-md p-2 w-1/5">
+            {% if state == 'edit' %}
+            {{'commonlabtest.labtesttype.edit'|get_message_commonlab:request.session.locale}}
+            {% else %}
+            {{'commonlabtest.labtesttype.add'|get_message_commonlab:request.session.locale}}
+            {% endif %}
+          </button>
+          <a class="cancel-button" href="javascript:history.go(-1)">Cancel</a>
+
+        </div>
+      </form>
+      {% if state == 'edit' %}
+      <form class="flex flex-col bg-white p-4 shadow-lg space-y-4 mt-4"
+        action="{% url 'retiretesttype' uuid=testType.uuid %}" method="post">
+        {% csrf_token %}
+
+        <div class="input-container -mt-3">
+          <label class="w-1/6 text-[#9E9E9E] input-label"
+            for="testname">{{'commonlabtest.labtesttype.void'|get_message_commonlab:request.session.locale}}</label>
+          <input class="input" placeholder="{{'general.retireReason'|get_message_commonlab:request.session.locale}}"
+            type="text" name="Retire" required />
+        </div>
+        <button type="submit" class="bg-[#2D9CDB] text-white rounded-md p-2 w-1/5">
+          {{'commonlabtest.labtesttype.void'|get_message_commonlab:request.session.locale}}
+        </button>
+        
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

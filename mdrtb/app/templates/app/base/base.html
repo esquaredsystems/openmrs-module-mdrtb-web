@@ -1,0 +1,234 @@
+{% load static tailwind_tags %}
+{% load static %}
+{% tailwind_css %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>{% block title %}{{title}}{% endblock %}</title>
+	<link rel="icon" type="image/png" href="{% static 'openmrs-favicon.png' %}">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+	<link rel="stylesheet" href="{% static 'app/css/styles.css' %}">
+
+
+	<script src="{% static 'app/js/jquery.js' %}"></script>
+	<script src="{% static '/dist/js/index.min.js' %}"></script>
+
+
+</head>
+<style>
+	.required:after {
+		content: " *";
+		color: red;
+	}
+
+	input:-webkit-autofill,
+	input:-webkit-autofill:focus {
+		transition: background-color 600000s 0s, color 600000s 0s;
+	}
+
+	input[data-autocompleted] {
+		background-color: transparent !important;
+	}
+</style>
+
+<body>
+	<header class="base-header">
+		<div>
+			<a href="{% url 'searchPatientsView' %}"><img class="openmrs-logo"
+					src="https://openmrs.org/wp-content/uploads/2021/08/cropped-OpenMRSlogo-transparent.png"
+					alt="OpemMRS logo" /></a>
+		</div>
+		<div class="navbar">
+			{% if request.session.session_id %}
+			<a class="nav-item" href="#">Logged in as {{request.session.logged_user.person.display}}</a>
+			<a class="nav-item"
+				href="{% url 'profile' %}">{{'Navigation.options'|get_message_openMRS:request.session.locale}}</a>
+			<a class="nav-item"
+				href="{% url 'logout' %}">{{'header.logout'|get_message_openMRS:request.session.locale}}</a>
+			{% else %}
+			<a class="nav-item" href="{% url 'login' %}">Login</a>
+			{% endif %}
+		</div>
+	</header>
+	{% if messages %}
+	{% for message in messages %}
+	{% if message.tags %}
+
+	<div class="left-0 transition-all animate-bounce duration-200 
+		alert 
+		{% if message.tags == 'error' %}
+        alert-danger
+        {% elif message.tags == 'success' %}
+        alert-success
+        {% elif message.tags == 'warning' %}
+        alert-warning
+        {% elif message.tags == 'info' %}
+        alert-info
+        {% endif %} 
+		m-4 w-fit flex-center space-x-4 alert-er">
+		<div>
+			{% if message.tags == 'error' %}
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+				<path fill-rule="evenodd"
+					d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z"
+					clip-rule="evenodd" />
+			</svg>
+
+			{% elif message.tags == 'success' %}
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+				<path fill-rule="evenodd"
+					d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z"
+					clip-rule="evenodd" />
+			</svg>
+			{% elif message.tags == 'warning' %}
+			<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" viewBox="0 0 16 16" role="img"
+				aria-label="Warning:">
+				<path
+					d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+			</svg>
+			{% elif message.tags == 'info' %}
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+				<path fill-rule="evenodd"
+					d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z"
+					clip-rule="evenodd" />
+			</svg>
+
+			{% endif %}
+		</div>
+		<div>{{message}}</div>
+	</div>
+	<script>
+		$('.alert-er').each(() => {
+			setTimeout(() => {
+				$('.alert-er').removeClass('left-0')
+				$('.alert-er').addClass('-left-40')
+
+			}, 2000)
+			setTimeout(() => {
+				$('.alert-er').remove()
+
+
+			}, 2100)
+		})
+
+
+	</script>
+	{% endif %}
+	{% endfor %}
+	{% endif %}
+
+
+
+
+	<div>
+		{%block content%}
+		{% endblock %}
+	</div>
+
+</body>
+
+<script>
+	var locationByUuids;
+
+	const getLocations = async () => {
+		await $.ajax(
+			{
+				url: "{% url 'locations' %}",
+				method: 'GET',
+				success: (locations) => {
+					if (locations) {
+						locationByUuids = locations.reduce((acc, location) => {
+							acc[location.uuid] = location;
+							return acc;
+						}, {});
+
+						locations.forEach(location => {
+							if (location.level === "region".toUpperCase()) {
+								$('#region-select').append(`<option value=${location.uuid}>${location.name}</option>`)
+							}
+						})
+					}
+				},
+				error: (err) => { }
+			}
+		)
+	}
+	if (document.getElementById("locations-container")) {
+		try {
+			getLocations()
+		} catch (error) {
+			console.log(error)
+		}
+	}
+	const clearSubregions = () => {
+		$('#subregion-container') && $('#subregion-container').addClass('hidden')
+	}
+	const clearDistrictsAndFacilities = () => {
+		$('#district-select').html(`<option value="">Select</option>`)
+		$('#district-select').prop('disabled', true)
+		$('#district-select').prop('required', false)
+		$('#facility-select').html(`<option value="">Select</option>`)
+		$('#facility-select').prop('disabled', true)
+		$('#facility-select').prop('required', false)
+
+	}
+	const insertchildren = (selectedLocation, insertInto, level) => {
+		const selectedRegion = $('#region-select').val()
+		const districts = locationByUuids[selectedRegion]['children'].length > 0 ? locationByUuids[selectedRegion]['children'] : []
+		if (districts.length > 0) {
+			for (district of districts) {
+				if (district.uuid === selectedLocation && district.children.length > 0) {
+					for (facility of district.children) {
+						$(insertInto).prop('required', true)
+						$(insertInto).prop('disabled', false)
+
+						if (facility.level === level.toUpperCase()) {
+							$(insertInto).append(`<option value=${facility.uuid}>${facility.name}</option>`)
+
+						}
+					}
+				}
+			}
+
+		}
+	}
+
+	$('#region-select').change(region => {
+		clearDistrictsAndFacilities()
+		clearSubregions()
+		const children = locationByUuids[region.target.value]['children']
+		if (children.length > 0) {
+			for (district of children) {
+				if (district.level === 'district'.toUpperCase()) {
+					$('#district-select').prop('required', true)
+					$('#district-select').prop('disabled', false)
+					$('#district-select').append(`<option value=${district.uuid}>${district.name}</option>`)
+				}
+				if (district.level === 'subregion'.toUpperCase()) {
+					$('#subregion-container').removeClass('hidden')
+					$('#subregion-select').prop('required', true)
+					$('#subregion-select').prop('disabled', false)
+					$('#subregion-select').append(`<option value=${district.uuid}>${district.name}</option>`)
+				}
+			}
+		}
+	})
+
+
+
+
+	$('#district-select').change(selectedDistrict => {
+		insertchildren(selectedDistrict.target.value, '#facility-select', 'facility')
+	})
+	$('#subregion-select').change(selectedSubRegion => {
+		insertchildren(selectedSubRegion.target.value, '#district-select', 'district')
+	})
+
+</script>
+
+</html>
