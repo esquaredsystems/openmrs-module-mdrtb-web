@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -36,61 +37,29 @@
         @apply border-2 border-black bg-[#9DC6DE];
     }
     .tw-dropdown-header{
-        @apply
-        px-6
-        after:hidden
-        py-2.5
-        text-black
-        font-medium
-        leading-tight
-        transition
-        duration-150
-        ease-in-out
-        flex
-        items-center
-        whitespace-nowrap;
+        @apply flex items-center space-x-4 rounded px-6 pt-2.5 pb-2 text-sm font-medium transition duration-150 ease-in-out;
     }
     .tw-dropdown-item-list{
-        @apply 
-        min-w-max
-        absolute
-        bg-white
-        text-base
-        z-50
-        float-left
-        py-2
-        list-none
-        text-left
-        rounded-lg
-        shadow-lg
-        mt-1
-        hidden
-        m-0
-        bg-clip-padding
-        border-none;
+        @apply absolute z-[1000] m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-left text-base shadow-lg [&[data-te-dropdown-show]]:block;
     }
     .tw-dropdown-item{
-        @apply dropdown-item
-        text-sm
-        py-2
-        px-4
-        font-normal
-        block
-        w-full
-        whitespace-nowrap
-        bg-transparent
-        text-gray-700
-        hover:bg-gray-100;
+        @apply block w-full whitespace-nowrap bg-transparent py-2 px-4 text-sm font-normal text-black hover:text-blue-600  active:no-underline;
     }
     .input-container{
             @apply  flex items-center w-full space-x-4;
     }
     .input{
-            @apply border rounded-md shadow-sm border-gray-200 outline-none focus:ring-0 w-11/12;
+            @apply border rounded-md shadow-sm border-gray-200 outline-none p-2 w-full;
     }
     .input-label{
             @apply text-[#9E9E9E] font-bold w-full;
     }
+
+    .radio-input{
+        @apply relative float-left mt-0.5 mr-1 -ml-[1.5rem] h-5 w-5 appearance-none rounded-full border-2 border-solid border-[rgba(0,0,0,0.25)] bg-white before:pointer-events-none before:absolute before:h-4 before:w-4 before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-[0px_0px_0px_13px_transparent] before:content-[''] after:absolute after:z-[1] after:block after:h-4 after:w-4 after:rounded-full after:bg-white after:content-[''] checked:border-primary checked:bg-white checked:before:opacity-[0.16] checked:after:absolute checked:after:left-1/2 checked:after:top-1/2 checked:after:h-[0.625rem] checked:after:w-[0.625rem] checked:after:rounded-full checked:after:border-primary checked:after:bg-primary checked:after:content-[''] checked:after:[transform:translate(-50%,-50%)] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:shadow-none focus:transition-[border-color_0.2s] focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:border-primary checked:focus:bg-white checked:focus:before:scale-100 checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s]
+
+    }
+
     .page-title{
         @apply text-[#2D9CDB] text-3xl font-bold;
     }
@@ -127,17 +96,17 @@
         @apply flex-column-center m-36 flex-grow
     }
     .search-input-container{
-        @apply flex-column-center items-center;
+        @apply flex flex-col justify-center items-center;
     }
 
 
     .search-box{
-        @apply rounded-tr-md rounded-tl-md cursor-pointer shadow-sm w-4/5 bg-gray-200 flex items-center justify-between px-2;
+        @apply rounded-tr-md rounded-tl-md cursor-pointer shadow-sm w-4/5 bg-gray-200 flex items-center justify-between p-2 ;
     }
 
 
      .search-page-input{
-        @apply border-none focus:ring-0 bg-transparent flex-1;
+        @apply border-none focus:ring-0 bg-transparent flex-1 outline-none;
     }
 
     .search-result-container{
@@ -197,7 +166,7 @@
     }
 
     .login-form-container{
-        @apply flex flex-col items-center justify-center space-y-4;
+        @apply flex flex-col items-center justify-center space-y-4 bg-gray-100 shadow-md p-4 rounded-md;
     }
 
    

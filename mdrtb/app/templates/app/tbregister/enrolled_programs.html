@@ -115,7 +115,7 @@
                       {{'Program.states'|get_message_openMRS:request.session.locale}}
                     </button>
                   </td>
-                  {% if program.program.uuid == "e80fec43-f2b5-45b0-aec1-eaf74be26ff9" %}
+                  {% if program.program.uuid == dots_program %}
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
                     <a href="{% url 'dashboard' uuid=uuid %}?program={{program.uuid}}" type="button"
                       class="cancel-button">{{'Patient.dashboard.title'|get_message_openMRS:request.session.locale}}
