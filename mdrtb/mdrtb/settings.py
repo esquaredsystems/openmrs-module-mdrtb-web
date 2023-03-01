@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import mimetypes
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-xkgiu_+nvkf2q+#lbme#0s69&ke80dle&s*jy%)kk+unk+@-!_"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '172.17.15.130']
 
 
 # Application definition
@@ -131,12 +132,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = "static/"
-STATIC_ROOT = BASE_DIR / "static"
-STATICFILES_DIRS = [
-    BASE_DIR / "app/static",
-    BASE_DIR / "theme/node_modules/tw-elements/dist/js/",
-]
+STATIC_ROOT = ''
+STATIC_URL = '/static/'
+STATICFILES_DIRS = ('static',)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -146,5 +144,9 @@ TAILWIND_APP_NAME = "theme"
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
-NPM_BIN_PATH = "C:\Program Files\\nodejs\\npm.cmd"
+#NPM_BIN_PATH = "C:\Program Files\\nodejs\\npm.cmd"
 REST_API_BASE_URL = "http://46.20.206.173:38080/openmrs/ws/rest/v1/"
+
+mimetypes.add_type('text/css', '.css', True)
+mimetypes.add_type('text/html', '.html', True)
+mimetypes.add_type('text/javascript', '.js', True)
