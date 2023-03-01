@@ -3,7 +3,7 @@
 
 <div id="locations-container" class="flex flex-col space-y-4">
     <div class="input-container">
-        <label class="input-label w-1/6  required"
+        <label class="input-label w-1/6"
             for="country">{{'Location.country'|get_message_openMRS:request.session.locale}}</label>
         <select required class="input form-control" name="country" id="country-select">
             <option selected value="Таджикистан">Таджикистан</option>
@@ -11,8 +11,7 @@
         </select>
     </div>
     <div class="input-container">
-        <label class="input-label w-1/6  required"
-            for="name">{{'mdrtb.region'|get_message:request.session.locale}}</label>
+        <label class="input-label w-1/6" for="name">{{'mdrtb.region'|get_message:request.session.locale}}</label>
         <select required class="input form-control" name="region" id="region-select">
             <option value="">Select</option>
         </select>

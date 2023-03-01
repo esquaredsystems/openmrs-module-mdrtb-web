@@ -266,7 +266,7 @@ def enroll_patient_in_mdrtb(req, uuid):
             return redirect("mdrtbprogramenroll", uuid=uuid)
 
 
-def edit_program(req, uuid, programid):
+def edit_dots_program(req, uuid, programid):
     if not check_if_session_alive(req):
         return redirect("login")
     if req.method == "POST":
@@ -289,7 +289,6 @@ def edit_program(req, uuid, programid):
                 req.session["current_date_enrolled"] = response["dateEnrolled"]
                 req.session["current_patient_program"] = response["uuid"]
         except Exception as e:
-            print(traceback.format_exc())
             messages.error(req, str(e))
         finally:
             return redirect("enrolledprograms", uuid=uuid)
@@ -297,11 +296,46 @@ def edit_program(req, uuid, programid):
         context = {"title": "Edit Program", "uuid": uuid, "state": "edit"}
         enrolled_program = pu.get_enrolled_program_by_uuid(req, programid)
         context["enrolled_program"] = enrolled_program
-        return render(req, "app/tbregister/enroll_program.html", context=context)
+        return render(req, "app/tbregister/dots/enroll_in_dots.html", context=context)
     except Exception as e:
-        print(traceback.format_exc())
         messages.error(req, str(e))
-        return redirect("editprogram", uuid=uuid, programid=programid)
+        return redirect("editdotsprogram", uuid=uuid, programid=programid)
+
+
+def edit_mdrtb_program(req, uuid, programid):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    if req.method == "POST":
+        body = {
+            "dateEnrolled": req.POST.get("enrollmentdate"),
+            "location": req.POST.get("facility") or req.POST.get("district"),
+            "dateCompleted": req.POST.get("completiondate"),
+        }
+        body = {key: value for key, value in body.items() if value}
+
+        try:
+            status, response = ru.post(req, f"programenrollment/{programid}", body)
+            if status:
+                req.session["current_location"] = {
+                    "uuid": response["location"]["uuid"],
+                    "name": response["location"].get(
+                        "name", response["location"]["display"]
+                    ),
+                }
+                req.session["current_date_enrolled"] = response["dateEnrolled"]
+                req.session["current_patient_program"] = response["uuid"]
+        except Exception as e:
+            messages.error(req, str(e))
+        finally:
+            return redirect("enrolledprograms", uuid=uuid)
+    try:
+        context = {"title": "Edit Program", "uuid": uuid, "state": "edit"}
+        enrolled_program = pu.get_enrolled_program_by_uuid(req, programid)
+        context["enrolled_program"] = enrolled_program
+        return render(req, "app/tbregister/mdr/enroll_in_mdrtb.html", context=context)
+    except Exception as e:
+        messages.error(req, str(e))
+        return redirect("editmdrtbprogram", uuid=uuid, programid=programid)
 
 
 def delete_program(req, uuid, programid):
@@ -1025,12 +1059,35 @@ def patientList(req):
 
 
 def user_profile(req):
+    context = {"title": "User Profile"}
     if req.method == "POST":
-        print(req.session["redirect_url"])
         req.session["locale"] = req.POST["locale"]
         return redirect(req.session["redirect_url"])
-    req.session["redirect_url"] = req.path
-    return render(req, "app/tbregister/user_profile.html")
+    try:
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER")
+        default_locale = req.session.get("logged_user")["userProperties"][
+            "defaultLocale"
+        ]
+        allowed_locales = [
+            locale.strip()
+            for locale in mu.get_global_properties(req, "locale.allowed.list").split(
+                ","
+            )
+        ]
+        allowed_locales.remove(default_locale)
+        context["allowed_locales"] = [
+            {"name": Constants[locale.upper()].value, "value": locale}
+            for locale in allowed_locales
+        ]
+        context["default_locale"] = {
+            "name": Constants[default_locale.upper()].value,
+            "value": default_locale,
+        }
+        return render(req, "app/tbregister/user_profile.html", context=context)
+    except Exception as e:
+        print(traceback.format_exc())
+        messages.error(req, str(e))
+        return redirect(req.session["redirect_url"])
 
 
 def transfer(req):

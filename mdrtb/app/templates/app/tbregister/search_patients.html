@@ -8,11 +8,11 @@
 {%block content%}
 
 {% include 'app/components/nav.html' %}
-
 <div class="search-page-container">
   <div class="search-input-container">
     <div class="search-box">
-      <input class="search-page-input" type="text" id="search-input" name="search" placeholder="Search for Patients"
+      <input class="search-page-input" type="text" id="search-input" name="search"
+        placeholder="{{'Patient.searchBox.placeholder' | get_message_openMRS:request.session.locale }}"
         title="Enter 2 or more characters" />
       <span class="cursor-pointer" onclick="handleSearch()">
         <svg id="search-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -32,8 +32,9 @@
     </div>
     {% if add_patient_privilege %}
     <div class="patient-create-new-box">
-      <p>Can't find the partient ? </p>
-      <a href="{% url 'enrollPatient' %}"><button class="button-primary">Create One</button></a>
+      <p>{{'PatientSearch.noneFound'|get_message_openMRS:request.session.locale}}? </p>
+      <a href="{% url 'enrollPatient' %}"><button
+          class="button-primary">{{'Patient.create'|get_message_openMRS:request.session.locale}}</button></a>
     </div>
     {% endif %}
   </div>

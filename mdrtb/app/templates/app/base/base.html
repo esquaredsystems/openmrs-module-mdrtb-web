@@ -4,7 +4,7 @@
 
 <head>
 	<title>{% block title %}{{title}}{% endblock %}</title>
-	<link rel="icon" type="image/png" href="{% static 'openmrs-favicon.png' %}">
+	<link rel="icon" type="image/png" href="{% static 'app/imgs/openmrs-favicon.png' %}">
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -41,7 +41,8 @@
 		</div>
 		<div class="navbar">
 			{% if request.session.session_id %}
-			<a class="nav-item" href="#">Logged in as {{request.session.logged_user.person.display}}</a>
+			<a class="nav-item" href="#">{{'header.logged.in'|get_message_openMRS:request.session.locale}}
+				{{request.session.logged_user.person.display}}</a>
 			<a class="nav-item"
 				href="{% url 'profile' %}">{{'Navigation.options'|get_message_openMRS:request.session.locale}}</a>
 			<a class="nav-item"
@@ -193,7 +194,12 @@
 
 		}
 	}
+	const clearFacilities = () => {
+		$('#facility-select').html(`<option value="">Select</option>`)
+		$('#facility-select').prop('disabled', true)
+		$('#facility-select').prop('required', false)
 
+	}
 	$('#region-select').change(region => {
 		clearDistrictsAndFacilities()
 		clearSubregions()
@@ -219,6 +225,7 @@
 
 
 	$('#district-select').change(selectedDistrict => {
+		clearFacilities()
 		insertchildren(selectedDistrict.target.value, '#facility-select', 'facility')
 	})
 	$('#subregion-select').change(selectedSubRegion => {
