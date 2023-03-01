@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-xkgiu_+nvkf2q+#lbme#0s69&ke80dle&s*jy%)kk+unk+@-!_"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '172.17.15.130']
 
@@ -132,9 +132,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_ROOT = ''
+STATIC_ROOT = BASE_DIR / "static"
 STATIC_URL = '/static/'
-STATICFILES_DIRS = ('static',)
+STATICFILES_DIRS = [
+    BASE_DIR / "app/static",
+    BASE_DIR / "theme/node_modules/tw-elements/dist/js/"
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -144,9 +147,42 @@ TAILWIND_APP_NAME = "theme"
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
-#NPM_BIN_PATH = "C:\Program Files\\nodejs\\npm.cmd"
+# NPM_BIN_PATH = "C:\Program Files\\nodejs\\npm.cmd"
 REST_API_BASE_URL = "http://46.20.206.173:38080/openmrs/ws/rest/v1/"
 
 mimetypes.add_type('text/css', '.css', True)
 mimetypes.add_type('text/html', '.html', True)
 mimetypes.add_type('text/javascript', '.js', True)
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False if DEBUG else True,
+    "handlers": {
+        "warning_file": {
+            "level": "WARNING",
+            "class": "logging.FileHandler",
+            "filename": "../mdrtb/logs/django.log",
+            "formatter": "simple"
+
+        },
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "simple"
+
+        }
+
+    },
+    "formatters": {
+        "simple": {
+            "format": "%(levelname)s, when = %(asctime)s, where = %(module)s.%(funcName)s, line_no = %(lineno)d, message = %(message)s",
+        },
+    },
+    "loggers": {
+        "django": {
+            "level": "INFO",
+            "handlers": ["warning_file", "console"]
+        }
+    }
+}
