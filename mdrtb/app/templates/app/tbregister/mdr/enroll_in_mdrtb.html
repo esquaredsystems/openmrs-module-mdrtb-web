@@ -14,7 +14,8 @@
         <h1 class="text-[#2D9CDB] text-3xl font-bold">
             {{'mdrtb.editProgram'|get_message:request.session.locale}}
         </h1>
-        <a href="{% url 'deleteprogram' uuid=uuid programid=enrolled_program.uuid %}" type="button" id="deletetb03">
+        <a href="{% url 'deleteprogram' uuid=uuid programid=enrolled_program.uuid %}" type="button"
+            title="Delete {{enrolled_program.program.name}}">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round"

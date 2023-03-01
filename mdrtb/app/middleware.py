@@ -1,4 +1,3 @@
-from django.contrib import messages
 import utilities.restapi_utils as ru
 
 
@@ -8,7 +7,7 @@ class SessionCheckMiddleware:
 
     def __call__(self, request):
         # Check if session_id is present in session
-        if not request.session.get('session_id'):
+        if not request.session.get("session_id"):
             ru.clear_session(request)
         response = self.get_response(request)
         return response

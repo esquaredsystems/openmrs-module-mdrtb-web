@@ -1,0 +1,19 @@
+{
+  "name": "theme",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tailwindcss -i ./src/css/input.css  -o ../app/static/app/css/styles.css --watch",
+    "build": "npx tailwindcss -i ./src/css/input.css -o ../app/static/app/css/styles.css --minify"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.2.7"
+  },
+  "dependencies": {
+    "tw-elements": "^1.0.0-beta1"
+  }
+}
