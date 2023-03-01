@@ -354,31 +354,25 @@
               <div class="flex-center space-x-2">
                 <label for="yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
-                {% if form.relapsed.uuid == '31b27f6a-0370-102d-b0e3-001ec94a0cc1' %}
-                <input checked name="53aaa4c7-49c0-4716-9af0-9098d35bacc5" type="radio"
-                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
+                {% if form.relapsed.uuid == constants.YES %}
+                <input checked name="53aaa4c7-49c0-4716-9af0-9098d35bacc5" type="radio" value="{{constants.YES}}" />
                 {% else %}
-                <input name="53aaa4c7-49c0-4716-9af0-9098d35bacc5" type="radio"
-                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
+                <input name="53aaa4c7-49c0-4716-9af0-9098d35bacc5" type="radio" value="{{constants.YES}}" />
                 {% endif %}
                 {% else %}
-                <input name="53aaa4c7-49c0-4716-9af0-9098d35bacc5" type="radio"
-                  value="31b27f6a-0370-102d-b0e3-001ec94a0cc1" />
+                <input name="53aaa4c7-49c0-4716-9af0-9098d35bacc5" type="radio" value="{{constants.YES}}" />
                 {% endif %}
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
-                {% if form.relapsed.uuid == '31b2803c-0370-102d-b0e3-001ec94a0cc1' %}
-                <input checked name="53aaa4c7-49c0-4716-9af0-9098d35bacc5" type="radio"
-                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
+                {% if form.relapsed.uuid == constants.NO %}
+                <input checked name="53aaa4c7-49c0-4716-9af0-9098d35bacc5" type="radio" value="{{constants.NO}}" />
                 {% else %}
-                <input name="53aaa4c7-49c0-4716-9af0-9098d35bacc5" type="radio"
-                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
+                <input name="53aaa4c7-49c0-4716-9af0-9098d35bacc5" type="radio" value="{{constants.NO}}" />
                 {% endif %}
                 {% else %}
-                <input name="53aaa4c7-49c0-4716-9af0-9098d35bacc5" type="radio"
-                  value="31b2803c-0370-102d-b0e3-001ec94a0cc1" />
+                <input name="53aaa4c7-49c0-4716-9af0-9098d35bacc5" type="radio" value="{{constants.NO}}" />
                 {% endif %}
               </div>
             </div>

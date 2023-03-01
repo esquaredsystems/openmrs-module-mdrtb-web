@@ -1,28 +1,27 @@
-{% load static tailwind_tags %}
 {% load static %}
-{% tailwind_css %}
 
 {% if request.session.session_id %}
 <div class="flex justify-center">
   <div>
-    <div class="dropdown relative">
-      <button class="tw-dropdown-header" type="button" id="dropdownGeneral" data-bs-toggle="dropdown"
-        aria-expanded="false">
+    <div class="relative" data-te-dropdown-ref>
+      <button
+        class="flex items-center space-x-4 rounded px-6 pt-2.5 pb-2 text-sm font-medium transition duration-150 ease-in-out"
+        type="button" id="dropdownGeneral" data-te-dropdown-toggle-ref aria-expanded="false" data-te-ripple-init
+        data-te-ripple-color="light">
         {{'mdrtb.general'|get_message:request.session.locale}}
-        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
-          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-          <path fill="currentColor"
-            d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z">
-          </path>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="ml-2 w-3 h-3 text-black">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
         </svg>
+
       </button>
-      <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="dropdownGeneral">
-        <li>
+      <ul class="tw-dropdown-item-list" aria-labelledby="dropdownGeneral" data-te-dropdown-menu-ref>
+        <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item" href="#">
             {{'mdrtb.mergePatients'|get_message:request.session.locale}}
           </a>
         </li>
-        <li>
+        <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item"
             href="{% url 'patientlist' %}">{{'mdrtb.patientLists'|get_message:request.session.locale}}</a>
         </li>
@@ -30,124 +29,131 @@
     </div>
   </div>
   <div>
-    <div class="dropdown relative">
-      <button class="tw-dropdown-header" type="button" id="dropdownDotsReports" data-bs-toggle="dropdown"
-        aria-expanded="false">
+    <div class="relative" data-te-dropdown-ref>
+      <button
+        class="flex items-center space-x-4 rounded px-6 pt-2.5 pb-2 text-sm font-medium transition duration-150 ease-in-out"
+        type="button" id="dropdownDotsReports" data-te-dropdown-toggle-ref aria-expanded="false" data-te-ripple-init
+        data-te-ripple-color="light">
         {{'mdrtb.dotsreports'|get_message:request.session.locale}}
-        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
-          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-          <path fill="currentColor"
-            d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z">
-          </path>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="ml-2 w-3 h-3 text-black">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
         </svg>
       </button>
-      <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="dropdownDotsReports">
-        <li>
+      <ul class="tw-dropdown-item-list" aria-labelledby="dropdownDotsReports" data-te-dropdown-menu-ref>
+        <li data-te-dropdown-item-ref>
+
           <a class="tw-dropdown-item" href="#">{{'mdrtb.viewClosedReports'|get_message:request.session.locale}}</a>
         </li>
-        <li>
+        <li data-te-dropdown-item-ref>
+
           <a class="tw-dropdown-item" href="#">{{'mdrtb.dotsreport07'|get_message:request.session.locale}}</a>
         </li>
-        <li>
+        <li data-te-dropdown-item-ref>
+
           <a class="tw-dropdown-item" href="#">{{'mdrtb.dotsreport08'|get_message:request.session.locale}}</a>
         </li>
-        <li>
+        <li data-te-dropdown-item-ref>
+
           <a class="tw-dropdown-item" href="#">{{'mdrtb.tb03Export'|get_message:request.session.locale}}</a>
         </li>
-        <li>
+        <li data-te-dropdown-item-ref>
+
           <a class="tw-dropdown-item" href="#">{{'mdrtb.tb03ExportSingleLine'|get_message:request.session.locale}}</a>
         </li>
-        <li>
-          <a class="tw-dropdown-item" href="#">{{'mdrtb.f89ExportSingleLine'|get_message:request.session.locale}}</a>
+        <li data-te-dropdown-item-ref <a class="tw-dropdown-item" href="#">
+          {{'mdrtb.f89ExportSingleLine'|get_message:request.session.locale}}</a>
         </li>
-        <li>
+        <li data-te-dropdown-item-ref>
+
           <a class="tw-dropdown-item" href="#">{{'mdrtb.dotsdq.title'|get_message:request.session.locale}}</a>
         </li>
-        <li>
+        <li data-te-dropdown-item-ref>
+
           <a class="tw-dropdown-item" href="#">{{'mdrtb.dq.missingtb03'|get_message:request.session.locale}}</a>
         </li>
       </ul>
     </div>
   </div>
   <div>
-    <div class="dropdown relative">
-      <button class="tw-dropdown-header" type="button" id="dropdownMdrReports" data-bs-toggle="dropdown"
-        aria-expanded="false">
+    <div class="relative" data-te-dropdown-ref>
+      <button
+        class="flex items-center space-x-4 rounded px-6 pt-2.5 pb-2 text-sm font-medium transition duration-150 ease-in-out"
+        type="button" id="dropdownMdrReports" data-te-dropdown-toggle-ref aria-expanded="false" data-te-ripple-init
+        data-te-ripple-color="light">
         {{'mdrtb.mdrreports'|get_message:request.session.locale}}
-        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
-          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-          <path fill="currentColor"
-            d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z">
-          </path>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="ml-2 w-3 h-3 text-black">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
         </svg>
       </button>
-      <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="dropdownMdrReports">
-        <li>
+      <ul class="tw-dropdown-item-list" aria-labelledby="dropdownMdrReports" data-te-dropdown-menu-ref>
+        <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item" href="#">{{'mdrtb.viewClosedReports'|get_message:request.session.locale}}</a>
         </li>
-        <li>
+        <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item" href="#">{{'mdrtb.tb07u'|get_message:request.session.locale}}</a>
         </li>
-        <li>
-          <a class="tw-dropdown-item" href="#">{{'mdrtb.tb08u'|get_message:request.session.locale}}</a>
+        <li data-te-dropdown-item-ref>
+          <a class="tw-dropdown-item" href="#">{{'mdrtb.tb08Fast'|get_message:request.session.locale}}</a>
         </li>
-        <li>
+        <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item" href="#">{{'mdrtb.tb03uExport'|get_message:request.session.locale}}</a>
         </li>
-        <li>
+        <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item" href="#">{{'mdrtb.tb03uExportSingleLine'|get_message:request.session.locale}}</a>
         </li>
-        <li>
+        <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item" href="#">{{'mdrtb.dq.title'|get_message:request.session.locale}}</a>
         </li>
-        <li>
+        <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item" href="#">{{'mdrtb.sldreport'|get_message:request.session.locale}}</a>
         </li>
-        <li>
+        <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item" href="#">{{'mdrtb.dq.missingtb03u'|get_message:request.session.locale}}</a>
         </li>
       </ul>
     </div>
   </div>
   <div>
-    <div class="dropdown relative">
-      <button class="tw-dropdown-header" type="button" id="dropdownOtherReports" data-bs-toggle="dropdown"
-        aria-expanded="false">
+    <div class="relative" data-te-dropdown-ref>
+      <button
+        class="flex items-center space-x-4 rounded px-6 pt-2.5 pb-2 text-sm font-medium transition duration-150 ease-in-out"
+        type="button" id="dropdownOtherReports" data-te-dropdown-toggle-ref aria-expanded="false" data-te-ripple-init
+        data-te-ripple-color="light">
         {{'mdrtb.otherreports'|get_message:request.session.locale}}
-        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
-          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-          <path fill="currentColor"
-            d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z">
-          </path>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="ml-2 w-3 h-3 text-black">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
         </svg>
       </button>
-      <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="dropdownOtherReports">
-        <li>
+      <ul class="tw-dropdown-item-list" aria-labelledby="dropdownOtherReports" data-te-dropdown-menu-ref>
+        <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item" href="#">{{'mdrtb.form8.title'|get_message:request.session.locale}}</a>
         </li>
-        <li>
+        <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item" href="#">{{'mdrtb.pv.qtrReportTitle'|get_message:request.session.locale}}</a>
         </li>
-        <li>
+        <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item" href="#">{{'mdrtb.pv.register.title'|get_message:request.session.locale}}</a>
         </li>
       </ul>
     </div>
   </div>
   <div>
-    <div class="dropdown relative">
-      <button class="tw-dropdown-header" type="button" id="dropdownCommonLab" data-bs-toggle="dropdown"
-        aria-expanded="false">
+    <div class="relative" data-te-dropdown-ref>
+      <button
+        class="flex items-center space-x-4 rounded px-6 pt-2.5 pb-2 text-sm font-medium transition duration-150 ease-in-out"
+        type="button" id="dropdownCommonLab" data-te-dropdown-toggle-ref aria-expanded="false" data-te-ripple-init
+        data-te-ripple-color="light">
         Common Lab (For DEV)
-        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
-          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-          <path fill="currentColor"
-            d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z">
-          </path>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="ml-2 w-3 h-3 text-black">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
         </svg>
       </button>
-      <ul class="dropdown-menu tw-dropdown-item-list" aria-labelledby="dropdownCommonLab">
-        <li>
+      <ul class="tw-dropdown-item-list" aria-labelledby="dropdownCommonLab" data-te-dropdown-menu-ref>
+        <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item" href="{% url 'managetesttypes' %}">Manage Test Types</a>
         </li>
 

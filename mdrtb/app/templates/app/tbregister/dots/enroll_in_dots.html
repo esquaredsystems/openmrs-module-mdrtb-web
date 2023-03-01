@@ -15,7 +15,8 @@
     <h1 class="text-[#2D9CDB] text-3xl font-bold">
       {{'mdrtb.editProgram'|get_message:request.session.locale}}
     </h1>
-    <a href="{% url 'deleteprogram' uuid=uuid programid=enrolled_program.uuid %}" type="button" id="deletetb03">
+    <a href="{% url 'deleteprogram' uuid=uuid programid=enrolled_program.uuid %}" type="button"
+      title="Delete {{enrolled_program.program.name}}">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
         class="w-6 h-6">
         <path stroke-linecap="round" stroke-linejoin="round"
@@ -29,7 +30,7 @@
   </h1>
   {% endif %}
   <form id="enroll-form"
-    action="{% if state == 'edit' %}{% url 'editprogram' uuid=uuid programid=enrolled_program.uuid %}{% else %}{% url 'dotsprogramenroll' uuid=uuid %}{% endif %}"
+    action="{% if state == 'edit' %}{% url 'editdotsprogram' uuid=uuid programid=enrolled_program.uuid %}{% else %}{% url 'dotsprogramenroll' uuid=uuid %}{% endif %}"
     method="post" class="flex flex-col">
 
     {% csrf_token %}
@@ -126,8 +127,10 @@
       {% include 'app/components/locations.html' %}
       {% endif %}
       <div id="states" class="flex-column-center space-y-4">
+        {% if state != 'edit' %}
         <h3 id="initialStates" class="primary-heading text-xl">
           {{'Program.initialStates' | get_message_openMRS:request.session.locale}}</h3>
+        {% endif %}
 
       </div>
     </div>

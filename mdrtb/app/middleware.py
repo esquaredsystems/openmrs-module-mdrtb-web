@@ -1,5 +1,4 @@
-from django.contrib import messages
-import utilities.metadata_util as mu
+import utilities.restapi_utils as ru
 
 
 class SessionCheckMiddleware:
@@ -8,12 +7,7 @@ class SessionCheckMiddleware:
 
     def __call__(self, request):
         # Check if session_id is present in session
-        if not request.session.get('session_id'):
-            redirect = request.path
-            print('EXPIRED REDIRECT TO ', redirect)
-            request.session.flush()
-            messages.error(request, mu.get_global_msgs(
-                'auth.session.expired', source='OpenMRS'))
-            request.session['redirect_url'] = redirect
+        if not request.session.get("session_id"):
+            ru.clear_session(request)
         response = self.get_response(request)
         return response

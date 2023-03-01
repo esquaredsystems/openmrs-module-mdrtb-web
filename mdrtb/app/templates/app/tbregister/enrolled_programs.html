@@ -92,10 +92,21 @@
                 {% for program in programs %}
 
                 <tr>
-                  <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
-                    <a href="{% url 'editprogram' uuid=uuid programid=program.uuid %}"
-                      class="cancel-button">{{program.program.name}}
+                  <td class="px-5 py-5 border-b border-gray-200 w-fit  text-sm">
+                    <a href="{% if program.program.uuid == dots_program %}{% url 'editdotsprogram' uuid=uuid programid=program.uuid %}{% else %}{% url 'editmdrtbprogram' uuid=uuid programid=program.uuid %}{% endif %}"
+                      class="cancel-button flex items-center space-x-3">
+                      <div>{{program.program.name}}</div>
+                      <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                          stroke="currentColor" class="w-4 h-4">
+                          <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                        </svg>
+                      </div>
+
                     </a>
+
+
                   </td>
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
                     {{program.dateEnrolled|iso_to_normal_date}}</td>
@@ -115,7 +126,7 @@
                       {{'Program.states'|get_message_openMRS:request.session.locale}}
                     </button>
                   </td>
-                  {% if program.program.uuid == "e80fec43-f2b5-45b0-aec1-eaf74be26ff9" %}
+                  {% if program.program.uuid == dots_program %}
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
                     <a href="{% url 'dashboard' uuid=uuid %}?program={{program.uuid}}" type="button"
                       class="cancel-button">{{'Patient.dashboard.title'|get_message_openMRS:request.session.locale}}

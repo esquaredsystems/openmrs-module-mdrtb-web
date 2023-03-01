@@ -8,20 +8,19 @@ from resources.enums.encounterType import EncounterType
 
 def get_patient(req, uuid):
     patient = {}
-    status, patient_data = ru.get(
-        req, f'patient/{uuid}', {'v': "full"})
+    status, patient_data = ru.get(req, f"patient/{uuid}", {"v": "full"})
     if status:
-        patient['uuid'] = uuid
-        patient['name'] = patient_data['person']['display']
-        patient['age'] = patient_data['person']['age']
-        patient['dob'] = patient_data['person']['birthdate']
-        patient['gender'] = patient_data['person']['gender']
-        patient['address'] = patient_data['person']['preferredAddress']['display']
-        patient['identifiers'] = patient_data['identifiers']
-        patient['auditInfo'] = patient_data['auditInfo']
+        patient["uuid"] = uuid
+        patient["name"] = patient_data["person"]["display"]
+        patient["age"] = patient_data["person"]["age"]
+        patient["dob"] = patient_data["person"]["birthdate"]
+        patient["gender"] = patient_data["person"]["gender"]
+        patient["address"] = patient_data["person"]["preferredAddress"]["display"]
+        patient["identifiers"] = patient_data["identifiers"]
+        patient["auditInfo"] = patient_data["auditInfo"]
         return patient
     else:
-        print('PATIENT NOT FOUND')
+        print("PATIENT NOT FOUND")
         return None
 
 
@@ -29,44 +28,46 @@ def create_patient(req, data):
     patient_info = {
         "identifiers": [
             {
-                "identifier": data['patientidentifier'],
-                "identifierType": data['patientidentifiertype'],
-                "location": data['district'] if 'facility' not in data else data['facility']
-
+                "identifier": data["patientidentifier"],
+                "identifierType": data["patientidentifiertype"],
+                "location": data["district"]
+                if "facility" not in data
+                else data["facility"],
             }
         ],
         "person": {
-            "names": [{
-                "givenName": data['givenname'],
-                "familyName":data['familyname']
-            }],
-
-            "gender": data['gender'],
-            "addresses": [{
-                "address1": data['address'],
-                "stateProvince": data['region'],
-                "country": data['country'],
-            }]
-        }}
-    if 'dob' in data:
-        patient_info['person']['birthdate'] = data['dob']
-        patient_info['person']['birthdateEstimated'] = False
+            "names": [
+                {"givenName": data["givenname"], "familyName": data["familyname"]}
+            ],
+            "gender": data["gender"],
+            "addresses": [
+                {
+                    "address1": data["address"],
+                    "stateProvince": data["region"],
+                    "country": data["country"],
+                }
+            ],
+        },
+    }
+    if "dob" in data:
+        patient_info["person"]["birthdate"] = data["dob"]
+        patient_info["person"]["birthdateEstimated"] = False
     else:
-        patient_info['person']['age'] = data['age']
+        patient_info["person"]["age"] = data["age"]
 
-    if 'deceased' in data:
-        patient_info['person']['deathDate'] = data['deathdate']
-        patient_info['person']['causeOfDeath'] = data['causeofdeath']
+    if "deceased" in data:
+        patient_info["person"]["deathDate"] = data["deathdate"]
+        patient_info["person"]["causeOfDeath"] = data["causeofdeath"]
     else:
-        patient_info['person']['deathDate'] = None
-        patient_info['person']['dead'] = False
-        patient_info['person']['causeOfDeath'] = None
+        patient_info["person"]["deathDate"] = None
+        patient_info["person"]["dead"] = False
+        patient_info["person"]["causeOfDeath"] = None
 
-    if 'voided' in data:
-        patient_info['person']['reasonToVoid'] = data['reasontovoid']
+    if "voided" in data:
+        patient_info["person"]["reasonToVoid"] = data["reasontovoid"]
 
     try:
-        status, response = ru.post(req, 'patient', patient_info)
+        status, response = ru.post(req, "patient", patient_info)
         if status:
             return status, response
     except Exception as e:
@@ -77,29 +78,39 @@ def enroll_patient_in_program(req, patientid, data):
     try:
         program_body = {
             "patient": patientid,
-            "program": data['program'],
-            "dateEnrolled": data['enrollmentdate'],
-            "location": data.get('facility', data.get('district', None)),
-            "dateCompleted": data['completiondate'] if not data['completiondate'] == '' else None,
+            "program": data["program"],
+            "dateEnrolled": data["enrollmentdate"],
+            "location": data.get("facility", data.get("district", None)),
+            "dateCompleted": data["completiondate"]
+            if not data["completiondate"] == ""
+            else None,
             "states": [
                 {
                     "state": data.get(work_flow_uuid, None),
-                    "startDate": data['enrollmentdate'],
-                    "endDate": data['completiondate'] if not data['completiondate'] == '' else None
-                } for work_flow_uuid in get_programs(req, uuid=data['program'], params={'v': 'custom:(allWorkflows)'}) if data.get(work_flow_uuid)
-            ]
+                    "startDate": data["enrollmentdate"],
+                    "endDate": data["completiondate"]
+                    if not data["completiondate"] == ""
+                    else None,
+                }
+                for work_flow_uuid in get_programs(
+                    req, uuid=data["program"], params={"v": "custom:(allWorkflows)"}
+                )
+                if data.get(work_flow_uuid)
+            ],
         }
-        if 'identifier' in data:
+        if "identifier" in data:
             patient_identifier = {
-                "identifier": data['identifier'],
-                "identifierType": data['identifierType'],
-                "location": data.get('facility', data.get('district', None))}
+                "identifier": data["identifier"],
+                "identifierType": data["identifierType"],
+                "location": data.get("facility", data.get("district", None)),
+            }
             identifier_status, _ = ru.post(
-                req, f'patient/{patientid}/identifier', patient_identifier)
+                req, f"patient/{patientid}/identifier", patient_identifier
+            )
 
-        status, response = ru.post(req, 'programenrollment', program_body)
+        status, response = ru.post(req, "programenrollment", program_body)
         if status:
-            return response['uuid']
+            return response["uuid"]
     except Exception as e:
         raise Exception(str(e))
 
@@ -107,7 +118,8 @@ def enroll_patient_in_program(req, patientid, data):
 def get_program_by_uuid(req, uuid):
     try:
         status, response = ru.get(
-            req, f'program/{uuid}', {'v': 'custom:(uuid,name,retired,allWorkflows)'})
+            req, f"program/{uuid}", {"v": "custom:(uuid,name,retired,allWorkflows)"}
+        )
         if status:
             return response
     except Exception as e:
@@ -116,17 +128,16 @@ def get_program_by_uuid(req, uuid):
 
 def get_programs(req, uuid=None, params=None):
     if uuid:
-        status, response = ru.get(
-            req, f'program/{uuid}', params)
+        status, response = ru.get(req, f"program/{uuid}", params)
         if status:
-            return [workFlowUuid['uuid']
-                    for workFlowUuid in response['allWorkflows']]
+            return [workFlowUuid["uuid"] for workFlowUuid in response["allWorkflows"]]
     status, response = ru.get(
-        req, 'program', {'v': 'custom:(uuid,name,retired,allWorkflows)'})
+        req, "program", {"v": "custom:(uuid,name,retired,allWorkflows)"}
+    )
     programs = []
     if status:
-        for program in response['results']:
-            if program['retired'] == False:
+        for program in response["results"]:
+            if program["retired"] == False:
                 programs.append(program)
         return programs
     else:
@@ -136,83 +147,101 @@ def get_programs(req, uuid=None, params=None):
 def sort_states(workflowstates, programstates):
     if len(workflowstates) > 0:
         for programstate in programstates:
-            state = programstate.get('state')
+            state = programstate.get("state")
             if state:
-                uuid = state.get('uuid')
+                uuid = state.get("uuid")
                 if uuid:
-                    concept = next(({'uuid': ws['concept']['uuid'], 'name': ws['concept']['display'].title()}
-                                    for ws in workflowstates if ws['uuid'] == uuid), None)
+                    concept = next(
+                        (
+                            {
+                                "uuid": ws["concept"]["uuid"],
+                                "name": ws["concept"]["display"].title(),
+                            }
+                            for ws in workflowstates
+                            if ws["uuid"] == uuid
+                        ),
+                        None,
+                    )
                     if concept:
                         return {
                             "concept": concept,
-                            "start_date": programstate.get('startDate')
+                            "start_date": programstate.get("startDate"),
                         }
 
 
 def get_program_states(program=None):
     states = [
         {
-            "uuid": workflow['concept']['uuid'],
-            "concept": workflow['concept']['display'].title(),
-            "answer":  sort_states(workflow['states'], program['states']),
-        } for workflow in program['program']['allWorkflows'] if not workflow['retired']
+            "uuid": workflow["concept"]["uuid"],
+            "concept": workflow["concept"]["display"].title(),
+            "answer": sort_states(workflow["states"], program["states"]),
+        }
+        for workflow in program["program"]["allWorkflows"]
+        if not workflow["retired"]
     ]
     return states
 
 
 def get_enrolled_programs_by_patient(req, uuid, enrollment_id=None):
-    representation = 'custom:(uuid,program,states,dateEnrolled,dateCompleted,location,outcome)'
+    representation = (
+        "custom:(uuid,program,states,dateEnrolled,dateCompleted,location,outcome)"
+    )
     if enrollment_id:
         try:
             status, response = ru.get(
-                req, f'programenrollment/{enrollment_id}', {'v': "custom:(uuid,program,states,dateEnrolled,dateCompleted,location,outcome)"})
+                req,
+                f"programenrollment/{enrollment_id}",
+                {
+                    "v": "custom:(uuid,program,states,dateEnrolled,dateCompleted,location,outcome)"
+                },
+            )
             if status:
                 return {
-                    "uuid": response['uuid'],
+                    "uuid": response["uuid"],
                     "program": {
-                        "uuid": response['program']['uuid'],
-                        "name": response['program']['name'],
+                        "uuid": response["program"]["uuid"],
+                        "name": response["program"]["name"],
                     },
-                    "dateEnrolled": response['dateEnrolled'],
-                    "dateCompleted": response['dateCompleted'],
+                    "dateEnrolled": response["dateEnrolled"],
+                    "dateCompleted": response["dateCompleted"],
                     "location": {
-                        "uuid": response['location']['uuid'],
-                        "name": response['location']['name'],
+                        "uuid": response["location"]["uuid"],
+                        "name": response["location"]["name"],
                     },
-                    "outcome": response['outcome'],
-                    "states": get_program_states(program=response)
-
+                    "outcome": response["outcome"],
+                    "states": get_program_states(program=response),
                 }
         except Exception as e:
             raise Exception(str(e))
 
     try:
-        status, response = ru.get(req, 'programenrollment', {
-                                  'patient': uuid, 'v': representation})
+        status, response = ru.get(
+            req, "programenrollment", {"patient": uuid, "v": representation}
+        )
         if status:
-            if len(response['results']) <= 0:
+            if len(response["results"]) <= 0:
                 return None
             programs_info = [
                 {
-                    "uuid": program['uuid'],
+                    "uuid": program["uuid"],
                     "program": {
-                        "uuid": program['program']['uuid'],
-                        "name": program['program']['name'],
+                        "uuid": program["program"]["uuid"],
+                        "name": program["program"]["name"],
                     },
-                    "dateEnrolled": program['dateEnrolled'],
-                    "dateCompleted": program['dateCompleted'],
-                    "location":{
-                        "uuid": program['location']['uuid'],
-                        "name": program['location']['name'],
+                    "dateEnrolled": program["dateEnrolled"],
+                    "dateCompleted": program["dateCompleted"],
+                    "location": {
+                        "uuid": program["location"]["uuid"],
+                        "name": program["location"]["name"],
                     },
-                    "outcome": program['outcome'],
-                    "states": get_program_states(program=program)
-
-                } for program in response['results']
+                    "outcome": program["outcome"],
+                    "states": get_program_states(program=program),
+                }
+                for program in response["results"]
             ]
             return programs_info
     except Exception as e:
-        raise Exception(str(e))
+        raise Exception(e)
 
 
 def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
@@ -220,19 +249,31 @@ def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
     try:
         patient = get_patient(req, patientuuid)
         program = get_enrolled_programs_by_patient(
-            req, patientuuid, enrollment_id=programuuid)
+            req, patientuuid, enrollment_id=programuuid
+        )
         if isMdrtb:
             forms = {
-                'tb03us': fu.get_encounters_by_patient_and_type(req, patientuuid, EncounterType.TB03u_MDR.value),
-                'aes': fu.get_encounters_by_patient_and_type(req, patientuuid, EncounterType.ADVERSE_EVENT.value),
-                'regimens': fu.get_encounters_by_patient_and_type(req, patientuuid, EncounterType.PV_REGIMEN.value),
-                'drug_resistance_forms': fu.get_encounters_by_patient_and_type(req, patientuuid, EncounterType.RESISTANCE_DURING_TREATMENT.value)
-
+                "tb03us": fu.get_encounters_by_patient_and_type(
+                    req, patientuuid, EncounterType.TB03u_MDR.value
+                ),
+                "aes": fu.get_encounters_by_patient_and_type(
+                    req, patientuuid, EncounterType.ADVERSE_EVENT.value
+                ),
+                "regimens": fu.get_encounters_by_patient_and_type(
+                    req, patientuuid, EncounterType.PV_REGIMEN.value
+                ),
+                "drug_resistance_forms": fu.get_encounters_by_patient_and_type(
+                    req, patientuuid, EncounterType.RESISTANCE_DURING_TREATMENT.value
+                ),
             }
         else:
             forms = {
-                'tb03s': fu.get_encounters_by_patient_and_type(req, patientuuid, EncounterType.TB03.value),
-                'form89s': fu.get_encounters_by_patient_and_type(req, patientuuid, EncounterType.FROM_89.value)
+                "tb03s": fu.get_encounters_by_patient_and_type(
+                    req, patientuuid, EncounterType.TB03.value
+                ),
+                "form89s": fu.get_encounters_by_patient_and_type(
+                    req, patientuuid, EncounterType.FROM_89.value
+                ),
             }
         return patient, program, forms
     except Exception as e:
@@ -241,8 +282,7 @@ def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
 
 def get_enrolled_program_by_uuid(req, programid):
     try:
-        status, response = ru.get(
-            req, f'programenrollment/{programid}', {'v': 'full'})
+        status, response = ru.get(req, f"programenrollment/{programid}", {"v": "full"})
         if status:
             return response
     except Exception as e:
@@ -253,21 +293,25 @@ def get_patient_identifiers(req, patient_uuid):
     identifiers = {}
     try:
         status, response = ru.get(
-            req, f'patient/{patient_uuid}/identifier', {'v': 'full'})
+            req, f"patient/{patient_uuid}/identifier", {"v": "full"}
+        )
         if status:
-            for identifier in response['results']:
-                if identifier['identifierType']['uuid'] == Constants.DOTS_IDENTIFIER.value:
-
-                    identifiers['dots'] = {
-                        'type': identifier['identifierType']['uuid'],
-                        'identifier': identifier['identifier'],
-                        'created_at': identifier['auditInfo']['dateCreated']
-
+            for identifier in response["results"]:
+                if (
+                    identifier["identifierType"]["uuid"]
+                    == Constants.DOTS_IDENTIFIER.value
+                ):
+                    identifiers["dots"] = {
+                        "type": identifier["identifierType"]["uuid"],
+                        "identifier": identifier["identifier"],
+                        "created_at": identifier["auditInfo"]["dateCreated"],
                     }
                 else:
-
-                    identifiers['mdr'] = {
-                        'type': identifier['identifierType']['uuid'], 'identifier': identifier['identifier'], 'created_at': identifier['auditInfo']['dateCreated']}
+                    identifiers["mdr"] = {
+                        "type": identifier["identifierType"]["uuid"],
+                        "identifier": identifier["identifier"],
+                        "created_at": identifier["auditInfo"]["dateCreated"],
+                    }
 
         return identifiers
     except Exception as e:
