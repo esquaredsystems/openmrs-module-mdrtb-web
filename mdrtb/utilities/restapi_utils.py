@@ -43,7 +43,7 @@ def clear_session(req):
         req.session.flush()
         req.session.create()
         req.session["redirect_url"] = redirect_url
-        print(req.session.get("redirect_url"))
+        
     except KeyError:
         pass
 
@@ -72,7 +72,7 @@ def post(req, endpoint, data):
         url=REST_API_BASE_URL + endpoint, headers=get_auth_headers(req), json=data
     )
     response.raise_for_status()
-    print(f"STATUS CODE FOR {endpoint} is {response.status_code}")
+    
     if response.ok:
         return True, response.json()
     return False, response.json()

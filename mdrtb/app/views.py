@@ -547,7 +547,7 @@ def edit_tb03u_form(req, uuid, formid):
 
     try:
         req.session["redirect_url"] = req.path
-        print(req.session["redirect_url"])
+
         context = {
             "title": "Edit TB03",
             "state": "edit",
@@ -950,7 +950,6 @@ def form_89(req, uuid):
         context["site_of_TB"] = site_of_TB
         return render(req, "app/tbregister/dots/form89.html", context=context)
     except Exception as e:
-        print(traceback.format_exc())
         messages.error(req, str(e))
         return redirect(req.session["redirect_url"])
 
@@ -1065,7 +1064,6 @@ def user_profile(req):
         }
         return render(req, "app/tbregister/user_profile.html", context=context)
     except Exception as e:
-        print(traceback.format_exc())
         messages.error(req, str(e))
         return redirect(req.session["redirect_url"])
 
@@ -1108,7 +1106,6 @@ def fetch_attributes(req):
                 else attribute["multisetName"],
             }
         )
-    print(attributes)
 
     return JsonResponse({"attributes": attributes})
 
@@ -1128,7 +1125,6 @@ def add_test_type(req):
         if status:
             return redirect("managetesttypes")
         else:
-            print(response)
             context["error"] = response
             return render(req, "app/commonlab/addtesttypes.html", context=context)
     concepts = cu.get_commonlab_concepts_by_type(req, "labtesttype")
@@ -1185,7 +1181,6 @@ def retire_test_type(req, uuid):
     if req.method == "POST":
         status, _ = ru.delete(req, f"commonlab/labtesttype/{uuid}")
         if status:
-            print(status)
             return redirect("managetesttypes")
     return render(req, "app/commonlab/addtesttypes.html")
 
@@ -1224,8 +1219,6 @@ def addattributes(req, uuid):
         status, response = ru.post(req, "commonlab/labtestattributetype", body)
         if status:
             return redirect(f"/commonlab/labtest/{uuid}/manageattributes")
-        else:
-            print(response)
 
     return render(req, "app/commonlab/addattributes.html", context=context)
 
@@ -1250,7 +1243,6 @@ def editAttribute(req, testid, attrid):
     else:
         redirect(f"/commonlab/labtest/{testid}/manageattributes")
     if req.method == "POST":
-        print(req.POST.get("next", "/"))
         body = {
             "name": req.POST["name"],
             "description": req.POST["desc"],
@@ -1270,9 +1262,6 @@ def editAttribute(req, testid, attrid):
         )
         if status:
             return redirect(f"/commonlab/labtest/{testid}/manageattributes")
-        else:
-            print(response.status_code)
-            print(response.json())
 
     return render(req, "app/commonlab/addattributes.html", context=context)
 
@@ -1310,12 +1299,11 @@ def add_lab_test(req, uuid):
                 "orderer": "09544a0e-14f1-11ed-9181-00155dcead03",
             },
         }
-        print(body)
+
         status, response = ru.post(req, "commonlab/labtestorder", body)
         if status:
             return redirect("managetestorders", uuid=uuid)
         else:
-            print(response)
             messages.error(req, response["error"]["message"])
         return redirect("managetestorders", uuid=uuid)
     encounters = cu.get_patient_encounters(req, uuid)
@@ -1352,12 +1340,11 @@ def edit_lab_test(req, patientid, orderid):
                 "orderer": "09544a0e-14f1-11ed-9181-00155dcead03",
             },
         }
-        print(body)
+
         status, response = ru.post(req, f"commonlab/labtestorder/{orderid}", body)
         if status:
             return redirect("managetestorders", uuid=patientid)
         else:
-            print(response)
             messages.error(req, "dfsd")
             return redirect("managetestorders", uuid=patientid)
     status, response = ru.get(
@@ -1383,7 +1370,6 @@ def edit_lab_test(req, patientid, orderid):
         context["labtests"] = json.dumps(labtests)
         return render(req, "app/commonlab/addlabtest.html", context=context)
     else:
-        print(response)
         messages.error(req, "404")
         return redirect("managetestorders", uuid=patientid)
 
@@ -1392,8 +1378,6 @@ def delete_lab_test(req, patientid, orderid):
     status, response = ru.delete(req, f"commonlab/labtestorder/{orderid}")
     if status:
         return redirect("managetestorders", uuid=patientid)
-    else:
-        print(response)
 
 
 def managetestsamples(req, orderid):
@@ -1420,12 +1404,11 @@ def add_test_sample(req, orderid):
             "status": "COLLECTED",
             "collector": "0e5ac8a2-cb48-40ff-a9bd-b0e09afa7860",
         }
-        print(body)
+
         status, response = ru.post(req, "commonlab/labtestsample", body)
         if status:
             return redirect("managetestsamples", orderid=orderid)
         else:
-            print(response)
             messages.error(req, "Error adding samples")
             return redirect("managetestsamples", orderid=orderid)
 
@@ -1462,11 +1445,11 @@ def add_test_results(req, orderid):
                             {"attributeType": key, "valueReference": value}
                         )
             body["attributes"].pop(0)
-            print(body)
+
         else:
             messages.error(req, "Error creating the order")
             return redirect("managetestorders", uuid=req.GET["patient"])
-        print(body)
+
     try:
         attributes, testType = cu.get_custom_attribute_for_labresults(req, orderid)
         context["attributes"] = json.dumps(attributes)

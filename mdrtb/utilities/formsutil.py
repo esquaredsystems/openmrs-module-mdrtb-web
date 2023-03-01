@@ -20,7 +20,7 @@ def get_form_concepts(concept_ids, req):
                     ] = answers
 
         except Exception as e:
-            print("FROM HERE EXCEPTION")
+            
             raise Exception(str(e))
     return concept_dict
 
@@ -122,9 +122,9 @@ def create_update_tb03(req, patientuuid, data, formid=None):
     try:
         url = f"mdrtb/tb03/{formid}" if formid else "mdrtb/tb03"
         # This returns the newly created TB03 form
-        print("=========================tb03")
-        print(tb03)
-        print("=========================tb03")
+        
+        
+        
         status, _ = ru.post(req, url, tb03)
         if status:
             return True
@@ -265,9 +265,9 @@ def create_update_tb03u(req, patientuuid, data, formid=None):
     try:
         # This returns the newly created TB03 form
         url = f"mdrtb/tb03u/{formid}" if formid else "mdrtb/tb03u"
-        print("===================================")
-        print(tb03u)
-        print("===================================")
+        
+        
+        
         status, _ = ru.post(req, url, tb03u)
         if status:
             return True
@@ -396,9 +396,9 @@ def create_update_adverse_event(req, patientuuid, data, formid=None):
                 )
     try:
         url = f"mdrtb/adverseevents/{formid}" if formid else "mdrtb/adverseevents"
-        print("===================================")
-        print(ae)
-        print("===================================")
+        
+        
+        
         status, response = ru.post(req, url, ae)
         if status:
             return True
@@ -696,9 +696,9 @@ def create_update_regimen_form(req, patientuuid, data, formid=None):
                 )
     try:
         url = f"mdrtb/regimen/{formid}" if formid else "mdrtb/regimen"
-        # print("===================================")
-        # print(regimen)
-        # print("===================================")
+        # 
+        # 
+        # 
         status, _ = ru.post(req, url, regimen)
         if status:
             return True
@@ -826,9 +826,9 @@ def create_update_drug_resistence_form(req, patientuuid, data, formid=None):
                 )
     try:
         url = f"mdrtb/drugresistance/{formid}" if formid else "mdrtb/drugresistance"
-        print("===================================", url)
-        print(drug_resistance)
-        print("===================================")
+        
+        
+        
         status, _ = ru.post(req, url, drug_resistance)
         if status:
             return True

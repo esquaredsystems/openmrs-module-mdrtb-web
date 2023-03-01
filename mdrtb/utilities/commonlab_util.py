@@ -11,8 +11,7 @@ def get_commonlab_concepts_by_type(req, type):
     if status:
         for concept in response['results']:
             concepts.append({'name': concept['name'], 'uuid': concept['uuid']})
-    else:
-        print(response)
+        
     return concepts
 
 
@@ -189,7 +188,7 @@ def get_reference_concept_of_labtesttype(req, labtestid):
         labtest = get_commonlab_labtesttype(req, labtestid)
         return labtest['referenceConcept']['uuid']
     except Exception as e:
-        print(e)
+        
         return None
 
 
