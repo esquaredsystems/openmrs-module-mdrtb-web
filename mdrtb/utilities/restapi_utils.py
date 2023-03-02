@@ -18,11 +18,10 @@ def initiate_session(req, username, password):
     ).decode("ascii")
     url = REST_API_BASE_URL + "session"
     headers = {"Authorization": f"Basic {encoded_credentials}"}
-    logger.info('Making REST call')
     response = requests.get(url, headers=headers)
     response.raise_for_status()
     if response.status_code == 200 and response.json()["authenticated"]:
-        logging.info("Authenticated")
+        logger.info("User Authenticated")
         req.session["session_id"] = response.json()["sessionId"]
         if "user" in response.json():
             req.session["logged_user"] = response.json()["user"]

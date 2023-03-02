@@ -159,7 +159,7 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False if DEBUG else True,
     "handlers": {
-        "warning_file": {
+        "file": {
             "level": "WARNING",
             "class": "logging.FileHandler",
             "filename": "../mdrtb/logs/django.log",
@@ -182,7 +182,7 @@ LOGGING = {
     "loggers": {
         "django": {
             "level": "INFO",
-            "handlers": ["warning_file", "console"]
+            "handlers": ["file", "console"]
         }
     }
 }
