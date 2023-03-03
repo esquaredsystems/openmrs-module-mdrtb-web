@@ -5,87 +5,120 @@ from django.test import TestCase, Client, RequestFactory
 import utilities.restapi_utils as ru
 from unittest import mock
 from utilities.common_utils import get_project_root
+from resources.enums.mdrtbConcepts import Concepts
+from resources.enums.constants import Constants
 
-
-os.environ['DJANGO_SETTINGS_MODULE'] = 'mdrtb.settings'
+os.environ["DJANGO_SETTINGS_MODULE"] = "mdrtb.settings"
 django.setup()
 
 
 class TestRestApiUtil(TestCase):
+    test_patient_uuid = None
 
     def setUp(self):
         self.client = Client()
-        self.labtest_len = 2
+        self.request = RequestFactory()
+        self.TEST_RESOURCES_DIR = f"{get_project_root()}/test_resources/"
 
-    def test_get_labtesttypes(self):
-        file = open(
-            f'{get_project_root()}/test_resources/labtesttype.json', 'r', encoding='utf-8')
-        data = dict(json.load(file))['results']
-        file.close()
-        with mock.patch.object(ru, 'get', return_value=data):
-            self.assertEqual(len(data), self.labtest_len)
+    def test_get_concept(self):
+        with open(self.TEST_RESOURCES_DIR + "test_get_concepts.json") as concepts_data:
+            data = json.load(concepts_data)["results"]
+            with mock.patch.object(ru, "get", return_value=(True, data)):
+                status, response = ru.get(self.request.request(), "concept", {})
+                self.assertEqual(len(response), len(data))
 
     def test_get_concept_by_uuid(self):
-        file = open(
-            f'{get_project_root()}/test_resources/concepts.json', 'r', encoding='utf-8')
-        data = dict(json.load(file))['results']
-        file.close()
-        fetched_concept = {}
-        for concept in data:
-            if concept['uuid'] == '0737cfba-5ae8-4605-bd52-74c26ee4da9e':
-                fetched_concept = concept
-        with mock.patch.object(ru, 'get', return_value=fetched_concept):
-            get_call = ru.get(self.client.request,
-                              'concept/0737cfba-5ae8-4605-bd52-74c26ee4da9e')
-            self.assertEqual(get_call, fetched_concept)
+        with open(
+            self.TEST_RESOURCES_DIR + "test_get_concept_by_uuid.json", encoding="utf-8"
+        ) as single_json_concept:
+            data = json.load(single_json_concept)
+            with mock.patch.object(ru, "get", return_value=(True, data)):
+                status, response = ru.get(
+                    self.request.request(), f"concept/{Concepts.BRONCHUS.value}", {}
+                )
+                self.assertEqual(response["uuid"], data["uuid"])
 
-    def test_post_labtesttype(self):
-        file = open(
-            f'{get_project_root()}/test_resources/labtesttype.json', 'r', encoding='utf-8')
-        read_data = dict(json.load(file))['results']
-        file.close()
-        with mock.patch.object(ru, 'post', return_value={"status_code": 201}):
-            data_to_be_posted = {
-                "uuid": "746ef7e6-0660-4deb-a19f-52d836e98547",
-                "name": "Smear Microscopy",
-                "referenceConcept": {
-                    "uuid": "31bf1518-0370-102d-b0e3-001ec94a0cc1",
-                    "display": "A TB smear result"
-                },
-                "shortName": "SM",
-                "description": "This is smear test",
-                "testGroup": "Blood Bank",
-                "requiresSpecimen": True
-            }
-            post_req = ru.post(self.client.request,
-                               'commonlab/labtesttype', data_to_be_posted)
-            file = open(
-                f'{get_project_root()}/test_resources/labtesttype.json', 'w', encoding='utf-8')
-            new_labtests = read_data.copy()
-            new_labtests.append(data_to_be_posted)
-            data_to_write = {'results': new_labtests}
-            file.write(json.dumps(data_to_write))
-            file.close()
-            self.assertEqual(post_req['status_code'], 201)
-            self.labtest_len = len(data_to_write)
-            self.assertGreater(len(read_data), len(data_to_write))
+    def test_create_patient(self):
+        patient_data = {
+            "identifiers": [
+                {
+                    "identifier": "202302T01",
+                    "identifierType": Constants.DOTS_IDENTIFIER.value,
+                    "location": "e77188ff-679a-4547-af3a-dd88bfd1080b",
+                }
+            ],
+            "person": {
+                "names": [{"givenName": "Unit", "familyName": "Test Patient"}],
+                "gender": "M",
+                "addresses": [
+                    {
+                        "address1": "Test Address",
+                        "stateProvince": "82be00a0-894b-42aa-812f-428f23e9fd7a",
+                        "country": "Таджикистан",
+                    }
+                ],
+                "age": "20",
+                "deathDate": None,
+                "dead": False,
+                "causeOfDeath": None,
+            },
+        }
+        with open(
+            self.TEST_RESOURCES_DIR + "test_create_patient.json", "r", encoding="utf-8"
+        ) as new_patient:
+            data = json.load(new_patient)
+            with mock.patch.object(ru, "post", return_value=(True, data)):
+                status, response = ru.post(
+                    self.request.request(), "patient", patient_data
+                )
+                patient_identifier = response["display"].split("-")[0].strip()
+                patient_name = (
+                    patient_data["person"]["names"][0]["givenName"]
+                    + " "
+                    + patient_data["person"]["names"][0]["familyName"]
+                )
+                self.assertEqual(
+                    patient_identifier, patient_data["identifiers"][0]["identifier"]
+                )
+                self.assertEqual(response["person"]["display"], patient_name)
 
-    def test_delete_labtesttype(self):
-        file = open(
-            f'{get_project_root()}/test_resources/labtesttype.json', 'r', encoding='utf-8')
-        data = dict(json.load(file))['results']
-        file.close()
-        with mock.patch.object(ru, 'delete', return_value={'status_code': 204}):
-            file = open(
-                f'{get_project_root()}/test_resources/labtesttype.json', 'w', encoding='utf-8')
-            delete_req = ru.delete(
-                self.client.request, 'commonlab/labtesttype/746ef7e6-0660-4deb-a19f-52d836e98547')
-            self.assertEqual(delete_req['status_code'], 204)
-            new_data = data.copy()
-            for labtest in new_data:
-                if labtest['uuid'] == "746ef7e6-0660-4deb-a19f-52d836e98547":
-                    new_data.remove(new_data[new_data.index(labtest)])
-            data_to_write = {'results': new_data}
-            file.write(json.dumps(data_to_write))
-            file.close()
-            self.assertGreater(len(data), len(new_data))
+    def test_update_person(self):
+        person_update = {"gender": "F"}
+        with open(
+            self.TEST_RESOURCES_DIR + "test_create_patient.json", "r", encoding="utf-8"
+        ) as created_patient:
+            gender = json.load(created_patient)["person"]["gender"]
+        with open(
+            self.TEST_RESOURCES_DIR + "test_update_person.json", "r", encoding="utf-8"
+        ) as updated_person:
+            updated_data = json.load(updated_person)
+            updated_gender = updated_data["person"]["gender"]
+            with mock.patch.object(ru, "post", return_value=(True, updated_data)):
+                status, resposne = ru.post(
+                    self.request.request(),
+                    f'post/{updated_data["uuid"]}',
+                    person_update,
+                )
+                self.assertEqual(person_update["gender"], updated_gender)
+
+    def test_delete_patient(self):
+        with mock.patch.object(ru, "delete", return_value=(True, {})):
+            patient_file = open(
+                self.TEST_RESOURCES_DIR + "test_create_patient.json",
+                "r",
+                encoding="utf-8",
+            )
+            patient_uuid = json.load(patient_file)["uuid"]
+            patient_file.close()
+            status, _ = ru.delete(self.request.request(), f"patient/{patient_uuid}")
+            if status:
+                with open(
+                    self.TEST_RESOURCES_DIR + "test_delete_patient.json",
+                    "r",
+                    encoding="utf-8",
+                ) as deleted_patient:
+                    data = json.load(deleted_patient)
+                    is_voided = data["voided"]
+                    identifiers = data["identifiers"]
+                    self.assertTrue(is_voided)
+                    self.assertListEqual(identifiers, [])
