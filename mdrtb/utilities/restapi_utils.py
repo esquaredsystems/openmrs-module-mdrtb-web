@@ -13,16 +13,13 @@ logger = logging.getLogger('django')
 
 @handle_rest_exceptions
 def initiate_session(req, username, password):
-    logger.info("Initiating session")
     encoded_credentials = base64.b64encode(
         f"{username}:{password}".encode("ascii")
     ).decode("ascii")
     url = REST_API_BASE_URL + "session"
     headers = {"Authorization": f"Basic {encoded_credentials}"}
-    logger.info("Executing GET request")
     response = requests.get(url, headers=headers)
     response.raise_for_status()
-    logger.info("Checking response code")
     if response.status_code == 200 and response.json()["authenticated"]:
         logger.info("User Authenticated")
         req.session["session_id"] = response.json()["sessionId"]
