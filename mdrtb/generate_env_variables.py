@@ -12,5 +12,8 @@ def generate_production_envrionment_variables():
         env_file.write(f"DEBUG={DEBUG}")
         env_file.write("\n")
 
+    if not os.path.exists("logs"):
+        os.makedirs("logs")
+
 
 generate_production_envrionment_variables()
