@@ -493,7 +493,7 @@
 
   $('#outcome-select').change((e) => {
     let selected = e.target.value
-    if (selected === "31b6b7d8-0370-102d-b0e3-001ec94a0cc1") {
+    if (selected === "{{'DIED' | get_concept}}") {
       $('#cause-of-death').prop('required', true);
       $('#date-of-death').prop('required', true);
     }

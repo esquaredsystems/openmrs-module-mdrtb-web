@@ -58,7 +58,7 @@
       </div>
       <div class="input-container">
         <label class="font-bold text-[#9E9E9E] w-1/5" for="">{{'mdrtb.drdt'|get_message:request.session.locale}}</label>
-        <select name="ccd094e6-ac27-418f-a30e-54e9a1bac362" class="input form-control w-3/5">
+        <select name="{{'DRUG_RESISTANCE_DURING_TREATMENT' | get_concept }}" class="input form-control w-3/5">
           {% if state == 'edit' %}
           <option selected value="{{form.drugResistance.uuid}}">{{form.drugResistance.display}}</option>
           {% else %}

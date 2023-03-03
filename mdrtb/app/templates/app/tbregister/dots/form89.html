@@ -878,7 +878,7 @@
 
   $('#populationCat').change((e) => {
     let val = e.target.value;
-    if (val === "96ae1050-172f-440e-9214-449bb2e36984") {
+    if (val === "{{'FOREIGNER' | get_constant }}") {
       $('#originCountry').prop('disabled', false)
     } else {
       $('#originCountry').prop('disabled', true)
@@ -887,7 +887,7 @@
 
   $('#detection').change((e) => {
     let val = e.target.value;
-    if (val === "c5a59d21-aae6-4a15-9732-13a51ec58d26") {
+    if (val === "{{'MIGRANT' | get_constant }}") {
       $('#originCity').prop('disabled', false)
       $('#returnDate').prop('disabled', false)
     } else {
