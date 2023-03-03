@@ -15,10 +15,10 @@
                 {{'options.title'|get_message_openMRS:request.session.locale}}
             </h1>
             <div class="enroll_form_bg w-full">
-                <h3 class="text-xl font-bold">{{'options.default.legend'|get_message_openMRS:request.session.locale}}
+                <h3 class="text-2xl font-bold">{{'options.default.legend'|get_message_openMRS:request.session.locale}}
                 </h3>
                 <div class="profile-input-container flex-col items-start">
-                    <label class="profile-input-label" for="name">
+                    <label class="profile-input-label text-lg" for="name">
                         {{'options.default.location'|get_message_openMRS:request.session.locale}}</label>
                     <div>
                         {% include 'app/components/locations.html' %}
@@ -29,6 +29,8 @@
                         for="">{{'options.default.locale'|get_message_openMRS:request.session.locale}}</label>
                     <select required class="input form-control" name="locale">
                         <option selected value="{{default_locale.value}}">{{default_locale.name}}</option>
+                        <option value="ru">Russian</option>
+                        <option value="tj">Tajik</option>
                         {% for locale in allowed_locales %}
                         <option value="{{locale.value}}">{{locale.name}}</option>
                         {% endfor %}
@@ -53,7 +55,8 @@
 
             </div>
             <div class="enroll_form_bg">
-                <h3 class="font-bold text-xl">{{'options.login.legend'|get_message_openMRS:request.session.locale}}</h3>
+                <h3 class="font-bold text-2xl">{{'options.login.legend'|get_message_openMRS:request.session.locale}}
+                </h3>
                 <div class="profile-input-container">
                     <label class="profile-input-label"
                         for="country">{{'options.login.username'|get_message_openMRS:request.session.locale}}</label>
