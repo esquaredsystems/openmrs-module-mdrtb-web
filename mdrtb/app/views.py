@@ -74,8 +74,8 @@ def login(req):
         return redirect(redirect_page if redirect_page else "searchPatientsView")
     context = {"title": "Login"}
     if req.method == "POST":
-        username = req.POST["username"]
-        password = req.POST["password"]
+        username = req.POST.get("username")
+        password = req.POST.get("password")
         try:
             response = ru.initiate_session(req, username, password)
             if response:
