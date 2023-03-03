@@ -74,16 +74,21 @@ def login(req):
         return redirect(redirect_page if redirect_page else "searchPatientsView")
     context = {"title": "Login"}
     if req.method == "POST":
+        logger.info("Reading params")
         username = req.POST.get("username")
         password = req.POST.get("password")
         try:
+            logger.info("Fetching reponse")
             response = ru.initiate_session(req, username, password)
             if response:
+                logger.info("Response received, getting redirect URL")
                 redirect_page = req.session.get("redirect_url")
+                logger.info("Redirecting to search Page")
                 return redirect(
                     redirect_page if redirect_page else "searchPatientsView"
                 )
             else:
+                logger.info("Going back to login")
                 return render(req, "app/tbregister/login.html", context=context)
         except Exception as e:
             messages.error(req, e)
