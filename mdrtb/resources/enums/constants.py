@@ -29,3 +29,6 @@ class Constants(enum.Enum):
     FR = "French"
     IT = "Italian"
     PT = "Portuguese"
+
+    # Location attribute Types
+    LEVEL = "6b738ed1-78b3-4cdb-81f6-7fdc5da20a3d"

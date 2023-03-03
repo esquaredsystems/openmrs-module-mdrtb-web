@@ -81,10 +81,10 @@
             <label class="tb03-form-label w-full"
               for="cmacDate">{{'mdrtb.pv.cmacDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.councilDate | iso_to_normal_date }}" name="65a4fb0d-503f-4ce5-961e-e55234ff2b88"
-              type="date" class="input form-control">
+            <input value="{{form.councilDate | iso_to_normal_date }}"
+              name="{{'CENTRAL_COMMISSION_DATE' | get_concept }}" type="date" class="input form-control">
             {% else %}
-            <input name="65a4fb0d-503f-4ce5-961e-e55234ff2b88" type="date" class="input form-control">
+            <input name="{{'CENTRAL_COMMISSION_DATE' | get_concept }}" type="date" class="input form-control">
             {% endif %}
 
           </div>
@@ -94,10 +94,10 @@
             <label class="tb03-form-label w-full"
               for="cmacNumber">{{'mdrtb.form89.cmacNumber'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.cmacNumber}}" name="677e0452-e795-4299-8e57-ba68a49f0ad0" type="text"
+            <input value="{{form.cmacNumber}}" name="{{'CENTRAL_COMMISSION_NUMBER' | get_concept }}" type="text"
               class="input form-control">
             {% else %}
-            <input name="677e0452-e795-4299-8e57-ba68a49f0ad0" type="text" class="input form-control">
+            <input name="{{'CENTRAL_COMMISSION_NUMBER' | get_concept }}" type="text" class="input form-control">
             {% endif %}
 
 
@@ -105,7 +105,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="placeOfCommission">{{'mdrtb.form89.placeOfCommission'|get_message:request.session.locale}}</label>
-            <select name="483e6ca8-293d-4d00-b71b-4464c093a71d" class="input form-control">
+            <select name="{{'PLACE_OF_CENTRAL_COMMISSION' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
               <option selected value="{{form.placeOfCommission.uuid}}">{{form.placeOfCommission.display}}</option>
               {% else %}
@@ -122,7 +122,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="resistanceType">{{'mdrtb.resistanceType'|get_message:request.session.locale}}</label>
-            <select name="3f5a6930-5ead-4880-80ce-6ab79f4f6cb1" class="input form-control">
+            <select name="{{'RESISTANCE_TYPE' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
               <option selected value="{{form.resistanceType.uuid}}">
                 {{form.resistanceType.display}}</option>
@@ -139,7 +139,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="fundingSource">{{'mdrtb.pv.fundingSource'|get_message:request.session.locale}}</label>
-            <select name="e56514ed-1b3b-4d2e-89f1-564fd6265ebe" class="input form-control">
+            <select name="{{'FUNDING_SOURCE' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
               <option selected value="{{form.fundingSource.uuid}}">
                 {{form.fundingSource.display}}</option>
@@ -157,7 +157,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="sldRegimenType">{{'mdrtb.pv.sldRegimenType'|get_message:request.session.locale}}</label>
-            <select name="cd9e240f-7860-4e37-a0d2-b922cbcc62d3" id="regimenType" class="input form-control">
+            <select name="{{'SLD_REGIMEN_TYPE' | get_concept }}" id="regimenType" class="input form-control">
               {% if state == 'edit' %}
               <option selected value="{{form.sldRegimen.uuid}}">
                 {{form.sldRegimen.display}}</option>
@@ -175,10 +175,10 @@
             <label class="tb03-form-label w-full"
               for="otherRegimen">{{'mdrtb.pv.otherRegimen'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.otherRegimen}}" name="f64d7ce4-c3b9-43a3-9614-308f1723e8f6" disabled id="otherRegimen"
-              type="text" class="input form-control">
+            <input value="{{form.otherRegimen}}" name="{{'SLD_TREATMENT_REGIMEN' | get_concept }}" disabled
+              id="otherRegimen" type="text" class="input form-control">
             {% else %}
-            <input name="f64d7ce4-c3b9-43a3-9614-308f1723e8f6" disabled id="otherRegimen" type="text"
+            <input name="{{'SLD_TREATMENT_REGIMEN' | get_concept }}" disabled id="otherRegimen" type="text"
               class="input form-control">
             {% endif %}
 
@@ -192,10 +192,9 @@
             <label class="tb03-form-label w-full"
               for="cmDose">{{'mdrtb.pv.cmDose'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.cmDose}}" name="59e4cba5-2343-482d-b08e-bb8b84890839" type="text"
-              class="input form-control" />
+            <input value="{{form.cmDose}}" name="{{'CM_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% else %}
-            <input name="59e4cba5-2343-482d-b08e-bb8b84890839" type="text" class="input form-control" />
+            <input name="{{'CM_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
 
 
@@ -204,10 +203,10 @@
             <label class="tb03-form-label w-full"
               for="mfxDose">{{'mdrtb.pv.mfxDose'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.mfxDose}}" name="9e809189-f7b0-424a-a018-f6dbd5bf1127" type="text"
+            <input value="{{form.mfxDose}}" name="{{'MFX_DOSE' | get_concept }}" type="text"
               class="input form-control" />
             {% else %}
-            <input name="9e809189-f7b0-424a-a018-f6dbd5bf1127" type="text" class="input form-control" />
+            <input name="{{'MFX_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
 
 
@@ -218,20 +217,18 @@
             <label class="tb03-form-label w-full"
               for="amDose">{{'mdrtb.pv.amDose'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.amDose}}" name="f265c34d-614c-4af4-b279-fe885eafc6f4" type="text"
-              class="input form-control" />
+            <input value="{{form.amDose}}" name="{{'AM_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% else %}
-            <input name="f265c34d-614c-4af4-b279-fe885eafc6f4" type="text" class="input form-control" />
+            <input name="{{'AM_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
           </div>
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="ptoDose">{{'mdrtb.pv.ptoDose'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.ptoDose}}" name="645117db-d6be-4dd9-b2d5-21c5fbf9249e" type="text"
-              class="input form-control">
+            <input value="{{form.ptoDose}}" name="{{'PTO_DOSE' | get_concept }}" type="text" class="input form-control">
             {% else %}
-            <input name="645117db-d6be-4dd9-b2d5-21c5fbf9249e" type="text" class="input form-control">
+            <input name="{{'PTO_DOSE' | get_concept }}" type="text" class="input form-control">
             {% endif %}
 
 
@@ -242,10 +239,9 @@
             <label class="tb03-form-label w-full"
               for="lfxDose">{{'mdrtb.pv.lfxDose'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.lfxDose}}" name="e5266c3f-e07e-4502-9e2b-892b00383ff9" type="text"
-              class="input form-control">
+            <input value="{{form.lfxDose}}" name="{{'LFX_DOSE' | get_concept }}" type="text" class="input form-control">
             {% else %}
-            <input name="e5266c3f-e07e-4502-9e2b-892b00383ff9" type="text" class="input form-control">
+            <input name="{{'LFX_DOSE' | get_concept }}" type="text" class="input form-control">
             {% endif %}
 
           </div>
@@ -253,10 +249,9 @@
             <label class="tb03-form-label w-full"
               for="pasDose">{{'mdrtb.pv.pasDose'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.pasDose}}" name="c3bd56cf-ac50-4d10-b6ac-3f4314cf0077" type="text"
-              class="input form-control">
+            <input value="{{form.pasDose}}" name="{{'PAS_DOSE' | get_concept }}" type="text" class="input form-control">
             {% else %}
-            <input name="c3bd56cf-ac50-4d10-b6ac-3f4314cf0077" type="text" class="input form-control">
+            <input name="{{'PAS_DOSE' | get_concept }}" type="text" class="input form-control">
             {% endif %}
 
           </div>
@@ -266,10 +261,9 @@
             <label class="tb03-form-label w-full"
               for="csDose">{{'mdrtb.pv.csDose'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.csDose}}" name="5be32a1d-295c-44d5-9f86-ec28e8e49777" type="text"
-              class="input form-control">
+            <input value="{{form.csDose}}" name="{{'CS_DOSE' | get_concept }}" type="text" class="input form-control">
             {% else %}
-            <input name="5be32a1d-295c-44d5-9f86-ec28e8e49777" type="text" class="input form-control">
+            <input name="{{'CS_DOSE' | get_concept }}" type="text" class="input form-control">
             {% endif %}
 
           </div>
@@ -277,10 +271,9 @@
             <label class="tb03-form-label w-full"
               for="eDose">{{'mdrtb.pv.eDose'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.eDose}}" name="a28051b7-303c-40a8-a09f-137a40b50696" type="text"
-              class="input form-control" />
+            <input value="{{form.eDose}}" name="{{'E_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% else %}
-            <input name="a28051b7-303c-40a8-a09f-137a40b50696" type="text" class="input form-control" />
+            <input name="{{'E_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
           </div>
         </div>
@@ -289,20 +282,19 @@
             <label class="tb03-form-label w-full"
               for="zDose">{{'mdrtb.pv.zDose'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.zDose}}" name="d7c20112-06f3-46dc-8bd5-ac271be894aa" type="text"
-              class="input form-control" />
+            <input value="{{form.zDose}}" name="{{'Z_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% else %}
-            <input name="d7c20112-06f3-46dc-8bd5-ac271be894aa" type="text" class="input form-control" />
+            <input name="{{'Z_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
           </div>
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="lzdDose">{{'mdrtb.pv.lzdDose'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.lzdDose}}" name="4148d306-41df-4c3d-acad-61874fe84594" type="text"
+            <input value="{{form.lzdDose}}" name="{{'LZD_DOSE' | get_concept }}" type="text"
               class="input form-control" />
             {% else %}
-            <input name="4148d306-41df-4c3d-acad-61874fe84594" type="text" class="input form-control" />
+            <input name="{{'LZD_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
           </div>
         </div>
@@ -312,20 +304,19 @@
             <label class="tb03-form-label w-full"
               for="hDose">{{'mdrtb.pv.hDose'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.hDose}}" name="c20ff49c-06f8-4ce6-b5ff-5ec3cdd4a436" type="text"
-              class="input form-control" />
+            <input value="{{form.hDose}}" name="{{'H_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% else %}
-            <input name="c20ff49c-06f8-4ce6-b5ff-5ec3cdd4a436" type="text" class="input form-control" />
+            <input name="{{'H_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
           </div>
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="bdqDose">{{'mdrtb.pv.bdqDose'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.bdqDose}}" name="46f5877e-b35a-4329-9842-c8e4d236223b" type="text"
+            <input value="{{form.bdqDose}}" name="{{'BDQ_DOSE' | get_concept }}" type="text"
               class="input form-control" />
             {% else %}
-            <input name="46f5877e-b35a-4329-9842-c8e4d236223b" type="text" class="input form-control" />
+            <input name="{{'BDQ_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
           </div>
         </div>
@@ -334,10 +325,10 @@
             <label class="tb03-form-label w-full"
               for="cfzDose">{{'mdrtb.pv.cfzDose'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.cfzDose}}" name="acb52757-8d76-45c5-97f9-e50cc28b2088" type="text"
+            <input value="{{form.cfzDose}}" name="{{'CFZ_DOSE' | get_concept }}" type="text"
               class="input form-control" />
             {% else %}
-            <input name="acb52757-8d76-45c5-97f9-e50cc28b2088" type="text" class="input form-control" />
+            <input name="{{'CFZ_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
 
           </div>
@@ -345,10 +336,10 @@
             <label class="tb03-form-label w-full"
               for="impDose">{{'mdrtb.pv.impDose'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.impDose}}" name="fef19b50-283b-437d-902f-7d1c5977ee4e" type="text"
+            <input value="{{form.impDose}}" name="{{'IMP_DOSE' | get_concept }}" type="text"
               class="input form-control" />
             {% else %}
-            <input name="fef19b50-283b-437d-902f-7d1c5977ee4e" type="text" class="input form-control" />
+            <input name="{{'IMP_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
 
           </div>
@@ -358,10 +349,10 @@
             <label class="tb03-form-label w-full"
               for="dlmDose">{{'mdrtb.pv.dlmDose'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.dlmDose}}" name="0464131c-5758-4bcc-9c60-f9bd84aa9738" type="text"
+            <input value="{{form.dlmDose}}" name="{{'DLM_DOSE' | get_concept }}" type="text"
               class="input form-control" />
             {% else %}
-            <input name="0464131c-5758-4bcc-9c60-f9bd84aa9738" type="text" class="input form-control" />
+            <input name="{{'DLM_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
 
           </div>
@@ -369,10 +360,10 @@
             <label class="tb03-form-label w-full"
               for="amxDose">{{'mdrtb.pv.amxDose'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.amxDose}}" name="78448ebb-79eb-41e0-a9fa-8f801da2b5ff" type="text"
+            <input value="{{form.amxDose}}" name="{{'AMX_DOSE' | get_concept }}" type="text"
               class="input form-control" />
             {% else %}
-            <input name="78448ebb-79eb-41e0-a9fa-8f801da2b5ff" type="text" class="input form-control" />
+            <input name="{{'AMX_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
 
           </div>
@@ -382,10 +373,10 @@
             <label class="tb03-form-label w-full"
               for="hrzeDose">{{'mdrtb.pv.hrzeDose'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.hrzeDose}}" name="5eec397a-c366-4cf0-8f1d-d355e068d4b6" type="text"
+            <input value="{{form.hrzeDose}}" name="{{'HRZE_DOSE' | get_concept }}" type="text"
               class="input form-control" />
             {% else %}
-            <input name="5eec397a-c366-4cf0-8f1d-d355e068d4b6" type="text" class="input form-control" />
+            <input name="{{'HRZE_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
 
           </div>
@@ -393,10 +384,9 @@
             <label class="tb03-form-label w-full"
               for="hrDose">{{'mdrtb.pv.hrDose'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.hrDose}}" name="3d9d4903-35fe-4dd3-be83-abe7fec6106c" type="text"
-              class="input form-control" />
+            <input value="{{form.hrDose}}" name="{{'HR_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% else %}
-            <input name="3d9d4903-35fe-4dd3-be83-abe7fec6106c" type="text" class="input form-control" />
+            <input name="{{'HR_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
 
           </div>
@@ -407,10 +397,9 @@
             <label class="tb03-form-label w-full"
               for="sDose">{{'mdrtb.pv.sDose'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.sDose}}" name="6f81017a-6454-4077-a830-17b6643a7b62" type="text"
-              class="input form-control" />
+            <input value="{{form.sDose}}" name="{{'S_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% else %}
-            <input name="6f81017a-6454-4077-a830-17b6643a7b62" type="text" class="input form-control" />
+            <input name="{{'S_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
 
           </div>
@@ -418,10 +407,10 @@
             <label class="tb03-form-label w-full"
               for="otherDrug1Name">{{'mdrtb.pv.otherDrug1Name'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.otherDrug1Name}}" name="975233be-8f88-417b-a54c-1dceedea6737" type="text"
+            <input value="{{form.otherDrug1Name}}" name="{{'OTHER_DRUG_1_NAME' | get_concept }}" type="text"
               class="input form-control" />
             {% else %}
-            <input name="975233be-8f88-417b-a54c-1dceedea6737" type="text" class="input form-control" />
+            <input name="{{'OTHER_DRUG_1_NAME' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
 
           </div>
@@ -433,10 +422,10 @@
             <label class="tb03-form-label w-full"
               for="otherDrug1Dose">{{'mdrtb.pv.otherDrug1Dose'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.otherDrug1Dose}}" name="968b15e0-1c70-4347-af4c-7e8d9b374d90" type="text"
+            <input value="{{form.otherDrug1Dose}}" name="{{'OTHER_DRUG_1_DOSE' | get_concept }}" type="text"
               class="input form-control" />
             {% else %}
-            <input name="968b15e0-1c70-4347-af4c-7e8d9b374d90" type="text" class="input form-control" />
+            <input name="{{'OTHER_DRUG_1_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
 
           </div>
@@ -445,10 +434,10 @@
               for="comments">{{'mdrtb.pv.comments'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
 
-            <textarea name="31b474e6-0370-102d-b0e3-001ec94a0cc1" class="input form-control" cols="10"
+            <textarea name="{{'CLINICIAN_NOTES' | get_concept }}" class="input form-control" cols="10"
               rows="5">{{form.comment}}</textarea>
             {% else %}
-            <textarea name="31b474e6-0370-102d-b0e3-001ec94a0cc1" class="input form-control" cols="10"
+            <textarea name="{{'CLINICIAN_NOTES' | get_concept }}" class="input form-control" cols="10"
               rows="5"></textarea>
             {% endif %}
 
@@ -478,7 +467,7 @@
 
     $('#regimenType').change((e) => {
       let regimenType = e.target.value
-      if (regimenType === "79838176-04c9-419e-bf75-3658c220ff34") {
+      if (regimenType === "{{'OTHER_MDRTB_REGIMEN' | get_concept}}") {
         $('#otherRegimen').prop('disabled', false)
       } else {
         $('#otherRegimen').prop('disabled', true)

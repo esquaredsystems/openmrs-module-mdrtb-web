@@ -9,17 +9,23 @@ import utilities.common_utils as util
 import utilities.locationsutil as lu
 import json
 import traceback
+import logging
 from django.contrib import messages
+from django.core.cache import cache
 from resources.enums.mdrtbConcepts import Concepts
 from resources.enums.privileges import Privileges
 from resources.enums.constants import Constants
-from urllib.parse import urlencode
+
+
+logger = logging.getLogger("django")
+
+# start memcache if u havent
 
 
 def check_if_session_alive(req):
     session_id = req.session.get("session_id")
     if not session_id:
-        ru.clear_session(req)
+        logger.warning("Session expired")
         return False
     return True
 
@@ -36,11 +42,10 @@ def get_redirect_url_from_exception(exception):
 def index(req):
     context = {}
     try:
-        context["url"] = req.session["redirect_url"]
+        d = {}
+        messages.success("yup")
     except Exception as e:
-        isexpired, message, redirect = get_redirect_url_from_exception(e)
-        if isexpired:
-            return redirect(redirect)
+        logger.error(str(e), exc_info=True)
         messages.error(req, e)
     finally:
         return render(req, "app/tbregister/reportmockup.html", context=context)
@@ -51,9 +56,11 @@ def get_locations(req):
         try:
             locations = lu.create_location_hierarchy(req)
             if locations:
+                logger.info("Locations fetched successfully")
                 return JsonResponse(locations, safe=False)
 
         except Exception as e:
+            logger.error(str(e), exc_info=True)
             messages.error(req, e)
             raise Exception(str(e))
     else:
@@ -63,6 +70,7 @@ def get_locations(req):
 def login(req):
     if check_if_session_alive(req):
         redirect_page = req.session.get("redirect_url")
+        logger.info("Redirecting from login page")
         return redirect(redirect_page if redirect_page else "searchPatientsView")
     context = {"title": "Login"}
     if req.method == "POST":
@@ -116,10 +124,6 @@ def search_patients_view(req):
             context["add_patient_privilege"] = True
         return render(req, "app/tbregister/search_patients.html", context=context)
     except Exception as e:
-        is_expired, message, redirect_url = get_redirect_url_from_exception(e)
-        if is_expired:
-            messages.error(req, message)
-            return redirect(redirect_url)
         context["minSearchCharacters"] = 2
         messages.error(req, str(e))
         return render(req, "app/tbregister/search_patients.html", context=context)
@@ -138,7 +142,7 @@ def enroll_patient(req):
             messages.error(req, str(e))
             return redirect("searchPatientsView")
     try:
-        req.session["redirect_url"] = req.path
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         identifiertypes = mu.get_patient_identifier_types(req)
         return render(
             req,
@@ -160,7 +164,7 @@ def enrolled_programs(req, uuid):
     }
 
     try:
-        req.session["redirect_url"] = req.path
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         programs = pu.get_enrolled_programs_by_patient(req, uuid)
         patient = pu.get_patient(req, uuid)
         if patient:
@@ -241,7 +245,7 @@ def enroll_patient_in_mdrtb(req, uuid):
             return redirect("mdrtbprogramenroll", uuid=uuid, permanent=True)
     else:
         try:
-            req.session["redirect_url"] = req.path
+            req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
             program = pu.get_program_by_uuid(req, Constants.MDRTB_PROGRAM.value)
             if program:
                 context["jsonprogram"] = json.dumps(program)
@@ -345,14 +349,14 @@ def delete_program(req, uuid, programid):
 def patient_dashboard(req, uuid, mdrtb=None):
     if not check_if_session_alive(req):
         return redirect("login")
-    req.session["redirect_url"] = req.path
+    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
     req.session["redirect_query_params"] = {
         key: value[0] if len(value) == 1 else value for key, value in req.GET.lists()
     }
     program = req.GET["program"]
     context = {"uuid": uuid, "title": "Patient Dashboard"}
     try:
-        req.session["redirect_url"] = req.path
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
 
         if mdrtb:
             context["mdrtb"] = True
@@ -394,7 +398,7 @@ def tb03_form(req, uuid):
         finally:
             return redirect(req.session["redirect_url"], permanent=True)
     try:
-        req.session["redirect_url"] = req.path
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
 
         tb03_concepts = [
             Concepts.TREATMENT_CENTER_FOR_IP.value,
@@ -406,7 +410,7 @@ def tb03_form(req, uuid):
             Concepts.TB_TREATMENT_OUTCOME.value,
             Concepts.CAUSE_OF_DEATH.value,
         ]
-        req.session["redirect_url"] = req.path
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         concepts = fu.get_form_concepts(tb03_concepts, req)
         context = {
             "concepts": concepts,
@@ -423,7 +427,7 @@ def tb03_form(req, uuid):
 
 def edit_tb03_form(req, uuid, formid):
     if not check_if_session_alive(req):
-        req.session["redirect_url"] = req.path
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         return redirect("login")
 
     if req.method == "POST":
@@ -437,7 +441,7 @@ def edit_tb03_form(req, uuid, formid):
             return redirect(req.session["redirect_url"])
 
     try:
-        req.session["redirect_url"] = req.path
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
 
         context = {
             "title": "Edit TB03",
@@ -457,7 +461,7 @@ def edit_tb03_form(req, uuid, formid):
             Concepts.CAUSE_OF_DEATH.value,
         ]
 
-        req.session["redirect_url"] = req.path
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         form = fu.get_tb03_by_uuid(req, formid)
         concepts = fu.get_form_concepts(tb03_concepts, req)
         fu.remove_tb03_duplicates(concepts, form)
@@ -497,7 +501,7 @@ def tb03u_form(req, uuid):
         finally:
             return redirect(req.session["redirect_url"], permanent=True)
     try:
-        req.session["redirect_url"] = req.path
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         tb03u_concepts = [
             Concepts.ANATOMICAL_SITE_OF_TB.value,
             Concepts.MDR_STATUS.value,
@@ -546,7 +550,7 @@ def edit_tb03u_form(req, uuid, formid):
             return redirect(req.session["redirect_url"], permanent=True)
 
     try:
-        req.session["redirect_url"] = req.path
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
 
         context = {
             "title": "Edit TB03",
@@ -571,7 +575,7 @@ def edit_tb03u_form(req, uuid, formid):
             Concepts.CAUSE_OF_DEATH.value,
         ]
 
-        req.session["redirect_url"] = req.path
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         form = fu.get_tb03u_by_uuid(req, formid)
         concepts = fu.get_form_concepts(tb03u_concepts, req)
         fu.remove_tb03u_duplicates(concepts, form)
@@ -615,7 +619,7 @@ def adverse_events_form(req, patientid):
             return redirect(req.session["redirect_url"], permanent=True)
 
     try:
-        req.session["redirect_url"] = req.path
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         context = {
             "title": "Add Adverse Event",
             "patient_id": patientid,
@@ -636,10 +640,10 @@ def adverse_events_form(req, patientid):
             Concepts.CAUSALITY_ASSESSMENT_RESULT_1.value,
             Concepts.CAUSALITY_ASSESSMENT_RESULT_2.value,
             Concepts.CAUSALITY_ASSESSMENT_RESULT_3.value,
-            Concepts.ACTION_TAKEN_IN_RESPONSE_TO_THE_EVENT.value,
             Concepts.ADVERSE_EVENT_ACTION.value,
             Concepts.ADVERSE_EVENT_ACTION_2.value,
             Concepts.ADVERSE_EVENT_ACTION_3.value,
+            Concepts.ADVERSE_EVENT_ACTION_4.value,
             Concepts.ADVERSE_EVENT_ACTION_5.value,
             Concepts.ADVERSE_EVENT_OUTCOME.value,
             Concepts.MEDDRA_CODE.value,
@@ -671,7 +675,7 @@ def edit_adverse_events_form(req, patientid, formid):
             return redirect(req.session["redirect_url"], permanent=True)
 
     try:
-        req.session["redirect_url"] = req.path
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         context = {
             "title": "Edit Adverse Event",
             "patient_id": patientid,
@@ -693,10 +697,10 @@ def edit_adverse_events_form(req, patientid, formid):
             Concepts.CAUSALITY_ASSESSMENT_RESULT_1.value,
             Concepts.CAUSALITY_ASSESSMENT_RESULT_2.value,
             Concepts.CAUSALITY_ASSESSMENT_RESULT_3.value,
-            Concepts.ACTION_TAKEN_IN_RESPONSE_TO_THE_EVENT.value,
             Concepts.ADVERSE_EVENT_ACTION.value,
             Concepts.ADVERSE_EVENT_ACTION_2.value,
             Concepts.ADVERSE_EVENT_ACTION_3.value,
+            Concepts.ADVERSE_EVENT_ACTION_4.value,
             Concepts.ADVERSE_EVENT_ACTION_5.value,
             Concepts.ADVERSE_EVENT_OUTCOME.value,
             Concepts.MEDDRA_CODE.value,
@@ -744,7 +748,7 @@ def drug_resistence_form(req, patientid):
             return redirect(req.session["redirect_url"], permanent=True)
 
     try:
-        req.session["redirect_url"] = req.path
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         drug_resistance_concepts = [Concepts.DRUG_RESISTANCE_DURING_TREATMENT.value]
         context = {
             "title": "Drug Resistense",
@@ -779,7 +783,7 @@ def edit_drug_resistence_form(req, patientid, formid):
 
     try:
         context = {"title": "Drug Resistanse", "patient_id": patientid, "state": "edit"}
-        req.session["redirect_url"] = req.path
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         drug_resistance_concepts = [Concepts.DRUG_RESISTANCE_DURING_TREATMENT.value]
         form = fu.get_drug_resistance_form_by_uuid(req, formid)
         concepts = fu.remove_drug_resistance_duplicates(
@@ -830,7 +834,7 @@ def regimen_form(req, patientid):
             return redirect(req.session["redirect_url"])
 
     try:
-        req.session["redirect_url"] = req.path
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         concept_ids = [
             Concepts.PLACE_OF_CENTRAL_COMMISSION.value,
             Concepts.RESISTANCE_TYPE.value,
@@ -865,7 +869,7 @@ def edit_regimen_form(req, patientid, formid):
             return redirect(req.session["redirect_url"])
 
     try:
-        req.session["redirect_url"] = req.path
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         concept_ids = [
             Concepts.PLACE_OF_CENTRAL_COMMISSION.value,
             Concepts.RESISTANCE_TYPE.value,
@@ -921,7 +925,7 @@ def form_89(req, uuid):
             return redirect(req.session["redirect_url"], permanent=True)
 
     try:
-        req.session["redirect_url"] = req.path
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         context = {
             "title": "Form 89",
             "uuid": uuid,
@@ -969,7 +973,7 @@ def edit_form_89(req, uuid, formid):
             return redirect(req.session["redirect_url"])
 
     try:
-        req.session["redirect_url"] = req.path
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
 
         context = {
             "title": "Edit Form 89",
@@ -1016,7 +1020,6 @@ def delete_form_89(req, formid):
 
 
 def patientList(req):
-    req.session["redirect_url"] = req.path_info
     context = {
         "months": [
             "January",

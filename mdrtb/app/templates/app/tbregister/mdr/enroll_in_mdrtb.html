@@ -49,13 +49,13 @@
                     for="">{{'mdrtb.patientidentifier'|get_message:request.session.locale}}</label>
                 <input class="input form-control" type="text" name="identifier" id="identifier" required />
                 <input hidden type="text" name="identifierType" id="identifierType"
-                    value="5c4c9795-2a7a-4757-8585-fba3a7cafa90">
+                    value="{{'MDR_IDENTIFIER' | get_constant }}">
             </div>
 
             <div hidden class="input-container">
                 <label
                     class="input-label w-1/6 required">{{'Program.header'|get_message_openMRS:request.session.locale}}</label>
-                <input type="text" name="program" value="34198d48-0370-102d-b0e3-001ec94a0cc1">
+                <input type="text" name="program" value="{{'MDRTB_PROGRAM' | get_constant }}">
 
             </div>
             {% endif %}

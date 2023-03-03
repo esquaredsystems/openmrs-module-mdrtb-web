@@ -77,7 +77,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.adverseEvent'|get_message:request.session.locale}}</label>
-            <select name="7047f880-b929-42fc-81f7-b9dbba2d1b15" class="input form-control">
+            <select name="{{'ADVERSE_EVENT' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
               <option selected value="{{form.advereEvent.uuid}}">{{form.advereEvent.display}}</option>
               {% else %}
@@ -99,14 +99,14 @@
                 <label for="yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.clinicalScreenDone.uuid == constants.YES %}
-                <input checked name="dd3142e4-237b-46e0-a5fe-7e5c68ee1dfe" type="radio" value="{{constants.YES}}"
+                <input checked name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% else %}
-                <input name="dd3142e4-237b-46e0-a5fe-7e5c68ee1dfe" type="radio" value="{{constants.YES}}"
+                <input name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="dd3142e4-237b-46e0-a5fe-7e5c68ee1dfe" type="radio" value="{{constants.YES}}"
+                <input name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -115,14 +115,14 @@
                 <label for="no">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.clinicalScreenDone.uuid == constants.NO %}
-                <input checked name="dd3142e4-237b-46e0-a5fe-7e5c68ee1dfe" type="radio" value="{{constants.NO}}"
+                <input checked name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% else %}
-                <input name="dd3142e4-237b-46e0-a5fe-7e5c68ee1dfe" type="radio" value="{{constants.NO}}"
+                <input name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="dd3142e4-237b-46e0-a5fe-7e5c68ee1dfe" type="radio" value="{{constants.NO}}"
+                <input name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
               </div>
@@ -136,14 +136,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.visualAcuityDone.uuid == constants.YES %}
-                <input checked name="beb57526-334c-426a-af9b-9082be53f030" type="radio" value="{{constants.YES}}"
+                <input checked name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% else %}
-                <input name="beb57526-334c-426a-af9b-9082be53f030" type="radio" value="{{constants.YES}}"
+                <input name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="beb57526-334c-426a-af9b-9082be53f030" type="radio" value="{{constants.YES}}"
+                <input name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
               </div>
@@ -151,14 +151,14 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.visualAcuityDone.uuid == constants.NO %}
-                <input checked name="beb57526-334c-426a-af9b-9082be53f030" type="radio" value="{{constants.NO}}"
+                <input checked name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% else %}
-                <input name="beb57526-334c-426a-af9b-9082be53f030" type="radio" value="{{constants.NO}}"
+                <input name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="beb57526-334c-426a-af9b-9082be53f030" type="radio" value="{{constants.NO}}"
+                <input name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
               </div>
@@ -176,14 +176,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.simpleHearingTestDone.uuid == constants.YES %}
-                <input checked name="dc585a17-bfd5-4b44-aa7b-ff326abf45d0" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
+                <input checked name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio"
+                  value="{{constants.YES}}" class="radio-input" />
                 {% else %}
-                <input name="dc585a17-bfd5-4b44-aa7b-ff326abf45d0" type="radio" value="{{constants.YES}}"
+                <input name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="dc585a17-bfd5-4b44-aa7b-ff326abf45d0" type="radio" value="{{constants.YES}}"
+                <input name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
               </div>
@@ -191,14 +191,14 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.simpleHearingTestDone.uuid == constants.NO %}
-                <input checked name="dc585a17-bfd5-4b44-aa7b-ff326abf45d0" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                <input checked name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio"
+                  value="{{constants.NO}}" class="radio-input" />
                 {% else %}
-                <input name="dc585a17-bfd5-4b44-aa7b-ff326abf45d0" type="radio" value="{{constants.NO}}"
+                <input name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="dc585a17-bfd5-4b44-aa7b-ff326abf45d0" type="radio" value="{{constants.NO}}"
+                <input name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -214,15 +214,15 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.audiogramDone.uuid == constants.YES %}
-                <input checked name="0e431270-5f1e-4b2e-ad08-bb15909ecd3c" type="radio" value="{{constants.YES}}"
+                <input checked name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% else %}
-                <input name="0e431270-5f1e-4b2e-ad08-bb15909ecd3c" type="radio" value="{{constants.YES}}"
+                <input name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
                 {% else %}
-                <input name="0e431270-5f1e-4b2e-ad08-bb15909ecd3c" type="radio" value="{{constants.YES}}"
+                <input name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -231,15 +231,15 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.audiogramDone.uuid == constants.NO %}
-                <input checked name="0e431270-5f1e-4b2e-ad08-bb15909ecd3c" type="radio" value="{{constants.NO}}"
+                <input checked name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% else %}
-                <input name="0e431270-5f1e-4b2e-ad08-bb15909ecd3c" type="radio" value="{{constants.NO}}"
+                <input name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
 
                 {% else %}
-                <input name="0e431270-5f1e-4b2e-ad08-bb15909ecd3c" type="radio" value="{{constants.NO}}"
+                <input name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -258,14 +258,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.neuroInvestigationDone.uuid == constants.YES %}
-                <input checked name="cb58ac47-7e2e-482d-b1ca-8f04641c9ad9" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
+                <input checked name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio"
+                  value="{{constants.YES}}" class="radio-input" />
                 {% else %}
-                <input name="cb58ac47-7e2e-482d-b1ca-8f04641c9ad9" type="radio" value="{{constants.YES}}"
+                <input name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="cb58ac47-7e2e-482d-b1ca-8f04641c9ad9" type="radio" value="{{constants.YES}}"
+                <input name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -274,14 +274,14 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.neuroInvestigationDone.uuid == constants.NO %}
-                <input checked name="cb58ac47-7e2e-482d-b1ca-8f04641c9ad9" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                <input checked name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio"
+                  value="{{constants.NO}}" class="radio-input" />
                 {% else %}
-                <input name="cb58ac47-7e2e-482d-b1ca-8f04641c9ad9" type="radio" value="{{constants.NO}}"
+                <input name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="cb58ac47-7e2e-482d-b1ca-8f04641c9ad9" type="radio" value="{{constants.NO}}"
+                <input name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -296,15 +296,15 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.serumCreatinineDone.uuid == constants.YES %}
-                <input checked name="1bccf186-0695-4fed-8dd4-937a2660c927" type="radio" value="{{constants.YES}}"
+                <input checked name="{{'CREATNINE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% else %}
-                <input name="1bccf186-0695-4fed-8dd4-937a2660c927" type="radio" value="{{constants.YES}}"
+                <input name="{{'CREATNINE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
                 {% else %}
-                <input name="1bccf186-0695-4fed-8dd4-937a2660c927" type="radio" value="{{constants.YES}}"
+                <input name="{{'CREATNINE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -313,15 +313,15 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.serumCreatinineDone.uuid == constants.NO %}
-                <input checked name="1bccf186-0695-4fed-8dd4-937a2660c927" type="radio" value="{{constants.NO}}"
+                <input checked name="{{'CREATNINE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% else %}
-                <input name="1bccf186-0695-4fed-8dd4-937a2660c927" type="radio" value="{{constants.NO}}"
+                <input name="{{'CREATNINE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
 
                 {% else %}
-                <input name="1bccf186-0695-4fed-8dd4-937a2660c927" type="radio" value="{{constants.NO}}"
+                <input name="{{'CREATNINE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -341,14 +341,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.altDone.uuid == constants.YES %}
-                <input checked name="7fea355e-0a14-4c64-af2f-4b6b96a7823d" type="radio" value="{{constants.YES}}"
+                <input checked name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% else %}
-                <input name="7fea355e-0a14-4c64-af2f-4b6b96a7823d" type="radio" value="{{constants.YES}}"
+                <input name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="7fea355e-0a14-4c64-af2f-4b6b96a7823d" type="radio" value="{{constants.YES}}"
+                <input name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -357,15 +357,13 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.altDone.uuid == constants.NO %}
-                <input checked name="7fea355e-0a14-4c64-af2f-4b6b96a7823d" type="radio" value="{{constants.NO}}"
+                <input checked name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% else %}
-                <input name="7fea355e-0a14-4c64-af2f-4b6b96a7823d" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                <input name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="7fea355e-0a14-4c64-af2f-4b6b96a7823d" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                <input name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
                 {% endif %}
 
               </div>
@@ -379,14 +377,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.astDone.uuid == constants.YES %}
-                <input checked name="076bd99e-869b-4253-a2fa-5c3697227615" type="radio" value="{{constants.YES}}"
+                <input checked name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% else %}
-                <input name="076bd99e-869b-4253-a2fa-5c3697227615" type="radio" value="{{constants.YES}}"
+                <input name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="076bd99e-869b-4253-a2fa-5c3697227615" type="radio" value="{{constants.YES}}"
+                <input name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -395,15 +393,13 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.astDone.uuid == constants.NO %}
-                <input checked name="076bd99e-869b-4253-a2fa-5c3697227615" type="radio" value="{{constants.NO}}"
+                <input checked name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% else %}
-                <input name="076bd99e-869b-4253-a2fa-5c3697227615" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                <input name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="076bd99e-869b-4253-a2fa-5c3697227615" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                <input name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
                 {% endif %}
               </div>
             </div>
@@ -421,14 +417,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.bilirubinDone.uuid == constants.YES %}
-                <input checked name="515f6786-1505-44a2-b216-2e22f31ab992" type="radio" value="{{constants.YES}}"
+                <input checked name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% else %}
-                <input name="515f6786-1505-44a2-b216-2e22f31ab992" type="radio" value="{{constants.YES}}"
+                <input name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="515f6786-1505-44a2-b216-2e22f31ab992" type="radio" value="{{constants.YES}}"
+                <input name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
               </div>
@@ -436,15 +432,15 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.bilirubinDone.uuid == constants.NO %}
-                <input checked name="515f6786-1505-44a2-b216-2e22f31ab992" type="radio" value="{{constants.NO}}"
+                <input checked name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% else %}
-                <input name="515f6786-1505-44a2-b216-2e22f31ab992" type="radio" value="{{constants.NO}}"
+                <input name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
 
                 {% else %}
-                <input name="515f6786-1505-44a2-b216-2e22f31ab992" type="radio" value="{{constants.NO}}"
+                <input name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -459,14 +455,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.alkalinePhosphateDone.uuid == constants.YES %}
-                <input checked name="56edff77-1933-4e62-845f-8399e3ade466" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
+                <input checked name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio"
+                  value="{{constants.YES}}" class="radio-input" />
                 {% else %}
-                <input name="56edff77-1933-4e62-845f-8399e3ade466" type="radio" value="{{constants.YES}}"
+                <input name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="56edff77-1933-4e62-845f-8399e3ade466" type="radio" value="{{constants.YES}}"
+                <input name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -476,14 +472,14 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.alkalinePhosphateDone.uuid == constants.NO %}
-                <input checked name="56edff77-1933-4e62-845f-8399e3ade466" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                <input checked name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio"
+                  value="{{constants.NO}}" class="radio-input" />
                 {% else %}
-                <input name="56edff77-1933-4e62-845f-8399e3ade466" type="radio" value="{{constants.NO}}"
+                <input name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="56edff77-1933-4e62-845f-8399e3ade466" type="radio" value="{{constants.NO}}"
+                <input name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -503,14 +499,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.ygtDone.uuid == constants.YES %}
-                <input checked name="a667469d-5eb1-470d-ad93-e37086f187af" type="radio" value="{{constants.YES}}"
+                <input checked name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% else %}
-                <input name="a667469d-5eb1-470d-ad93-e37086f187af" type="radio" value="{{constants.YES}}"
+                <input name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="a667469d-5eb1-470d-ad93-e37086f187af" type="radio" value="{{constants.YES}}"
+                <input name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -519,15 +515,13 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.ygtDone.uuid == constants.NO %}
-                <input checked name="a667469d-5eb1-470d-ad93-e37086f187af" type="radio" value="{{constants.NO}}"
+                <input checked name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% else %}
-                <input name="a667469d-5eb1-470d-ad93-e37086f187af" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                <input name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="a667469d-5eb1-470d-ad93-e37086f187af" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                <input name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
                 {% endif %}
 
               </div>
@@ -541,14 +535,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.ecgDone.uuid == constants.YES %}
-                <input checked name="2d5df3ac-636f-4ad5-98c3-e4c7cf6f4782" type="radio" value="{{constants.YES}}"
+                <input checked name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% else %}
-                <input name="2d5df3ac-636f-4ad5-98c3-e4c7cf6f4782" type="radio" value="{{constants.YES}}"
+                <input name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="2d5df3ac-636f-4ad5-98c3-e4c7cf6f4782" type="radio" value="{{constants.YES}}"
+                <input name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -557,15 +551,13 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.ecgDone.uuid == constants.NO %}
-                <input checked name="2d5df3ac-636f-4ad5-98c3-e4c7cf6f4782" type="radio" value="{{constants.NO}}"
+                <input checked name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% else %}
-                <input name="2d5df3ac-636f-4ad5-98c3-e4c7cf6f4782" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                <input name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="2d5df3ac-636f-4ad5-98c3-e4c7cf6f4782" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                <input name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
                 {% endif %}
 
               </div>
@@ -584,14 +576,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.lipaseDone.uuid == constants.YES %}
-                <input checked name="f8e5f193-0b6e-4ff3-91c8-84a3e06f7f75" type="radio" value="{{constants.YES}}"
+                <input checked name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% else %}
-                <input name="f8e5f193-0b6e-4ff3-91c8-84a3e06f7f75" type="radio" value="{{constants.YES}}"
+                <input name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="f8e5f193-0b6e-4ff3-91c8-84a3e06f7f75" type="radio" value="{{constants.YES}}"
+                <input name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -600,14 +592,14 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.lipaseDone.uuid == constants.NO %}
-                <input checked name="f8e5f193-0b6e-4ff3-91c8-84a3e06f7f75" type="radio" value="{{constants.NO}}"
+                <input checked name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% else %}
-                <input name="f8e5f193-0b6e-4ff3-91c8-84a3e06f7f75" type="radio" value="{{constants.NO}}"
+                <input name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="f8e5f193-0b6e-4ff3-91c8-84a3e06f7f75" type="radio" value="{{constants.NO}}"
+                <input name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -622,14 +614,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.amylaseDone.uuid == constants.YES %}
-                <input checked name="99c62c8f-0885-401e-8aeb-8e41dd9f4a0b" type="radio" value="{{constants.YES}}"
+                <input checked name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% else %}
-                <input name="99c62c8f-0885-401e-8aeb-8e41dd9f4a0b" type="radio" value="{{constants.YES}}"
+                <input name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="99c62c8f-0885-401e-8aeb-8e41dd9f4a0b" type="radio" value="{{constants.YES}}"
+                <input name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -638,14 +630,14 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.amylaseDone.uuid == constants.NO %}
-                <input checked name="99c62c8f-0885-401e-8aeb-8e41dd9f4a0b" type="radio" value="{{constants.NO}}"
+                <input checked name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% else %}
-                <input name="99c62c8f-0885-401e-8aeb-8e41dd9f4a0b" type="radio" value="{{constants.NO}}"
+                <input name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="99c62c8f-0885-401e-8aeb-8e41dd9f4a0b" type="radio" value="{{constants.NO}}"
+                <input name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -665,14 +657,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.potassiumDone.uuid == constants.YES %}
-                <input checked name="c8328edf-30eb-429a-8c95-3713ebf8cd5f" type="radio" value="{{constants.YES}}"
+                <input checked name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% else %}
-                <input name="c8328edf-30eb-429a-8c95-3713ebf8cd5f" type="radio" value="{{constants.YES}}"
+                <input name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="c8328edf-30eb-429a-8c95-3713ebf8cd5f" type="radio" value="{{constants.YES}}"
+                <input name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -681,14 +673,14 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.potassiumDone.uuid == constants.NO %}
-                <input checked name="c8328edf-30eb-429a-8c95-3713ebf8cd5f" type="radio" value="{{constants.NO}}"
+                <input checked name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% else %}
-                <input name="c8328edf-30eb-429a-8c95-3713ebf8cd5f" type="radio" value="{{constants.NO}}"
+                <input name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="c8328edf-30eb-429a-8c95-3713ebf8cd5f" type="radio" value="{{constants.NO}}"
+                <input name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -703,14 +695,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.magnesiumDone.uuid == constants.YES %}
-                <input checked name="6ef1bf66-4143-4290-8cf1-ae4d7a3aa911" type="radio" value="{{constants.YES}}"
+                <input checked name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% else %}
-                <input name="6ef1bf66-4143-4290-8cf1-ae4d7a3aa911" type="radio" value="{{constants.YES}}"
+                <input name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="6ef1bf66-4143-4290-8cf1-ae4d7a3aa911" type="radio" value="{{constants.YES}}"
+                <input name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -719,14 +711,14 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.magnesiumDone.uuid == constants.NO %}
-                <input checked name="6ef1bf66-4143-4290-8cf1-ae4d7a3aa911" type="radio" value="{{constants.NO}}"
+                <input checked name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% else %}
-                <input name="6ef1bf66-4143-4290-8cf1-ae4d7a3aa911" type="radio" value="{{constants.NO}}"
+                <input name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="6ef1bf66-4143-4290-8cf1-ae4d7a3aa911" type="radio" value="{{constants.NO}}"
+                <input name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -746,14 +738,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.calciumDone.uuid == constants.YES %}
-                <input checked name="315531c6-bd48-4789-9c34-8a52d5f85f6a" type="radio" value="{{constants.YES}}"
+                <input checked name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% else %}
-                <input name="315531c6-bd48-4789-9c34-8a52d5f85f6a" type="radio" value="{{constants.YES}}"
+                <input name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="315531c6-bd48-4789-9c34-8a52d5f85f6a" type="radio" value="{{constants.YES}}"
+                <input name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -762,14 +754,14 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.calciumDone.uuid == constants.NO %}
-                <input checked name="315531c6-bd48-4789-9c34-8a52d5f85f6a" type="radio" value="{{constants.NO}}"
+                <input checked name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% else %}
-                <input name="315531c6-bd48-4789-9c34-8a52d5f85f6a" type="radio" value="{{constants.NO}}"
+                <input name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="315531c6-bd48-4789-9c34-8a52d5f85f6a" type="radio" value="{{constants.NO}}"
+                <input name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -784,14 +776,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.albuminDone.uuid == constants.YES %}
-                <input checked name="a5228f9e-aaef-4835-8413-f6c4e89063aa" type="radio" value="{{constants.YES}}"
+                <input checked name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% else %}
-                <input name="a5228f9e-aaef-4835-8413-f6c4e89063aa" type="radio" value="{{constants.YES}}"
+                <input name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="a5228f9e-aaef-4835-8413-f6c4e89063aa" type="radio" value="{{constants.YES}}"
+                <input name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -800,14 +792,14 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.albuminDone.uuid == constants.NO %}
-                <input checked name="a5228f9e-aaef-4835-8413-f6c4e89063aa" type="radio" value="{{constants.NO}}"
+                <input checked name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% else %}
-                <input name="a5228f9e-aaef-4835-8413-f6c4e89063aa" type="radio" value="{{constants.NO}}"
+                <input name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="a5228f9e-aaef-4835-8413-f6c4e89063aa" type="radio" value="{{constants.NO}}"
+                <input name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -828,14 +820,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.cbcDone.uuid == constants.YES %}
-                <input checked name="09e6fee5-8d20-4fb8-b636-7e92335fa3b2" type="radio" value="{{constants.YES}}"
+                <input checked name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% else %}
-                <input name="09e6fee5-8d20-4fb8-b636-7e92335fa3b2" type="radio" value="{{constants.YES}}"
+                <input name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="09e6fee5-8d20-4fb8-b636-7e92335fa3b2" type="radio" value="{{constants.YES}}"
+                <input name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -844,15 +836,13 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.cbcDone.uuid == constants.NO %}
-                <input checked name="09e6fee5-8d20-4fb8-b636-7e92335fa3b2" type="radio" value="{{constants.NO}}"
+                <input checked name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% else %}
-                <input name="09e6fee5-8d20-4fb8-b636-7e92335fa3b2" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                <input name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="09e6fee5-8d20-4fb8-b636-7e92335fa3b2" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                <input name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
                 {% endif %}
 
               </div>
@@ -866,14 +856,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.bloodGlucoseDone.uuid == constants.YES %}
-                <input checked name="3cee56ec-4841-43e3-a7fd-afdd4d1fea2e" type="radio" value="{{constants.YES}}"
+                <input checked name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% else %}
-                <input name="3cee56ec-4841-43e3-a7fd-afdd4d1fea2e" type="radio" value="{{constants.YES}}"
+                <input name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="3cee56ec-4841-43e3-a7fd-afdd4d1fea2e" type="radio" value="{{constants.YES}}"
+                <input name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -882,14 +872,14 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.bloodGlucoseDone.uuid == constants.NO %}
-                <input checked name="3cee56ec-4841-43e3-a7fd-afdd4d1fea2e" type="radio" value="{{constants.NO}}"
+                <input checked name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% else %}
-                <input name="3cee56ec-4841-43e3-a7fd-afdd4d1fea2e" type="radio" value="{{constants.NO}}"
+                <input name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="3cee56ec-4841-43e3-a7fd-afdd4d1fea2e" type="radio" value="{{constants.NO}}"
+                <input name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -908,14 +898,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.thyroidTestDone.uuid == constants.YES %}
-                <input checked name="db064f00-5f8f-447f-ae4c-ccf46aabea1e" type="radio" value="{{constants.YES}}"
+                <input checked name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% else %}
-                <input name="db064f00-5f8f-447f-ae4c-ccf46aabea1e" type="radio" value="{{constants.YES}}"
+                <input name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="db064f00-5f8f-447f-ae4c-ccf46aabea1e" type="radio" value="{{constants.YES}}"
+                <input name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -924,14 +914,14 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.thyroidTestDone.uuid == constants.NO %}
-                <input checked name="db064f00-5f8f-447f-ae4c-ccf46aabea1e" type="radio" value="{{constants.NO}}"
+                <input checked name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% else %}
-                <input name="db064f00-5f8f-447f-ae4c-ccf46aabea1e" type="radio" value="{{constants.NO}}"
+                <input name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="db064f00-5f8f-447f-ae4c-ccf46aabea1e" type="radio" value="{{constants.NO}}"
+                <input name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -946,14 +936,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.otherTestDone.uuid == constants.YES %}
-                <input checked name="d3cadad5-bdd6-4a77-abc5-c752d9a56234" type="radio" value="{{constants.YES}}"
+                <input checked name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% else %}
-                <input name="d3cadad5-bdd6-4a77-abc5-c752d9a56234" type="radio" value="{{constants.YES}}"
+                <input name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="d3cadad5-bdd6-4a77-abc5-c752d9a56234" type="radio" value="{{constants.YES}}"
+                <input name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -962,14 +952,14 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.otherTestDone.uuid == constants.NO %}
-                <input checked name="d3cadad5-bdd6-4a77-abc5-c752d9a56234" type="radio" value="{{constants.NO}}"
+                <input checked name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% else %}
-                <input name="d3cadad5-bdd6-4a77-abc5-c752d9a56234" type="radio" value="{{constants.NO}}"
+                <input name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="d3cadad5-bdd6-4a77-abc5-c752d9a56234" type="radio" value="{{constants.NO}}"
+                <input name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -986,10 +976,10 @@
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.treatmentRegimenAtOnset'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.treatmentRegimenAtOnset}}" name="4fd9f2ad-0515-41c9-a2e5-468b315bc707" type="text"
-              class="input form-control">
+            <input value="{{form.treatmentRegimenAtOnset}}" name="{{'ADVERSE_EVENT_REGIMEN' | get_concept }}"
+              type="text" class="input form-control">
             {% else %}
-            <input name="4fd9f2ad-0515-41c9-a2e5-468b315bc707" type="text" class="input form-control">
+            <input name="{{'ADVERSE_EVENT_REGIMEN' | get_concept }}" type="text" class="input form-control">
             {% endif %}
 
           </div>
@@ -998,11 +988,11 @@
               for="name">{{'mdrtb.pv.suspectedDrug'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
 
-            <input value="{{form.suspectedDrug}}" name="1975615d-78d2-4a66-9c13-b513939c6160" type="text"
+            <input value="{{form.suspectedDrug}}" name="{{'SUSPECTED_DRUG' | get_concept }}" type="text"
               class="input form-control">
             {% else %}
 
-            <input name="1975615d-78d2-4a66-9c13-b513939c6160" type="text" class="input form-control">
+            <input name="{{'SUSPECTED_DRUG' | get_concept }}" type="text" class="input form-control">
             {% endif %}
 
           </div>
@@ -1011,7 +1001,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.typeOfEvent'|get_message:request.session.locale}}</label>
-            <select id="eventType" name="1051a25f-5609-40d1-9801-10c3b6fd74ab" class="input form-control">
+            <select id="eventType" name="{{'ADVERSE_EVENT_TYPE' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.typeOfEvent.uuid}}">{{form.typeOfEvent.display}}</option>
@@ -1028,7 +1018,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.typeOfSAE'|get_message:request.session.locale}}</label>
-            <select disabled id="saeType" name="e31fb77b-3623-4c65-ac86-760a2248fc1b" class="input form-control">
+            <select disabled id="saeType" name="{{'SAE_TYPE' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.typeOfSAE.uuid}}">{{form.typeOfSAE.display}}</option>
@@ -1046,7 +1036,8 @@
           <div class="input-container">
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.typeOfSpecialEvent'|get_message:request.session.locale}}</label>
-            <select disabled id="specialType" name="aa9cb2d0-a6d6-4fb7-bb02-9298235128b2" class="input form-control">
+            <select disabled id="specialType" name="{{'SPECIAL_INTEREST_EVENT_TYPE' | get_concept }}"
+              class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.typeOfSpecialEvent.uuid}}">
@@ -1068,14 +1059,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.requiresAncillaryDrugs.uuid == constants.YES %}
-                <input checked name="0b056d73-92e6-4d78-9948-5f14aa397127" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
+                <input checked name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio"
+                  value="{{constants.YES}}" class="radio-input" />
                 {% else %}
-                <input name="0b056d73-92e6-4d78-9948-5f14aa397127" type="radio" value="{{constants.YES}}"
+                <input name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="0b056d73-92e6-4d78-9948-5f14aa397127" type="radio" value="{{constants.YES}}"
+                <input name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
 
                 {% endif %}
@@ -1085,15 +1076,15 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.requiresAncillaryDrugs.uuid == constants.NO %}
-                <input checked name="0b056d73-92e6-4d78-9948-5f14aa397127" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                <input checked name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio"
+                  value="{{constants.NO}}" class="radio-input" />
                 {% else %}
-                <input name="0b056d73-92e6-4d78-9948-5f14aa397127" type="radio" value="{{constants.NO}}"
+                <input name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
 
-                <input name="0b056d73-92e6-4d78-9948-5f14aa397127" type="radio" value="{{constants.NO}}"
+                <input name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
               </div>
@@ -1110,14 +1101,14 @@
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.requiresDoseChange.uuid == constants.YES %}
-                <input checked name="ac6e1e3c-f299-4cfb-bd9e-4c9679702db9" type="radio" value="{{constants.YES}}"
+                <input checked name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% else %}
-                <input name="ac6e1e3c-f299-4cfb-bd9e-4c9679702db9" type="radio" value="{{constants.YES}}"
+                <input name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="ac6e1e3c-f299-4cfb-bd9e-4c9679702db9" type="radio" value="{{constants.YES}}"
+                <input name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
               </div>
@@ -1125,14 +1116,14 @@
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.requiresDoseChange.uuid == constants.NO %}
-                <input checked name="ac6e1e3c-f299-4cfb-bd9e-4c9679702db9" type="radio" value="{{constants.NO}}"
+                <input checked name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% else %}
-                <input name="ac6e1e3c-f299-4cfb-bd9e-4c9679702db9" type="radio" value="{{constants.NO}}"
+                <input name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
                 {% else %}
-                <input name="ac6e1e3c-f299-4cfb-bd9e-4c9679702db9" type="radio" value="{{constants.NO}}"
+                <input name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
 
@@ -1145,11 +1136,11 @@
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.yellowCardDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.yellowCardDate | iso_to_normal_date }}" name="8d9a0671-a39c-4592-861d-2184531fbd8c"
+            <input value="{{form.yellowCardDate | iso_to_normal_date }}" name="{{'YELLOW_CARD_DATE' | get_concept }}"
               type="date" class="input form-control">
             {% else %}
 
-            <input name="8d9a0671-a39c-4592-861d-2184531fbd8c" type="date" class="input form-control">
+            <input name="{{'YELLOW_CARD_DATE' | get_concept }}" type="date" class="input form-control">
             {% endif %}
 
           </div>
@@ -1158,7 +1149,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.causalityDrug1'|get_message:request.session.locale}}</label>
-            <select name="aaeb7e1e-e2ea-445d-8c86-6d5eff7d45ad" class="input form-control">
+            <select name="{{'CAUSALITY_DRUG_1' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.casualityDrug.uuid}}">{{form.casualityDrug.display}}</option>
@@ -1174,7 +1165,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.causalityAssessmentResult1'|get_message:request.session.locale}}</label>
-            <select name="0d5228b4-5891-4740-9b13-1b8898ba4957" class="input form-control">
+            <select name="{{'CAUSALITY_ASSESSMENT_RESULT_1' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.casualityAssessmentResult.uuid}}">
@@ -1193,7 +1184,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.causalityDrug2'|get_message:request.session.locale}}</label>
-            <select name="d5383d2c-ad69-489e-983d-938bc5356ecf" class="input form-control">
+            <select name="{{'CAUSALITY_DRUG_2' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.casualityDrug2.uuid}}">
@@ -1210,7 +1201,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.causalityAssessmentResult2'|get_message:request.session.locale}}</label>
-            <select name="dfad56a0-6f69-437b-bc50-28195039a9e2" class="input form-control">
+            <select name="{{'CAUSALITY_ASSESSMENT_RESULT_2' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.casualityAssessmentResult2.uuid}}">
@@ -1229,7 +1220,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.causalityDrug3'|get_message:request.session.locale}}</label>
-            <select name="34c3a6f2-adf4-4c1a-9e47-7fd9dc4f093d" class="input form-control">
+            <select name="{{'CAUSALITY_DRUG_3' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.casualityDrug3.uuid}}">{{form.casualityDrug3.display}}</option>
@@ -1245,7 +1236,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.causalityAssessmentResult3'|get_message:request.session.locale}}</label>
-            <select name="a04a5e94-a584-4f03-b0c5-ea7acf0a28d7" class="input form-control">
+            <select name="{{'CAUSALITY_ASSESSMENT_RESULT_3' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.casualityAssessmentResult3.uuid}}">
@@ -1264,7 +1255,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.actionTaken'|get_message:request.session.locale}}</label>
-            <select name="d9cabe01-9c29-45b0-a071-0cd8d80fcb41" class="input form-control">
+            <select name="{{'ADVERSE_EVENT_ACTION' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.actionTaken.uuid}}">{{form.actionTaken.display}}</option>
@@ -1281,7 +1272,7 @@
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.actionTaken'|get_message:request.session.locale}}
               2</label>
-            <select name="7e97054b-cf92-49ec-9f68-54b095f5436e" class="input form-control">
+            <select name="{{'ADVERSE_EVENT_ACTION_2' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.actionTaken2.uuid}}">{{form.actionTaken2.display}}</option>
@@ -1299,7 +1290,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.actionTaken'|get_message:request.session.locale}} 3</label>
-            <select name="caa95b8f-86c3-4ec4-9397-933d880aba3e" class="input form-control">
+            <select name="{{'ADVERSE_EVENT_ACTION_3' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.actionTaken3.uuid}}">{{form.actionTaken3.display}}</option>
@@ -1316,7 +1307,7 @@
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.actionTaken'|get_message:request.session.locale}}
               4</label>
-            <select name="1d70fdcd-915d-4524-9ab5-1bdda1790508" class="input form-control">
+            <select name="{{'ADVERSE_EVENT_ACTION_4' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.actionTaken4.uuid}}">{{form.actionTaken4.display}}</option>
@@ -1334,7 +1325,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.actionTaken'|get_message:request.session.locale}} 5</label>
-            <select name="c0592626-62a8-48f6-93b0-1e4f8ff671f3" class="input form-control">
+            <select name="{{'ADVERSE_EVENT_ACTION_5' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.actionTaken5.uuid}}">{{form.actionTaken5.display}}</option>
@@ -1350,7 +1341,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.actionOutcome'|get_message:request.session.locale}}</label>
-            <select id="actionOutcome" name="adbed9a8-29a6-4adb-8a5b-60619fa02c19" class="input form-control">
+            <select id="actionOutcome" name="{{'ADVERSE_EVENT_OUTCOME' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.actionOutcome.uuid}}">{{form.actionOutcome.display}}</option>
@@ -1370,17 +1361,18 @@
               {{'mdrtb.pv.outcomeDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
             <input id="outcomeDate" value="{{form.outcomeDate | iso_to_normal_date}}"
-              name="2e418adc-f3f2-4d49-bc4d-dcbe82dc5a17" type="date" class="input form-control">
+              name="{{'ADVERSE_EVENT_OUTCOME_DATE' | get_concept }}" type="date" class="input form-control">
             {% else %}
 
-            <input id="outcomeDate" name="2e418adc-f3f2-4d49-bc4d-dcbe82dc5a17" type="date" class="input form-control">
+            <input id="outcomeDate" name="{{'ADVERSE_EVENT_OUTCOME_DATE' | get_concept }}" type="date"
+              class="input form-control">
             {% endif %}
 
           </div>
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.meddraCode'|get_message:request.session.locale}}</label>
-            <select name="c213828e-3d30-46a4-9245-485c9f78c233" class="input form-control">
+            <select name="{{'MEDDRA_CODE' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.meddraCode.uuid}}">{{form.meddraCode.display}}</option>
@@ -1398,7 +1390,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.drugRechallenge'|get_message:request.session.locale}}</label>
-            <select name="dead117a-53c3-40f8-879b-40c170b68037" class="input form-control">
+            <select name="{{'DRUG_RECHALLENGE' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
 
               <option selected value="{{form.drugRechallenge.uuid}}">{{form.drugRechallenge.display}}</option>
@@ -1415,11 +1407,11 @@
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.register.comments'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <textarea name="31b474e6-0370-102d-b0e3-001ec94a0cc1"
+            <textarea name="{{'CLINICIAN_NOTES' | get_concept }}"
               class="input form-control">{{form.clinicianNotes}}</textarea>
             {% else %}
 
-            <textarea name="31b474e6-0370-102d-b0e3-001ec94a0cc1" class="input form-control"></textarea>
+            <textarea name="{{'CLINICIAN_NOTES' | get_concept }}" class="input form-control"></textarea>
             {% endif %}
 
           </div>
@@ -1446,25 +1438,26 @@
   <script>
     $('#eventType').change((e) => {
       let eventType = e.target.value
-      if (eventType === "937e3189-ebcb-4deb-a25b-836ef83b2727") {
+      if (eventType === "{{'SERIOUS' | get_constant }}") {
         $('#saeType').prop('disabled', false)
         $('#specialType').prop('disabled', true)
-      } else if (eventType === "afd112d1-e7e8-4e21-81fa-f00490b4e0ef") {
-        $('#specialType').prop('disabled', false)
-        $('#saeType').prop('disabled', true)
-      } else {
-        $('#specialType').prop('disabled', true)
-        $('#saeType').prop('disabled', true)
-      }
+      } else
+        if (eventType === "{{'OF_SPECIAL_INTEREST' | get_constant }}") {
+          $('#specialType').prop('disabled', false)
+          $('#saeType').prop('disabled', true)
+        } else {
+          $('#specialType').prop('disabled', true)
+          $('#saeType').prop('disabled', true)
+        }
     })
 
     $('#actionOutcome').change((e) => {
       let outcome = e.target.value
       let outcomeDate = $('#outcomeDate')
-      if (outcome === "97db90d6-c5f9-46b5-bae0-dfe8368673ae") {
+      if (outcome === "{{'NOT_RESOLVED' | get_constant }}") {
         outcomeDate.val("")
         outcomeDate.prop('disabled', true)
-      } else if (outcome === "76fe4243-bac0-4a7b-8799-acdfe6affa13") {
+      } else if (outcome === "{{'RESOLVING' | get_constant }}") {
         outcomeDate.val("")
         outcomeDate.prop('disabled', true)
       } else {
@@ -1485,10 +1478,10 @@
       $('select').prop('disabled', false)
       $('textarea').prop('disabled', false)
       $('#canceleditbtn').prop('hidden', false)
-      if ($('#eventType').val() === "937e3189-ebcb-4deb-a25b-836ef83b2727") {
+      if ($('#eventType').val() === "{{'SERIOUS' | get_constant }}") {
         $('#saeType').prop('disabled', false)
         $('#specialType').prop('disabled', true)
-      } else if ($('#eventType').val() === "afd112d1-e7e8-4e21-81fa-f00490b4e0ef") {
+      } else if ($('#eventType').val() === "{{'OF_SPECIAL_INTEREST' | get_constant }}") {
         $('#specialType').prop('disabled', false)
         $('#saeType').prop('disabled', true)
       } else {
