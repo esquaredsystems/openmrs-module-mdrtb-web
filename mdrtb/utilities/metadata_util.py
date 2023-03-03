@@ -69,7 +69,7 @@ def get_concept(req, uuid):
             cache.set('concepts', concepts, timeout=None)
             return response
     except Exception as e:
-        print(e)
+        
         raise Exception(str(e))
 
 

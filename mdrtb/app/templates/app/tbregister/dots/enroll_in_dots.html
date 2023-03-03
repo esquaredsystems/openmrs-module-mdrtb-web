@@ -117,7 +117,7 @@
 
           <input class="input form-control" type="text" name="location" id="location"
             value="{{enrolled_program.location.name}}" />
-          <div hidden id="locations-container" class="flex-column-center space-y-4">
+          <div hidden id="locations" class="flex-column-center space-y-4">
             {% include 'app/components/locations.html' %}
           </div>
         </div>
@@ -216,12 +216,12 @@
 
     })
     $('#editLocations').click(() => {
-      if ($('#locations-container').prop('hidden')) {
+      if ($('#locations').prop('hidden')) {
         $('select').prop('disabled', false)
         $('button[type=submit]').prop('disabled', false)
         $('#prefilledlocation').removeClass('input-container').addClass('flex-column-center')
         $('#location').prop('hidden', true)
-        $('#locations-container').prop('hidden', false)
+        $('#locations').prop('hidden', false)
         $('#editLocations').html(
           `
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -234,7 +234,7 @@
         $('button[type=submit]').prop('disabled', true)
         $('#location').prop('hidden', false)
         $('#prefilledlocation').removeClass('flex-column-center').addClass('input-container')
-        $('#locations-container').prop('hidden', true)
+        $('#locations').prop('hidden', true)
         $('#editLocations').html(
           `
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
