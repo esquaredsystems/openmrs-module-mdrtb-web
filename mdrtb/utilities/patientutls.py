@@ -20,7 +20,7 @@ def get_patient(req, uuid):
         patient["auditInfo"] = patient_data["auditInfo"]
         return patient
     else:
-        print("PATIENT NOT FOUND")
+        
         return None
 
 

@@ -1,0 +1,510 @@
+{
+  "results": [
+    {
+      "uuid": "31b4a16e-0370-102d-b0e3-001ec94a0cc1",
+      "display": "MODERATELY POSITIVE",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31b4a16e-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31bd79ec-0370-102d-b0e3-001ec94a0cc1",
+      "display": "MDR-TB PROGRAM",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31bd79ec-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31c2c5fa-0370-102d-b0e3-001ec94a0cc1",
+      "display": "TB CULTURE STATUS",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31c2c5fa-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31b2a94a-0370-102d-b0e3-001ec94a0cc1",
+      "display": "NONE",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31b2a94a-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31c1d492-0370-102d-b0e3-001ec94a0cc1",
+      "display": "RECONVERTED",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31c1d492-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31c1d564-0370-102d-b0e3-001ec94a0cc1",
+      "display": "CONVERTED",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31c1d564-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31c1d640-0370-102d-b0e3-001ec94a0cc1",
+      "display": "NOT CONVERTED",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31c1d640-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31b66f1c-0370-102d-b0e3-001ec94a0cc1",
+      "display": "AMBULATORY",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31b66f1c-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31b2803c-0370-102d-b0e3-001ec94a0cc1",
+      "display": "NO",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31b2803c-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31b27f6a-0370-102d-b0e3-001ec94a0cc1",
+      "display": "YES",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31b27f6a-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31c095fa-0370-102d-b0e3-001ec94a0cc1",
+      "display": "PATIENT HOSPITALIZED",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31c095fa-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "d3d3e1a7-7230-4085-af56-690977a479e5",
+      "display": "HOSPITALIZATION",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/d3d3e1a7-7230-4085-af56-690977a479e5"
+        }
+      ]
+    },
+    {
+      "uuid": "31b6b8aa-0370-102d-b0e3-001ec94a0cc1",
+      "display": "DEFAULT AFTER REGIMEN 1",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31b6b8aa-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "e58da80f-3adf-4a4d-8a7a-43482f9fa5a5",
+      "display": "PATIENT TRANSFERRED IN",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/e58da80f-3adf-4a4d-8a7a-43482f9fa5a5"
+        }
+      ]
+    },
+    {
+      "uuid": "31b4fb78-0370-102d-b0e3-001ec94a0cc1",
+      "display": "AFTER REGIMEN 2 FAILURE",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31b4fb78-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31b5b644-0370-102d-b0e3-001ec94a0cc1",
+      "display": "AFTER CAT-1 FAILURE",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31b5b644-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "f7b5bf49-cb07-4fca-8c15-93ba92249344",
+      "display": "NEW",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/f7b5bf49-cb07-4fca-8c15-93ba92249344"
+        }
+      ]
+    },
+    {
+      "uuid": "31c9eb78-0370-102d-b0e3-001ec94a0cc1",
+      "display": "OTHER",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31c9eb78-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31ce3b38-0370-102d-b0e3-001ec94a0cc1",
+      "display": "RELAPSE AFTER REGIMEN 1",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31ce3b38-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31c2d31a-0370-102d-b0e3-001ec94a0cc1",
+      "display": "REGISTRATION GROUP - PREVIOUS TREATMENT",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31c2d31a-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "fbdf8f79-477d-46e2-b767-85fb47723a6d",
+      "display": "DRUG SENSITIVE",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/fbdf8f79-477d-46e2-b767-85fb47723a6d"
+        }
+      ]
+    },
+    {
+      "uuid": "31b6b986-0370-102d-b0e3-001ec94a0cc1",
+      "display": "PATIENT TRANSFERRED OUT",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31b6b986-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31b6b7d8-0370-102d-b0e3-001ec94a0cc1",
+      "display": "DIED",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31b6b7d8-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31b6bb34-0370-102d-b0e3-001ec94a0cc1",
+      "display": "CURED",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31b6bb34-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31b0e4ac-0370-102d-b0e3-001ec94a0cc1",
+      "display": "TREATMENT FAILED",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31b0e4ac-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31b69906-0370-102d-b0e3-001ec94a0cc1",
+      "display": "TREATMENT COMPLETE",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31b69906-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31c7bbdc-0370-102d-b0e3-001ec94a0cc1",
+      "display": "LOST TO FOLLOW UP",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31c7bbdc-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31c2c834-0370-102d-b0e3-001ec94a0cc1",
+      "display": "MULTI-DRUG RESISTANT TUBERCULOSIS TREATMENT OUTCOME",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31c2c834-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31c2d4be-0370-102d-b0e3-001ec94a0cc1",
+      "display": "PREVIOUSLY ON FIRST-LINE DRUGS ONLY",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31c2d4be-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31c2d3ec-0370-102d-b0e3-001ec94a0cc1",
+      "display": "PREVIOUSLY ON SECOND-LINE DRUGS",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31c2d3ec-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31c2d590-0370-102d-b0e3-001ec94a0cc1",
+      "display": "CATEGORY 4 TUBERCULOSIS CLASSIFICATION ACCORDING TO PREVIOUS DRUG USE",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31c2d590-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31c1d3c0-0370-102d-b0e3-001ec94a0cc1",
+      "display": "MULTI-DRUG RESISTANT TUBERCULOSIS PATIENT STATUS",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31c1d3c0-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31c1d212-0370-102d-b0e3-001ec94a0cc1",
+      "display": "SUSPENDED",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31c1d212-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31c1d2e4-0370-102d-b0e3-001ec94a0cc1",
+      "display": "ON TREATMENT",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31c1d2e4-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31c1d140-0370-102d-b0e3-001ec94a0cc1",
+      "display": "WAITING FOR TREATMENT",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31c1d140-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31acf054-0370-102d-b0e3-001ec94a0cc1",
+      "display": "DECEASED",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31acf054-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31b64c6c-0370-102d-b0e3-001ec94a0cc1",
+      "display": "TERIZIDONE",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31b64c6c-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31caeaa0-0370-102d-b0e3-001ec94a0cc1",
+      "display": "Z",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31caeaa0-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31b4a740-0370-102d-b0e3-001ec94a0cc1",
+      "display": "PTO",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31b4a740-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31bf136a-0370-102d-b0e3-001ec94a0cc1",
+      "display": "BACILLI",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31bf136a-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31bf11bc-0370-102d-b0e3-001ec94a0cc1",
+      "display": "FLUOROCHROME (250X)",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31bf11bc-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31bf128e-0370-102d-b0e3-001ec94a0cc1",
+      "display": "TUBERCULOSIS SMEAR MICROSCOPY METHOD",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31bf128e-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31bf030c-0370-102d-b0e3-001ec94a0cc1",
+      "display": "START DATE",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31bf030c-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31b4a09c-0370-102d-b0e3-001ec94a0cc1",
+      "display": "CONTAMINATED",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31b4a09c-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31b0141e-0370-102d-b0e3-001ec94a0cc1",
+      "display": "POSITIVE",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31b0141e-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31ccc80c-0370-102d-b0e3-001ec94a0cc1",
+      "display": "UNSATISFACTORY SAMPLE",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31ccc80c-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31bf100e-0370-102d-b0e3-001ec94a0cc1",
+      "display": "SCANTY",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31bf100e-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31b4a240-0370-102d-b0e3-001ec94a0cc1",
+      "display": "STRONGLY POSITIVE",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31b4a240-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31b4a312-0370-102d-b0e3-001ec94a0cc1",
+      "display": "+",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31b4a312-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    },
+    {
+      "uuid": "31aff3c6-0370-102d-b0e3-001ec94a0cc1",
+      "display": "NEGATIVE",
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept/31aff3c6-0370-102d-b0e3-001ec94a0cc1"
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "rel": "next",
+      "uri": "http://46.20.206.173:38080/openmrs/ws/rest/v1/concept?startIndex=50"
+    }
+  ]
+}
