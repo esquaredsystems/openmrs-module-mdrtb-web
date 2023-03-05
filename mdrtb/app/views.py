@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.http import JsonResponse
 import utilities.restapi_utils as ru
 import utilities.metadata_util as mu
@@ -11,11 +11,10 @@ import json
 import traceback
 import logging
 from django.contrib import messages
-from django.core.cache import cache
 from resources.enums.mdrtbConcepts import Concepts
 from resources.enums.privileges import Privileges
 from resources.enums.constants import Constants
-
+from django.views.decorators.cache import never_cache,cache_control
 
 logger = logging.getLogger("django")
 
@@ -40,16 +39,16 @@ def get_redirect_url_from_exception(exception):
 
 
 def index(req):
-    context = {}
+    context = {'title':'Report'}
+    
     try:
-        d = {}
-        messages.success("yup")
+        pass
     except Exception as e:
         logger.error(str(e), exc_info=True)
         messages.error(req, e)
     finally:
-        return render(req, "app/tbregister/reportmockup.html", context=context)
-
+         return render(req, "app/tbregister/reportmockup.html", context=context) 
+        
 
 def get_locations(req):
     if check_if_session_alive(req):
@@ -110,6 +109,8 @@ def search_patients_view(req):
         return redirect("login")
     context = {"title": "Search Patients", "add_patient_privilege": False}
     try:
+        if 'breadcrumbs' in req.session:
+            del req.session['breadcrumbs']
         if "current_patient_program_flow" in req.session:
             del req.session["current_patient_program_flow"]
         minSearchCharacters = mu.get_global_properties(req, "minSearchCharacters")
@@ -144,10 +145,13 @@ def enroll_patient(req):
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         identifiertypes = mu.get_patient_identifier_types(req)
+        context={"title": "Enroll new Patient", "identifiertypes": identifiertypes}
+        mu.add_url_to_breadcrumb(req,context['title'])
+
         return render(
             req,
             "app/tbregister/enroll_patients.html",
-            context={"title": "Enroll new Patient", "identifiertypes": identifiertypes},
+            context=context,
         )
     except Exception as e:
         messages.error(req, e)
@@ -164,6 +168,7 @@ def enrolled_programs(req, uuid):
     }
 
     try:
+        mu.add_url_to_breadcrumb(req,context['title'])
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         programs = pu.get_enrolled_programs_by_patient(req, uuid)
         patient = pu.get_patient(req, uuid)
@@ -195,19 +200,20 @@ def enroll_in_dots_program(req, uuid):
                         req, uuid, enrollment_id=patient_program
                     ),
                 }
-                return redirect("tb03", uuid=uuid, permanent=True)
-            return redirect("dotsprogramenroll", uuid=uuid, permanent=True)
+                
+                return redirect("tb03" , uuid=uuid)
+            return redirect("dotsprogramenroll", uuid=uuid)
         except Exception as e:
+            logger.error(e)
             messages.error(req, e)
-            return redirect("dotsprogramenroll", uuid=uuid, permanent=True)
+            return redirect("enrolledprograms", uuid=uuid)
     else:
         try:
-            flow = req.GET.get("flow", None)
-            if flow:
-                context["flow"] = flow
+            
             program = pu.get_program_by_uuid(req, Constants.DOTS_PROGRAM.value)
             if program:
                 context["jsonprogram"] = json.dumps(program)
+                mu.add_url_to_breadcrumb(req,context['title'])
                 return render(
                     req, "app/tbregister/dots/enroll_in_dots.html", context=context
                 )
@@ -249,6 +255,7 @@ def enroll_patient_in_mdrtb(req, uuid):
             program = pu.get_program_by_uuid(req, Constants.MDRTB_PROGRAM.value)
             if program:
                 context["jsonprogram"] = json.dumps(program)
+                mu.add_url_to_breadcrumb(req,context['title'])
                 return render(
                     req, "app/tbregister/mdr/enroll_in_mdrtb.html", context=context
                 )
@@ -291,6 +298,7 @@ def edit_dots_program(req, uuid, programid):
         context = {"title": "Edit Program", "uuid": uuid, "state": "edit"}
         enrolled_program = pu.get_enrolled_program_by_uuid(req, programid)
         context["enrolled_program"] = enrolled_program
+        mu.add_url_to_breadcrumb(req,context['title'])
         return render(req, "app/tbregister/dots/enroll_in_dots.html", context=context)
     except Exception as e:
         messages.error(req, str(e))
@@ -327,35 +335,38 @@ def edit_mdrtb_program(req, uuid, programid):
         context = {"title": "Edit Program", "uuid": uuid, "state": "edit"}
         enrolled_program = pu.get_enrolled_program_by_uuid(req, programid)
         context["enrolled_program"] = enrolled_program
+        mu.add_url_to_breadcrumb(req,context['title'])
         return render(req, "app/tbregister/mdr/enroll_in_mdrtb.html", context=context)
     except Exception as e:
         messages.error(req, str(e))
         return redirect("editmdrtbprogram", uuid=uuid, programid=programid)
 
 
-def delete_program(req, uuid, programid):
-    if programid:
-        try:
-            status, _ = ru.delete(req, f"programenrollment/{programid}")
-            if status:
-                messages.warning(req, "Program deleted successfully")
-        except Exception as e:
-            messages.error(req, str(e))
-            return redirect("enrolledprograms", uuid=uuid)
-        finally:
-            return redirect("enrolledprograms", uuid=uuid)
+# def delete_program(req, uuid, programid):
+#     if programid:
+#         try:
+#             status, _ = ru.delete(req, f"programenrollment/{programid}")
+#             if status:
+#                 messages.warning(req, "Program deleted successfully")
+#         except Exception as e:
+#             messages.error(req, str(e))
+#             return redirect("enrolledprograms", uuid=uuid)
+#         finally:
+#             return redirect("enrolledprograms", uuid=uuid)
 
 
 def patient_dashboard(req, uuid, mdrtb=None):
     if not check_if_session_alive(req):
         return redirect("login")
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-    req.session["redirect_query_params"] = {
+    query_params = {
         key: value[0] if len(value) == 1 else value for key, value in req.GET.lists()
     }
+    req.session["redirect_query_params"] = query_params
     program = req.GET["program"]
     context = {"uuid": uuid, "title": "Patient Dashboard"}
     try:
+        mu.add_url_to_breadcrumb(req,context['title'],query_params=query_params)
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
 
         if mdrtb:
@@ -374,6 +385,7 @@ def patient_dashboard(req, uuid, mdrtb=None):
         if patient and program:
             context["patient"] = patient
             context["program"] = program_info
+            context['mdrEnrolled'] = pu.check_if_patient_enrolled_in_mdrtb(req,uuid)
             return render(req, "app/tbregister/dashboard.html", context=context)
 
         else:
@@ -396,7 +408,10 @@ def tb03_form(req, uuid):
         except Exception as e:
             messages.error(req, str(e))
         finally:
-            return redirect(req.session["redirect_url"], permanent=True)
+            redirect_to = "/tbdashboard/patient/{}?program={}".format(uuid,req.session[
+                'current_patient_program_flow']['current_program']['uuid'])
+            
+            return  redirect(redirect_to)
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
 
@@ -410,7 +425,6 @@ def tb03_form(req, uuid):
             Concepts.TB_TREATMENT_OUTCOME.value,
             Concepts.CAUSE_OF_DEATH.value,
         ]
-        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         concepts = fu.get_form_concepts(tb03_concepts, req)
         context = {
             "concepts": concepts,
@@ -419,6 +433,7 @@ def tb03_form(req, uuid):
             "current_patient_program_flow": req.session["current_patient_program_flow"],
             "identifiers": pu.get_patient_identifiers(req, uuid),
         }
+        mu.add_url_to_breadcrumb(req,context['title'])
         return render(req, "app/tbregister/dots/tb03.html", context=context)
     except Exception as e:
         messages.error(req, str(e))
@@ -460,6 +475,7 @@ def edit_tb03_form(req, uuid, formid):
             Concepts.TB_TREATMENT_OUTCOME.value,
             Concepts.CAUSE_OF_DEATH.value,
         ]
+        mu.add_url_to_breadcrumb(req,context['title'])
 
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         form = fu.get_tb03_by_uuid(req, formid)
@@ -499,7 +515,10 @@ def tb03u_form(req, uuid):
         except Exception as e:
             messages.error(req, str(e))
         finally:
-            return redirect(req.session["redirect_url"], permanent=True)
+            redirect_to = "/mdrtb/dashboard/patient/{}?program={}".format(uuid,req.session[
+                'current_patient_program_flow']['current_program']['uuid'])
+
+            return redirect(redirect_to)
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         tb03u_concepts = [
@@ -514,10 +533,7 @@ def tb03u_form(req, uuid):
             Concepts.CAUSE_OF_DEATH.value,
         ]
         concepts = fu.get_form_concepts(tb03u_concepts, req)
-        return render(
-            req,
-            "app/tbregister/mdr/tb03u.html",
-            context={
+        context={
                 "title": "TB03u",
                 "concepts": concepts,
                 "json": json.dumps(concepts),
@@ -531,6 +547,11 @@ def tb03u_form(req, uuid):
                     "NO": Concepts.NO.value,
                 },
             },
+        mu.add_url_to_breadcrumb(req,context['title'])
+        return render(
+            req,
+            "app/tbregister/mdr/tb03u.html",
+            context=context
         )
     except Exception as e:
         messages.error(req, str(e))
@@ -582,6 +603,7 @@ def edit_tb03u_form(req, uuid, formid):
         if form:
             context["form"] = form
             context["concepts"] = concepts
+            mu.add_url_to_breadcrumb(req,context['title'])
             return render(req, "app/tbregister/mdr/tb03u.html", context=context)
     except Exception as e:
         messages.error(req, str(e))
@@ -652,8 +674,10 @@ def adverse_events_form(req, patientid):
         concepts = fu.get_form_concepts(adverse_event_concepts, req)
         context["concepts"] = concepts
         context["jsonconcepts"] = json.dumps(concepts)
+        mu.add_url_to_breadcrumb(req,context['title'])
         return render(req, "app/tbregister/mdr/adverse_events.html", context=context)
     except Exception as e:
+        logger.error(e,exc_info=True)
         messages.error(req, str(e))
         return redirect(req.session["redirect_url"])
 
@@ -714,6 +738,7 @@ def edit_adverse_events_form(req, patientid, formid):
         if form:
             context["form"] = form
             context["concepts"] = concepts
+            mu.add_url_to_breadcrumb(req,context['title'])
             return render(
                 req, "app/tbregister/mdr/adverse_events.html", context=context
             )
@@ -755,6 +780,7 @@ def drug_resistence_form(req, patientid):
             "concepts": fu.get_form_concepts(drug_resistance_concepts, req),
             "patient_id": patientid,
         }
+        mu.add_url_to_breadcrumb(req,context['title'])
         return render(req, "app/tbregister/mdr/drug_resistence.html", context=context)
     except Exception as e:
         is_expired, message, redirect_url = get_redirect_url_from_exception(e)
@@ -792,7 +818,7 @@ def edit_drug_resistence_form(req, patientid, formid):
         if form:
             context["form"] = form
             context["concepts"] = concepts
-
+        mu.add_url_to_breadcrumb(req,context['title'])
         return render(req, "app/tbregister/mdr/drug_resistence.html", context=context)
     except Exception as e:
         is_expired, message, redirect_url = get_redirect_url_from_exception(e)
@@ -846,6 +872,7 @@ def regimen_form(req, patientid):
             "concepts": fu.get_form_concepts(concept_ids, req),
             "current_patient_program_flow": req.session["current_patient_program_flow"],
         }
+        mu.add_url_to_breadcrumb(req,context['title'])
         return render(req, "app/tbregister/mdr/regimen.html", context=context)
     except Exception as e:
         messages.error(req, str(e))
@@ -889,7 +916,7 @@ def edit_regimen_form(req, patientid, formid):
             context["form"] = form
         else:
             raise Exception("Regimen form not found")
-
+        mu.add_url_to_breadcrumb(req,context['title'])
         return render(req, "app/tbregister/mdr/regimen.html", context=context)
     except Exception as e:
         messages.error(req, str(e))
@@ -952,8 +979,10 @@ def form_89(req, uuid):
 
         context["concepts"] = concepts
         context["site_of_TB"] = site_of_TB
+        mu.add_url_to_breadcrumb(req,context['title'])
         return render(req, "app/tbregister/dots/form89.html", context=context)
     except Exception as e:
+        logger.error(e, exc_info=True)
         messages.error(req, str(e))
         return redirect(req.session["redirect_url"])
 
@@ -1004,6 +1033,7 @@ def edit_form_89(req, uuid, formid):
         if form:
             context["form"] = form
             context["concepts"] = concepts
+            mu.add_url_to_breadcrumb(req,context['title'])
             return render(req, "app/tbregister/dots/form89.html", context=context)
     except Exception as e:
         messages.error(req, str(e))
@@ -1065,6 +1095,7 @@ def user_profile(req):
             "name": Constants[default_locale.upper()].value,
             "value": default_locale,
         }
+        mu.add_url_to_breadcrumb(req,context['title'])
         return render(req, "app/tbregister/user_profile.html", context=context)
     except Exception as e:
         messages.error(req, str(e))

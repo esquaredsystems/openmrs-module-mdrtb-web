@@ -14,6 +14,8 @@
     method="post" class="flex flex-col">
     {% csrf_token %}
     <div class="m-16 flex flex-col justify-center space-y-8">
+      {% include 'app/components/breadcrumbs.html'%}
+
       {% if state == 'edit' %}
       <div id="form-info" class="flex-center space-x-4">
         <h1 class="text-[#2D9CDB] text-3xl font-bold">
@@ -1438,11 +1440,11 @@
   <script>
     $('#eventType').change((e) => {
       let eventType = e.target.value
-      if (eventType === "{{'SERIOUS' | get_constant }}") {
+      if (eventType === "{{'SERIOUS' | get_concept }}") {
         $('#saeType').prop('disabled', false)
         $('#specialType').prop('disabled', true)
       } else
-        if (eventType === "{{'OF_SPECIAL_INTEREST' | get_constant }}") {
+        if (eventType === "{{'OF_SPECIAL_INTEREST' | get_concept }}") {
           $('#specialType').prop('disabled', false)
           $('#saeType').prop('disabled', true)
         } else {
@@ -1454,10 +1456,10 @@
     $('#actionOutcome').change((e) => {
       let outcome = e.target.value
       let outcomeDate = $('#outcomeDate')
-      if (outcome === "{{'NOT_RESOLVED' | get_constant }}") {
+      if (outcome === "{{'NOT_RESOLVED' | get_concept }}") {
         outcomeDate.val("")
         outcomeDate.prop('disabled', true)
-      } else if (outcome === "{{'RESOLVING' | get_constant }}") {
+      } else if (outcome === "{{'RESOLVING' | get_concept }}") {
         outcomeDate.val("")
         outcomeDate.prop('disabled', true)
       } else {
@@ -1478,10 +1480,10 @@
       $('select').prop('disabled', false)
       $('textarea').prop('disabled', false)
       $('#canceleditbtn').prop('hidden', false)
-      if ($('#eventType').val() === "{{'SERIOUS' | get_constant }}") {
+      if ($('#eventType').val() === "{{'SERIOUS' | get_concept }}") {
         $('#saeType').prop('disabled', false)
         $('#specialType').prop('disabled', true)
-      } else if ($('#eventType').val() === "{{'OF_SPECIAL_INTEREST' | get_constant }}") {
+      } else if ($('#eventType').val() === "{{'OF_SPECIAL_INTEREST' | get_concept }}") {
         $('#specialType').prop('disabled', false)
         $('#saeType').prop('disabled', true)
       } else {

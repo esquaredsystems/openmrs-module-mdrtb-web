@@ -12,6 +12,8 @@
     class="flex flex-col">
     {% csrf_token %}
     <div class="m-16 flex flex-col justify-center space-y-4">
+      {% include 'app/components/breadcrumbs.html'%}
+
       {% if state == 'edit' %}
       <div id="form-info" class="flex-center space-x-4">
         <h1 class="text-[#2D9CDB] text-3xl font-bold">
@@ -878,7 +880,7 @@
 
   $('#populationCat').change((e) => {
     let val = e.target.value;
-    if (val === "{{'FOREIGNER' | get_constant }}") {
+    if (val === "{{'FOREIGNER' | get_concept }}") {
       $('#originCountry').prop('disabled', false)
     } else {
       $('#originCountry').prop('disabled', true)
@@ -887,7 +889,7 @@
 
   $('#detection').change((e) => {
     let val = e.target.value;
-    if (val === "{{'MIGRANT' | get_constant }}") {
+    if (val === "{{'MIGRANT' | get_concept }}") {
       $('#originCity').prop('disabled', false)
       $('#returnDate').prop('disabled', false)
     } else {

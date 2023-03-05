@@ -27,22 +27,24 @@
 
 <div class="p-2 flex-column-center space-y-6">
   {% include 'app/components/patient_banner.html' %}
+
   <section>
     <div class="m-5 md:m-2">
+
       <div class="py-8">
+        {% include 'app/components/breadcrumbs.html'%}
+
+        {% if programs %}
+
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-4">
             <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">Enrolled Programs</h2>
-            <a class="cancel-button" href="{% url 'dotsprogramenroll' uuid=uuid %}?flow=new" type="button">
-              {{'general.add'|get_message_openMRS:request.session.locale}}
-              {{'general.new'|get_message_openMRS:request.session.locale}}
-            </a>
 
 
           </div>
 
         </div>
-        {% if programs %}
+
         <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
           <div class="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
 
@@ -148,7 +150,17 @@
 
           </div>
         </div>
-
+        {% else %}
+        <div class="mx-auto">
+          <div class="flex items-center justify-center">
+            <h1 class="font-bold text-xl">{{patient.name}} is not
+              enrolled in any programs</h1>
+            <a class="cancel-button" href="{% url 'dotsprogramenroll' uuid=uuid %}?flow=new" type="button">
+              {{'general.add'|get_message_openMRS:request.session.locale}}
+              {{'general.new'|get_message_openMRS:request.session.locale}}
+            </a>
+          </div>
+        </div>
         {% endif %}
       </div>
     </div>

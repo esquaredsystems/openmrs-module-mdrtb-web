@@ -34,11 +34,11 @@ urlpatterns = [
         views.edit_mdrtb_program,
         name="editmdrtbprogram",
     ),
-    path(
-        "patient/<str:uuid>/program/<str:programid>",
-        views.delete_program,
-        name="deleteprogram",
-    ),
+    # path(
+    #     "patient/<str:uuid>/program/<str:programid>",
+    #     views.delete_program,
+    #     name="deleteprogram",
+    # ),
     path(
         "patient/<str:uuid>/enrolledprograms",
         views.enrolled_programs,

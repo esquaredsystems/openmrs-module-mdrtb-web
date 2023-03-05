@@ -12,6 +12,7 @@
 	<link rel="stylesheet" href="../../../static/app/css/styles.css">
 	<script type="text/javascript" src="../../../static/index.min.js"></script>
 	<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.1.js"></script>
+	<script src="https://cdn.lordicon.com/qjzruarw.js"></script>
 
 
 </head>
@@ -125,112 +126,113 @@
 		{%block content%}
 		{% endblock %}
 	</div>
+	<script>
+		var locationByUuids;
 
-</body>
+		const getLocations = async () => {
+			await $.ajax(
+				{
+					url: "{% url 'locations' %}",
+					method: 'GET',
+					success: (locations) => {
+						if (locations) {
+							locationByUuids = locations.reduce((acc, location) => {
+								acc[location.uuid] = location;
+								return acc;
+							}, {});
 
-<script>
-	var locationByUuids;
-
-	const getLocations = async () => {
-		await $.ajax(
-			{
-				url: "{% url 'locations' %}",
-				method: 'GET',
-				success: (locations) => {
-					if (locations) {
-						locationByUuids = locations.reduce((acc, location) => {
-							acc[location.uuid] = location;
-							return acc;
-						}, {});
-
-						locations.forEach(location => {
-							if (location.level === "region".toUpperCase()) {
-								$('#region-select').append(`<option value=${location.uuid}>${location.name}</option>`)
-							}
-						})
-					}
-				},
-				error: (err) => { }
-			}
-		)
-	}
-	if (document.getElementById("locations-container") || document.getElementById("region-select")) {
-		try {
-			getLocations()
-		} catch (error) {
-			console.log(error)
+							locations.forEach(location => {
+								if (location.level === "region".toUpperCase()) {
+									$('#region-select').append(`<option value=${location.uuid}>${location.name}</option>`)
+								}
+							})
+						}
+					},
+					error: (err) => { }
+				}
+			)
 		}
-	}
-	const clearSubregions = () => {
-		$('#subregion-container') && $('#subregion-container').addClass('hidden')
-	}
-	const clearDistrictsAndFacilities = () => {
-		$('#district-select').html(`<option value="">Select</option>`)
-		$('#district-select').prop('disabled', true)
-		$('#district-select').prop('required', false)
-		$('#facility-select').html(`<option value="">Select</option>`)
-		$('#facility-select').prop('disabled', true)
-		$('#facility-select').prop('required', false)
+		if (document.getElementById("locations-container") || document.getElementById("region-select")) {
+			try {
+				getLocations()
+			} catch (error) {
+				console.log(error)
+			}
+		}
+		const clearSubregions = () => {
+			$('#subregion-container') && $('#subregion-container').addClass('hidden')
+		}
+		const clearDistrictsAndFacilities = () => {
+			$('#district-select').html(`<option value="">Select</option>`)
+			$('#district-select').prop('disabled', true)
+			$('#district-select').prop('required', false)
+			$('#facility-select').html(`<option value="">Select</option>`)
+			$('#facility-select').prop('disabled', true)
+			$('#facility-select').prop('required', false)
 
-	}
-	const insertchildren = (selectedLocation, insertInto, level) => {
-		const selectedRegion = $('#region-select').val()
-		const districts = locationByUuids[selectedRegion]['children'].length > 0 ? locationByUuids[selectedRegion]['children'] : []
-		if (districts.length > 0) {
-			for (district of districts) {
-				if (district.uuid === selectedLocation && district.children.length > 0) {
-					for (facility of district.children) {
-						$(insertInto).prop('required', true)
-						$(insertInto).prop('disabled', false)
+		}
+		const insertchildren = (selectedLocation, insertInto, level) => {
+			const selectedRegion = $('#region-select').val()
+			const districts = locationByUuids[selectedRegion]['children'].length > 0 ? locationByUuids[selectedRegion]['children'] : []
+			if (districts.length > 0) {
+				for (district of districts) {
+					if (district.uuid === selectedLocation && district.children.length > 0) {
+						for (facility of district.children) {
+							$(insertInto).prop('required', true)
+							$(insertInto).prop('disabled', false)
 
-						if (facility.level === level.toUpperCase()) {
-							$(insertInto).append(`<option value=${facility.uuid}>${facility.name}</option>`)
+							if (facility.level === level.toUpperCase()) {
+								$(insertInto).append(`<option value=${facility.uuid}>${facility.name}</option>`)
 
+							}
 						}
 					}
 				}
-			}
 
-		}
-	}
-	const clearFacilities = () => {
-		$('#facility-select').html(`<option value="">Select</option>`)
-		$('#facility-select').prop('disabled', true)
-		$('#facility-select').prop('required', false)
-
-	}
-	$('#region-select').change(region => {
-		clearDistrictsAndFacilities()
-		clearSubregions()
-		const children = locationByUuids[region.target.value]['children']
-		if (children.length > 0) {
-			for (district of children) {
-				if (district.level === 'district'.toUpperCase()) {
-					$('#district-select').prop('required', true)
-					$('#district-select').prop('disabled', false)
-					$('#district-select').append(`<option value=${district.uuid}>${district.name}</option>`)
-				}
-				if (district.level === 'subregion'.toUpperCase()) {
-					$('#subregion-container').removeClass('hidden')
-					$('#subregion-select').prop('required', true)
-					$('#subregion-select').prop('disabled', false)
-					$('#subregion-select').append(`<option value=${district.uuid}>${district.name}</option>`)
-				}
 			}
 		}
-	})
+		const clearFacilities = () => {
+			$('#facility-select').html(`<option value="">Select</option>`)
+			$('#facility-select').prop('disabled', true)
+			$('#facility-select').prop('required', false)
+
+		}
+		$('#region-select').change(region => {
+			clearDistrictsAndFacilities()
+			clearSubregions()
+			const children = locationByUuids[region.target.value]['children']
+			if (children.length > 0) {
+				for (district of children) {
+					if (district.level === 'district'.toUpperCase()) {
+						$('#district-select').prop('required', true)
+						$('#district-select').prop('disabled', false)
+						$('#district-select').append(`<option value=${district.uuid}>${district.name}</option>`)
+					}
+					if (district.level === 'subregion'.toUpperCase()) {
+						$('#subregion-container').removeClass('hidden')
+						$('#subregion-select').prop('required', true)
+						$('#subregion-select').prop('disabled', false)
+						$('#subregion-select').append(`<option value=${district.uuid}>${district.name}</option>`)
+					}
+				}
+			}
+		})
 
 
 
 
-	$('#district-select').change(selectedDistrict => {
-		clearFacilities()
-		insertchildren(selectedDistrict.target.value, '#facility-select', 'facility')
-	})
-	$('#subregion-select').change(selectedSubRegion => {
-		insertchildren(selectedSubRegion.target.value, '#district-select', 'district')
-	})
+		$('#district-select').change(selectedDistrict => {
+			clearFacilities()
+			insertchildren(selectedDistrict.target.value, '#facility-select', 'facility')
+		})
+		$('#subregion-select').change(selectedSubRegion => {
+			clearDistrictsAndFacilities()
+			insertchildren(selectedSubRegion.target.value, '#district-select', 'district')
+		})
 
-</script>
+	</script>
+
+</body>
+
 
 </html>

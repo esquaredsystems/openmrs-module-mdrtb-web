@@ -10,12 +10,14 @@
 
 <div>
 
-  <form
+  <form onsubmit="handleSubmit()"
     action="{% if state == 'edit'  %}{% url 'edittb03' uuid=uuid formid=form.uuid %}{% else %}{% url 'tb03' uuid=uuid %}{% endif %}"
     method="post" class="flex flex-col">
     {% csrf_token %}
 
     <div class="m-16 flex flex-col justify-center space-y-4">
+      {% include 'app/components/breadcrumbs.html'%}
+
       {% if state == 'edit' %}
 
       <div id="form-info" class="flex-center space-x-4">
@@ -52,6 +54,7 @@
 
       </div>
       {% endif %}
+
       <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4">
         <div class="flex items-center space-x-12">
           <div class="space-x-3">
@@ -364,7 +367,7 @@
         </div>
       </div>
       <div class="p-4 flex items-center">
-        <button type="submit" class="button-primary w-1/5">
+        <button id="submit" type="submit" class="button-primary w-1/5">
           Save
         </button>
 
@@ -377,6 +380,8 @@
   </form>
 </div>
 <script>
+  let dashboard_url = "/tbdashboard/patient/{{uuid | escapejs }}?program={{request.session.current_patient_program_flow.current_program.uuid}}"
+  window.onpopstate = () => history.replaceState(dashboard_url)
   let state = '{{state | escapejs}}'
   if (state === 'edit') {
     $('input').prop('disabled', true).prop('', false)
@@ -397,7 +402,19 @@
     $('textarea').prop('disabled', true)
     $('#canceleditbtn').prop('hidden', true)
   })
+  const handleSubmit = () => {
+    $('#submit').removeClass('button-primary')
+    $('#submit').html(`
+        <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
+                colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+            </lord-icon>
 
+        
+        `)
+    $('#submit').prop('disabled', true)
+
+
+  }
   let date = new Date();
   maxDate = date.toISOString().substring(0, 10);
   $('input[type="date"]').prop("max", maxDate)

@@ -10,8 +10,11 @@
 
 
 <div class="m-16">
+  {% include 'app/components/breadcrumbs.html'%}
+
   {% if state == 'edit' %}
   <div id="form-info" class="flex-center space-x-4">
+
     <h1 class="text-[#2D9CDB] text-3xl font-bold">
       {{'mdrtb.edit'|get_message:request.session.locale}}
       {{'mdrtb.drdt'|get_message:request.session.locale}}

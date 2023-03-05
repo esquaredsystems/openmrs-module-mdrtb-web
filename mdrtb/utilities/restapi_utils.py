@@ -68,7 +68,6 @@ def get(req, endpoint, parameters):
         session_expired_msg = mu.get_global_msgs(
             "auth.session.expired", source="OpenMRS"
         )
-        messages.error(req, session_expired_msg)
         raise Exception(session_expired_msg)
     response.raise_for_status()
     logger.info(

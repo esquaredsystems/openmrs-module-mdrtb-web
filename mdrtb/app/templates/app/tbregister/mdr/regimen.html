@@ -16,6 +16,8 @@
   {% endif %}" class="flex flex-col">
     {% csrf_token %}
     <div class="m-16 flex flex-col justify-center space-y-8">
+      {% include 'app/components/breadcrumbs.html'%}
+
       {% if state == 'edit' %}
       <div id="form-info" class="flex-center space-x-4">
         <h1 class="text-[#2D9CDB] text-3xl font-bold">

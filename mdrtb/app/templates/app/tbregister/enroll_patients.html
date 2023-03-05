@@ -12,6 +12,8 @@
 <form action="{% url 'enrollPatient' %}" method="post" class="enroll-form">
   {% csrf_token %}
   <div class="enrollform-sections-container">
+    {% include 'app/components/breadcrumbs.html'%}
+
     <h1 class="page-title">
       {{'mdrtb.enrollNewPatient'|get_message:request.session.locale}}
     </h1>

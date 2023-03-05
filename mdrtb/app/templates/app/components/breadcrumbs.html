@@ -1,0 +1,20 @@
+{% load static %}
+
+<nav class="bg-grey-light w-full rounded-md mb-4">
+    <ol class="list-reset flex">
+        <li>
+            <a href="/" class="text-[#2D9CDB] font-md font-bold">Home</a>
+        </li>
+        {% for url in request.session.breadcrumbs %}
+        <li>
+            <span class="mx-2 text-neutral-500 dark:text-neutral-400">></span>
+        </li>
+        <li>
+            <a href="{{url.url}}" class="text-[#2D9CDB] font-md font-bold">{{url.name}}</a>
+        </li>
+        {% endfor %}
+    </ol>
+</nav>
+<script>
+    console.log(document.links)
+</script>
