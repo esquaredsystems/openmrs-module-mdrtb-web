@@ -44,7 +44,21 @@ urlpatterns = [
         views.enrolled_programs,
         name="enrolledprograms",
     ),
-    path("transfer", views.transfer, name="transfer"),
+    path(
+        "patient/<str:patientuuid>/transferout",
+        views.transferout_form,
+        name="transferout",
+    ),
+    path(
+        "patient/<str:patientuuid>/transferout/<str:formid>",
+        views.edit_transferout_form,
+        name="edittransferout",
+    ),
+    path(
+        "transferout/<str:formid>",
+        views.delete_transferout_form,
+        name="deletetransferout",
+    ),
     path(
         "patient/<str:patientid>/drugresistense",
         views.drug_resistence_form,

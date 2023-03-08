@@ -25,7 +25,7 @@
     {{'Program.add'|get_message_openMRS:request.session.locale}}
   </h1>
   {% endif %}
-  <form id="enroll-form"
+  <form onsubmit="disableSubmit()" id="enroll-form"
     action="{% if state == 'edit' %}{% url 'editdotsprogram' uuid=uuid programid=enrolled_program.uuid %}{% else %}{% url 'dotsprogramenroll' uuid=uuid %}{% endif %}"
     method="post" class="flex flex-col">
 
@@ -132,19 +132,31 @@
     </div>
 
     <div class="flex items-center p-4 space-x-8">
-      <button type="submit" id="submitbtn" class="bg-[#2D9CDB] p-2 w-1/5 rounded-md disabled:text-black text-white">
+      <button type="submit" id="submitBtn" class="button-primary w-1/5">
         {% if state == 'edit' %}
         Save
         {% else %}
         Enroll
         {% endif %}
       </button>
-      <a href="javascript:history.go(-1)" class="p-2 font-bold w-1/5 rounded-md underline text-[#044062]">
+      <a href="javascript:history.go(-1)" class="cancel-button">
         Cancel
       </a>
     </div>
   </form>
   <script>
+    const disableSubmit = () => {
+      $('#submitBtn').prop('disabled', true)
+      $('#submitBtn').removeClass('button-primary')
+      $('#submitBtn').html(`
+        <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
+                colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+            </lord-icon>
+
+        
+        `)
+    }
+
     let state = "{{state}}"
 
     if (state === 'edit') {
@@ -246,7 +258,6 @@
     })
 
     let program = JSON.parse("{{jsonprogram|escapejs}}")
-    console.log(program)
     $(document).ready(() => {
       for (workFlow of program.allWorkflows) {
         if (!workFlow.retired) {

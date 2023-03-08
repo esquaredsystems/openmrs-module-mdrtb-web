@@ -9,7 +9,6 @@
 {%block content%}
 
 
-
 <div class="flex flex-col space-y-6 m-6">
   {% include 'app/components/patient_banner.html' %}
   <div class="m-4">
@@ -63,12 +62,22 @@
       {% endif %}
       {% endif %}
 
-      <a href="{% url 'transfer' %}" class="font-bold underline text-[#044062]">
-        Transfer In
+      {% if not transfer_out %}
+      <a href="{% url 'transferout' patientuuid=uuid %}" class="font-bold underline text-[#044062]">
+        {{'mdrtb.transferOut'|get_message:request.session.locale}}
       </a>
-      <a href="{% url 'transfer' %}" class="font-bold underline text-[#044062]">
-        Transfer Out
-      </a>
+      {% else %}
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.transferOut'|get_message:request.session.locale}}: </span>
+        <span class="tb03-form-label underline">
+          <a href="{% url 'edittransferout' patientuuid=uuid formid=transfer_out.uuid %}">
+            {{transfer_out.encounterDatetime | iso_to_normal_date}} at
+            {{transfer_out.location.name}}
+          </a>
+        </span>
+      </div>
+      {% endif %}
+
     </div>
   </div>
   <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">

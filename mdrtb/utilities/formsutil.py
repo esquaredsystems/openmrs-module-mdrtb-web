@@ -836,6 +836,84 @@ def remove_drug_resistance_duplicates(concepts, form_data):
     return clone_concepts
 
 
+def get_transfer_out_by_uuid(req, uuid):
+    try:
+        status, response = ru.get(req, f"mdrtb/transferout/{uuid}", {"v": "full"})
+        if status:
+            return response
+        else:
+            return None
+    except Exception as e:
+        raise Exception(str(e))
+
+
+def create_update_tranfer_out_form(req, patientuuid, data, formid=None):
+    patient_program_uuid = req.session["current_patient_program_flow"][
+        "current_program"
+    ]["uuid"]
+    encounter_type = EncounterType.TRANSFER_OUT.value
+    current_date_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    current_date_time_iso = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+    patient_location = req.session["current_patient_program_flow"]["current_program"][
+        "location"
+    ]["uuid"]
+    if formid:
+        try:
+            response = mu.get_encounter_by_uuid(req, formid)
+            if response:
+                transfer_out = {
+                    "patientProgramUuid": patient_program_uuid,
+                    "encounter": {
+                        "uuid": response["uuid"],
+                        "encounterDatetime": data.get(
+                            "encounterDatetime", response["encounterDatetime"]
+                        ),
+                        "location": data.get(
+                            "facility",
+                            data.get("district", response["location"]),
+                        ),
+                        "obs": [
+                            {
+                                "person": patientuuid,
+                                "obsDatetime": current_date_time_iso,
+                                "concept": Concepts.PATIENT_PROGRAM_ID.value,
+                            }
+                        ],
+                    },
+                }
+
+        except Exception as e:
+            raise Exception(e)
+    else:
+        transfer_out = {
+            "patientProgramUuid": patient_program_uuid,
+            "encounter": {
+                "patient": patientuuid,
+                "encounterType": encounter_type,
+                "encounterDatetime": data.get("encounterDatetime", current_date_time),
+                "location": data.get(
+                    "facility",
+                    data.get("district", patient_location),
+                ),
+                "obs": [
+                    {
+                        "person": patientuuid,
+                        "obsDatetime": current_date_time_iso,
+                        "concept": Concepts.PATIENT_PROGRAM_ID.value,
+                    }
+                ],
+            },
+        }
+    try:
+        url = f"mdrtb/transferout/{formid}" if formid else "mdrtb/transferout"
+        print(transfer_out)
+        status, _ = ru.post(req, url, transfer_out)
+        if status:
+            return True
+    except Exception as e:
+        raise Exception(str(e))
+
+
 def get_patient_site_of_TB(req, patientuuid):
     try:
         status, response = ru.get(

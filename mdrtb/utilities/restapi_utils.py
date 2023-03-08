@@ -8,7 +8,7 @@ from utilities.exceptions import handle_rest_exceptions
 from urllib.parse import urlencode
 import logging
 
-logger = logging.getLogger('django')
+logger = logging.getLogger("django")
 
 
 @handle_rest_exceptions
@@ -31,8 +31,7 @@ def initiate_session(req, username, password):
     else:
         logger.error(f"Status_code = {response.status_code}", exc_info=True)
         clear_session(req)
-        raise Exception(mu.get_global_msgs(
-            "auth.password.invalid", source="OpenMRS"))
+        raise Exception(mu.get_global_msgs("auth.password.invalid", source="OpenMRS"))
 
 
 def clear_session(req):
@@ -68,10 +67,12 @@ def get(req, endpoint, parameters):
         session_expired_msg = mu.get_global_msgs(
             "auth.session.expired", source="OpenMRS"
         )
+        messages.error(req, session_expired_msg)
         raise Exception(session_expired_msg)
     response.raise_for_status()
     logger.info(
-        f"'GET Request successful to /{endpoint}, status: {response.status_code}'")
+        f"'GET Request successful to /{endpoint}, status: {response.status_code}'"
+    )
     return True, response.json()
 
 
@@ -83,10 +84,9 @@ def post(req, endpoint, data):
     logger.info(f"'Making POST call to /{endpoint}'")
     response.raise_for_status()
     if response.ok:
-        logger.info(f'POST Request successful, status: {response.status_code}')
+        logger.info(f"POST Request successful, status: {response.status_code}")
         return True, response.json()
-    logger.info(
-        f"'POST Request failed to /{endpoint}, status: {response.status_code}'")
+    logger.info(f"'POST Request failed to /{endpoint}, status: {response.status_code}'")
     return False, response.json()
 
 
@@ -98,7 +98,8 @@ def delete(req, endpoint):
     logger.info(f"'Making DELETE call to /{endpoint}'")
     response.raise_for_status()
     logger.info(
-        f"'DEL Request successful to /{endpoint}, status: {response.status_code}'")
+        f"'DEL Request successful to /{endpoint}, status: {response.status_code}'"
+    )
     return True, response
 
 
@@ -112,5 +113,4 @@ def get_auth_headers(req):
     except KeyError as ke:
         logger.error(ke, exc_info=True)
         clear_session(req)
-        raise Exception(mu.get_global_msgs(
-            "auth.session.expired", source="OpenMRS"))
+        raise Exception(mu.get_global_msgs("auth.session.expired", source="OpenMRS"))

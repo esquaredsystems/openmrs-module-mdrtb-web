@@ -20,7 +20,6 @@ def get_patient(req, uuid):
         patient["auditInfo"] = patient_data["auditInfo"]
         return patient
     else:
-        
         return None
 
 
@@ -90,7 +89,7 @@ def get_patient_identifiers(req, patient_uuid):
                         "type": identifier["identifierType"]["uuid"],
                         "identifier": identifier["identifier"],
                         "created_at": identifier["auditInfo"]["dateCreated"],
-                        "location" : identifier["location"]['uuid']
+                        "location": identifier["location"]["uuid"],
                     }
                 else:
                     identifiers["mdr"] = {
@@ -102,7 +101,6 @@ def get_patient_identifiers(req, patient_uuid):
         return identifiers
     except Exception as e:
         raise Exception(str(e))
-
 
 
 def enroll_patient_in_program(req, patientid, data):
@@ -131,13 +129,14 @@ def enroll_patient_in_program(req, patientid, data):
         }
         if "identifier" in data:
             patient_identifier = {
-                    "identifier": data["identifier"],
-                    "identifierType": data["identifierType"],
-                    "location": data.get("facility", data.get("district", None)),
+                "identifier": data["identifier"],
+                "identifierType": data["identifierType"],
+                "location": data.get("facility", data.get("district", None)),
             }
-            identifier_status, _ = ru.post(
+            identifier_status, iden_response = ru.post(
                 req, f"patient/{patientid}/identifier", patient_identifier
             )
+            print(iden_response, "RESPONSE=======================")
 
         status, response = ru.post(req, "programenrollment", program_body)
         if status:
@@ -282,6 +281,9 @@ def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
         program = get_enrolled_programs_by_patient(
             req, patientuuid, enrollment_id=programuuid
         )
+        transfer_out = fu.get_encounters_by_patient_and_type(
+            req, patientuuid, EncounterType.TRANSFER_OUT.value
+        )
         if isMdrtb:
             forms = {
                 "tb03us": fu.get_encounters_by_patient_and_type(
@@ -306,7 +308,7 @@ def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
                     req, patientuuid, EncounterType.FROM_89.value
                 ),
             }
-        return patient, program, forms
+        return patient, program, transfer_out, forms
     except Exception as e:
         raise Exception(str(e))
 
@@ -320,11 +322,11 @@ def get_enrolled_program_by_uuid(req, programid):
         raise Exception(str(e))
 
 
-def check_if_patient_enrolled_in_mdrtb(req,patient_uuid):
+def check_if_patient_enrolled_in_mdrtb(req, patient_uuid):
     try:
-        programs = get_enrolled_programs_by_patient(req,patient_uuid)
+        programs = get_enrolled_programs_by_patient(req, patient_uuid)
         for program in programs:
-            if program['program']['uuid'] == Constants.MDRTB_PROGRAM.value:
+            if program["program"]["uuid"] == Constants.MDRTB_PROGRAM.value:
                 return True
         return False
     except Exception as e:
