@@ -123,17 +123,20 @@ def get_encounter_by_uuid(req, uuid):
 
 
 def add_url_to_breadcrumb(req, name, query_params=None):
-    breadcrumbs = req.session.get('breadcrumbs', [])
-    url = req.path_info
-    if query_params:
-        url += '?' + urlencode(query_params)
-    index = None
-    for i, bc in enumerate(breadcrumbs):
-        if bc['name'] == name:
-            index = i
-            break
-    if index is not None:
-        breadcrumbs = breadcrumbs[:index+1]
-    else:
-        breadcrumbs.append({'name': name, 'url': url})
-    req.session['breadcrumbs'] = breadcrumbs
+    try:
+        breadcrumbs = req.session.get('breadcrumbs', [])
+        url = req.path_info
+        if query_params:
+            url += '?' + urlencode(query_params)
+        index = None
+        for i, bc in enumerate(breadcrumbs):
+            if bc['name'] == name:
+                index = i
+                break
+        if index is not None:
+            breadcrumbs = breadcrumbs[:index+1]
+        else:
+            breadcrumbs.append({'name': name, 'url': url})
+        req.session['breadcrumbs'] = breadcrumbs
+    except Exception as e:
+        raise Exception(e)

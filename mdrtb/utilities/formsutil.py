@@ -362,7 +362,7 @@ def create_update_adverse_event(req, patientuuid, data, formid=None):
             "encounter": {
                 "patient": patientuuid,
                 "encounterType": encounter_type,
-                "encounterDatetime": data.get("encounterDateTime", current_date_time),
+                "encounterDatetime": current_date_time if not any(data.get("encounterDateTime")) else data.get("encounterDateTime"),
                 "location": patient_location,
                 "obs": [
                     {
@@ -391,7 +391,7 @@ def create_update_adverse_event(req, patientuuid, data, formid=None):
                 )
     try:
         url = f"mdrtb/adverseevents/{formid}" if formid else "mdrtb/adverseevents"
-
+        print(ae)
         status, response = ru.post(req, url, ae)
         if status:
             return True
@@ -660,7 +660,7 @@ def create_update_regimen_form(req, patientuuid, data, formid=None):
             "encounter": {
                 "patient": patientuuid,
                 "encounterType": encounter_type,
-                "encounterDatetime": data.get("encounterDateTime", current_date_time),
+                "encounterDatetime": current_date_time if not any(data.get("encounterDateTime")) else data.get("encounterDateTime"),
                 "location": patient_location,
                 "obs": [
                     {

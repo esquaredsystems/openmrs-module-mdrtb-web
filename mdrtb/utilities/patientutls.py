@@ -4,6 +4,9 @@ from utilities import formsutil as fu
 from resources.enums.constants import Constants
 from resources.enums.mdrtbConcepts import Concepts
 from resources.enums.encounterType import EncounterType
+import logging
+
+logger = logging.getLogger("django")
 
 
 def get_patient(req, uuid):
@@ -142,6 +145,7 @@ def enroll_patient_in_program(req, patientid, data):
         if status:
             return response["uuid"]
     except Exception as e:
+        logger.error(e,exc_info=True)
         raise Exception(str(e))
 
 
@@ -242,6 +246,7 @@ def get_enrolled_programs_by_patient(req, uuid, enrollment_id=None):
                     "states": get_program_states(program=response),
                 }
         except Exception as e:
+            logger.error(e,exc_info=True)
             raise Exception(str(e))
 
     try:
@@ -271,6 +276,7 @@ def get_enrolled_programs_by_patient(req, uuid, enrollment_id=None):
             ]
             return programs_info
     except Exception as e:
+        logger.error(e,exc_info=True)
         raise Exception(e)
 
 

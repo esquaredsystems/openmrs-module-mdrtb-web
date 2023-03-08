@@ -540,8 +540,7 @@ def tb03u_form(req, uuid):
             Concepts.CAUSE_OF_DEATH.value,
         ]
         concepts = fu.get_form_concepts(tb03u_concepts, req)
-        context = (
-            {
+        context = {
                 "title": "TB03u",
                 "concepts": concepts,
                 "json": json.dumps(concepts),
@@ -554,11 +553,12 @@ def tb03u_form(req, uuid):
                     "YES": Concepts.YES.value,
                     "NO": Concepts.NO.value,
                 },
-            },
-        )
+            }
+        
         mu.add_url_to_breadcrumb(req, context["title"])
         return render(req, "app/tbregister/mdr/tb03u.html", context=context)
     except Exception as e:
+        logger.error(e,exc_info=True)
         messages.error(req, str(e))
         return redirect(req.session["redirect_url"])
 
