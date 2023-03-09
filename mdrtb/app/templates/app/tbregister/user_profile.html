@@ -6,6 +6,8 @@
 
 
 {%block content%}
+
+
 <div>
     {% if error %} {{error}} {% endif %}
     <form action="{% url 'profile' %}" method="post" class="flex-column-center">
@@ -62,29 +64,33 @@
                 <div class="profile-input-container">
                     <label class="profile-input-label"
                         for="country">{{'options.login.username'|get_message_openMRS:request.session.locale}}</label>
-                    <input class="input form-control" type="text" name="address" />
+                    <input class="input form-control" type="text" name="username"
+                        value="{{request.session.logged_user.display}}" />
 
                 </div>
                 <div class="profile-input-container">
                     <label class="profile-input-label"
                         for="name">{{'PersonName.givenName'|get_message_openMRS:request.session.locale}}</label>
-                    <input class="input form-control" type="text" name="address" />
+                    <input class="input form-control" type="text" name="givenName"
+                        value="{{person.preferredName.givenName}}" />
 
                 </div>
                 <div class="profile-input-container">
                     <label class="profile-input-label"
                         for="name">{{'PersonName.middleName'|get_message_openMRS:request.session.locale}}</label>
-                    <input class="input form-control" type="text" name="address" />
+                    <input class="input form-control" value="{{person.preferredName.middleName}}" type="text"
+                        name="middleName" />
 
                 </div>
                 <div class="profile-input-container">
                     <label class="profile-input-label"
                         for="name">{{'PersonName.familyName'|get_message_openMRS:request.session.locale}}</label>
-                    <input class="input form-control" type="text" name="address" />
+                    <input class="input form-control" type="text" name="familyName"
+                        value="{{person.preferredName.familyName}}" />
 
                 </div>
                 <br>
-                <div class="profile-input-container">
+                <div class=" profile-input-container">
                     <label class="profile-input-label"
                         for="country">{{'options.login.password.old'|get_message_openMRS:request.session.locale}}</label>
                     <input class="input form-control" type="text" name="address" />

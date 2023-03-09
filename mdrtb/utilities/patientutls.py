@@ -139,13 +139,12 @@ def enroll_patient_in_program(req, patientid, data):
             identifier_status, iden_response = ru.post(
                 req, f"patient/{patientid}/identifier", patient_identifier
             )
-            print(iden_response, "RESPONSE=======================")
 
         status, response = ru.post(req, "programenrollment", program_body)
         if status:
             return response["uuid"]
     except Exception as e:
-        logger.error(e,exc_info=True)
+        logger.error(e, exc_info=True)
         raise Exception(str(e))
 
 
@@ -246,7 +245,7 @@ def get_enrolled_programs_by_patient(req, uuid, enrollment_id=None):
                     "states": get_program_states(program=response),
                 }
         except Exception as e:
-            logger.error(e,exc_info=True)
+            logger.error(e, exc_info=True)
             raise Exception(str(e))
 
     try:
@@ -276,7 +275,7 @@ def get_enrolled_programs_by_patient(req, uuid, enrollment_id=None):
             ]
             return programs_info
     except Exception as e:
-        logger.error(e,exc_info=True)
+        logger.error(e, exc_info=True)
         raise Exception(e)
 
 

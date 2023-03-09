@@ -42,8 +42,9 @@ def clear_session(req):
             + "?"
             + urlencode(query_params, safe="-[]',")
             if query_params
-            else req.session.get("redirect_url") if req.path != '/logout'
-            else '/'
+            else req.session.get("redirect_url")
+            if req.path != "/logout"
+            else "/"
         )
         cache.clear()
         req.session.flush()

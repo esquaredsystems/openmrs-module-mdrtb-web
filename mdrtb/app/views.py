@@ -243,8 +243,6 @@ def enroll_patient_in_mdrtb(req, uuid):
 
             return redirect("tb03u", uuid=uuid)
         except Exception as e:
-            
-            
             logger.error(e, exc_info=True)
             messages.error(req, e)
             return redirect(req.session.get("redirect_url"))
@@ -262,8 +260,6 @@ def enroll_patient_in_mdrtb(req, uuid):
                 return redirect("searchPatientsView")
 
         except Exception as e:
-            
-
             messages.error(req, str(e))
             return redirect(req.session.get("redirect_url"))
 
@@ -541,24 +537,22 @@ def tb03u_form(req, uuid):
         ]
         concepts = fu.get_form_concepts(tb03u_concepts, req)
         context = {
-                "title": "TB03u",
-                "concepts": concepts,
-                "json": json.dumps(concepts),
-                "uuid": uuid,
-                "current_patient_program_flow": req.session[
-                    "current_patient_program_flow"
-                ],
-                "identifiers": pu.get_patient_identifiers(req, uuid),
-                "constants": {
-                    "YES": Concepts.YES.value,
-                    "NO": Concepts.NO.value,
-                },
-            }
-        
+            "title": "TB03u",
+            "concepts": concepts,
+            "json": json.dumps(concepts),
+            "uuid": uuid,
+            "current_patient_program_flow": req.session["current_patient_program_flow"],
+            "identifiers": pu.get_patient_identifiers(req, uuid),
+            "constants": {
+                "YES": Concepts.YES.value,
+                "NO": Concepts.NO.value,
+            },
+        }
+
         mu.add_url_to_breadcrumb(req, context["title"])
         return render(req, "app/tbregister/mdr/tb03u.html", context=context)
     except Exception as e:
-        logger.error(e,exc_info=True)
+        logger.error(e, exc_info=True)
         messages.error(req, str(e))
         return redirect(req.session["redirect_url"])
 
@@ -1092,6 +1086,14 @@ def user_profile(req):
             )
         ]
         allowed_locales.remove(default_locale)
+        status, person = ru.get(
+            req,
+            "person/{}".format(req.session["logged_user"]["person"]["uuid"]),
+            {"v": "full"},
+        )
+        if status:
+            context["person"] = person
+
         context["allowed_locales"] = [
             {"name": Constants[locale.upper()].value, "value": locale}
             for locale in allowed_locales
