@@ -11,6 +11,8 @@
     <form action="{% url 'profile' %}" method="post" class="flex-column-center">
         {% csrf_token %}
         <div class="m-16 flex-column-center space-y-8">
+            {% include 'app/components/breadcrumbs.html'%}
+
             <h1 class="page-title">
                 {{'options.title'|get_message_openMRS:request.session.locale}}
             </h1>

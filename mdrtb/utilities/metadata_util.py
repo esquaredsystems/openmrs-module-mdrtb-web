@@ -3,6 +3,7 @@ from utilities import common_utils as u
 from utilities import restapi_utils as ru
 from django.core.cache import cache
 from django.utils.safestring import SafeString as ss
+from urllib.parse import urlencode
 
 # os.environ['DJANGO_SETTINGS_MODULE'] = 'mdrtb.settings'
 # django.setup()
@@ -119,3 +120,23 @@ def get_encounter_by_uuid(req, uuid):
             return response
     except Exception as e:
         return None
+
+
+def add_url_to_breadcrumb(req, name, query_params=None):
+    try:
+        breadcrumbs = req.session.get('breadcrumbs', [])
+        url = req.path_info
+        if query_params:
+            url += '?' + urlencode(query_params)
+        index = None
+        for i, bc in enumerate(breadcrumbs):
+            if bc['name'] == name:
+                index = i
+                break
+        if index is not None:
+            breadcrumbs = breadcrumbs[:index+1]
+        else:
+            breadcrumbs.append({'name': name, 'url': url})
+        req.session['breadcrumbs'] = breadcrumbs
+    except Exception as e:
+        raise Exception(e)

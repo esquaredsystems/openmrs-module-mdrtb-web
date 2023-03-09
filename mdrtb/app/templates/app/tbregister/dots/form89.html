@@ -7,11 +7,13 @@
 {%block content%}
 
 <div>
-  <form action="{% if state == 'edit' %}
+  <form onsubmit="disableSubmit()" action="{% if state == 'edit' %}
     {% url 'editform89' uuid=uuid formid=form.uuid %}{% else %}{% url 'form89' uuid=uuid %} {% endif %}" method="post"
     class="flex flex-col">
     {% csrf_token %}
     <div class="m-16 flex flex-col justify-center space-y-4">
+      {% include 'app/components/breadcrumbs.html'%}
+
       {% if state == 'edit' %}
       <div id="form-info" class="flex-center space-x-4">
         <h1 class="text-[#2D9CDB] text-3xl font-bold">
@@ -843,13 +845,25 @@
 
       </div>
       <div class="px-4 flex-center space-x-4">
-        <button type="submit" class="button-primary w-1/5">Save</button>
+        <button type="submit" id="submitBtn" class="button-primary w-1/5">Save</button>
         <a href="javascript:history.go(-1)" type="button" class="cancel-button">Cancel</button>
       </div>
     </div>
   </form>
 </div>
 <script>
+  const disableSubmit = () => {
+    $('#submitBtn').prop('disabled', true)
+    $('#submitBtn').removeClass('button-primary')
+    $('#submitBtn').html(`
+        <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
+                colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+            </lord-icon>
+
+        
+        `)
+  }
+
   let state = '{{state | escapejs}}'
   if (state === 'edit') {
     $('input').prop('disabled', true).prop('required', false)
@@ -878,7 +892,7 @@
 
   $('#populationCat').change((e) => {
     let val = e.target.value;
-    if (val === "{{'FOREIGNER' | get_constant }}") {
+    if (val === "{{'FOREIGNER' | get_concept }}") {
       $('#originCountry').prop('disabled', false)
     } else {
       $('#originCountry').prop('disabled', true)
@@ -887,7 +901,7 @@
 
   $('#detection').change((e) => {
     let val = e.target.value;
-    if (val === "{{'MIGRANT' | get_constant }}") {
+    if (val === "{{'MIGRANT' | get_concept }}") {
       $('#originCity').prop('disabled', false)
       $('#returnDate').prop('disabled', false)
     } else {

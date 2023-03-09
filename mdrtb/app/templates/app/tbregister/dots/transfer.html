@@ -7,111 +7,188 @@
 
 {% block content %}
 
+
 <div class="m-16">
+  {% include 'app/components/breadcrumbs.html'%}
+  {% if state == 'edit' %}
+  <div id="form-info" class="flex-center space-x-4">
+
+    <h1 class="text-[#2D9CDB] text-3xl font-bold">
+      {{'mdrtb.edit'|get_message:request.session.locale}}
+      {{'mdrtb.transferOut'|get_message:request.session.locale}}
+    </h1>
+    <button hidden type="button" id="canceleditbtn" class="cancel-button">Cancel</button>
+    <a href="{% url 'deletetransferout' formid=form.uuid %}" type="button" id="deletetb03">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+      </svg>
+    </a>
+
+
+  </div>
+  {% else %}
   <h1 class="text-[#2D9CDB] text-3xl font-bold">
-    {{'mdrtb.transferIn'|get_message:request.session.locale}}
+    {{'mdrtb.transferOut'|get_message:request.session.locale}}
   </h1>
-  <form action="{% url 'dotsEnroll' %}" method="post" class="flex flex-col">
+  {% endif %}
+  <form onsubmit="disableSubmit()"
+    action="{% if state == 'edit' %}{% url 'edittransferout' patientuuid=patientuuid formid=form.uuid %}{% else %}{% url 'transferout' patientuuid=patientuuid %}{% endif %}"
+    method="post" class="flex flex-col">
     {% csrf_token %}
 
     <div class="p-4 flex flex-col justify-center space-y-4">
       <div class="input-container">
-        <label class="font-bold text-[#9E9E9E] w-2/5" for="">{{'mdrtb.date'|get_message:request.session.locale}}</label>
-        <input class="input w-3/5" type="date" name="enrollmentdate" id="enrollmentdate" required />
-      </div>
-      <div class="input-container">
-        <label class="font-bold text-[#9E9E9E] w-2/5"
-          for="">{{'mdrtb.oblast'|get_message:request.session.locale}}</label>
-        <select class="input w-3/5 disabled:pointer-events-none" name="oblast" id="oblast-select" required>
-          <option value="None">Select</option>
-        </select>
-      </div>
-      <div class="input-container">
-        <label class="font-bold text-[#9E9E9E] w-2/5"
-          for="">{{'mdrtb.district'|get_message:request.session.locale}}</label>
-        <select class="input w-3/5" name="district" id="district-select" required>
+        <label class="input-label w-1/6" for="">{{'mdrtb.date'|get_message:request.session.locale}}</label>
+        {% if state == 'edit' %}
+        <button id="editEnrollmentDate" type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+          </svg>
+        </button>
+        <input class="input form-control" type="date" id="encounterDateTime" name="encounterDatetime"
+          value="{{form.encounter.encounterDatetime | iso_to_normal_date }}" />
 
-        </select>
-      </div>
-      <div class="input-container">
-        <label class="font-bold text-[#9E9E9E] w-2/5"
-          for="">{{'mdrtb.facility'|get_message:request.session.locale}}</label>
-        <select class="input w-3/5" name="facility" id="facility-select">
+        {% else %}
+        <input class="input form-control" type="date" name="encounterDatetime" />
+        {% endif %}
 
-        </select>
+
       </div>
+      {% if state == 'edit' %}
+      <div class="flex-column-center space-y-2">
+        <div id="prefilledlocation" class="input-container">
+          <label class="input-label w-1/6 flex-center space-x-2" for="">
+            {{'mdrtb.location'|get_message:request.session.locale}}
+            <button class="ml-4" id="editLocations" type="button">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+              </svg>
+            </button>
+
+          </label>
+
+          <input class="input form-control" type="text" name="location" id="location"
+            value="{{form.encounter.location.name}}" />
+          <div hidden id="locations" class="flex-column-center space-y-4">
+            {% include 'app/components/locations.html' %}
+          </div>
+        </div>
+
+      </div>
+      {% else %}
+      {% include 'app/components/locations.html' %}
+      {% endif %}
     </div>
-    <div class="flex items-center p-4 -space-x-8">
-      <button class="bg-[#2D9CDB] p-2 w-1/5 rounded-md text-white">
-        Register
+    <div class="flex items-center p-4 space-x-4">
+      <button type="submit" id="submitBtn" class="button-primary w-1/5">
+        Submit
       </button>
-      <button class="p-2 font-bold w-1/5 rounded-md underline text-[#044062]">
+      <a href="javascript:history.go(-1)" type="button" class="cancel-button">
         Cancel
-      </button>
+      </a>
     </div>
   </form>
 
   <script>
+    $('#editLocations').click(() => {
+      if ($('#locations').prop('hidden')) {
+        $('select').prop('disabled', false)
+        $('button[type=submit]').prop('disabled', false)
+        $('#prefilledlocation').removeClass('input-container').addClass('flex-column-center')
+        $('#location').prop('hidden', true)
+        $('#locations').prop('hidden', false)
+        $('#editLocations').html(
+          `
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+</svg>
+          `
+        )
+      } else {
+        $('select').prop('disabled', true)
+        $('button[type=submit]').prop('disabled', true)
+        $('#location').prop('hidden', false)
+        $('#prefilledlocation').removeClass('flex-column-center').addClass('input-container')
+        $('#locations').prop('hidden', true)
+        $('#editLocations').html(
+          `
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+          </svg>
+          `
+        )
+      }
+
+
+    })
+    const disableSubmit = () => {
+      $('#submitBtn').prop('disabled', true)
+      $('#submitBtn').removeClass('button-primary')
+      $('#submitBtn').html(`
+        <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
+                colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+            </lord-icon>
+
+        
+        `)
+    }
+
     const setMaxDate = () => {
       let date = new Date();
       maxDate = date.toISOString().substring(0, 10);
-      $("#enrollmentdate").prop("max", maxDate);
+      $("#encounterDateTime").prop("max", maxDate);
     };
 
     setMaxDate();
-    var locations = JSON.parse("{{locations | escapejs }}");
-    let tjkRegions = locations[0].children;
-    function setLocations(tjkRegions) {
+    let state = '{{state | escapejs}}'
+    if (state === 'edit') {
+      $('input').prop('disabled', true).prop('required', false)
+      $('input[name=csrfmiddlewaretoken]').prop('disabled', false)
+      $('select').prop('disabled', true).prop('required', false)
+      $('textarea').prop('disabled', true).prop('required', false)
+      $('#canceleditbtn').prop('hidden', true)
+    }
+    $('#editEnrollmentDate').click(() => {
+      if ($('#encounterDateTime').prop('disabled')) {
+        $('#encounterDateTime').prop('disabled', false)
+        $('#editEnrollmentDate').html(
+          `
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+</svg>
 
-      for (let location of tjkRegions) {
+          `
+        )
+      } else {
+        $('#encounterDateTime').prop('disabled', true)
+        $('#editEnrollmentDate').html(
+          `
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+          </svg>
 
-        if (location.level === "region") {
-
-          $("#oblast-select").append(
-            $("<option>", {
-              value: location.name,
-              text: location.name,
-            })
-          );
-        }
+          `
+        )
       }
 
-    }
+    })
+    $('#canceleditbtn').click(function () {
+      $('input').prop('disabled', true)
+      $('select').prop('disabled', true)
+      $('textarea').prop('disabled', true)
+      $('#canceleditbtn').prop('hidden', true)
+    })
 
-
-    $("#oblast-select").change(function () {
-      $("#district-select").prop("disabled", false);
-
-      let selectedCountry = $("#oblast-select").val();
-      for (let location of tjkRegions) {
-        if (location.name === selectedCountry) {
-          if (location.children != undefined) {
-            for (child of location.children) {
-              if (child.level === "district") {
-                $("#district-select").append(
-                  $("<option>", {
-                    value: child.name,
-                    text: child.name,
-                  })
-                );
-              }
-            }
-          }
-        }
-      }
-    });
-
-
-
-
-
-
-    function disableLocationsInput() {
-      $('#district-select').prop('disabled', true)
-      $('#facility-select').prop('disabled', true)
-    }
-    disableLocationsInput()
-    setLocations(tjkRegions);
 
   </script>
 </div>

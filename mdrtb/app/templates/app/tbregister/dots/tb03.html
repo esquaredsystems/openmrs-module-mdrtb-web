@@ -10,12 +10,14 @@
 
 <div>
 
-  <form
+  <form onsubmit="disableSubmit()"
     action="{% if state == 'edit'  %}{% url 'edittb03' uuid=uuid formid=form.uuid %}{% else %}{% url 'tb03' uuid=uuid %}{% endif %}"
     method="post" class="flex flex-col">
     {% csrf_token %}
 
     <div class="m-16 flex flex-col justify-center space-y-4">
+      {% include 'app/components/breadcrumbs.html'%}
+
       {% if state == 'edit' %}
 
       <div id="form-info" class="flex-center space-x-4">
@@ -52,6 +54,7 @@
 
       </div>
       {% endif %}
+
       <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4">
         <div class="flex items-center space-x-12">
           <div class="space-x-3">
@@ -287,7 +290,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full "
               for="treatmentOutcome">{{'mdrtb.tb03.treatmentOutcome'|get_message:request.session.locale}}</label>
-            <select class="input form-control" name="{{'TB_TREATMENT_OUTCOME' | get_concept }}">
+            <select id="treatmentOutcome" class="input form-control" name="{{'TB_TREATMENT_OUTCOME' | get_concept }}">
               {% if state == 'edit' %}
               <option selected value="{{form.treatmentOutcome.uuid}}">{{form.treatmentOutcome.display}}</option>
               {% else %}
@@ -313,7 +316,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="causeOfDeath">{{'mdrtb.causeOfDeath'|get_message:request.session.locale}}</label>
-            <select class="input form-control" name="{{'CAUSE_OF_DEATH' | get_concept }}">
+            <select id="causeOfDeath" class="input form-control" name="{{'CAUSE_OF_DEATH' | get_concept }}">
               {% if state == 'edit' %}
               <option selected value="{{form.causeOfDeath.uuid}}">{{form.causeOfDeath.display}}</option>
               {% else %}
@@ -364,7 +367,7 @@
         </div>
       </div>
       <div class="p-4 flex items-center">
-        <button type="submit" class="button-primary w-1/5">
+        <button id="submitBtn" type="submit" class="button-primary w-1/5">
           Save
         </button>
 
@@ -377,6 +380,16 @@
   </form>
 </div>
 <script>
+  let dashboard_url = "/tbdashboard/patient/{{uuid | escapejs }}?program={{request.session.current_patient_program_flow.current_program.uuid}}"
+  window.onpopstate = () => history.replaceState(dashboard_url)
+  $('#treatmentOutcome').change((e) => {
+    let outcome = e.target.value
+    if (outcome === "{{'DIED' | get_concept}}") {
+      $('#causeOfDeath').prop('required', true)
+    } else {
+      $('#causeOfDeath').prop('required', false)
+    }
+  })
   let state = '{{state | escapejs}}'
   if (state === 'edit') {
     $('input').prop('disabled', true).prop('', false)
@@ -397,6 +410,17 @@
     $('textarea').prop('disabled', true)
     $('#canceleditbtn').prop('hidden', true)
   })
+  const disableSubmit = () => {
+    $('#submitBtn').prop('disabled', true)
+    $('#submitBtn').removeClass('button-primary')
+    $('#submitBtn').html(`
+        <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
+                colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+            </lord-icon>
+
+        
+        `)
+  }
 
   let date = new Date();
   maxDate = date.toISOString().substring(0, 10);

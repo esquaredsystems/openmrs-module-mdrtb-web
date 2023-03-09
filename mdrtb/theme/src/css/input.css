@@ -12,7 +12,7 @@
 @layer components{
     /* Global Styles */
     .button-primary{
-        @apply bg-[#2D9CDB] text-white rounded-md p-2;
+        @apply bg-[#2D9CDB] text-white rounded-md p-2 transition-all duration-200;
     }
 
     .primary-heading{

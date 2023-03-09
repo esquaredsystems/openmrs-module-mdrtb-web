@@ -9,9 +9,11 @@
 
 
 
-<form action="{% url 'enrollPatient' %}" method="post" class="enroll-form">
+<form onsubmit="disableSubmit()" action="{% url 'enrollPatient' %}" method="post" class="enroll-form">
   {% csrf_token %}
   <div class="enrollform-sections-container">
+    {% include 'app/components/breadcrumbs.html'%}
+
     <h1 class="page-title">
       {{'mdrtb.enrollNewPatient'|get_message:request.session.locale}}
     </h1>
@@ -53,11 +55,11 @@
           <div class="radios-container">
             <div class="radio-container">
               <label for="Male">{{'mdrtb.male'|get_message:request.session.locale}}</label>
-              <input required name="gender" type="radio" value="M" />
+              <input required class="radio-input" name="gender" type="radio" value="M" />
             </div>
             <div class="radio-container">
               <label for="Female">{{'mdrtb.female'|get_message:request.session.locale}}</label>
-              <input required name="gender" type="radio" value="F" />
+              <input class="radio-input" required name="gender" type="radio" value="F" />
             </div>
           </div>
         </div>
@@ -107,7 +109,7 @@
     </div>
 
     <div class="flex-center">
-      <input type="submit" class="button-primary w-1/5" value="Register" />
+      <button type="submit" id="submitBtn" class="button-primary w-1/5">Register</button>
 
       <a href="javascript:history.go(-1)" class="cancel-button"> Cancel </a>
     </div>
@@ -116,6 +118,18 @@
 <script defer>
   let date = new Date();
   let maxDate = date.toISOString().substring(0, 10);
+  const disableSubmit = () => {
+    $('#submitBtn').prop('disabled', true)
+    $('#submitBtn').removeClass('button-primary')
+    $('#submitBtn').html(`
+        <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
+                colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+            </lord-icon>
+
+        
+        `)
+  }
+
   $('input[type="date"]').prop('max', maxDate)
   $("#dob").change(function () {
     if ($("#dob").val() != "") {
@@ -154,5 +168,4 @@
     }
   });
 </script>
-</div>
 {% endblock %}
