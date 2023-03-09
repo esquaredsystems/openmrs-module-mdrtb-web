@@ -243,8 +243,8 @@ def enroll_patient_in_mdrtb(req, uuid):
 
             return redirect("tb03u", uuid=uuid)
         except Exception as e:
-            print(traceback.format_exc())
-            print("ERROR enrolling in mdrtb", e)
+            
+            
             logger.error(e, exc_info=True)
             messages.error(req, e)
             return redirect(req.session.get("redirect_url"))
@@ -262,7 +262,7 @@ def enroll_patient_in_mdrtb(req, uuid):
                 return redirect("searchPatientsView")
 
         except Exception as e:
-            print(traceback.format_exc())
+            
 
             messages.error(req, str(e))
             return redirect(req.session.get("redirect_url"))
