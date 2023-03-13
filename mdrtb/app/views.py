@@ -115,12 +115,8 @@ def search_patients_view(req):
             del req.session["current_patient_program_flow"]
         minSearchCharacters = mu.get_global_properties(req, "minSearchCharacters")
         context["minSearchCharacters"] = minSearchCharacters
-        # Check if user is admin grant all privileges
-        if req.session["logged_user"]["systemId"] == "admin":
-            context["add_patient_privilege"] = True
-        # Check if user has the privilege to Add patients
-        elif mu.check_if_user_has_privilege(
-            Privileges.ADD_PATIENTS, req.session["logged_user"]["privileges"]
+        if mu.check_if_user_has_privilege(
+            req, Privileges.ADD_PATIENTS.value, req.session["logged_user"]["privileges"]
         ):
             context["add_patient_privilege"] = True
         return render(req, "app/tbregister/search_patients.html", context=context)
@@ -248,10 +244,10 @@ def enroll_patient_in_mdrtb(req, uuid):
             return redirect(req.session.get("redirect_url"))
     else:
         try:
+            req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
             program = pu.get_program_by_uuid(req, Constants.MDRTB_PROGRAM.value)
             if program:
                 context["jsonprogram"] = json.dumps(program)
-                mu.add_url_to_breadcrumb(req, context["title"])
                 return render(
                     req, "app/tbregister/mdr/enroll_in_mdrtb.html", context=context
                 )
