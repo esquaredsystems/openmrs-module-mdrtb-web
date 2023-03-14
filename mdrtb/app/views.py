@@ -40,14 +40,7 @@ def get_redirect_url_from_exception(exception):
 
 def index(req):
     context = {"title": "Report"}
-
-    try:
-        pass
-    except Exception as e:
-        logger.error(str(e), exc_info=True)
-        messages.error(req, e)
-    finally:
-        return render(req, "app/tbregister/reportmockup.html", context=context)
+    return render(req, "app/reporting/tb03report.html", context=context)
 
 
 def get_locations(req):

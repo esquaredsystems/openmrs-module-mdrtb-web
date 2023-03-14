@@ -31,3 +31,7 @@ def get_id_from_name(name):
 @register.filter
 def get_year(date):
     return date[:4]
+
+@register.filter
+def get_range(number):
+    return range(int(number))

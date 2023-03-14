@@ -166,6 +166,7 @@
 		}
 		if (document.getElementById("locations-container") || document.getElementById("region-select")) {
 			try {
+				console.log('getting locs')
 				getLocations()
 			} catch (error) {
 				console.log(error)
