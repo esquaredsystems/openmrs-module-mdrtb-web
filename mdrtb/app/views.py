@@ -29,18 +29,30 @@ def check_if_session_alive(req):
     return True
 
 
-def get_redirect_url_from_exception(exception):
-    if exception.args[0] == mu.get_global_msgs(
-        "auth.session.expired", source="OpenMRS"
-    ):
-        message, redirect_url = exception.args
-        return True, message, redirect_url
-    return False, None, None
+# def get_redirect_url_from_exception(exception):
+#     if exception.args[0] == mu.get_global_msgs(
+#         "auth.session.expired", source="OpenMRS"
+#     ):
+#         message, redirect_url = exception.args
+#         return True, message, redirect_url
+#     return False, None, None
 
 
 def index(req):
     context = {"title": "Report"}
-    return render(req, "app/reporting/tb03report.html", context=context)
+    status, response = ru.get(
+        req,
+        "mdrtb/tb03report",
+        {
+            "year": 2021,
+            "quarter": 1,
+            "location": "82be00a0-894b-42aa-812f-428f23e9fd7a",
+        },
+    )
+    if status:
+        context["patientSet"] = response["results"]
+        context["json"] = json.dumps(response["results"])
+    return render(req, "app/reporting/tb03_report.html", context=context)
 
 
 def get_locations(req):
@@ -771,10 +783,6 @@ def drug_resistence_form(req, patientid):
         mu.add_url_to_breadcrumb(req, context["title"])
         return render(req, "app/tbregister/mdr/drug_resistence.html", context=context)
     except Exception as e:
-        is_expired, message, redirect_url = get_redirect_url_from_exception(e)
-        if is_expired:
-            messages.error(req, message)
-            return redirect(redirect_url)
         messages.error(req, str(e))
         return redirect(req.session.get("redirect_url"))
 
@@ -809,10 +817,6 @@ def edit_drug_resistence_form(req, patientid, formid):
         mu.add_url_to_breadcrumb(req, context["title"])
         return render(req, "app/tbregister/mdr/drug_resistence.html", context=context)
     except Exception as e:
-        is_expired, message, redirect_url = get_redirect_url_from_exception(e)
-        if is_expired:
-            messages.error(req, message)
-            return redirect(redirect_url)
         messages.error(req, str(e))
         return redirect(req.session.get("redirect_url"))
 
@@ -908,9 +912,6 @@ def edit_regimen_form(req, patientid, formid):
         return render(req, "app/tbregister/mdr/regimen.html", context=context)
     except Exception as e:
         messages.error(req, str(e))
-        is_expired, redirect_url = get_redirect_url_from_exception(e)
-        if is_expired:
-            return redirect(redirect_url)
         return redirect(req.session.get("redirect_url"))
 
 

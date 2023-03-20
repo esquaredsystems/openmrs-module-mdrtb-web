@@ -14,7 +14,7 @@
       <input class="search-page-input" type="text" id="search-input" name="search"
         placeholder="{{'Patient.searchBox.placeholder' | get_message_openMRS:request.session.locale }}"
         title="Enter 2 or more characters" />
-      <span class="cursor-pointer" onclick="handleSearch()">
+      <span class="cursor-pointer" onclick="handleSearch($('#search-input').val())">
         <svg id="search-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
           stroke="currentColor" class="w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round"
@@ -40,15 +40,15 @@
   </div>
 
   <script>
-    const minSearchCharacters = "{{ minSearchCharacters}}"
-    const handleSearch = () => {
-      if ($('#search-input').val() === '') {
+    const minSearchCharacters = "{{minSearchCharacters}}"
+    const handleSearch = (searchQuery) => {
+      if (searchQuery.length < 0) {
 
         $('#search-results').addClass('hidden')
         $('#search-results').removeClass('flex')
         $('#search-results').html("")
 
-      } else if ($('#search-input').val().length >= Number(minSearchCharacters)) {
+      } else if (searchQuery.length >= Number(minSearchCharacters)) {
         $('#search-results').html("")
         $('#search-results').append(`
 
@@ -62,51 +62,48 @@
             </div>
 
 `)
-
-        let val = $('#search-input').val()
-        setTimeout(() => {
-          $.ajax({
-            url: "{% url 'search'%}?q=" + `${val}`,
-            method: 'GET',
-            success: function (data) {
-              if (data.error) {
-                $('#search-results').html(
-                  `
+        $.ajax({
+          url: "{% url 'search'%}?q=" + `${searchQuery}`,
+          method: 'GET',
+          success: function (data) {
+            if (data.error) {
+              $('#search-results').html(
+                `
       <div class="patient-notfound-box">
         <h3>
           Error finding patient
           </h3>
     </div>
       `
-                )
-              }
-              else if (data.results.length === 0) {
+              )
+            }
+            else if (data.results.length === 0) {
 
-                $('#search-results').html("")
-                $('#search-results').append(
-                  `
+              $('#search-results').html("")
+              $('#search-results').append(
+                `
       <div class="patient-notfound-box">
         <h3>
           Could not find any patient according to your search
           </h3>
     </div>
       `
-                )
-              } else {
-                $('#search-results').html("")
+              )
+            } else {
+              $('#search-results').html("")
 
-                $('#search-results').append(
-                  `<div class="search-result-items font-bold">
+              $('#search-results').append(
+                `<div class="search-result-items font-bold">
       <p>Identifier</p>
       <p class="col-span-2">Given Name</p>
       <p>Age</p>
       <p>Gender</p>
     </div>`
-                )
-                for (i = 0; i < data.results.length; i++) {
-                  const path = `patient/${data.results[i].uuid}/enrolledprograms`
-                  $('#search-results').append(
-                    `
+              )
+              for (i = 0; i < data.results.length; i++) {
+                const path = `patient/${data.results[i].uuid}/enrolledprograms`
+                $('#search-results').append(
+                  `
         <a href="${path}">
           <div class="search-result-items">
         <p>${data.results[i].identifiers[0].identifier}</p>
@@ -116,15 +113,15 @@
     </div></a>
           
           `
-                  )
-                }
+                )
               }
-
             }
 
+          }
 
-          })
-        }, 500)
+
+        })
+
         $('#search-results').removeClass('hidden')
         $('#search-results').addClass('flex')
       }
@@ -132,8 +129,8 @@
 
 
 
-    $('#search-input').keyup(function () {
-      handleSearch()
+    $('#search-input').keyup(function (e) {
+      handleSearch(e.target.value)
     })
   </script>
 
