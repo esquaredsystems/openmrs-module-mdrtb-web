@@ -1,118 +1,21 @@
-{% extends 'app/base/base.html' %}
-
-{% block title %}
-{{title}}
-{% endblock %}
-
-
-
+{% extends 'app/reporting/report_base.html' %}
 
 {% block content %}
-
 
 <div>
     <div>
         <div id="tb03">
-            <style>
-                th.rotate {
-                    /* Something you can count on */
-                    height: 350px;
-                    white-space: nowrap;
-                    text-align: center;
-                }
 
-                th.rotate>div {
-                    transform:
-                        /* Magic Numbers */
-                        translate(0px, 120px)
-                        /* 45 is really 360 - 45 */
-                        rotate(270deg);
-                    width: 30px;
-                    text-align: centre;
-                }
-
-                td.rotate {
-                    /* Something you can count on */
-                    height: 150px;
-                    white-space: nowrap;
-                    text-align: center;
-                }
-
-                td.rotate>div {
-                    transform:
-                        /* Magic Numbers */
-                        translate(0px, 100px)
-                        /* 45 is really 360 - 45 */
-                        rotate(270deg);
-                    width: 30px;
-                    text-align: centre;
-                }
-
-                th.subrotate {
-                    /* Something you can count on */
-                    white-space: nowrap;
-                    text-align: center;
-                }
-
-                th.subrotate>div {
-                    transform:
-                        /* Magic Numbers */
-                        translate(0px, 65px)
-                        /* 45 is really 360 - 45 */
-                        rotate(270deg);
-                    width: 50px;
-                    text-align: centre;
-                }
-
-                th.dst {
-                    text-align: center;
-                }
-
-                th.dst>div {
-                    width: 30px;
-                }
-
-                th.widedst {
-                    text-align: center;
-                }
-
-                th.widedst>div {
-                    width: 55px;
-                }
-
-                th.normal {
-                    /* Something you can count on */
-                    white-space: nowrap;
-                    text-align: center;
-                }
-
-                th.reggroup {
-                    /* Something you can count on */
-                    height: 50px;
-                    white-space: nowrap;
-                    text-align: center;
-                }
-
-                table.resultsTable {
-                    border-collapse: collapse;
-                }
-
-                table.resultsTable td,
-                table.resultsTable th {
-                    border-top: 1px black solid;
-                    border-bottom: 1px black solid;
-                    border-right: 1px black solid;
-                    border-left: 1px black solid;
-                }
-            </style>
 
             <table class="resultsTable" border="1" cellspacing="0">
                 <tr>
                     <th class="rotate" rowspan="4">
-                        <div><span>{{'mdrtb.tb03.registrationNumber'|get_message:request.session.locale}}</span></div>
+                        <div><span>{{'mdrtb.tb03.registrationNumber'|get_message:request.session.locale}}</span>
+                        </div>
                     </th>
                     <th class="rotate" rowspan="4">
-                        <div><span>{{'mdrtb.tb03.dateOfRegistration'|get_message:request.session.locale}}</span></div>
+                        <div><span>{{'mdrtb.tb03.dateOfRegistration'|get_message:request.session.locale}}</span>
+                        </div>
                     </th>
                     <th rowspan="4">{{'mdrtb.tb03.fullName'|get_message:request.session.locale}}</th>
                     <th class="rotate" rowspan="4">
@@ -121,7 +24,8 @@
                     <th class="normal" rowspan="2">{{'mdrtb.tb03.age'|get_message:request.session.locale}}</th>
                     <th rowspan="4">{{'mdrtb.tb03.address'|get_message:request.session.locale}}</th>
                     <th class="normal" rowspan="2">{{'mdrtb.tb03.mfForIP'|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{'mdrtb.tb03.treatmentRegimen'|get_message:request.session.locale}}
+                    <th class="normal" rowspan="2">
+                        {{'mdrtb.tb03.treatmentRegimen'|get_message:request.session.locale}}
                     </th>
                     <th class="rotate" rowspan="4">
                         <div><span>{{'mdrtb.tb03.tbLocalization'|get_message:request.session.locale}}</span></div>
@@ -132,7 +36,8 @@
                     <th class="rotate" rowspan="4">
                         <div><span>{{'mdrtb.tb03.transferFrom'|get_message:request.session.locale}}</span></div>
                     </th>
-                    <th class="reggroup" colspan="3">{{'mdrtb.tb03.tbHivActivities'|get_message:request.session.locale}}
+                    <th class="reggroup" colspan="3">
+                        {{'mdrtb.tb03.tbHivActivities'|get_message:request.session.locale}}
                     </th>
                     <th class="reggroup" colspan="17">
                         {{'mdrtb.tb03.diagnosticMethod'|get_message:request.session.locale}}
@@ -144,9 +49,12 @@
                     </th>
 
                     <th class="rotate" rowspan="4">
-                        <div><span>{{'mdrtb.tb03.drugResistance'|get_message:request.session.locale}}</span></div>
+                        <div><span
+                                style="white-space: nowrap;">{{'mdrtb.tb03.drugResistance'|get_message:request.session.locale}}</span>
+                        </div>
                     </th>
-                    <th class="reggroup" colspan="9">{{'mdrtb.tb03.smearMonitoring'|get_message:request.session.locale}}
+                    <th class="reggroup" colspan="9">
+                        {{'mdrtb.tb03.smearMonitoring'|get_message:request.session.locale}}
                     </th>
                     <th class="reggroup" colspan="6">
                         {{'mdrtb.tb03.treatmentOutcome'|get_message:request.session.locale}}
@@ -167,10 +75,14 @@
                 <tr>
 
                     <th class="subrotate" rowspan="3">
-                        <div><span>{{'mdrtb.tb03.new'|get_message:request.session.locale}}</span></div>
+                        <div>
+                            <span>{{'mdrtb.tb03.new'|get_message:request.session.locale}}</span>
+                        </div>
                     </th>
                     <th class="subrotate" rowspan="2">
-                        <div><span>{{'mdrtb.tb03.relapseAfter'|get_message:request.session.locale}}</span></div>
+                        <div>
+                            <span>{{'mdrtb.tb03.relapseAfter'|get_message:request.session.locale}}</span>
+                        </div>
                     </th>
                     <th class="subrotate" rowspan="2">
                         <div><span>{{'mdrtb.tb03.relapseAfter'|get_message:request.session.locale}}</span></div>
@@ -200,8 +112,10 @@
                     <th class="subrotate" rowspan="2">
                         <div><span>{{'mdrtb.tb03.cpTest'|get_message:request.session.locale}}</span></div>
                     </th>
-                    <th class="normal" colspan="3">{{'mdrtb.tb03.microscopy'|get_message:request.session.locale}}</th>
-                    <th class="normal" colspan="3">{{'mdrtb.tb03.genexpert'|get_message:request.session.locale}}</th>
+                    <th class="normal" colspan="3">{{'mdrtb.tb03.microscopy'|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" colspan="3">{{'mdrtb.tb03.genexpert'|get_message:request.session.locale}}
+                    </th>
                     <th class="normal" colspan="4">{{'mdrtb.tb03.hain'|get_message:request.session.locale}}</th>
                     <th class="normal" colspan="4">{{'mdrtb.tb03.hain2'|get_message:request.session.locale}}</th>
                     <th class="normal" colspan="3">{{'mdrtb.culture'|get_message:request.session.locale}}</th>
@@ -279,28 +193,34 @@
 
                 </tr>
                 <tr>
-                    <th class="normal" rowspan="2">{{'mdrtb.tb03.dateOfBirth'|get_message:request.session.locale}}</th>
+                    <th class="normal" rowspan="2">{{'mdrtb.tb03.dateOfBirth'|get_message:request.session.locale}}
+                    </th>
                     <th class="normal" rowspan="2">{{'mdrtb.tb03.mfForFP'|get_message:request.session.locale}}</th>
                     <th class="normal" rowspan="2">
                         {{'mdrtb.tb03.treatmentStartDate'|get_message:request.session.locale}}
                     </th>
                     <!-- <th class="normal" rowspan="1">I</th>
-             <th class="normal" rowspan="1">II</th>
-             <th class="normal" rowspan="1">I</th>
-             <th class="normal" rowspan="1">II</th>
-             <th class="normal" rowspan="1">I</th>
-             <th class="normal" rowspan="1">II</th> -->
+                 <th class="normal" rowspan="1">II</th>
+                 <th class="normal" rowspan="1">I</th>
+                 <th class="normal" rowspan="1">II</th>
+                 <th class="normal" rowspan="1">I</th>
+                 <th class="normal" rowspan="1">II</th> -->
 
-                    <th class="normal" colspan="3">{{'mdrtb.tb03.microscopyResult'|get_message:request.session.locale}}
+                    <th class="normal" colspan="3">
+                        {{'mdrtb.tb03.microscopyResult'|get_message:request.session.locale}}
                     </th>
-                    <th class="normal" colspan="3">{{'mdrtb.tb03.xpertResult'|get_message:request.session.locale}}</th>
+                    <th class="normal" colspan="3">{{'mdrtb.tb03.xpertResult'|get_message:request.session.locale}}
+                    </th>
                     <th class="normal">{{'mdrtb.date'|get_message:request.session.locale}}</th>
-                    <th class="normal" colspan="3">{{'mdrtb.tb03.hainCultureResult'|get_message:request.session.locale}}
+                    <th class="normal" colspan="3">
+                        {{'mdrtb.tb03.hainCultureResult'|get_message:request.session.locale}}
                     </th>
                     <th class="normal">{{'mdrtb.date'|get_message:request.session.locale}}</th>
-                    <th class="normal" colspan="3">{{'mdrtb.tb03.hainCultureResult'|get_message:request.session.locale}}
+                    <th class="normal" colspan="3">
+                        {{'mdrtb.tb03.hainCultureResult'|get_message:request.session.locale}}
                     </th>
-                    <th class="normal" colspan="3">{{'mdrtb.tb03.hainCultureResult'|get_message:request.session.locale}}
+                    <th class="normal" colspan="3">
+                        {{'mdrtb.tb03.hainCultureResult'|get_message:request.session.locale}}
                     </th>
                     <th class="normal" rowspan="2">{{'mdrtb.tb03.dstResultDate'|get_message:request.session.locale}}
                     </th>
@@ -347,20 +267,20 @@
                     <th>{{'mdrtb.lab'|get_message:request.session.locale}}</th>
 
                     <!--  <th class="normal">Date</th>
-               <th class="normal">Date</th>
-               <th class="normal">Date</th>
-               <th class="normal">Date</th>
-               <th class="normal">Date</th>
-               <th class="normal">Date</th>
-               <th class="normal">Date</th>
-               <th class="normal">Date</th>
-               <th class="normal">Date</th>
-               <th class="normal">Date</th>
-               <th class="normal">Date</th>
-               <th class="normal">Date</th>
-               <th class="normal">Date</th>
-               <th class="normal">Date</th>
-                -->
+                   <th class="normal">Date</th>
+                   <th class="normal">Date</th>
+                   <th class="normal">Date</th>
+                   <th class="normal">Date</th>
+                   <th class="normal">Date</th>
+                   <th class="normal">Date</th>
+                   <th class="normal">Date</th>
+                   <th class="normal">Date</th>
+                   <th class="normal">Date</th>
+                   <th class="normal">Date</th>
+                   <th class="normal">Date</th>
+                   <th class="normal">Date</th>
+                   <th class="normal">Date</th>
+                    -->
                     <th>{{'mdrtb.date'|get_message:request.session.locale}}</th>
                     <th>{{'mdrtb.tb03.testNumber'|get_message:request.session.locale}}</th>
                     <th>{{'mdrtb.lab'|get_message:request.session.locale}}</th>
@@ -377,7 +297,8 @@
                         <div><span>{{ row.identifier }}</span></div>
                     </td>
                     <td rowspan="2">{{ row.tb03RegistrationDate }}</td>
-                    <td rowspan="2">{{ row.patient.personName.familyName }}, {{ row.patient.personName.givenName }}</td>
+                    <td rowspan="2">{{ row.patient.personName.familyName }}, {{ row.patient.personName.givenName }}
+                    </td>
                     <td rowspan="2" align="center">{{ row.gender }}</td>
                     <td align="center">{{row.ageAtTB03Registration }}</td>
                     <td rowspan="2">{{ row.patient.personAddress.stateProvince }},<br />
@@ -539,9 +460,9 @@
             value="{{'mdrtb.exportToExcelBtn'|get_message:request.session.locale}}" />
         <!-- <input type="button" id="tableToPdf" name="tableToPdf" value="{{'mdrtb.exportToPdfBtn'|get_message:request.session.locale}}" /> -->
         <!-- <openmrs:hasPrivilege privilege="Manage Report Closing">
-            <input type="button" id="tableToSql" name="tableToSql"
-                value="{{'mdrtb.closeReportBtn'|get_message:request.session.locale}}" />
-        </openmrs:hasPrivilege> -->
+                <input type="button" id="tableToSql" name="tableToSql"
+                    value="{{'mdrtb.closeReportBtn'|get_message:request.session.locale}}" />
+            </openmrs:hasPrivilege> -->
         <input type="button" id="back" name="back" value="{{'mdrtb.back'|get_message:request.session.locale}}"
             onclick="document.location.href='{{ pageContext.request.contextPath }}/module/mdrtb/mdrtbIndex.form';" />
         <input type="button" onclick="printForm()" value="{{'mdrtb.print'|get_message:request.session.locale}}" />
@@ -558,10 +479,10 @@
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.1.js"></script>
     <!-- <script type="text/javascript" src="/moduleResources/mdrtb/tableExport/js/tableExport.js"></script>
-    <script type="text/javascript" src="/moduleResources/mdrtb/tableExport/js/jquery.base64.js"></script>
-    <script type="text/javascript" src="/moduleResources/mdrtb/tableExport/js/jspdf/libs/sprintf.js"></script>
-    <script type="text/javascript" src="/moduleResources/mdrtb/tableExport/js/jspdf/jspdf.js"></script>
-    <script type="text/javascript" src="/moduleResources/mdrtb/tableExport/js/jspdf/libs/base64.js"></script> -->
+        <script type="text/javascript" src="/moduleResources/mdrtb/tableExport/js/jquery.base64.js"></script>
+        <script type="text/javascript" src="/moduleResources/mdrtb/tableExport/js/jspdf/libs/sprintf.js"></script>
+        <script type="text/javascript" src="/moduleResources/mdrtb/tableExport/js/jspdf/jspdf.js"></script>
+        <script type="text/javascript" src="/moduleResources/mdrtb/tableExport/js/jspdf/libs/base64.js"></script> -->
 
     <script type="text/javascript">
         function printForm() {

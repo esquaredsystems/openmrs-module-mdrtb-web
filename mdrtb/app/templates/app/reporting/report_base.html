@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="http://46.20.206.173:18080/openmrs/openmrs.js?v=1.9.1.28992" type="text/javascript"></script>
+    <link href="http://46.20.206.173:18080/openmrs/openmrs.css?v=1.9.1.28992" type="text/css" rel="stylesheet" />
+    <link href="http://46.20.206.173:18080/openmrs/style.css?v=1.9.1.28992" type="text/css" rel="stylesheet" />
+    <link href="http://46.20.206.173:18080/openmrs/mdrtb.css?v=1.9.1.28992" type="text/css" rel="stylesheet" />
+    <script src="http://46.20.206.173:18080/openmrs/dwr/engine.js?v=1.9.1.28992" type="text/javascript"></script>
+    <script src="http://46.20.206.173:18080/openmrs/dwr/util.js?v=1.9.1.28992" type="text/javascript"></script>
+    <script src="http://46.20.206.173:18080/openmrs/dwr/interface/DWRAlertService.js?v=1.9.1.28992"
+        type="text/javascript"></script>
+    <meta http-equiv="content-type" content="text/plain; charset=UTF-8" />
+
+    <script src="http://46.20.206.173:18080/openmrs/scripts/calendar/calendar.js?v=1.9.1.28992"
+        type="text/javascript"></script>
+
+    <script src="http://46.20.206.173:18080/openmrs/scripts/jquery/jquery.min.js?v=1.9.1.28992"
+        type="text/javascript"></script>
+    <script src="http://46.20.206.173:18080/openmrs/scripts/jquery-ui/js/jquery-ui.custom.min.js?v=1.9.1.28992"
+        type="text/javascript"></script>
+    <link href="http://46.20.206.173:18080/openmrs/scripts/jquery-ui/css/redmond/jquery-ui.custom.css?v=1.9.1.28992"
+        type="text/css" rel="stylesheet" />
+    <link href="http://46.20.206.173:18080/openmrs/scripts/jquery-ui/css/green/jquery-ui.custom.css" type="text/css"
+        rel="stylesheet" />
+</head>
+
+<style>
+    th.rotate {
+        /* Something you can count on */
+        height: 350px;
+        white-space: nowrap;
+        valign: middle;
+    }
+
+    th.rotate>div {
+        transform:
+            /* Magic Numbers */
+            translate(0px, 120px)
+            /* 45 is really 360 - 45 */
+            rotate(270deg);
+        width: 30px;
+        align: centre;
+    }
+
+    td.rotate {
+        /* Something you can count on */
+        height: 150px;
+        white-space: nowrap;
+        valign: middle;
+    }
+
+    td.rotate>div {
+        transform:
+            /* Magic Numbers */
+            translate(0px, 100px)
+            /* 45 is really 360 - 45 */
+            rotate(270deg);
+        width: 30px;
+        align: centre;
+    }
+
+    th.subrotate {
+        /* Something you can count on */
+        white-space: nowrap;
+        text-align: middle;
+    }
+
+    th.subrotate>div {
+        transform:
+            /* Magic Numbers */
+            translate(0px, 65px)
+            /* 45 is really 360 - 45 */
+            rotate(270deg);
+        width: 50px;
+        text-align: centre;
+    }
+
+    th.dst {
+        valign: middle;
+    }
+
+    th.dst>div {
+        width: 30px;
+    }
+
+    th.widedst {
+        valign: middle;
+    }
+
+    th.widedst>div {
+        width: 55px;
+    }
+
+    th.normal {
+        /* Something you can count on */
+        white-space: nowrap;
+        valign: middle;
+    }
+
+    th.reggroup {
+        /* Something you can count on */
+        height: 50px;
+        white-space: nowrap;
+        valign: middle;
+    }
+
+    table.resultsTable {
+        border-collapse: collapse;
+    }
+
+    table.resultsTable td,
+    table.resultsTable th {
+        border-top: 1px black solid;
+        border-bottom: 1px black solid;
+        border-right: 1px black solid;
+        border-left: 1px black solid;
+    }
+</style>
+
+<body>
+
+    <script type="text/javascript"
+        src="http://46.20.206.173:18080/openmrs/moduleResources/mdrtb/jquery.min.js"></script>
+    <script type="text/javascript"
+        src="http://46.20.206.173:18080/openmrs/moduleResources/mdrtb/tableExport/js/tableExport.js"></script>
+    <script type="text/javascript"
+        src="http://46.20.206.173:18080/openmrs/moduleResources/mdrtb/tableExport/js/jquery.base64.js"></script>
+    <script type="text/javascript"
+        src="http://46.20.206.173:18080/openmrs/moduleResources/mdrtb/tableExport/js/jspdf/libs/sprintf.js"></script>
+    <script type="text/javascript"
+        src="http://46.20.206.173:18080/openmrs/moduleResources/mdrtb/tableExport/js/jspdf/jspdf.js"></script>
+    <script type="text/javascript"
+        src="http://46.20.206.173:18080/openmrs/moduleResources/mdrtb/tableExport/js/jspdf/libs/base64.js"></script>
+
+    {% block content %}
+    {% endblock %}
+
+
+
+</body>
+
+</html>

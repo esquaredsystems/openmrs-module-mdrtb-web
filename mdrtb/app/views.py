@@ -42,17 +42,17 @@ def index(req):
     context = {"title": "Report"}
     status, response = ru.get(
         req,
-        "mdrtb/tb03report",
+        "mdrtb/tb03ureport",
         {
             "year": 2021,
-            "quarter": 1,
-            "location": "82be00a0-894b-42aa-812f-428f23e9fd7a",
+            "month": 1,
+            "location": "d5f57138-dd5b-4528-aa9e-95db379fbd3a",
         },
     )
     if status:
         context["patientSet"] = response["results"]
         context["json"] = json.dumps(response["results"])
-    return render(req, "app/reporting/tb03_report.html", context=context)
+    return render(req, "app/reporting/tb03u_report.html", context=context)
 
 
 def get_locations(req):
