@@ -4,141 +4,45 @@
 
 <div>
     <div id="tb03u">
-        <style>
-            th.rotate {
-                /* Something you can count on */
-                height: 350px;
-                white-space: nowrap;
-                text-align: middle;
-            }
-
-            th.rotate>div {
-                transform:
-                    /* Magic Numbers */
-                    translate(0px, 100px)
-                    /* 45 is really 360 - 45 */
-                    rotate(270deg);
-                width: 30px;
-                text-align: centre;
-
-            }
-
-            td.rotate {
-                /* Something you can count on */
-                height: 150px;
-                white-space: nowrap;
-                text-align: middle;
-            }
-
-            td.rotate>div {
-                transform:
-                    /* Magic Numbers */
-                    translate(0px, 100px)
-                    /* 45 is really 360 - 45 */
-                    rotate(270deg);
-                width: 30px;
-                text-align: centre;
-
-            }
-
-            th.subrotate {
-                /* Something you can count on */
-                height: 200px;
-                white-space: nowrap;
-                text-align: middle;
-            }
-
-            th.subrotate>div {
-                transform:
-                    /* Magic Numbers */
-                    translate(0px, 65px)
-                    /* 45 is really 360 - 45 */
-                    rotate(270deg);
-                width: 50px;
-                text-align: centre;
-            }
-
-            th.dst {
-                text-align: middle;
-            }
-
-            th.dst>div {
-                width: 30px;
-            }
-
-            th.widedst {
-                text-align: middle;
-            }
-
-            th.widedst>div {
-                width: 55px;
-            }
-
-            th.normal {
-                /* Something you can count on */
-                white-space: nowrap;
-                text-align: middle;
-            }
-
-            th.reggroup {
-                /* Something you can count on */
-                height: 50px;
-                white-space: nowrap;
-                text-align: middle;
-            }
-
-
-            table.resultsTable {
-                border-collapse: collapse;
-            }
-
-            table.resultsTable td,
-            table.resultsTable th {
-                border-top: 1px black solid;
-                border-bottom: 1px black solid;
-                border-right: 1px black solid;
-                border-left: 1px black solid;
-            }
-        </style>
         <table class="resultsTable">
             <tr>
-                <th class="rotate" rowspan="3">
+                <th class="" rowspan="3">
                     <div><span>{{"mdrtb.tb03.registrationNumber"|get_message:request.session.locale}}</span></div>
                 </th>
-                <th class="rotate" rowspan="3">
+                <th class="" rowspan="3">
                     <div><span>{{"mdrtb.tb03.dateOfRegistration"|get_message:request.session.locale}}</span></div>
                 </th>
-                <th class="rotate" rowspan="3">
+                <th class="" rowspan="3">
                     <div><span>{{"mdrtb.tb03.tb03registration"|get_message:request.session.locale}}</span></div>
                 </th>
-                <th class="rotate" rowspan="3">
+                <th class="" rowspan="3">
                     <div><span>{{"mdrtb.tb03.fullName"|get_message:request.session.locale}}</span></div>
                 </th>
-                <th class="rotate" rowspan="3">
+                <th class="" rowspan="3">
                     <div><span>{{"mdrtb.tb03.gender"|get_message:request.session.locale}}</span></div>
                 </th>
-                <th class="rotate" rowspan="3">
+                <th class="" rowspan="3">
                     <div><span>{{"mdrtb.tb03.ageDOB"|get_message:request.session.locale}}</span></div>
                 </th>
-                <th class="rotate" rowspan="3">
+                <th class="" rowspan="3">
                     <div><span>{{"mdrtb.tb03.address"|get_message:request.session.locale}}</span></div>
                 </th>
-                <th class="rotate" rowspan="3">
+                <th class="" rowspan="3">
                     <div><span>{{"mdrtb.tb03.addressRegII"|get_message:request.session.locale}}</span></div>
                 </th>
-                <th class="rotate" rowspan="3">
+                <th class="" rowspan="3">
                     <div><span>{{"mdrtb.tb03.tbLocalization"|get_message:request.session.locale}}</span></div>
                 </th>
 
                 <th class="reggroup" colspan="8">{{"mdrtb.tb03.registrationGroup"|get_message:request.session.locale}}
                 </th>
-                <th class="rotate" rowspan="3">
+                <th class="" rowspan="3">
                     <div><span>{{"mdrtb.tb03.transferFrom"|get_message:request.session.locale}}</span></div>
                 </th>
                 <th class="normal" rowspan="1">{{"mdrtb.tb03.confirmedOrSuspect"|get_message:request.session.locale}}
                 </th>
                 <th class="normal" rowspan="1">{{"mdrtb.tb03.treatmentRegimen"|get_message:request.session.locale}}</th>
-                <th class="rotate" rowspan="3">
+                <th class="" rowspan="3">
                     <div><span>{{"mdrtb.tb03.ambulatoryHosp"|get_message:request.session.locale}}</span></div>
                 </th>
                 <th class="normal" rowspan="1" rowspan="2">
@@ -157,7 +61,7 @@
                 </th>
                 <th class="reggroup" rowspan="1" colspan="6">
                     {{"mdrtb.tb03.treatmentOutcomeDate"|get_message:request.session.locale}}</th>
-                <th class="rotate" rowspan="3">
+                <th class="" rowspan="3">
                     <div><span>{{"mdrtb.tb03.transferOut"|get_message:request.session.locale}}</span></div>
                 </th>
                 <th class="normal" rowspan="1">{{"mdrtb.tb03.relapseYesNo"|get_message:request.session.locale}}</th>
@@ -165,23 +69,23 @@
             </tr>
             <tr>
 
-                <th class="subrotate" rowspan="2">
+                <th class="" rowspan="2">
                     <div><span>{{"mdrtb.tb03.new"|get_message:request.session.locale}}</span></div>
                 </th>
-                <th class="subrotate" rowspan="1" colspan="2">
+                <th class="" rowspan="1" colspan="2">
                     <div><span>{{"mdrtb.tb03.relapseAfter"|get_message:request.session.locale}}</span></div>
                 </th>
 
 
-                <th class="subrotate" rowspan="1" colspan="2">
+                <th class="" rowspan="1" colspan="2">
                     <div><span>{{"mdrtb.tb03.defaultAfter"|get_message:request.session.locale}}</span></div>
                 </th>
-                <!-- <th class="subrotate" rowspan="1"><div><span>{{"mdrtb.tb03.defaultAfter"|get_message:request.session.locale}}Default After Treatment<br/>on Regimen </span></div></th> -->
-                <th class="subrotate" rowspan="1" colspan="2">
+                <!-- <th class="" rowspan="1"><div><span>{{"mdrtb.tb03.defaultAfter"|get_message:request.session.locale}}Default After Treatment<br/>on Regimen </span></div></th> -->
+                <th class="" rowspan="1" colspan="2">
                     <div><span>{{"mdrtb.tb03.failureAfter"|get_message:request.session.locale}}</span></div>
                 </th>
-                <!-- <th class="subrotate" rowspan="1"><div><span>{{"mdrtb.tb03.failureAfter"|get_message:request.session.locale}}Failure After Treatment<br/>on Regimen</span></div></th> -->
-                <th class="subrotate" rowspan="2">
+                <!-- <th class="" rowspan="1"><div><span>{{"mdrtb.tb03.failureAfter"|get_message:request.session.locale}}Failure After Treatment<br/>on Regimen</span></div></th> -->
+                <th class="" rowspan="2">
                     <div><span>{{"mdrtb.tb03.other"|get_message:request.session.locale}}</span></div>
                 </th>
                 <th class="normal" rowspan="2">{{"mdrtb.tb03.dateOfConfirmation"|get_message:request.session.locale}}
@@ -560,6 +464,11 @@
 
         </table>
     </div>
+    <button>
+        <a style="text-decoration: none; color: black;" href="javascript:history.go(-1)">
+            {{'mdrtb.back'|get_message:request.session.locale}}
+        </a>
+    </button>
     <input type="button" onclick="tableToExcel('tb03u', 'TB03u')"
         value="{{'mdrtb.exportToExcelBtn'|get_message:request.session.locale}}" />
     <!-- <input type="button" id="tableToPdf" name="tableToPdf" value="{{"mdrtb.exportToPdfBtn"|get_message:request.session.locale}}" /> -->

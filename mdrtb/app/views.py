@@ -42,7 +42,7 @@ def index(req):
     context = {"title": "Report"}
     status, response = ru.get(
         req,
-        "mdrtb/tb03ureport",
+        "mdrtb/tb03report",
         {
             "year": 2021,
             "month": 1,
@@ -1164,6 +1164,98 @@ def delete_transferout_form(req, formid):
     finally:
         return redirect(req.session["redirect_url"])
 
+# Reporting Views
+
+def tb03_report_form(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    context = {'title' : 'TB03 Export'}
+    if req.method == 'POST':
+        month = req.POST.get('month')
+        quarter = req.POST.get('quarter')
+        keys_to_check = ['facility', 'district', 'region']
+        location = None
+        for key in keys_to_check:
+            value = req.POST.get(key)
+            if value and len(value) > 0:
+                location = value
+                break
+        year = req.POST.get('year')
+        if month:
+            url = f"/tb03results?year={year}&month={month}&location={location}"
+        elif quarter:
+            url = f"/tb03results?year={year}&quarter={quarter}&location={location}"
+        return redirect(url)
+    return render(req,'app/reporting/tb03_report_form.html',context)
+
+def tb03_report(req):
+    context = {'title':'TB03 Report'}
+    try:
+        month = req.GET.get('month')
+        quarter = req.GET.get('quarter')
+        location = req.GET.get('location')
+        year = req.GET.get('year')
+        params = {
+            'year': year,
+            'location': location
+
+        }
+        if month:
+            params['month'] = month
+        elif quarter:
+            params['quarter'] = quarter
+        status, response = ru.get(req,"mdrtb/tb03report",params)
+        if status:
+            context["patientSet"] = response["results"]
+            return render(req,'app/reporting/tb03_report.html',context)
+        return redirect("searchPatientsView")
+    except Exception as e:
+        messages.error(req,e)
+        return redirect('searchPatientsView')
+    
+
+def tb03u_report_form(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    context = {'title' : 'TB03u Export'}
+    if req.method == 'POST':
+        month = req.POST.get('month')
+        quarter = req.POST.get('quarter')
+        location = req.POST.get('facility',req.POST.get('district',req.POST.get('region')))
+        year = req.POST.get('year')
+        if month:
+            url = f"/tb03uresults?year={year}&month={month}&location={location}"
+        elif quarter:
+            url = f"/tb03uresults?year={year}&quarter={quarter}&location={location}"
+        return redirect(url)
+    return render(req,'app/reporting/tb03u_report_form.html',context)
+
+def tb03u_report(req):
+    context = {'title':'TB03u Report'}
+    try:
+        month = req.GET.get('month')
+        quarter = req.GET.get('quarter')
+        location = req.GET.get('location')
+        year = req.GET.get('year')
+        params = {
+            'year': year,
+            'location': location
+
+        }
+        if month:
+            params['month'] = month
+        elif quarter:
+            params['quarter'] = quarter
+        status, response = ru.get(req,"mdrtb/tb03ureport",params)
+        if status:
+            context["patientSet"] = response["results"]
+            return render(req,'app/reporting/tb03u_report.html',context)
+        return redirect("searchPatientsView")
+    except Exception as e:
+        messages.error(req,e)
+        return redirect('searchPatientsView')
+
+# CommonLab Views
 
 def manage_test_types(req):
     context = {"title": "Manage Test Types"}

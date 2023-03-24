@@ -34,11 +34,6 @@ urlpatterns = [
         views.edit_mdrtb_program,
         name="editmdrtbprogram",
     ),
-    # path(
-    #     "patient/<str:uuid>/program/<str:programid>",
-    #     views.delete_program,
-    #     name="deleteprogram",
-    # ),
     path(
         "patient/<str:uuid>/enrolledprograms",
         views.enrolled_programs,
@@ -90,9 +85,6 @@ urlpatterns = [
         name="editregimen",
     ),
     path("regimen/<str:formid>", views.delete_regimen_form, name="deleteregimen"),
-    #     path('patient/<str:patientid>/manageadverseevents',
-    #          views.manage_adverse_events, name='manageae'),
-    #     path('manageregimens', views.manage_regimens, name='manageregimens'),
     path(
         "patient/<str:patientid>/adverseevents",
         views.adverse_events_form,
@@ -114,6 +106,14 @@ urlpatterns = [
     ),
     path("tb03u/<str:formid>", views.delete_tb03u_form, name="deletetb03u"),
     path("patientlist", views.patientList, name="patientlist"),
+    # Reporting Urls
+    path("tb03export",views.tb03_report_form, name="tb03export"),
+    path("tb03results",views.tb03_report, name="tb03Results"),
+    path("tb03uexport",views.tb03u_report_form, name="tb03uexport"),
+    path("tb03uresults",views.tb03u_report, name="tb03uResults"),
+
+
+    # CommonLab Urls
     path("commonlab/managetesttypes", views.manage_test_types, name="managetesttypes"),
     path("commonlab/fetchattributes", views.fetch_attributes, name="fetchattributes"),
     path("commonlab/addtesttypes", views.add_test_type, name="addtesttype"),

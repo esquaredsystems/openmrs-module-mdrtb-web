@@ -1,13 +1,160 @@
-{% extends 'app/base/base.html' %}
+{% for row in patientSet %}
+<tr {% if forloop.counter|divisibleby:2 %} bgcolor="#D3D3D3" {% endif %}>
+    <td rowspan="2">
+        <div><span>{{ row.identifier }}</span></div>
+    </td>
+    <td rowspan="2">{{ row.tb03RegistrationDate }}</td>
+    <td rowspan="2">{{ row.patient.personName.familyName }}, {{ row.patient.personName.givenName }}
+    </td>
+    <td rowspan="2" align="center">{{ row.gender }}</td>
+    <td align="center">{{row.ageAtTB03Registration }}</td>
+    <td rowspan="2">{{ row.patient.personAddress.stateProvince }},<br />
+        {{row.patient.personAddress.countyDistrict }},{{ row.patient.personAddress.address1 }}</td>
+    <td>{{row.intensivePhaseFacility }}</td>
+    <td>{{row.treatmentRegimen }}</td>
+    <td align="center" rowspan="2">{{ row.siteOfDisease }}</td>
+    {% for loop in '9'|get_range %}
+    <td align="center" rowspan="2">
+        {% if row.regGroup == forloop.counter %}&#10004;{% endif %}
+    </td>
+    {% endfor %}
 
+    <td>{{row.hivTestResult }}</td>
+    <td rowspan="2">{{row.artStartDate }}</td>
+    <td rowspan="2">{{row.cpStartDate }}</td>
 
-{% block content %}
-<div class="m-12 flex items-center justify-center">
-    {% include 'app/components/breadcrumbs.html'%}
-</div>
-<script src="https://cdn.lordicon.com/ritcuqlt.js"></script>
+    <td colspan="3" align="center">{{row.diagnosticSmearResult }}</td>
+    <td colspan="3" align="center">{{row.xpertMTBResult }} {{row.xpertRIFResult }} </td>
+    <td align="center">{{row.hainTestDate }} </td>
+    <td colspan="3" align="center">{{row.hainMTBResult }}</td>
+    <td align="center">{{row.hain2TestDate }} </td>
+    <td colspan="3" align="center">{{row.hain2MTBResult }}</td>
+    <td colspan="3" align="center">{{row.cultureResult }}</td>
+    <td>{{ row.dstCollectionDate}}</td>
+    <td rowspan="2" align="center">{{ row.dstR}}</td>
+    <td rowspan="2" align="center">{{ row.dstH }}</td>
+    <td rowspan="2" align="center">{{ row.dstE }}</td>
+    <td rowspan="2" align="center">{{ row.dstS }}</td>
+    <td rowspan="2" align="center">{{ row.dstZ }}</td>
+    <td rowspan="2" align="center">{{ row.dstKm }}</td>
+    <td rowspan="2" align="center">{{ row.dstAm }}</td>
+    <td rowspan="2" align="center">{{ row.dstCm }}</td>
+    <td rowspan="2" align="center">{{ row.dstOfx }}</td>
+    <td rowspan="2" align="center">{{ row.dstMfx }}</td>
+    <td rowspan="2" align="center">{{ row.dstPto }}</td>
+    <td rowspan="2" align="center">{{ row.dstCs }}</td>
+    <td rowspan="2" align="center">{{ row.dstPAS }}</td>
+    <td rowspan="2" align="center">{{ row.dstLzd }}</td>
+    <td rowspan="2" align="center">{{ row.dstCfz }}</td>
+    <td rowspan="2" align="center">{{ row.dstBdq}}</td>
+    <td rowspan="2" align="center">{{ row.dstDlm }}</td>
 
-<script>
+    <td rowspan="2">{{row.drugResistance }}</td>
+    {% if row.reg1New %}
 
-</script>
-{% endblock %}
+    {% if row.month2SmearResult is not None or row.month3SmearResult is not None %}
+    <td colspan="3" align="center">{{ row.month2SmearResult }} / {{ row.month3SmearResult }}</td>
+    {% else %}
+    <td colspan="3">&nbsp;</td>
+
+    {% endif %}
+
+    <td colspan="3" align="center">{{ row.month5SmearResult }}</td>
+    <td colspan="3" align="center">{{ row.month6SmearResult }}</td>
+    {% endif %}
+    {% if row.reg1Rtx %}
+    {% if row.month3SmearResult is not None or row.month4SmearResult is not None %}
+    <td colspan="3" align="center">{{ row.month3SmearResult }} / {{ row.month4SmearResult }}</td>
+    {% else %}
+    <td colspan="3">&nbsp;</td>
+    {% endif %}
+
+    <td colspan="3" align="center">{{ row.month5SmearResult }}</td>
+    <td colspan="3" align="center">{{ row.month8SmearResult }}</td>
+    {% else %}
+    <td colspan="3">&nbsp;</td>
+    <td colspan="3">&nbsp;</td>
+    <td colspan="3">&nbsp;</td>
+    {% endif %}
+
+    {% for loop in '9'|get_range %}
+    <td align="center" rowspan="2">
+        {% if row.tb03TreatmentOutcome == forloop.counter %}
+        {{ row.tb03TreatmentOutcomeDate }}
+        {% endif %}
+    </td>
+    {% endfor %}
+    <td rowspan="2">{{row.notes }}</td>
+</tr>
+<tr {% if forloop.counter|divisibleby:2 %} bgcolor="#D3D3D3" {% endif %}>
+    <td>{{ row.dateOfBirth }}</td>
+    <td>{{row.continuationPhaseFacility }}</td>
+    <td>{{row.tb03TreatmentStartDate }}</td>
+    <td>{{row.hivTestDate }}</td>
+    <td>{{row.diagnosticSmearDate }}</td>
+    <td>{{row.diagnosticSmearTestNumber }}</td>
+    <td>{{row.diagnosticSmearLab }}</td>
+    <td>{{row.xpertTestDate }}</td>
+    <td>{{row.xpertTestNumber }}</td>
+    <td>{{row.xpertLab }}</td>
+    <td>{{row.hainTestNumber }}</td>
+    <td align="center">{{row.hainINHResult }}</td>
+    <td align="center">{{row.hainRIFResult }}</td>
+    <td>{{row.hainLab }}</td>
+    <td>{{row.hain2TestNumber }}</td>
+    <td align="center">{{row.hain2InjResult }}</td>
+    <td align="center">{{row.hain2FqResult }}</td>
+    <td>{{row.hain2Lab }}</td>
+    <td>{{row.cultureTestDate }}</td>
+    <td>{{row.cultureTestNumber }}</td>
+    <td>{{row.cultureLab }}</td>
+    <td>{{ row.dstResultDate}}</td>
+    {% if row.reg1New %}
+    {% if row.month2SmearDate is not None or row.month3SmearDate is not None %}
+    <td align="center">{{ row.month2SmearDate }} / {{ row.month3SmearDate }}</td>
+    <td align="center">{{ row.month2TestNumber }} / {{ row.month3TestNumber }}</td>
+    <td align="center">{{ row.month2TestLab }} / {{ row.month3TestLab }}</td>
+    {% else %}
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    {% endif %}
+
+    <td>{{ row.month5SmearDate }}</td>
+    <td>{{ row.month5TestNumber }}</td>
+    <td>{{ row.month5TestLab }}</td>
+    <td>{{ row.month6SmearDate }}</td>
+    <td>{{ row.month6TestNumber }}</td>
+    <td>{{ row.month6TestLab }}</td>
+    {% endif %}
+    {% if row.reg1Rtx %}
+    {% if row.month3SmearDate is not None or row.month4SmearDate is not None %}
+    <td align="center">{{ row.month3SmearDate }} / {{ row.month4SmearDate }}</td>
+    <td align="center">{{ row.month3TestNumber }} / {{ row.month4TestNumber }}</td>
+    <td align="center">{{ row.month3TestLab }} / {{ row.month4TestLab }}</td>
+    {% else %}
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    {% endif %}
+
+    <td>{{ row.month5SmearDate }}</td>
+    <td>{{ row.month5TestNumber }}</td>
+    <td>{{ row.month5TestLab }}</td>
+    <td>{{ row.month8SmearDate }}</td>
+    <td>{{ row.month8TestNumber }}</td>
+    <td>{{ row.month8TestLab }}</td>
+    {% else %}
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    {% endif %}
+
+</tr>
+{% endfor %}

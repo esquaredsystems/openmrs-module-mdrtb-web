@@ -2,23 +2,24 @@
 
 {% block content %}
 <div class="m-12">
-	<form method="post" class="flex flex-col space-y-6">
+	<form action="{% url 'tb03export' %}" method="post" class="flex flex-col space-y-6">
+		{% csrf_token %}
 		<h2 class="page-title">{{"mdrtb.tb03Parameters"|get_message:request.session.locale}}</h2>
 		<div>
 			{% include 'app/components/locations.html' %}
 		</div>
 		<div class="input-container">
-			<label class="input-label w-1/6" for="country">{{"mdrtb.year"|get_message:request.session.locale}}</label>
-			<input type="text" class="input form-control" size="4" id="year">
+			<label class="input-label w-1/6" for="year">{{"mdrtb.year"|get_message:request.session.locale}}</label>
+			<input required type="text" class="input form-control" name="year" size="4" id="year">
 		</div>
 		<div class="input-container">
-			<label class="input-label w-1/6" for="country">{{"mdrtb.month"|get_message:request.session.locale}}</label>
-			<input type="text" class="input form-control" size="7" id="month">
+			<label class="input-label w-1/6" for="month">{{"mdrtb.month"|get_message:request.session.locale}}</label>
+			<input required type="text" class="input form-control" name="month" size="7" id="month">
 		</div>
 		<div class="input-container">
 			<label class="input-label w-1/6"
-				for="country">{{"mdrtb.quarter"|get_message:request.session.locale}}</label>
-			<input type="text" class="input form-control" size="7" id="quarter">
+				for="quarter">{{"mdrtb.quarter"|get_message:request.session.locale}}</label>
+			<input required type="text" class="input form-control" name="quarter" size="7" id="quarter">
 		</div>
 		<div class="flex-center space-x-4 mt-4">
 			<button type="submit" id="submitBtn" class="button-primary w-1/5">Submit</button>

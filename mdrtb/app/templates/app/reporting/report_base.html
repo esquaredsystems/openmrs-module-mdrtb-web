@@ -2,6 +2,9 @@
 <html lang="en">
 
 <head>
+    <title>{% block title %}{{title}}{% endblock %}</title>
+    <link rel="icon" type="image/png" href="../../../static/app/imgs/openmrs-favicon.png">
+
     <script src="http://46.20.206.173:18080/openmrs/openmrs.js?v=1.9.1.28992" type="text/javascript"></script>
     <link href="http://46.20.206.173:18080/openmrs/openmrs.css?v=1.9.1.28992" type="text/css" rel="stylesheet" />
     <link href="http://46.20.206.173:18080/openmrs/style.css?v=1.9.1.28992" type="text/css" rel="stylesheet" />
@@ -23,14 +26,15 @@
         type="text/css" rel="stylesheet" />
     <link href="http://46.20.206.173:18080/openmrs/scripts/jquery-ui/css/green/jquery-ui.custom.css" type="text/css"
         rel="stylesheet" />
+
 </head>
 
 <style>
     th.rotate {
         /* Something you can count on */
-        height: 350px;
+        height: 450px;
         white-space: nowrap;
-        valign: middle;
+        text-align: middle;
     }
 
     th.rotate>div {
@@ -40,14 +44,14 @@
             /* 45 is really 360 - 45 */
             rotate(270deg);
         width: 30px;
-        align: centre;
+        text-align: middle;
     }
 
     td.rotate {
         /* Something you can count on */
         height: 150px;
         white-space: nowrap;
-        valign: middle;
+        text-align: middle;
     }
 
     td.rotate>div {
@@ -57,7 +61,7 @@
             /* 45 is really 360 - 45 */
             rotate(270deg);
         width: 30px;
-        align: centre;
+        text-align: middle;
     }
 
     th.subrotate {
@@ -118,7 +122,7 @@
     }
 </style>
 
-<body>
+<body style="margin: 1rem;">
 
     <script type="text/javascript"
         src="http://46.20.206.173:18080/openmrs/moduleResources/mdrtb/jquery.min.js"></script>
