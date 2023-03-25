@@ -107,12 +107,14 @@ urlpatterns = [
     path("tb03u/<str:formid>", views.delete_tb03u_form, name="deletetb03u"),
     path("patientlist", views.patientList, name="patientlist"),
     # Reporting Urls
-    path("tb03export",views.tb03_report_form, name="tb03export"),
-    path("tb03results",views.tb03_report, name="tb03Results"),
-    path("tb03uexport",views.tb03u_report_form, name="tb03uexport"),
-    path("tb03uresults",views.tb03u_report, name="tb03uResults"),
-
-
+    path("tb03export", views.tb03_report_form, name="tb03export"),
+    path("tb03results", views.tb03_report, name="tb03Results"),
+    path("tb03uexport", views.tb03u_report_form, name="tb03uexport"),
+    path("tb03uresults", views.tb03u_report, name="tb03uResults"),
+    path("form89export", views.form89_report_form, name="form89export"),
+    path("form89results", views.form89_report, name="form89results"),
+    path("tb08export", views.tb08_report_form, name="tb08export"),
+    path("tb08results", views.tb08_report, name="tb08results"),
     # CommonLab Urls
     path("commonlab/managetesttypes", views.manage_test_types, name="managetesttypes"),
     path("commonlab/fetchattributes", views.fetch_attributes, name="fetchattributes"),

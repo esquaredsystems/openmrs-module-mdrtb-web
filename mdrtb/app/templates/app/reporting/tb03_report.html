@@ -514,7 +514,7 @@
                 var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
                 window.location.href = uri + base64(format(template, ctx))
             }
-        })()
+        })
         function savePdf(action, reportName, formPath) {
             var tableData = (document.getElementById("tb03")).innerHTML.toString();
             var oblast = "{{ oblast }}";

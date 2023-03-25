@@ -115,11 +115,11 @@
 
 
 
-
 	<div>
 		{%block content%}
 		{% endblock %}
 	</div>
+
 	<script>
 		var locationByUuids;
 
@@ -140,15 +140,20 @@
 									$('#region-select').append(`<option value=${location.uuid}>${location.name}</option>`)
 								}
 							})
+							$("#region-select").prop("disabled", false);
+							$("#region-select").prop("title", "");
+
+
 						}
 					},
 					error: (err) => { }
 				}
 			)
 		}
-		if (document.getElementById("locations-container") || document.getElementById("region-select")) {
+		if ($("#locations-container").length > 0) {
 			try {
-				console.log('getting locs')
+				$("#region-select").prop("disabled", true);
+				$("#region-select").prop("title", "Fetching Locations");
 				getLocations()
 			} catch (error) {
 				console.log(error)

@@ -29,6 +29,15 @@ def check_if_session_alive(req):
     return True
 
 
+def check_privileges(req, privileges_required):
+    perms = {}
+    for privilege in privileges_required:
+        perms[privilege.name.lower() + "_privilege"] = mu.check_if_user_has_privilege(
+            req, privilege.value, req.session["logged_user"]["privileges"]
+        )
+    return perms
+
+
 # def get_redirect_url_from_exception(exception):
 #     if exception.args[0] == mu.get_global_msgs(
 #         "auth.session.expired", source="OpenMRS"
@@ -112,7 +121,11 @@ def search_patients_query(req):
 def search_patients_view(req):
     if not check_if_session_alive(req):
         return redirect("login")
-    context = {"title": "Search Patients", "add_patient_privilege": False}
+    context = {"title": "Search Patients"}
+    privileges_required = [
+        Privileges.VIEW_PATIENTS,
+        Privileges.ADD_PATIENTS,
+    ]
     try:
         if "breadcrumbs" in req.session:
             del req.session["breadcrumbs"]
@@ -120,10 +133,7 @@ def search_patients_view(req):
             del req.session["current_patient_program_flow"]
         minSearchCharacters = mu.get_global_properties(req, "minSearchCharacters")
         context["minSearchCharacters"] = minSearchCharacters
-        if mu.check_if_user_has_privilege(
-            req, Privileges.ADD_PATIENTS.value, req.session["logged_user"]["privileges"]
-        ):
-            context["add_patient_privilege"] = True
+        context.update(check_privileges(req, privileges_required))
         return render(req, "app/tbregister/search_patients.html", context=context)
     except Exception as e:
         context["minSearchCharacters"] = 2
@@ -144,9 +154,13 @@ def enroll_patient(req):
             messages.error(req, str(e))
             return redirect("searchPatientsView")
     try:
+        context = {"title": "Enroll new Patient"}
+        privileges_required = [Privileges.ADD_PATIENTS]
+        context.update(check_privileges(req, privileges_required))
+        if not context["add_patients_privilege"]:
+            raise Exception("Privileges required: Add Patients")
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-        identifiertypes = mu.get_patient_identifier_types(req)
-        context = {"title": "Enroll new Patient", "identifiertypes": identifiertypes}
+        context["identifiertypes"] = mu.get_patient_identifier_types(req)
         mu.add_url_to_breadcrumb(req, context["title"])
 
         return render(
@@ -160,6 +174,7 @@ def enroll_patient(req):
 
 
 def enrolled_programs(req, uuid):
+    privileges_required = [Privileges.VIEW_PATIENT_PROGRAMS]
     if not check_if_session_alive(req):
         return redirect("login")
     context = {
@@ -169,6 +184,9 @@ def enrolled_programs(req, uuid):
     }
 
     try:
+        context.update(check_privileges(req, privileges_required))
+        if not context["view_patient_programs_privilege"]:
+            raise Exception("Privileges required: View patient programs")
         mu.add_url_to_breadcrumb(req, context["title"])
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         programs = pu.get_enrolled_programs_by_patient(req, uuid)
@@ -184,9 +202,11 @@ def enrolled_programs(req, uuid):
 
 
 def enroll_in_dots_program(req, uuid):
+    privileges_required = [Privileges.ADD_PATIENT_PROGRAMS]
     if not check_if_session_alive(req):
         return redirect("login", permanent=True)
     context = {"title": "Add a new Program", "uuid": uuid}
+
     if req.method == "POST":
         try:
             patient_program = pu.enroll_patient_in_program(req, uuid, req.POST)
@@ -208,25 +228,30 @@ def enroll_in_dots_program(req, uuid):
             logger.error(e)
             messages.error(req, e)
             return redirect("enrolledprograms", uuid=uuid)
-    else:
-        try:
-            program = pu.get_program_by_uuid(req, Constants.DOTS_PROGRAM.value)
-            if program:
-                context["jsonprogram"] = json.dumps(program)
-                mu.add_url_to_breadcrumb(req, context["title"])
-                return render(
-                    req, "app/tbregister/dots/enroll_in_dots.html", context=context
-                )
-            else:
-                messages.error(req, "Error fetching programs. Please try again later")
-                return redirect("searchPatientsView")
 
-        except Exception as e:
-            messages.error(req, str(e))
-            return redirect("/")
+    try:
+        context.update(check_privileges(req, privileges_required))
+        if not context["add_patient_programs_privilege"]:
+            raise Exception("Privileges required: Add patient programs")
+        program = pu.get_program_by_uuid(req, Constants.DOTS_PROGRAM.value)
+        if program:
+            context["jsonprogram"] = json.dumps(program)
+            mu.add_url_to_breadcrumb(req, context["title"])
+            return render(
+                req, "app/tbregister/dots/enroll_in_dots.html", context=context
+            )
+        else:
+            messages.error(req, "Error fetching programs. Please try again later")
+            return redirect("searchPatientsView")
+
+    except Exception as e:
+        messages.error(req, str(e))
+        return redirect("/")
 
 
 def enroll_patient_in_mdrtb(req, uuid):
+    privileges_required = [Privileges.ADD_PATIENT_PROGRAMS]
+
     context = {"title": "Enroll in MDRTB Program", "uuid": uuid}
     if req.method == "POST":
         try:
@@ -247,25 +272,33 @@ def enroll_patient_in_mdrtb(req, uuid):
             logger.error(e, exc_info=True)
             messages.error(req, e)
             return redirect(req.session.get("redirect_url"))
-    else:
-        try:
-            req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-            program = pu.get_program_by_uuid(req, Constants.MDRTB_PROGRAM.value)
-            if program:
-                context["jsonprogram"] = json.dumps(program)
-                return render(
-                    req, "app/tbregister/mdr/enroll_in_mdrtb.html", context=context
-                )
-            else:
-                messages.error(req, "Error fetching programs. Please try again later")
-                return redirect("searchPatientsView")
 
-        except Exception as e:
-            messages.error(req, str(e))
-            return redirect(req.session.get("redirect_url"))
+    try:
+        context.update(check_privileges(req, privileges_required))
+        if not context["add_patient_programs_privilege"]:
+            raise Exception("Privileges required: Add patient programs")
+
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+        program = pu.get_program_by_uuid(req, Constants.MDRTB_PROGRAM.value)
+        if program:
+            context["jsonprogram"] = json.dumps(program)
+            return render(
+                req, "app/tbregister/mdr/enroll_in_mdrtb.html", context=context
+            )
+        else:
+            messages.error(req, "Error fetching programs. Please try again later")
+            return redirect("searchPatientsView")
+
+    except Exception as e:
+        messages.error(req, str(e))
+        return redirect(req.session.get("redirect_url"))
 
 
 def edit_dots_program(req, uuid, programid):
+    privileges_required = [
+        Privileges.EDIT_PATIENT_PROGRAMS,
+        Privileges.EDIT_DOTS_MDR_DATA,
+    ]
     if not check_if_session_alive(req):
         return redirect("login")
     if req.method == "POST":
@@ -293,6 +326,9 @@ def edit_dots_program(req, uuid, programid):
             return redirect("enrolledprograms", uuid=uuid)
     try:
         context = {"title": "Edit Program", "uuid": uuid, "state": "edit"}
+        context.update(check_privileges(req, privileges_required))
+        if not context["edit_patient_programs_privilege"]:
+            raise Exception("Privileges required: Edit patient programs")
         enrolled_program = pu.get_enrolled_program_by_uuid(req, programid)
         context["enrolled_program"] = enrolled_program
         mu.add_url_to_breadcrumb(req, context["title"])
@@ -303,6 +339,11 @@ def edit_dots_program(req, uuid, programid):
 
 
 def edit_mdrtb_program(req, uuid, programid):
+    privileges_required = [
+        Privileges.EDIT_PATIENT_PROGRAMS,
+        Privileges.EDIT_DOTS_MDR_DATA,
+    ]
+
     if not check_if_session_alive(req):
         return redirect("login")
     if req.method == "POST":
@@ -330,6 +371,10 @@ def edit_mdrtb_program(req, uuid, programid):
             return redirect("enrolledprograms", uuid=uuid)
     try:
         context = {"title": "Edit Program", "uuid": uuid, "state": "edit"}
+        context.update(check_privileges(req, privileges_required))
+        if not context["edit_patient_programs_privilege"]:
+            raise Exception("Privileges required: Edit patient programs")
+
         enrolled_program = pu.get_enrolled_program_by_uuid(req, programid)
         context["enrolled_program"] = enrolled_program
         mu.add_url_to_breadcrumb(req, context["title"])
@@ -353,6 +398,16 @@ def edit_mdrtb_program(req, uuid, programid):
 
 
 def patient_dashboard(req, uuid, mdrtb=None):
+    privileges_required = [
+        Privileges.PATIENT_DASHBOARD_VIEW_FORMS_SECTION,
+        Privileges.PATIENT_DASHBOARD_VIEW_OVERVIEW_SECTION,
+        Privileges.VIEW_ENCOUNTERS,
+        Privileges.ADD_ENCOUNTERS,
+        Privileges.EDIT_ENCOUNTERS,
+        Privileges.EDIT_ENCOUNTERS,
+        Privileges.ADD_PATIENT_PROGRAMS,
+    ]
+
     if not check_if_session_alive(req):
         return redirect("login")
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
@@ -363,6 +418,9 @@ def patient_dashboard(req, uuid, mdrtb=None):
     program = req.GET["program"]
     context = {"uuid": uuid, "title": "Patient Dashboard"}
     try:
+        context.update(check_privileges(req, privileges_required))
+        if not context["view_encounters_privilege"]:
+            raise Exception("Privileges required: View Encounters")
         mu.add_url_to_breadcrumb(req, context["title"], query_params=query_params)
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
 
@@ -1164,98 +1222,193 @@ def delete_transferout_form(req, formid):
     finally:
         return redirect(req.session["redirect_url"])
 
+
 # Reporting Views
+
 
 def tb03_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
-    context = {'title' : 'TB03 Export'}
-    if req.method == 'POST':
-        month = req.POST.get('month')
-        quarter = req.POST.get('quarter')
-        keys_to_check = ['facility', 'district', 'region']
+    context = {"title": "TB03 Export"}
+    if req.method == "POST":
+        month = req.POST.get("month")
+        quarter = req.POST.get("quarter")
+        keys_to_check = ["facility", "district", "region"]
         location = None
         for key in keys_to_check:
             value = req.POST.get(key)
             if value and len(value) > 0:
                 location = value
                 break
-        year = req.POST.get('year')
+        year = req.POST.get("year")
         if month:
             url = f"/tb03results?year={year}&month={month}&location={location}"
         elif quarter:
             url = f"/tb03results?year={year}&quarter={quarter}&location={location}"
         return redirect(url)
-    return render(req,'app/reporting/tb03_report_form.html',context)
+    return render(req, "app/reporting/tb03_report_form.html", context)
+
 
 def tb03_report(req):
-    context = {'title':'TB03 Report'}
+    context = {"title": "TB03 Report"}
     try:
-        month = req.GET.get('month')
-        quarter = req.GET.get('quarter')
-        location = req.GET.get('location')
-        year = req.GET.get('year')
-        params = {
-            'year': year,
-            'location': location
-
-        }
+        month = req.GET.get("month")
+        quarter = req.GET.get("quarter")
+        location = req.GET.get("location")
+        year = req.GET.get("year")
+        params = {"year": year, "location": location}
         if month:
-            params['month'] = month
+            params["month"] = month
         elif quarter:
-            params['quarter'] = quarter
-        status, response = ru.get(req,"mdrtb/tb03report",params)
+            params["quarter"] = quarter
+        status, response = ru.get(req, "mdrtb/tb03report", params)
         if status:
             context["patientSet"] = response["results"]
-            return render(req,'app/reporting/tb03_report.html',context)
+            return render(req, "app/reporting/tb03_report.html", context)
         return redirect("searchPatientsView")
     except Exception as e:
-        messages.error(req,e)
-        return redirect('searchPatientsView')
-    
+        messages.error(req, e)
+        return redirect("searchPatientsView")
+
 
 def tb03u_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
-    context = {'title' : 'TB03u Export'}
-    if req.method == 'POST':
-        month = req.POST.get('month')
-        quarter = req.POST.get('quarter')
-        location = req.POST.get('facility',req.POST.get('district',req.POST.get('region')))
-        year = req.POST.get('year')
+    context = {"title": "TB03u Export"}
+    if req.method == "POST":
+        month = req.POST.get("month")
+        quarter = req.POST.get("quarter")
+        keys_to_check = ["facility", "district", "region"]
+        location = None
+        for key in keys_to_check:
+            value = req.POST.get(key)
+            if value and len(value) > 0:
+                location = value
+                break
+        year = req.POST.get("year")
         if month:
             url = f"/tb03uresults?year={year}&month={month}&location={location}"
         elif quarter:
             url = f"/tb03uresults?year={year}&quarter={quarter}&location={location}"
         return redirect(url)
-    return render(req,'app/reporting/tb03u_report_form.html',context)
+    return render(req, "app/reporting/tb03u_report_form.html", context)
+
 
 def tb03u_report(req):
-    context = {'title':'TB03u Report'}
+    context = {"title": "TB03u Report"}
     try:
-        month = req.GET.get('month')
-        quarter = req.GET.get('quarter')
-        location = req.GET.get('location')
-        year = req.GET.get('year')
-        params = {
-            'year': year,
-            'location': location
-
-        }
+        month = req.GET.get("month")
+        quarter = req.GET.get("quarter")
+        location = req.GET.get("location")
+        year = req.GET.get("year")
+        params = {"year": year, "location": location}
         if month:
-            params['month'] = month
+            params["month"] = month
         elif quarter:
-            params['quarter'] = quarter
-        status, response = ru.get(req,"mdrtb/tb03ureport",params)
+            params["quarter"] = quarter
+        status, response = ru.get(req, "mdrtb/tb03ureport", params)
         if status:
             context["patientSet"] = response["results"]
-            return render(req,'app/reporting/tb03u_report.html',context)
+            return render(req, "app/reporting/tb03u_report.html", context)
         return redirect("searchPatientsView")
     except Exception as e:
-        messages.error(req,e)
-        return redirect('searchPatientsView')
+        messages.error(req, e)
+        return redirect("searchPatientsView")
+
+
+def form89_report_form(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    context = {"title": "Form89 Export"}
+    if req.method == "POST":
+        month = req.POST.get("month")
+        quarter = req.POST.get("quarter")
+        keys_to_check = ["facility", "district", "region"]
+        location = None
+        for key in keys_to_check:
+            value = req.POST.get(key)
+            if value and len(value) > 0:
+                location = value
+                break
+        year = req.POST.get("year")
+        if month:
+            url = f"/form89results?year={year}&month={month}&location={location}"
+        elif quarter:
+            url = f"/form89results?year={year}&quarter={quarter}&location={location}"
+        return redirect(url)
+    return render(req, "app/reporting/form89_report_form.html", context)
+
+
+def form89_report(req):
+    context = {"title": "Form89 Report"}
+    try:
+        month = req.GET.get("month")
+        quarter = req.GET.get("quarter")
+        location = req.GET.get("location")
+        year = req.GET.get("year")
+        params = {"year": year, "location": location}
+        if month:
+            params["month"] = month
+        elif quarter:
+            params["quarter"] = quarter
+        status, response = ru.get(req, "mdrtb/form89report", params)
+        if status:
+            context["patientSet"] = response["results"]
+            return render(req, "app/reporting/form89_report.html", context)
+        return redirect("searchPatientsView")
+    except Exception as e:
+        messages.error(req, e)
+        return redirect("searchPatientsView")
+
+
+def tb08_report_form(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    context = {"title": "Tb08 Export"}
+    if req.method == "POST":
+        month = req.POST.get("month")
+        quarter = req.POST.get("quarter")
+        keys_to_check = ["facility", "district", "region"]
+        location = None
+        for key in keys_to_check:
+            value = req.POST.get(key)
+            if value and len(value) > 0:
+                location = value
+                break
+        year = req.POST.get("year")
+        if month:
+            url = f"/tb08results?year={year}&month={month}&location={location}"
+        elif quarter:
+            url = f"/tb08results?year={year}&quarter={quarter}&location={location}"
+        return redirect(url)
+    return render(req, "app/reporting/tb08_report_form.html", context)
+
+
+def tb08_report(req):
+    context = {"title": "Tb08 Report"}
+    month = req.GET.get("month")
+    quarter = req.GET.get("quarter")
+    location = req.GET.get("location")
+    year = req.GET.get("year")
+    params = {"year": year, "location": location}
+    if month:
+        params["month"] = month
+    elif quarter:
+        params["quarter"] = quarter
+    status, response = ru.get(req, "mdrtb/tb08report", params)
+    if status:
+        context["patientSet"] = response["results"]
+        return render(req, "app/reporting/tb08_report.html", context)
+    return redirect("searchPatientsView")
+
+
+# except Exception as e:
+#     messages.error(req, e)
+#     return redirect("searchPatientsView")
+
 
 # CommonLab Views
+
 
 def manage_test_types(req):
     context = {"title": "Manage Test Types"}

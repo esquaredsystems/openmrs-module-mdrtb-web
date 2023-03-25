@@ -7,9 +7,11 @@
 
 {%block content%}
 
+{% if view_patients_privilege %}
 {% include 'app/components/nav.html' %}
 <div class="search-page-container">
   <div class="search-input-container">
+
     <div class="search-box">
       <input class="search-page-input" type="text" id="search-input" name="search"
         placeholder="{{'Patient.searchBox.placeholder' | get_message_openMRS:request.session.locale }}"
@@ -22,6 +24,8 @@
         </svg>
       </span>
     </div>
+
+
     <div id="search-results" class="search-result-container">
       <div id="search-results" class="search-results-box scrollbar-hide">
 
@@ -30,7 +34,8 @@
 
       </div>
     </div>
-    {% if add_patient_privilege %}
+
+    {% if add_patients_privilege %}
     <div class="patient-create-new-box">
       <p>{{'PatientSearch.noneFound'|get_message_openMRS:request.session.locale}}? </p>
       <a href="{% url 'enrollPatient' %}"><button
@@ -135,4 +140,10 @@
   </script>
 
 </div>
+{% else %}
+<div class="search-page-container">
+  <h1>You dont have privileges to <strong><i>Search and Create Patients</i></strong> <a class="cancel-button"
+      href="{% url 'logout' %}">Logout</a></h1>
+</div>
+{% endif %}
 {% endblock %}

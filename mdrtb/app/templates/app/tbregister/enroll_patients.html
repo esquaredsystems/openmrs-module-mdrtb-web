@@ -7,6 +7,7 @@
 
 {%block content%}
 
+{% if add_patients_privilege %}
 
 
 <form onsubmit="disableSubmit()" action="{% url 'enrollPatient' %}" method="post" class="enroll-form">
@@ -168,4 +169,10 @@
     }
   });
 </script>
+{% else %}
+<div class="enrollform-sections-container">
+  <h1>You dont have privilege to <strong><i>Create Patients</i></strong> <a class="cancel-button"
+      href="javascript:history.go(-1)">Go back</a></h1>
+</div>
+{% endif %}
 {% endblock %}

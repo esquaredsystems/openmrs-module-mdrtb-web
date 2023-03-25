@@ -1,0 +1,57 @@
+{% extends 'app/base/base.html' %}
+
+{% block content %}
+<div class="m-12">
+    <form action="{% url 'form89export' %}" method="post" class="flex flex-col space-y-6">
+        {% csrf_token %}
+        <h2 class="page-title">{{"mdrtb.form89Parameters"|get_message:request.session.locale}}</h2>
+        <div>
+            {% include 'app/components/locations.html' %}
+        </div>
+        <div class="input-container">
+            <label class="input-label w-1/6" for="year">{{"mdrtb.year"|get_message:request.session.locale}}</label>
+            <input required type="text" class="input form-control" name="year" size="4" id="year">
+        </div>
+        <div class="input-container">
+            <label class="input-label w-1/6" for="month">{{"mdrtb.month"|get_message:request.session.locale}}</label>
+            <input required type="text" class="input form-control" name="month" size="7" id="month">
+        </div>
+        <div class="input-container">
+            <label class="input-label w-1/6"
+                for="quarter">{{"mdrtb.quarter"|get_message:request.session.locale}}</label>
+            <input required type="text" class="input form-control" name="quarter" size="7" id="quarter">
+        </div>
+        <div class="flex-center space-x-4 mt-4">
+            <button type="submit" id="submitBtn" class="button-primary w-1/5">Submit</button>
+
+            <a href="javascript:history.go(-1)" class="cancel-button"> Cancel </a>
+        </div>
+
+    </form>
+</div>
+<script type="text/javascript">
+    $('#month').change((e) => {
+        if (e.target.value != '') {
+            $('#quarter').prop('disabled', true)
+            $('#quarter').prop('title', 'Quarter cannot be selected with month')
+        } else {
+            $('#quarter').prop('disabled', false)
+            $('#quarter').prop('title', '')
+        }
+    })
+    $('#quarter').change((e) => {
+        if (e.target.value != '') {
+            $('#month').prop('disabled', true)
+            $('#month').prop('title', 'Month cannot be selected with quarter')
+        } else {
+            $('#month').prop('disabled', false)
+            $('#month').prop('title', '')
+        }
+    })
+
+
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</script>
+
+{% endblock %}
