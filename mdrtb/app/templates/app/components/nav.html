@@ -95,10 +95,12 @@
           <a class="tw-dropdown-item" href="#">{{'mdrtb.viewClosedReports'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
-          <a class="tw-dropdown-item" href="#">{{'mdrtb.tb07u'|get_message:request.session.locale}}</a>
+          <a class="tw-dropdown-item"
+            href="{% url 'tb07uexport' %}">{{'mdrtb.tb07u'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
-          <a class="tw-dropdown-item" href="#">{{'mdrtb.tb08Fast'|get_message:request.session.locale}}</a>
+          <a class="tw-dropdown-item"
+            href="{% url 'tb08uexport' %}">{{'mdrtb.tb08Fast'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item"

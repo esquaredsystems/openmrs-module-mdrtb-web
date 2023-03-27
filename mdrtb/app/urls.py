@@ -115,6 +115,12 @@ urlpatterns = [
     path("form89results", views.form89_report, name="form89results"),
     path("tb08export", views.tb08_report_form, name="tb08export"),
     path("tb08results", views.tb08_report, name="tb08results"),
+    path("tb08uexport", views.tb08u_report_form, name="tb08uexport"),
+    path("tb08uresults", views.tb08u_report, name="tb08uresults"),
+    path("tb07uexport", views.tb07u_report_form, name="tb07uexport"),
+    path("tb07uresults", views.tb07u_report, name="tb07uresults"),
+
+
     # CommonLab Urls
     path("commonlab/managetesttypes", views.manage_test_types, name="managetesttypes"),
     path("commonlab/fetchattributes", views.fetch_attributes, name="fetchattributes"),

@@ -308,7 +308,7 @@
                     <td align="center" rowspan="2">{{ row.siteOfDisease }}</td>
                     {% for loop in '9'|get_range %}
                     <td align="center" rowspan="2">
-                        {% if row.regGroup == forloop.counter %}&#10004;{% endif %}
+                        {% if row.regGroup == loop %}&#10004;{% endif %}
                     </td>
                     {% endfor %}
 
@@ -344,24 +344,19 @@
 
                     <td rowspan="2">{{row.drugResistance }}</td>
                     {% if row.reg1New %}
-
-                    {% if row.month2SmearResult is not None or row.month3SmearResult is not None %}
+                    {% if row.month2SmearResult or row.month3SmearResult %}
                     <td colspan="3" align="center">{{ row.month2SmearResult }} / {{ row.month3SmearResult }}</td>
                     {% else %}
                     <td colspan="3">&nbsp;</td>
-
                     {% endif %}
-
                     <td colspan="3" align="center">{{ row.month5SmearResult }}</td>
                     <td colspan="3" align="center">{{ row.month6SmearResult }}</td>
-                    {% endif %}
-                    {% if row.reg1Rtx %}
-                    {% if row.month3SmearResult is not None or row.month4SmearResult is not None %}
+                    {% elif row.reg1Rtx %}
+                    {% if row.month3SmearResult or row.month4SmearResult %}
                     <td colspan="3" align="center">{{ row.month3SmearResult }} / {{ row.month4SmearResult }}</td>
                     {% else %}
                     <td colspan="3">&nbsp;</td>
                     {% endif %}
-
                     <td colspan="3" align="center">{{ row.month5SmearResult }}</td>
                     <td colspan="3" align="center">{{ row.month8SmearResult }}</td>
                     {% else %}
@@ -370,9 +365,10 @@
                     <td colspan="3">&nbsp;</td>
                     {% endif %}
 
+
                     {% for loop in '9'|get_range %}
                     <td align="center" rowspan="2">
-                        {% if row.tb03TreatmentOutcome == forloop.counter %}
+                        {% if row.tb03TreatmentOutcome == loop %}
                         {{ row.tb03TreatmentOutcomeDate }}
                         {% endif %}
                     </td>
@@ -403,7 +399,7 @@
                     <td>{{row.cultureLab }}</td>
                     <td>{{ row.dstResultDate}}</td>
                     {% if row.reg1New %}
-                    {% if row.month2SmearDate is not None or row.month3SmearDate is not None %}
+                    {% if row.month2SmearDate or row.month3SmearDate %}
                     <td align="center">{{ row.month2SmearDate }} / {{ row.month3SmearDate }}</td>
                     <td align="center">{{ row.month2TestNumber }} / {{ row.month3TestNumber }}</td>
                     <td align="center">{{ row.month2TestLab }} / {{ row.month3TestLab }}</td>
@@ -412,16 +408,14 @@
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     {% endif %}
-
                     <td>{{ row.month5SmearDate }}</td>
                     <td>{{ row.month5TestNumber }}</td>
                     <td>{{ row.month5TestLab }}</td>
                     <td>{{ row.month6SmearDate }}</td>
                     <td>{{ row.month6TestNumber }}</td>
                     <td>{{ row.month6TestLab }}</td>
-                    {% endif %}
-                    {% if row.reg1Rtx %}
-                    {% if row.month3SmearDate is not None or row.month4SmearDate is not None %}
+                    {% elif row.reg1Rtx %}
+                    {% if row.month3SmearDate or row.month4SmearDate %}
                     <td align="center">{{ row.month3SmearDate }} / {{ row.month4SmearDate }}</td>
                     <td align="center">{{ row.month3TestNumber }} / {{ row.month4TestNumber }}</td>
                     <td align="center">{{ row.month3TestLab }} / {{ row.month4TestLab }}</td>
@@ -430,7 +424,6 @@
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     {% endif %}
-
                     <td>{{ row.month5SmearDate }}</td>
                     <td>{{ row.month5TestNumber }}</td>
                     <td>{{ row.month5TestLab }}</td>
@@ -449,6 +442,7 @@
                     <td>&nbsp;</td>
                     {% endif %}
 
+
                 </tr>
                 {% endfor %}
 
@@ -464,8 +458,11 @@
                 <input type="button" id="tableToSql" name="tableToSql"
                     value="{{'mdrtb.closeReportBtn'|get_message:request.session.locale}}" />
             </openmrs:hasPrivilege> -->
-        <input type="button" id="back" name="back" value="{{'mdrtb.back'|get_message:request.session.locale}}"
-            onclick="document.location.href='{{ pageContext.request.contextPath }}/module/mdrtb/mdrtbIndex.form';" />
+        <button>
+            <a style="text-decoration: none; color: black;" href="javascript:history.go(-1)">
+                {{'mdrtb.back'|get_message:request.session.locale}}
+            </a>
+        </button>
         <input type="button" onclick="printForm()" value="{{'mdrtb.print'|get_message:request.session.locale}}" />
 
         <script>

@@ -74,8 +74,13 @@ def get_concept(req, uuid):
         raise Exception(str(e))
 
 
-def get_location(uuid):
-    pass
+def get_location(req,uuid):
+    try:
+        status, response = ru.get(req,f"location/{uuid}",{})
+        if status:
+            return {'location':response['display'],'parent': response['parentLocation']['display']}
+    except Exception as e:
+        raise Exception(str(e))
 
 
 def get_user(req, username):

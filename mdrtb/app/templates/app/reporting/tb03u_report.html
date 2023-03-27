@@ -301,14 +301,18 @@
                 <td rowspan="1">{{ row.patient.personName.familyName }}</td>
                 <td rowspan="2" text-align="center">{{ row.gender }}</td>
                 <td text-align="center" rowspan="1">{{row.ageAtTB03uRegistration }}</td>
-                <td rowspan="2">{{ row.patient.personAddress.stateProvince }},<br />{{
-                    row.patient.personAddress.countyDistrict }},{{ row.patient.personAddress.address1 }}</td>
+                <td rowspan="2">
+                    {{ row.patient.personAddress.stateProvince }},
+                    <br />
+                    {{row.patient.personAddress.countyDistrict }},
+                    {{ row.patient.personAddress.address1 }}
+                </td>
                 <td rowspan="2">{{ row.reg2Number }}</td>
 
                 <td text-align="center" rowspan="2">{{ row.siteOfDisease }}</td>
-                {% for loop in '8'|get_range %}
+                {% for loop in '9'|get_range %}
                 <td text-align="center" rowspan="2">
-                    {% if row.regGroup == loop.index %}&#10004;{% endif %}
+                    {% if row.regGroup == loop %}&#10004;{% endif %}
                 </td>
                 {% endfor %}
                 <td rowspan="1">{{row.mdrtbStatus }}
@@ -385,9 +389,9 @@
                 <td rowspan="1">{{row.month33CultureResult }}</td>
                 <td rowspan="1">{{row.month36SmearResult }}</td>
                 <td rowspan="1">{{row.month36CultureResult }}</td>
-                {% for loop in '6'|get_range %}
+                {% for loop in '7'|get_range %}
                 <td text-align="center" rowspan="2">
-                    {% if row.tb03uTreatmentOutcome == loop.index %}{{row.tb03uTreatmentOutcomeDate }}{% endif %}
+                    {% if row.tb03uTreatmentOutcome == loop %}{{row.tb03uTreatmentOutcomeDate }}{% endif %}
                 </td>
                 {% endfor %}
                 <td rowspan="1">{{row.relapsed }}</td>
