@@ -336,4 +336,3 @@ def check_if_patient_enrolled_in_mdrtb(req, patient_uuid):
         return False
     except Exception as e:
         raise Exception(e)
-    pass

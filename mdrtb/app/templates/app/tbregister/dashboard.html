@@ -15,6 +15,7 @@
     {% include 'app/components/breadcrumbs.html'%}
   </div>
 
+  {% if patient_dashboard_view_overview_section_privilege %}
   <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
     <div class="flex items-center space-x-4">
       <h2 class="text-[#2D9CDB] text-3xl font-bold">{{program.program.name}}
@@ -80,10 +81,14 @@
 
     </div>
   </div>
+  {% endif %}
+  {% if patient_dashboard_view_forms_section_privilege %}
+  {% if view_encounters_privilege %}
   <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
     <div class="flex items-center space-x-2">
       <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.forms'|get_message:request.session.locale}}
       </h2>
+      {% if add_encounters_privilege %}
       <div class="relative" data-te-dropdown-ref>
         {% if not mdrtb %}
         {% if not forms.tb03s or not forms.form89s %}
@@ -143,14 +148,16 @@
         </ul>
         {% endif %}
       </div>
-
+      {% endif %}
     </div>
     {% if not mdrtb %}
     <div class="ml-4 grid grid-cols-2 gap-3">
       {% for tb03 in forms.tb03s %}
       <div class="space-x-3">
         <span class="font-bold">{{'mdrtb.tb03'|get_message:request.session.locale}}: </span><a
-          class="tb03-form-label underline" href="{% url 'edittb03' uuid=uuid formid=tb03.uuid %}">
+          class="tb03-form-label underline" href="{% if edit_encounters_privilege %}
+          {% url 'edittb03' uuid=uuid formid=tb03.uuid %}
+          {% else %} # {% endif %}">
           {{tb03.encounterDatetime | iso_to_normal_date}} at
           {{tb03.location.name}}</a>
       </div>
@@ -158,7 +165,8 @@
       {% for form89 in forms.form89s %}
       <div class="space-x-3">
         <span class="font-bold">{{'mdrtb.form89'|get_message:request.session.locale}}: </span><a
-          class="tb03-form-label underline" href="{% url 'editform89' uuid=uuid formid=form89.uuid %}">
+          class="tb03-form-label underline"
+          href="{% if edit_encounters_privilege %}{% url 'editform89' uuid=uuid formid=form89.uuid %}{% else %} # {% endif %}">
           {{form89.encounterDatetime | iso_to_normal_date}} at
           {{form89.location.name}}</a>
       </div>
@@ -169,7 +177,8 @@
       {% for tb03u in forms.tb03us %}
       <div class="space-x-3">
         <span class="font-bold">{{'mdrtb.tb03u'|get_message:request.session.locale}}: </span><a
-          class="tb03-form-label underline" href="{% url 'edittb03u' uuid=uuid formid=tb03u.uuid %}">
+          class="tb03-form-label underline"
+          href="{% if edit_encounters_privilege %}{% url 'edittb03u' uuid=uuid formid=tb03u.uuid %}{% else %} # {% endif %}">
           {{tb03u.encounterDatetime | iso_to_normal_date}} at
           {{tb03u.location.name}}</a>
       </div>
@@ -177,7 +186,8 @@
       {% for drug_res in forms.drug_resistance_forms %}
       <div class="space-x-3">
         <span class="font-bold">{{'mdrtb.drdt'|get_message:request.session.locale}}: </span><a
-          class="tb03-form-label underline" href="{% url 'editdrugresistanse' patientid=uuid formid=drug_res.uuid %}">
+          class="tb03-form-label underline"
+          href="{% if edit_encounters_privilege %}{% url 'editdrugresistanse' patientid=uuid formid=drug_res.uuid %}{% else %} # {% endif %}">
           {{drug_res.encounterDatetime | iso_to_normal_date}} at
           {{drug_res.location.name}}</a>
       </div>
@@ -185,6 +195,9 @@
     </div>
     {% endif %}
   </div>
+  {% endif %}
+  {% endif %}
+  {% if view_commonlabtest_results_privilege %}
   <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
     <div class="flex items-center justify-between space-x-4">
       <div class="flex-center space-x-4">
@@ -315,20 +328,25 @@
     </div>
 
   </div>
+  {% endif %}
   {% if mdrtb %}
+  {% if view_encounters_privilege %}
   <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
     <div class="flex items-center space-x-4">
       <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.pv.regimens'|get_message:request.session.locale}}
       </h2>
+      {% if add_encounters_privilege %}
       <a href="{% url 'regimen' patientid=uuid %}" class="text-[#044062] font-bold underline p-2">
         {{'mdrtb.add'|get_message:request.session.locale}} {{'mdrtb.new'|get_message:request.session.locale}}
       </a>
+      {% endif %}
     </div>
     <div class="ml-4 grid grid-cols-2 gap-3">
       {% for regimen in forms.regimens %}
       <div class="space-x-3">
         <span class="font-bold">{{'mdrtb.pv.regimen'|get_message:request.session.locale}}: </span><a
-          class="tb03-form-label underline" href="{% url 'editregimen' patientid=uuid formid=regimen.uuid %}">
+          class="tb03-form-label underline"
+          href="{% if edit_encounters_privilege %}{% url 'editregimen' patientid=uuid formid=regimen.uuid %}{% else %} # {% endif %}">
           {{regimen.encounterDatetime | iso_to_normal_date}} at
           {{regimen.location.name}}</a>
       </div>
@@ -341,15 +359,18 @@
       <div class="flex items-center space-x-4">
         <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.pv.pv'|get_message:request.session.locale}}
         </h2>
+        {% if add_encounters_privilege %}
         <a href="{% url 'adverseevents' patientid=uuid %}" class="text-[#044062] font-bold underline p-2">
           {{'mdrtb.add'|get_message:request.session.locale}} {{'mdrtb.new'|get_message:request.session.locale}}
         </a>
+        {% endif %}
       </div>
       <div class="ml-4 grid grid-cols-2 gap-3">
         {% for ae in forms.aes %}
         <div class="space-x-3">
           <span class="font-bold">{{'mdrtb.pv.aeForm'|get_message:request.session.locale}}: </span><a
-            class="tb03-form-label underline" href="{% url 'editadverseevents' patientid=uuid formid=ae.uuid %}">
+            class="tb03-form-label underline"
+            href="{% if edit_encounters_privilege %}{% url 'editadverseevents' patientid=uuid formid=ae.uuid %}{% else %} # {% endif %}">
             {{ae.encounterDatetime | iso_to_normal_date}} at
             {{ae.location.name}}</a>
         </div>
@@ -358,6 +379,7 @@
     </div>
 
   </div>
+  {% endif %}
   {% endif %}
 
 </div>

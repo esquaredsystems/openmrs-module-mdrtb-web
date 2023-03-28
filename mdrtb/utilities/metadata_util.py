@@ -110,7 +110,7 @@ def get_global_properties(req, key):
         raise Exception(e)
 
 
-def check_if_user_has_privilege(req, privileges_to_check, user_privileges):
+def check_if_user_has_privilege(req, privilege_to_check, user_privileges):
     # Check if user is admin grant all privileges
     if req.session["logged_user"]["systemId"] == "admin":
         return True

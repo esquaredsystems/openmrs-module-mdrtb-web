@@ -406,6 +406,7 @@ def patient_dashboard(req, uuid, mdrtb=None):
         Privileges.EDIT_ENCOUNTERS,
         Privileges.EDIT_ENCOUNTERS,
         Privileges.ADD_PATIENT_PROGRAMS,
+        Privileges.VIEW_COMMONLABTEST_RESULTS,
     ]
 
     if not check_if_session_alive(req):
@@ -501,6 +502,8 @@ def tb03_form(req, uuid):
 
 
 def edit_tb03_form(req, uuid, formid):
+    privileges_required = [Privileges.DELETE_ENCOUNTERS]
+
     if not check_if_session_alive(req):
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         return redirect("login")
@@ -525,6 +528,7 @@ def edit_tb03_form(req, uuid, formid):
             "current_patient_program_flow": req.session["current_patient_program_flow"],
             "identifiers": pu.get_patient_identifiers(req, uuid),
         }
+        context.update(check_privileges(req,privileges_required))
         tb03_concepts = [
             Concepts.TREATMENT_CENTER_FOR_IP.value,
             Concepts.TREATMENT_CENTER_FOR_CP.value,
@@ -553,6 +557,7 @@ def edit_tb03_form(req, uuid, formid):
 def delete_tb03_form(req, formid):
     if formid:
         try:
+            
             response = ru.delete(req, f"mdrtb/tb03/{formid}")
             ru.delete(req, f"encounter/{formid}")
             if response:
@@ -617,6 +622,7 @@ def tb03u_form(req, uuid):
 
 
 def edit_tb03u_form(req, uuid, formid):
+    privileges_required = [Privileges.DELETE_ENCOUNTERS]
     if not check_if_session_alive(req):
         return redirect("login")
 
@@ -642,6 +648,7 @@ def edit_tb03u_form(req, uuid, formid):
                 "NO": Concepts.NO.value,
             },
         }
+        context.update(check_privileges(req,privileges_required))
         tb03u_concepts = [
             Concepts.ANATOMICAL_SITE_OF_TB.value,
             Concepts.MDR_STATUS.value,
@@ -741,6 +748,7 @@ def adverse_events_form(req, patientid):
 
 
 def edit_adverse_events_form(req, patientid, formid):
+    privileges_required = [Privileges.DELETE_ENCOUNTERS]
     if not check_if_session_alive(req):
         return redirect("login")
 
@@ -768,6 +776,7 @@ def edit_adverse_events_form(req, patientid, formid):
                 "NO": Concepts.NO.value,
             },
         }
+        context.update(check_privileges(req,privileges_required))
         adverse_event_concepts = [
             Concepts.ADVERSE_EVENT.value,
             Concepts.ADVERSE_EVENT_TYPE.value,
@@ -846,6 +855,7 @@ def drug_resistence_form(req, patientid):
 
 
 def edit_drug_resistence_form(req, patientid, formid):
+    privileges_required = [Privileges.DELETE_ENCOUNTERS]
     if not check_if_session_alive(req):
         return redirect("login")
 
@@ -863,6 +873,7 @@ def edit_drug_resistence_form(req, patientid, formid):
 
     try:
         context = {"title": "Drug Resistanse", "patient_id": patientid, "state": "edit"}
+        context.update(check_privileges(req,privileges_required))
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         drug_resistance_concepts = [Concepts.DRUG_RESISTANCE_DURING_TREATMENT.value]
         form = fu.get_drug_resistance_form_by_uuid(req, formid)
@@ -930,6 +941,7 @@ def regimen_form(req, patientid):
 
 
 def edit_regimen_form(req, patientid, formid):
+    privileges_required = [Privileges.DELETE_ENCOUNTERS]
     if not check_if_session_alive(req):
         return redirect("login")
 
@@ -962,6 +974,7 @@ def edit_regimen_form(req, patientid, formid):
             "state": "edit",
             "current_patient_program_flow": req.session["current_patient_program_flow"],
         }
+        context.update(check_privileges(req,privileges_required))
         if form:
             context["form"] = form
         else:
@@ -1035,6 +1048,7 @@ def form_89(req, uuid):
 
 
 def edit_form_89(req, uuid, formid):
+    privileges_required = [Privileges.DELETE_ENCOUNTERS]
     if not check_if_session_alive(req):
         return redirect("login")
 
@@ -1062,6 +1076,7 @@ def edit_form_89(req, uuid, formid):
                 "NO": Concepts.NO.value,
             },
         }
+        context.update(check_privileges(req,privileges_required))
         form89_concepts = [
             Concepts.LOCATION_TYPE.value,
             Concepts.PROFESSION.value,
@@ -1180,6 +1195,7 @@ def transferout_form(req, patientuuid):
 
 
 def edit_transferout_form(req, patientuuid, formid):
+    privileges_required = [Privileges.DELETE_ENCOUNTERS]
     if not check_if_session_alive(req):
         return redirect("login")
 
@@ -1203,6 +1219,7 @@ def edit_transferout_form(req, patientuuid, formid):
             "patientuuid": patientuuid,
             "state": "edit",
         }
+        context.update(check_privileges(req,privileges_required))
         mu.add_url_to_breadcrumb(req, context["title"])
         if form:
             context["form"] = form
