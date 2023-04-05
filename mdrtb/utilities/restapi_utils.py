@@ -73,9 +73,9 @@ def get(req, endpoint, parameters):
         session_expired_msg = mu.get_global_msgs(
             "require.login", source="OpenMRS"
         )
+        messages.info(req, session_expired_msg)
         logger.info("Session expired")
         clear_session(req)
-        messages.info(req, session_expired_msg)
         raise Exception(session_expired_msg)
     response.raise_for_status()
     logger.info(
@@ -94,7 +94,9 @@ def post(req, endpoint, data):
         logger.info(f"POST Request successful, status: {response.status_code}")
         return True, response.json()
     logger.info(f"'POST Request failed to /{endpoint}, status: {response.status_code}'")
-    raise Exception(response.json()["error"]["message"])
+    if "error" in response.json():
+        raise Exception(response.json()["error"]["message"].replace("[","").replace("]", ""))
+    response.raise_for_status()
 
 
 @handle_rest_exceptions

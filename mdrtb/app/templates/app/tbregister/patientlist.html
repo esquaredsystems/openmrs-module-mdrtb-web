@@ -3,78 +3,36 @@
 {% block content %}
 
 <div class="p-4 m-6 flex flex-col justify-center">
-  <h1 class="text-[#2D9CDB] font-bold text-4xl">{{'mdrtb.patientLists'|get_message:request.session.locale}}</h1>
+  <h1 class="page-title">{{'mdrtb.patientLists'|get_message:request.session.locale}}</h1>
 
-  <form class=" flex flex-col  p-4">
-    <div class="flex justify-start items-start py-4  space-x-12  ">
-      <div class="space-y-3 w-1/4">
-        <div class="input-container">
-          <label class="w-full text-[#9E9E9E]"
-            for="gender">{{'mdrtb.oblast'|get_message:request.session.locale}}</label>
-
-
-          <select class="input" name="" id="">
-            <option value="">1</option>
-            <option value="">2</option>
-          </select>
-        </div>
-
-        <div class="input-container group">
-          <label class="w-full text-[#9E9E9E]" for="DOB">{{'mdrtb.year'|get_message:request.session.locale}}</label>
-
-          <input class="input" type="text" />
-        </div>
-
-      </div>
-      <div class="space-y-3 w-1/4 ">
-        <div class="input-container">
-          <label class="w-full text-[#9E9E9E]"
-            for="gender">{{'mdrtb.district'|get_message:request.session.locale}}</label>
-
-
-          <select class="input" name="" id="">
-            <option value="">1</option>
-            <option value="">2</option>
-          </select>
-        </div>
-        <div class="input-container">
-          <label class="w-full text-[#9E9E9E]" for="gender">{{'mdrtb.month'|get_message:request.session.locale}}</label>
-
-
-          <select class="input" name="" id="">
-            {% for month in months %}
-            <option value="{{month}}">{{month}}</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
-      <div class="space-y-3 w-1/4 ">
-        <div class="input-container">
-          <label class="w-full text-[#9E9E9E]"
-            for="gender">{{'mdrtb.facility'|get_message:request.session.locale}}</label>
-
-
-          <select class="input" name="" id="">
-            <option value="">1</option>
-            <option value="">2</option>
-          </select>
-        </div>
-        <div class="input-container">
-          <label class="w-full text-[#9E9E9E]"
-            for="gender">{{'mdrtb.quarter'|get_message:request.session.locale}}</label>
-
-
-          <select class="input" name="" id="">
-            {% for quater in quaters %}
-            <option value="{{quater}}">{{quater}}</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
+  <form class=" flex flex-col space-y-6  p-4">
+    <div>
+      {% include 'app/components/locations.html' %}
     </div>
-    <button
-      class="bg-[#2D9CDB] text-white rounded-md p-2 w-1/5">{{'mdrtb.generate'|get_message:request.session.locale}}</button>
-    <div class="m-5 flex flex-col space-y-4">
+    <div class="input-container">
+      <label class="input-label w-1/6" for="year">{{"mdrtb.year"|get_message:request.session.locale}}</label>
+      <input required type="text" class="input form-control" name="year" size="4" id="year">
+    </div>
+    <div class="input-container">
+      <label class="input-label w-1/6" for="month">{{"mdrtb.month"|get_message:request.session.locale}}</label>
+      <select name="month" id="" class="input form-control">
+        <option value="">Select</option>
+        {% for month in months %}
+        <option value="{{month.value}}">{{month.name}}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="input-container">
+      <label class="input-label w-1/6" for="quarter">{{"mdrtb.quarter"|get_message:request.session.locale}}</label>
+      <select name="quarter" id="" class="input form-control">
+        <option value="">Select</option>
+        {% for quarter in quarters %}
+        <option value="{{quarter}}">{{quarter}}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="flex flex-col space-y-4">
       <div class="flex items-center space-x-4">
         <input required type="radio" name="plist-report-options">
         <label for="">{{'mdrtb.allCasesEnrolled'|get_message:request.session.locale}}</label>
@@ -153,7 +111,7 @@
       </div>
 
     </div>
-
+    <button class="button-primary w-1/5">{{'mdrtb.generate'|get_message:request.session.locale}}</button>
   </form>
 
 </div>

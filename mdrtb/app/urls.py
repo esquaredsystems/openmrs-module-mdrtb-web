@@ -105,7 +105,7 @@ urlpatterns = [
         "patient/<str:uuid>/tb03u/<str:formid>", views.edit_tb03u_form, name="edittb03u"
     ),
     path("tb03u/<str:formid>", views.delete_tb03u_form, name="deletetb03u"),
-    path("patientlist", views.patientList, name="patientlist"),
+    path("patientlist", views.patient_list, name="patientlist"),
     # Reporting Urls
     path("tb03export", views.tb03_report_form, name="tb03export"),
     path("tb03results", views.tb03_report, name="tb03Results"),

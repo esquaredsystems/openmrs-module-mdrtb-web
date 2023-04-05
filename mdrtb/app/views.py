@@ -1111,23 +1111,10 @@ def delete_form_89(req, formid):
         return redirect(req.session["redirect_url"])
 
 
-def patientList(req):
+def patient_list(req):
     context = {
-        "months": [
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
-        ],
-        "quaters": ["1", "2", "3", "4"],
+        'months' : util.get_months(),
+        "quarters" : util.get_quarters()
     }
     return render(req, "app/tbregister/patientlist.html", context=context)
 
@@ -1246,7 +1233,7 @@ def delete_transferout_form(req, formid):
 def tb03_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
-    context = {"title": "TB03 Export"}
+    context = {"title": "TB03 Export",'months' : util.get_months(),"quarters" : util.get_quarters()}
     if req.method == "POST":
         month = req.POST.get("month")
         quarter = req.POST.get("quarter")
@@ -1291,7 +1278,7 @@ def tb03_report(req):
 def tb03u_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
-    context = {"title": "TB03u Export"}
+    context = {"title": "TB03u Export",'months' : util.get_months(),"quarters" : util.get_quarters()}
     if req.method == "POST":
         month = req.POST.get("month")
         quarter = req.POST.get("quarter")
@@ -1336,7 +1323,7 @@ def tb03u_report(req):
 def form89_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
-    context = {"title": "Form89 Export"}
+    context = {"title": "Form89 Export",'months' : util.get_months(),"quarters" : util.get_quarters()}
     if req.method == "POST":
         month = req.POST.get("month")
         quarter = req.POST.get("quarter")
@@ -1381,7 +1368,7 @@ def form89_report(req):
 def tb08_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
-    context = {"title": "TB08 Export"}
+    context = {"title": "TB08 Export",'months' : util.get_months(),"quarters" : util.get_quarters()}
     if req.method == "POST":
         month = req.POST.get("month")
         quarter = req.POST.get("quarter")
@@ -1431,7 +1418,7 @@ def tb08_report(req):
 def tb08u_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
-    context = {"title": "TB08u Export"}
+    context = {"title": "TB08u Export",'months' : util.get_months(),"quarters" : util.get_quarters()}
     if req.method == "POST":
         month = req.POST.get("month")
         quarter = req.POST.get("quarter")
@@ -1477,10 +1464,11 @@ def tb08u_report(req):
         messages.error(req,e)
         return redirect(req.session['redirect_url'])
 
+
 def tb07u_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
-    context = {"title": "TB07u Export"}
+    context = {"title": "TB07u Export",'months' : util.get_months(),"quarters" : util.get_quarters()}
     if req.method == "POST":
         month = req.POST.get("month")
         quarter = req.POST.get("quarter")

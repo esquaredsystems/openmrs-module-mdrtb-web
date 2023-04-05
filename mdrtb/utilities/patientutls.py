@@ -1,5 +1,6 @@
 from utilities import common_utils as u
 from utilities import restapi_utils as ru
+from utilities import metadata_util as mu
 from utilities import formsutil as fu
 from resources.enums.constants import Constants
 from resources.enums.mdrtbConcepts import Concepts
