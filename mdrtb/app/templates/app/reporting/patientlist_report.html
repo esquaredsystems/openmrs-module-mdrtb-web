@@ -1,0 +1,20 @@
+{% extends 'app/reporting/report_base.html' %}
+
+{% block content %}
+
+
+<div>
+    <div style="font-size: 0.75rem;">
+        <a href="javascript:history.go(-1)">Back</a>
+        <p class="text-xl"><b>Year:</b> {{year}}</p>
+        {% if month %}
+        <p><b>Month:</b> {{month}}</p>
+        {% elif quarter %}
+        <p><b>Quarter:</b> {{quarter}}</p>
+        {% endif %}
+        <p><b>List:</b> {{listname}}</p>
+    </div>
+    <div>{{ string_data|safe }}</div>
+</div>
+
+{% endblock %}

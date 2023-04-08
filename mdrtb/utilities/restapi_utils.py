@@ -68,18 +68,17 @@ def get(req, endpoint, parameters):
         headers=get_auth_headers(req),
         params=parameters,
     )
+    print("STATUS CODE: ", response.status_code)
     logger.info(f"'Making GET call to /{endpoint}'")
     if response.status_code == 403:
-        session_expired_msg = mu.get_global_msgs(
-            "require.login", source="OpenMRS"
-        )
+        session_expired_msg = mu.get_global_msgs("require.login", source="OpenMRS")
         messages.info(req, session_expired_msg)
         logger.info("Session expired")
         clear_session(req)
         raise Exception(session_expired_msg)
     response.raise_for_status()
     logger.info(
-        f"'GET Request successful to /{endpoint}, status: {response.status_code}'"
+        f"GET Request successful to /{endpoint}, status: {response.status_code}"
     )
     return True, response.json()
 
@@ -95,7 +94,10 @@ def post(req, endpoint, data):
         return True, response.json()
     logger.info(f"'POST Request failed to /{endpoint}, status: {response.status_code}'")
     if "error" in response.json():
-        raise Exception(response.json()["error"]["message"].replace("[","").replace("]", ""))
+        logger.error(response.json(), exc_info=True)
+        raise Exception(
+            response.json()["error"]["message"].replace("[", "").replace("]", "")
+        )
     response.raise_for_status()
 
 

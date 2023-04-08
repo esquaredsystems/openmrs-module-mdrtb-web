@@ -528,7 +528,7 @@ def edit_tb03_form(req, uuid, formid):
             "current_patient_program_flow": req.session["current_patient_program_flow"],
             "identifiers": pu.get_patient_identifiers(req, uuid),
         }
-        context.update(check_privileges(req,privileges_required))
+        context.update(check_privileges(req, privileges_required))
         tb03_concepts = [
             Concepts.TREATMENT_CENTER_FOR_IP.value,
             Concepts.TREATMENT_CENTER_FOR_CP.value,
@@ -557,7 +557,6 @@ def edit_tb03_form(req, uuid, formid):
 def delete_tb03_form(req, formid):
     if formid:
         try:
-            
             response = ru.delete(req, f"mdrtb/tb03/{formid}")
             ru.delete(req, f"encounter/{formid}")
             if response:
@@ -648,7 +647,7 @@ def edit_tb03u_form(req, uuid, formid):
                 "NO": Concepts.NO.value,
             },
         }
-        context.update(check_privileges(req,privileges_required))
+        context.update(check_privileges(req, privileges_required))
         tb03u_concepts = [
             Concepts.ANATOMICAL_SITE_OF_TB.value,
             Concepts.MDR_STATUS.value,
@@ -776,7 +775,7 @@ def edit_adverse_events_form(req, patientid, formid):
                 "NO": Concepts.NO.value,
             },
         }
-        context.update(check_privileges(req,privileges_required))
+        context.update(check_privileges(req, privileges_required))
         adverse_event_concepts = [
             Concepts.ADVERSE_EVENT.value,
             Concepts.ADVERSE_EVENT_TYPE.value,
@@ -873,7 +872,7 @@ def edit_drug_resistence_form(req, patientid, formid):
 
     try:
         context = {"title": "Drug Resistanse", "patient_id": patientid, "state": "edit"}
-        context.update(check_privileges(req,privileges_required))
+        context.update(check_privileges(req, privileges_required))
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         drug_resistance_concepts = [Concepts.DRUG_RESISTANCE_DURING_TREATMENT.value]
         form = fu.get_drug_resistance_form_by_uuid(req, formid)
@@ -974,7 +973,7 @@ def edit_regimen_form(req, patientid, formid):
             "state": "edit",
             "current_patient_program_flow": req.session["current_patient_program_flow"],
         }
-        context.update(check_privileges(req,privileges_required))
+        context.update(check_privileges(req, privileges_required))
         if form:
             context["form"] = form
         else:
@@ -1076,7 +1075,7 @@ def edit_form_89(req, uuid, formid):
                 "NO": Concepts.NO.value,
             },
         }
-        context.update(check_privileges(req,privileges_required))
+        context.update(check_privileges(req, privileges_required))
         form89_concepts = [
             Concepts.LOCATION_TYPE.value,
             Concepts.PROFESSION.value,
@@ -1109,14 +1108,6 @@ def delete_form_89(req, formid):
         messages.error(req, str(e))
     finally:
         return redirect(req.session["redirect_url"])
-
-
-def patient_list(req):
-    context = {
-        'months' : util.get_months(),
-        "quarters" : util.get_quarters()
-    }
-    return render(req, "app/tbregister/patientlist.html", context=context)
 
 
 def user_profile(req):
@@ -1206,7 +1197,7 @@ def edit_transferout_form(req, patientuuid, formid):
             "patientuuid": patientuuid,
             "state": "edit",
         }
-        context.update(check_privileges(req,privileges_required))
+        context.update(check_privileges(req, privileges_required))
         mu.add_url_to_breadcrumb(req, context["title"])
         if form:
             context["form"] = form
@@ -1230,10 +1221,53 @@ def delete_transferout_form(req, formid):
 # Reporting Views
 
 
+def patient_list(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
+
+    context = {
+        "months": util.get_months(),
+        "quarters": util.get_quarters(),
+        "title": "Patient List",
+    }
+    if req.method == "POST":
+        month = req.POST.get("month")
+        quarter = req.POST.get("quarter")
+        keys_to_check = ["facility", "district", "region"]
+        location = None
+        for key in keys_to_check:
+            value = req.POST.get(key)
+            if value and len(value) > 0:
+                location = value
+                break
+        year = req.POST.get("year")
+        listname = req.POST.get("listname")
+        params = {"year": year, "listname": listname, "location": location}
+        if month:
+            params["month"] = month
+            context["month"] = month
+        elif quarter:
+            params["quarter"] = quarter
+            context["quarter"] = quarter
+
+        status, response = ru.get(req, "mdrtb/patientlist", params)
+        if status:
+            context["year"] = year
+            context["listname"] = util.get_patient_list_options(listname)
+            context["string_data"] = response["results"][0]["stringData"]
+            return render(req, "app/reporting/patientlist_report.html", context=context)
+
+    return render(req, "app/tbregister/patientlist.html", context=context)
+
+
 def tb03_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
-    context = {"title": "TB03 Export",'months' : util.get_months(),"quarters" : util.get_quarters()}
+    context = {
+        "title": "TB03 Export",
+        "months": util.get_months(),
+        "quarters": util.get_quarters(),
+    }
     if req.method == "POST":
         month = req.POST.get("month")
         quarter = req.POST.get("quarter")
@@ -1278,7 +1312,11 @@ def tb03_report(req):
 def tb03u_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
-    context = {"title": "TB03u Export",'months' : util.get_months(),"quarters" : util.get_quarters()}
+    context = {
+        "title": "TB03u Export",
+        "months": util.get_months(),
+        "quarters": util.get_quarters(),
+    }
     if req.method == "POST":
         month = req.POST.get("month")
         quarter = req.POST.get("quarter")
@@ -1323,7 +1361,11 @@ def tb03u_report(req):
 def form89_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
-    context = {"title": "Form89 Export",'months' : util.get_months(),"quarters" : util.get_quarters()}
+    context = {
+        "title": "Form89 Export",
+        "months": util.get_months(),
+        "quarters": util.get_quarters(),
+    }
     if req.method == "POST":
         month = req.POST.get("month")
         quarter = req.POST.get("quarter")
@@ -1368,7 +1410,11 @@ def form89_report(req):
 def tb08_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
-    context = {"title": "TB08 Export",'months' : util.get_months(),"quarters" : util.get_quarters()}
+    context = {
+        "title": "TB08 Export",
+        "months": util.get_months(),
+        "quarters": util.get_quarters(),
+    }
     if req.method == "POST":
         month = req.POST.get("month")
         quarter = req.POST.get("quarter")
@@ -1393,7 +1439,7 @@ def tb08_report(req):
         return redirect("login")
 
     try:
-        req.session['redirect_url'] = req.META.get('HTTP_REFERER')
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER")
         context = {"title": "TB08 Report"}
         month = req.GET.get("month")
         quarter = req.GET.get("quarter")
@@ -1406,19 +1452,23 @@ def tb08_report(req):
             params["quarter"] = quarter
         status, response = ru.get(req, "mdrtb/tb08report", params)
         if status:
-            context['location'] = mu.get_location(req,location)
+            context["location"] = mu.get_location(req, location)
             context["patientSet"] = response["results"]
             return render(req, "app/reporting/tb08_report.html", context)
         return redirect("searchPatientsView")
     except Exception as e:
-        messages.error(req,e)
-        return redirect(req.session['redirect_url'])
+        messages.error(req, e)
+        return redirect(req.session["redirect_url"])
 
 
 def tb08u_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
-    context = {"title": "TB08u Export",'months' : util.get_months(),"quarters" : util.get_quarters()}
+    context = {
+        "title": "TB08u Export",
+        "months": util.get_months(),
+        "quarters": util.get_quarters(),
+    }
     if req.method == "POST":
         month = req.POST.get("month")
         quarter = req.POST.get("quarter")
@@ -1443,7 +1493,7 @@ def tb08u_report(req):
         return redirect("login")
 
     try:
-        req.session['redirect_url'] = req.META.get('HTTP_REFERER')
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER")
         context = {"title": "TB08u Report"}
         month = req.GET.get("month")
         quarter = req.GET.get("quarter")
@@ -1456,19 +1506,23 @@ def tb08u_report(req):
             params["quarter"] = quarter
         status, response = ru.get(req, "mdrtb/tb08ureport", params)
         if status:
-            context['location'] = mu.get_location(req,location)
+            context["location"] = mu.get_location(req, location)
             context["patientSet"] = response["results"]
             return render(req, "app/reporting/tb08u_report.html", context)
         return redirect("searchPatientsView")
     except Exception as e:
-        messages.error(req,e)
-        return redirect(req.session['redirect_url'])
+        messages.error(req, e)
+        return redirect(req.session["redirect_url"])
 
 
 def tb07u_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
-    context = {"title": "TB07u Export",'months' : util.get_months(),"quarters" : util.get_quarters()}
+    context = {
+        "title": "TB07u Export",
+        "months": util.get_months(),
+        "quarters": util.get_quarters(),
+    }
     if req.method == "POST":
         month = req.POST.get("month")
         quarter = req.POST.get("quarter")
@@ -1493,7 +1547,7 @@ def tb07u_report(req):
         return redirect("login")
 
     try:
-        req.session['redirect_url'] = req.META.get('HTTP_REFERER')
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER")
         context = {"title": "TB07u Report"}
         month = req.GET.get("month")
         quarter = req.GET.get("quarter")
@@ -1506,13 +1560,13 @@ def tb07u_report(req):
             params["quarter"] = quarter
         status, response = ru.get(req, "mdrtb/tb07ureport", params)
         if status:
-            context['location'] = mu.get_location(req,location)
+            context["location"] = mu.get_location(req, location)
             context["patientSet"] = response["results"]
             return render(req, "app/reporting/tb07u_report.html", context)
         return redirect("searchPatientsView")
     except Exception as e:
-        messages.error(req,e)
-        return redirect(req.session['redirect_url'])
+        messages.error(req, e)
+        return redirect(req.session["redirect_url"])
 
 
 # CommonLab Views
