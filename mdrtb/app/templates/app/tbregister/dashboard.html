@@ -203,7 +203,7 @@
       <div class="flex-center space-x-4">
         <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.labResults'|get_message:request.session.locale}}
         </h2>
-        <a href="#" class="cancel-button">
+        <a href="{% url 'managetestorders' uuid=uuid %}" class="cancel-button">
           View All Lab Tests
         </a>
       </div>
