@@ -114,6 +114,9 @@ def get_attributes_of_labtest(req, uuid):
     status, data = ru.get(
         req, "commonlab/labtestattributetype", {"testTypeUuid": uuid, "v": "full"}
     )
+    print("===================")
+    print(data)
+    print("===================")
     if status:
         sortedAttr = sorted(data["results"], key=lambda x: x["sortWeight"])
         return sortedAttr

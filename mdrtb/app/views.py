@@ -80,6 +80,18 @@ def get_locations(req):
         return JsonResponse(data={})
 
 
+def get_concepts(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    try:
+        q = req.GET["q"]
+        _, response = ru.get(req, "concept", parameters={"q": q})
+    except Exception as e:
+        messages.error(req, e)
+        response = {"error": str(e)}
+    return JsonResponse(response)
+
+
 def login(req):
     if check_if_session_alive(req):
         redirect_page = req.session.get("redirect_url")
@@ -1573,6 +1585,9 @@ def tb07u_report(req):
 
 
 def manage_test_types(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
+
     context = {"title": "Manage Test Types"}
     if req.method == "POST":
         search_results = cu.get_test_types_by_search(req, req.POST["search"])
@@ -1589,6 +1604,9 @@ def manage_test_types(req):
 
 
 def fetch_attributes(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
+
     response = cu.get_attributes_of_labtest(req, req.GET["uuid"])
     attributes = []
     for attribute in response:
@@ -1596,11 +1614,11 @@ def fetch_attributes(req):
             {
                 "attrName": attribute["name"],
                 "sortWeight": attribute["sortWeight"],
-                "groupName": "none"
-                if attribute["groupName"] == None
+                "groupName": "None"
+                if "groupName" not in attribute
                 else attribute["groupName"],
-                "multisetName": "none"
-                if attribute["multisetName"] == None
+                "multisetName": "None"
+                if "groupName" not in attribute
                 else attribute["multisetName"],
             }
         )
@@ -1609,13 +1627,15 @@ def fetch_attributes(req):
 
 
 def add_test_type(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
     context = {"title": "Add Test Type"}
     if req.method == "POST":
         body = {
             "name": req.POST["testname"],
             "testGroup": req.POST["testgroup"],
             "requiresSpecimen": True if req.POST["requirespecimen"] == "Yes" else False,
-            "referenceConcept": req.POST["referenceconcept"],
+            "referenceConcept": req.POST["referenceConceptuuid"],
             "description": req.POST["description"],
             "shortName": None if req.POST["shortname"] == "" else req.POST["shortname"],
         }
@@ -1625,13 +1645,14 @@ def add_test_type(req):
         else:
             context["error"] = response
             return render(req, "app/commonlab/addtesttypes.html", context=context)
-    concepts = cu.get_commonlab_concepts_by_type(req, "labtesttype")
-    context["referenceConcepts"] = concepts
     context["testGroups"] = cu.get_commonlab_test_groups()
     return render(req, "app/commonlab/addtesttypes.html", context=context)
 
 
 def edit_test_type(req, uuid):
+    if not check_if_session_alive(req):
+        return redirect("login")
+
     context = {"title": "Edit Test Type"}
     status, response = ru.get(
         req, f"commonlab/labtesttype/{uuid}", {"v": "full", "lang": "en"}
@@ -1651,9 +1672,9 @@ def edit_test_type(req, uuid):
                 "name": data["referenceConcept"]["display"],
             },
         }
-        context["referenceConcepts"] = cu.get_commonlab_concepts_by_type(
-            req, "labtesttype"
-        )
+        # context["referenceConcepts"] = cu.get_commonlab_concepts_by_type(
+        #     req, "labtesttype"
+        # )
         context["testGroups"] = util.remove_given_str_from_arr(
             cu.get_commonlab_test_groups(), data["testGroup"]
         )
@@ -1676,6 +1697,9 @@ def edit_test_type(req, uuid):
 
 
 def retire_test_type(req, uuid):
+    if not check_if_session_alive(req):
+        return redirect("login")
+
     if req.method == "POST":
         status, _ = ru.delete(req, f"commonlab/labtesttype/{uuid}")
         if status:
@@ -1684,6 +1708,9 @@ def retire_test_type(req, uuid):
 
 
 def manageAttributes(req, uuid):
+    if not check_if_session_alive(req):
+        return redirect("login")
+
     context = {"labTestUuid": uuid, "title": "Manage Attributes"}
     response = cu.get_attributes_of_labtest(req, uuid)
     context["attributes"] = response
@@ -1692,6 +1719,9 @@ def manageAttributes(req, uuid):
 
 
 def addattributes(req, uuid):
+    if not check_if_session_alive(req):
+        return redirect("login")
+
     context = {
         "labTestUuid": uuid,
         "prefferedHandlers": cu.get_preffered_handler(),
@@ -1722,6 +1752,9 @@ def addattributes(req, uuid):
 
 
 def editAttribute(req, testid, attrid):
+    if not check_if_session_alive(req):
+        return redirect("login")
+
     context = {"state": "edit", "testid": testid, "title": "Edit Attribute"}
     status, response = ru.get(
         req, f"commonlab/labtestattributetype/{attrid}", {"v": "full"}
@@ -1765,6 +1798,9 @@ def editAttribute(req, testid, attrid):
 
 
 def managetestorders(req, uuid):
+    if not check_if_session_alive(req):
+        return redirect("login")
+
     context = {"title": "Manage Lab Test Orders", "patient": uuid}
     status, response = ru.get(
         req,
@@ -1778,6 +1814,9 @@ def managetestorders(req, uuid):
 
 
 def add_lab_test(req, uuid):
+    if not check_if_session_alive(req):
+        return redirect("login")
+
     context = {"title": "Add Lab Test", "patient": uuid}
     if req.method == "POST":
         body = {
@@ -1814,6 +1853,9 @@ def add_lab_test(req, uuid):
 
 
 def edit_lab_test(req, patientid, orderid):
+    if not check_if_session_alive(req):
+        return redirect("login")
+
     context = {
         "title": "Edit Lab Test",
         "state": "edit",
@@ -1873,12 +1915,18 @@ def edit_lab_test(req, patientid, orderid):
 
 
 def delete_lab_test(req, patientid, orderid):
+    if not check_if_session_alive(req):
+        return redirect("login")
+
     status, response = ru.delete(req, f"commonlab/labtestorder/{orderid}")
     if status:
         return redirect("managetestorders", uuid=patientid)
 
 
 def managetestsamples(req, orderid):
+    if not check_if_session_alive(req):
+        return redirect("login")
+
     context = {"title": "Manage Test Samples", "orderid": orderid}
     status, response = ru.get(
         req, f"commonlab/labtestorder/{orderid}", {"v": "custom:(labTestSamples)"}
@@ -1889,6 +1937,9 @@ def managetestsamples(req, orderid):
 
 
 def add_test_sample(req, orderid):
+    if not check_if_session_alive(req):
+        return redirect("login")
+
     context = {"title": "Add Sample", "orderid": orderid}
     if req.method == "POST":
         body = {
@@ -1918,6 +1969,9 @@ def add_test_sample(req, orderid):
 
 
 def add_test_results(req, orderid):
+    if not check_if_session_alive(req):
+        return redirect("login")
+
     context = {"title": "Add Test Results", "orderid": orderid}
     if req.method == "POST":
         status, laborder = ru.get(req, f"commonlab/labtestorder/{orderid}", {})
