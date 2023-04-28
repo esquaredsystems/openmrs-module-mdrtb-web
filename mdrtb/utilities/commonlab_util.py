@@ -114,9 +114,6 @@ def get_attributes_of_labtest(req, uuid):
     status, data = ru.get(
         req, "commonlab/labtestattributetype", {"testTypeUuid": uuid, "v": "full"}
     )
-    print("===================")
-    print(data)
-    print("===================")
     if status:
         sortedAttr = sorted(data["results"], key=lambda x: x["sortWeight"])
         return sortedAttr
@@ -136,10 +133,10 @@ def custom_attribute(data, removeDT, removeHandler):
         "uuid": data["uuid"],
         "name": data["name"],
         "description": data["description"],
-        "multisetName": "" if data["multisetName"] == None else data["multisetName"],
-        "groupName": "" if data["groupName"] == None else data["groupName"],
+        "multisetName": "None" if "multisetName" not in data else data["multisetName"],
+        "groupName": "None" if "groupName" not in data else data["groupName"],
         "maxOccurs": data["maxOccurs"],
-        "minOccurs": data["minOccurs"],
+        "minOccurs": 0 if "minOccurs" not in data else data["minOccurs"],
         "sortWeight": data["sortWeight"],
         "datatypeClassname": {
             "name": u.remove_given_str_from_obj_arr(
