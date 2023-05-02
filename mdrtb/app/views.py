@@ -1599,6 +1599,8 @@ def manage_test_types(req):
             context["response"] = response["results"]
             return render(req, "app/commonlab/managetesttypes.html", context=context)
     status, response = ru.get(req, "commonlab/labtesttype", {"v": "full"})
+    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+    mu.add_url_to_breadcrumb(req, context["title"])
     context["response"] = response["results"] if status else []
     return render(req, "app/commonlab/managetesttypes.html", context=context)
 
@@ -1646,6 +1648,8 @@ def add_test_type(req):
             context["error"] = response
             return render(req, "app/commonlab/addtesttypes.html", context=context)
     context["testGroups"] = cu.get_commonlab_test_groups()
+    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+    mu.add_url_to_breadcrumb(req, context["title"])
     return render(req, "app/commonlab/addtesttypes.html", context=context)
 
 
@@ -1657,6 +1661,9 @@ def edit_test_type(req, uuid):
     status, response = ru.get(
         req, f"commonlab/labtesttype/{uuid}", {"v": "full", "lang": "en"}
     )
+    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+    mu.add_url_to_breadcrumb(req, context["title"])
+
     if status:
         data = response
         context["state"] = "edit"
@@ -1704,6 +1711,8 @@ def retire_test_type(req, uuid):
         status, _ = ru.delete(req, f"commonlab/labtesttype/{uuid}")
         if status:
             return redirect("managetesttypes")
+    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+    mu.add_url_to_breadcrumb(req, context["title"])
     return render(req, "app/commonlab/addtesttypes.html")
 
 
@@ -1714,7 +1723,8 @@ def manageAttributes(req, uuid):
     context = {"labTestUuid": uuid, "title": "Manage Attributes"}
     response = cu.get_attributes_of_labtest(req, uuid)
     context["attributes"] = response
-
+    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+    mu.add_url_to_breadcrumb(req, context["title"])
     return render(req, "app/commonlab/manageattributes.html", context=context)
 
 
@@ -1747,7 +1757,8 @@ def addattributes(req, uuid):
         status, response = ru.post(req, "commonlab/labtestattributetype", body)
         if status:
             return redirect(f"/commonlab/labtest/{uuid}/manageattributes")
-
+    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+    mu.add_url_to_breadcrumb(req, context["title"])
     return render(req, "app/commonlab/addattributes.html", context=context)
 
 
@@ -1756,6 +1767,8 @@ def editAttribute(req, testid, attrid):
         return redirect("login")
 
     context = {"state": "edit", "testid": testid, "title": "Edit Attribute"}
+    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+    mu.add_url_to_breadcrumb(req, context["title"])
     status, response = ru.get(
         req, f"commonlab/labtestattributetype/{attrid}", {"v": "full"}
     )
@@ -1802,6 +1815,8 @@ def managetestorders(req, uuid):
         return redirect("login")
 
     context = {"title": "Manage Lab Test Orders", "patient": uuid}
+    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+    mu.add_url_to_breadcrumb(req, context["title"])
     status, response = ru.get(
         req,
         f"commonlab/labtestorder",
@@ -1816,40 +1831,52 @@ def managetestorders(req, uuid):
 def add_lab_test(req, uuid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     context = {"title": "Add Lab Test", "patient": uuid}
     if req.method == "POST":
-        body = {
-            "labTestType": req.POST["testType"],
-            "labReferenceNumber": req.POST["labref"],
-            "order": {
-                "patient": uuid,
-                "concept": cu.get_reference_concept_of_labtesttype(
-                    req, req.POST["testType"]
-                ),
-                "encounter": req.POST["encounter"],
-                "type": "order",
-                "instructions": None
-                if req.POST["instructions"] == None
-                else req.POST["instructions"],
-                "orderType": "33ccfcc6-0370-102d-b0e3-001ec94a0cc1",
-                "orderer": "09544a0e-14f1-11ed-9181-00155dcead03",
-            },
-        }
+        try:
+            body = {
+                "labTestType": req.POST["testType"],
+                "labReferenceNumber": req.POST["labref"],
+                "order": {
+                    "patient": uuid,
+                    "concept": cu.get_reference_concept_of_labtesttype(
+                        req, req.POST["testType"]
+                    ),
+                    "encounter": req.POST["encounter"],
+                    "type": "order",
+                    "instructions": None
+                    if req.POST["instructions"] == None
+                    else req.POST["instructions"],
+                    "orderType": "33ccfcc6-0370-102d-b0e3-001ec94a0cc1",
+                    "orderer": "09544a0e-14f1-11ed-9181-00155dcead03",
+                },
+            }
+            print("==========================")
+            print(body)
+            print("==========================")
+            status, response = ru.post(req, "commonlab/labtestorder", body)
+            if status:
+                return redirect("managetestorders", uuid=uuid)
+            else:
+                messages.error(req, response["error"]["message"])
+                return redirect("managetestorders", uuid=uuid)
+        except Exception as e:
+            messages.error(req, e)
+            return redirect(req.session["redirect_url"])
 
-        status, response = ru.post(req, "commonlab/labtestorder", body)
-        if status:
-            return redirect("managetestorders", uuid=uuid)
-        else:
-            messages.error(req, response["error"]["message"])
-        return redirect("managetestorders", uuid=uuid)
-    encounters = cu.get_patient_encounters(req, uuid)
-    labtests, testgroups = cu.get_test_groups_and_tests(req)
-    if encounters:
-        context["encounters"] = encounters["results"]
-        context["testgroups"] = testgroups
-        context["labtests"] = json.dumps(labtests)
-    return render(req, "app/commonlab/addlabtest.html", context=context)
+    try:
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+        mu.add_url_to_breadcrumb(req, context["title"])
+        encounters = cu.get_patient_encounters(req, uuid)
+        labtests, testgroups = cu.get_test_groups_and_tests(req)
+        if encounters:
+            context["encounters"] = encounters["results"]
+            context["testgroups"] = list(dict.fromkeys(testgroups))
+            context["labtests"] = json.dumps(labtests)
+        return render(req, "app/commonlab/addlabtest.html", context=context)
+    except Exception as e:
+        messages.error(req, e)
+        return redirect(req.session["redirect_url"])
 
 
 def edit_lab_test(req, patientid, orderid):
@@ -1892,6 +1919,8 @@ def edit_lab_test(req, patientid, orderid):
         f"commonlab/labtestorder/{orderid}",
         {"v": "custom:(uuid,order,labTestType,labReferenceNumber)"},
     )
+    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+    mu.add_url_to_breadcrumb(req, context["title"])
     if status:
         encounters = cu.get_patient_encounters(
             req, response["order"]["patient"]["uuid"]
@@ -1919,6 +1948,8 @@ def delete_lab_test(req, patientid, orderid):
         return redirect("login")
 
     status, response = ru.delete(req, f"commonlab/labtestorder/{orderid}")
+    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+    mu.add_url_to_breadcrumb(req, context["title"])
     if status:
         return redirect("managetestorders", uuid=patientid)
 
@@ -1931,6 +1962,8 @@ def managetestsamples(req, orderid):
     status, response = ru.get(
         req, f"commonlab/labtestorder/{orderid}", {"v": "custom:(labTestSamples)"}
     )
+    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+    mu.add_url_to_breadcrumb(req, context["title"])
     if status:
         context["samples"] = response["labTestSamples"]
     return render(req, "app/commonlab/managetestsamples.html", context=context)
@@ -1941,6 +1974,7 @@ def add_test_sample(req, orderid):
         return redirect("login")
 
     context = {"title": "Add Sample", "orderid": orderid}
+
     if req.method == "POST":
         body = {
             "labTest": orderid,
@@ -1951,8 +1985,11 @@ def add_test_sample(req, orderid):
             "units": "" if not req.POST["units"] else req.POST["units"],
             "collectionDate": req.POST["collectedon"],
             "status": "COLLECTED",
-            "collector": "0e5ac8a2-cb48-40ff-a9bd-b0e09afa7860",
+            "collector": req.session["logged_user"]["uuid"],
         }
+        print("======================")
+        print(body)
+        print("======================")
 
         status, response = ru.post(req, "commonlab/labtestsample", body)
         if status:
@@ -1960,9 +1997,14 @@ def add_test_sample(req, orderid):
         else:
             messages.error(req, "Error adding samples")
             return redirect("managetestsamples", orderid=orderid)
-
-    context["specimentype"] = cu.get_commonlab_concepts_by_type(req, "specimentype")
-    context["specimensite"] = cu.get_commonlab_concepts_by_type(req, "specimensite")
+    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+    mu.add_url_to_breadcrumb(req, context["title"])
+    context["specimentype"] = cu.get_commonlab_concepts_by_type(
+        req, "commonlabtest.specimenTypeConceptUuid"
+    )
+    context["specimensite"] = cu.get_commonlab_concepts_by_type(
+        req, "commonlabtest.specimenSiteConceptUuid"
+    )
     context["units"] = cu.get_sample_units(req)
 
     return render(req, "app/commonlab/addsample.html", context=context)
@@ -2003,6 +2045,8 @@ def add_test_results(req, orderid):
             return redirect("managetestorders", uuid=req.GET["patient"])
 
     try:
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+        mu.add_url_to_breadcrumb(req, context["title"])
         attributes, testType = cu.get_custom_attribute_for_labresults(req, orderid)
         context["attributes"] = json.dumps(attributes)
         context["testType"] = testType

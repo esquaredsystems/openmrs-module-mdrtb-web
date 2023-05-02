@@ -18,7 +18,7 @@
                 {{'general.specimenType'|get_message_commonlab:request.session.locale}}
 
             </label>
-            <select required name="specimentype" class="input">
+            <select required name="specimentype" class="input form-control">
                 <option selected value="">Select</option>
                 {% for type in specimentype %}
                 <option value="{{ type.uuid }}">{{ type.name }}</option>
@@ -30,7 +30,7 @@
                 {{'general.specimenSite'|get_message_commonlab:request.session.locale}}
 
             </label>
-            <select required name="specimensite" id="group-select" class="input">
+            <select required name="specimensite" id="group-select" class="input form-control">
                 <option selected value="">Select</option>
 
                 {% for site in specimensite %}
@@ -43,14 +43,14 @@
                 {{'commonlabtest.labtestsample.quantity'|get_message_commonlab:request.session.locale}}
 
             </label>
-            <input class="input" type="number" name="quantity">
+            <input class="input form-control" type="number" name="quantity">
         </div>
         <div class="input-container">
             <label class="input-label">
                 {{'commonlabtest.labtestsample.unit'|get_message_commonlab:request.session.locale}}
 
             </label>
-            <select name="units" class="input">
+            <select name="units" class="input form-control">
                 <option selected value="">Select</option>
 
                 {% for unit in units %}
@@ -64,7 +64,7 @@
                 {{'commonlabtest.labtestsample.sampleIdentifier'|get_message_commonlab:request.session.locale}}
 
             </label>
-            <input class="input" type="text" name="specimenid" value="{{'placeholder' | get_datenow}}">
+            <input class="input form-control" type="text" name="specimenid" value="{{'placeholder' | get_datenow}}">
 
         </div>
         <div class="input-container">
@@ -72,7 +72,7 @@
                 {{'commonlabtest.labtestsample.collectionDate'|get_message_commonlab:request.session.locale}}
 
             </label>
-            <input class="input" type="date" name="collectedon">
+            <input class="input form-control" type="date" name="collectedon">
         </div>
         <div class="flex-center space-x-4">
             <input type="submit" class="button-primary w-1/5"

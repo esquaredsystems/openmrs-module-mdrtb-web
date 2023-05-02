@@ -6,14 +6,11 @@ import utilities.metadata_util as mu
 
 
 def get_commonlab_concepts_by_type(req, type):
-    concept_uuid = mu.get_global_properties(req, type)
-    status, response = ru.get(
-        req, "commonlab/concept", {"type": type, "lang": req.session["locale"]}
-    )
+    concept = mu.get_concept(req, mu.get_global_properties(req, type))
     concepts = []
-    if status:
-        for concept in response["answers"]:
-            concepts.append({"name": concept["name"], "uuid": concept["uuid"]})
+    if concept:
+        for answer in concept["answers"]:
+            concepts.append({"name": answer["display"], "uuid": answer["uuid"]})
 
     return concepts
 

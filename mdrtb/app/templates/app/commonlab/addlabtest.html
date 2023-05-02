@@ -28,7 +28,7 @@
                 {{'ConceptProposal.encounter'|get_message_openMRS:request.session.locale}}
 
             </label>
-            <select name="encounter" class="input">
+            <select name="encounter" class="input form-control">
                 {% if state == 'edit' %}
                 <option selected value="{{laborder.order.encounter.uuid}}">{{laborder.order.encounter.name}}</option>
                 {% endif %}
@@ -42,7 +42,7 @@
                 {{'general.testGroup'|get_message_commonlab:request.session.locale}}
 
             </label>
-            <select name="testGroup" id="group-select" class="input">
+            <select name="testGroup" id="group-select" class="input form-control">
                 {% if state == 'edit' %}
                 <option selected value="{{laborder.labtesttype.testGroup}}">{{laborder.labtesttype.testGroup}}</option>
                 {% else %}
@@ -60,11 +60,11 @@
 
             </label>
             {% if state == 'edit' %}
-            <select name="testType" id="test-select" class="input">
+            <select name="testType" id="test-select" class="input form-control">
                 <option selected value="{{laborder.labtesttype.uuid}}">{{laborder.labtesttype.name}}</option>
             </select>
             {% else %}
-            <select disabled name="testType" id="test-select" class="input">
+            <select disabled name="testType" id="test-select" class="input form-control">
             </select>
             {% endif %}
 
@@ -77,9 +77,10 @@
 
             </label>
             {% if state == 'edit' %}
-            <input name="labref" id="labref" class="input" type="text" value="{{laborder.labref}}">
+            <input name="labref" id="labref" class="input form-control" type="text" value="{{laborder.labref}}">
             {% else %}
-            <input name="labref" id="labref" class="input" type="text" value="{{'placeholder' | get_datenow}}">
+            <input name="labref" id="labref" class="input form-control" type="text"
+                value="{{'placeholder' | get_datenow}}">
             {% endif %}
         </div>
         <div class="input-container">
@@ -88,9 +89,9 @@
 
             </label>
             {% if state == 'edit' %}
-            <textarea name="instructions" class="input">{{laborder.order.instructions}}</textarea>
+            <textarea name="instructions" class="input form-control">{{laborder.order.instructions}}</textarea>
             {% else %}
-            <textarea name="instructions" id="" class="input"></textarea>
+            <textarea name="instructions" id="" class="input form-control"></textarea>
             {% endif %}
         </div>
         <div class="flex-center space-x-4">
