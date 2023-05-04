@@ -10,16 +10,34 @@
 <div class="m-16">
     <div class="flex flex-col">
         <div class="flex items-center justify-between">
+            {% if state == 'edit' %}
+            <div id="form-info" class="flex-center space-x-4">
+                <h1 class="text-[#2D9CDB] text-3xl font-bold">
+                    {{'commonlabtest.labtestattributetype.edit'|get_message_commonlab:request.session.locale}}
+                </h1>
+                <button type="button" id="editbtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                    </svg>
+
+                </button>
+                <button hidden type="button" id="canceleditbtn" class="cancel-button">Cancel</button>
+
+
+
+            </div>
+            {% else %}
             <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
-                {% if state == 'edit' %}
-                {{'commonlabtest.labtestattributetype.edit'|get_message_commonlab:request.session.locale}}
-                {% else %}
-                {{'commonlabtest.labtestattributetype.add'|get_message_commonlab:request.session.locale}}{% endif %}
+                {{'commonlabtest.labtestattributetype.add'|get_message_commonlab:request.session.locale}}
             </h2>
+            {% endif %}
         </div>
 
+
         <div class="mt-4">
-            <form method="post"
+            <form onsubmit="disableSubmit()" method="post"
                 action="{% if state == 'edit' %} {% url 'editattr' testid=testid attrid=attribute.uuid %} {% else %} {% url 'addattr' uuid=labTestUuid %} {% endif %}"
                 class="grid grid-cols-2 gap-5 p-4 ">
                 {% csrf_token %}
@@ -37,10 +55,10 @@
                         <label
                             class="input-label w-4/5">{{'general.description'|get_message_commonlab:request.session.locale}}</label>
                         {% if state == 'edit' %}
-                        <textarea name="desc" required class="input" cols="5"
+                        <textarea name="desc" required class="input form-control" cols="5"
                             rows="5">{{attribute.description}}</textarea>
                         {% else %}
-                        <textarea name="desc" required class="input" cols="5" rows="5"></textarea>
+                        <textarea name="desc" required class="input form-control" cols="5" rows="5"></textarea>
                         {% endif %}
                     </div>
                     <div class="input-container">
@@ -113,7 +131,8 @@
                     <div class="input-container">
                         <label
                             class="input-label w-4/5">{{'general.dataType'|get_message_commonlab:request.session.locale}}</label>
-                        <select required onchange="handleDataType()" class="input" id="datatype" name="datatype">
+                        <select required onchange="handleDataType()" class="input form-control" id="datatype"
+                            name="datatype">
                             {% if state == 'edit' %}
                             <option selected value="{{attribute.datatypeClassname.value}}">
                                 {{attribute.datatypeClassname.name}}</option>
@@ -152,18 +171,18 @@
                         <label
                             class="input-label w-4/5">{{'general.datatypeConfiguration'|get_message_commonlab:request.session.locale}}</label>
                         {% if state == 'edit' %}
-                        <textarea name="datatypeconfig" class="input" cols="5"
+                        <textarea name="datatypeconfig" class="input form-control" cols="5"
                             rows="5">{{attribute.datatypeConfig}}</textarea>
 
                         {% else %}
-                        <textarea name="datatypeconfig" class="input" cols="5" rows="5"></textarea>
+                        <textarea name="datatypeconfig" class="input form-control" cols="5" rows="5"></textarea>
 
                         {% endif %}
                     </div>
                     <div class="input-container">
                         <label
                             class="input-label w-4/5">{{'general.preferredHandler'|get_message_commonlab:request.session.locale}}</label>
-                        <select name="handler" class="input">
+                        <select name="handler" class="input form-control">
                             {% if state == 'edit' %}
                             <option selected value="{{attribute.preferredHandlerClassname.value}}">
                                 {{attribute.preferredHandlerClassname.name}}</option>
@@ -184,10 +203,10 @@
                         <label
                             class="input-label w-4/5">{{'general.handlerConfiguration'|get_message_commonlab:request.session.locale}}</label>
                         {% if state == 'edit' %}
-                        <textarea class="input" cols="3" rows="3"
+                        <textarea class="input form-control" cols="3" rows="3"
                             name="handleconfig">{{attribute.handlerConfig}}</textarea>
                         {% else %}
-                        <textarea class="input" cols="3" rows="3" name="handleconfig"></textarea>
+                        <textarea class="input form-control" cols="3" rows="3" name="handleconfig"></textarea>
                         {% endif %}
 
                     </div>
@@ -195,13 +214,31 @@
 
                 </div>
                 <div class="flex-center space-x-4">
-                    <button
-                        class="bg-[#2D9CDB] text-white rounded-md p-2 w-2/5">{{'general.save'|get_message_openMRS:request.session.locale}}</button>
+                    <button id="submitBtn"
+                        class="button-primary w-2/5">{{'general.save'|get_message_openMRS:request.session.locale}}</button>
                     <a href="javascript:history.go(-1)"
                         class="cancel-button">{{'general.cancel'|get_message_openMRS:request.session.locale}}</a>
                 </div>
 
             </form>
+            <!-- {% if state == 'edit' %}
+            <form onsubmit="disableSubmit()" class="flex flex-col bg-white p-4 shadow-lg space-y-4 mt-4"
+                action="{% url 'retiretesttype' uuid=testType.uuid %}" method="post">
+                {% csrf_token %}
+
+                <div class="input-container -mt-3">
+                    <label class="w-1/6 text-[#9E9E9E] input-label"
+                        for="testname">{{'commonlabtest.labtestattributetype.void'|get_message_commonlab:request.session.locale}}</label>
+                    <input id="retireTestType" class="input form-control"
+                        placeholder="{{'general.retireReason'|get_message_commonlab:request.session.locale}}"
+                        type="text" name="Retire" required />
+                </div>
+                <button id="updateBtn" type="submit" class="button-primary  w-1/5">
+                    {{'commonlabtest.labtestattributetype.void'|get_message_commonlab:request.session.locale}}
+                </button>
+
+            </form>
+            {% endif %} -->
         </div>
     </div>
 </div>
@@ -217,6 +254,52 @@
             $('#dataTypeResponse').addClass('opacity-0')
         }
     }
+    const disableSubmit = () => {
+        $('#submitBtn').prop('disabled', true)
+        $('#submitBtn').removeClass('button-primary')
+        $('#submitBtn').html(`
+        <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
+                colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+            </lord-icon>
+
+        
+        `)
+        if (state === 'edit') {
+            $('#updateBtn').prop('disabled', true)
+            $('#updateBtn').removeClass('button-primary')
+            $('#updateBtn').html(`
+          <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
+                  colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+              </lord-icon>
+
+          
+          `)
+
+        }
+    }
+    let state = '{{state | escapejs}}'
+    if (state === 'edit') {
+        $('input').prop('disabled', true)
+        $('input[name=csrfmiddlewaretoken]').prop('disabled', false)
+        $('select').prop('disabled', true).prop('', false)
+        $('textarea').prop('disabled', true).prop('', false)
+        $('#canceleditbtn').prop('hidden', true)
+        $('#retireTestType').prop('disabled', false)
+    }
+    $('#editbtn').click(function () {
+        $('input').prop('disabled', false)
+        $('select').prop('disabled', false)
+        $('textarea').prop('disabled', false)
+        $('#canceleditbtn').prop('hidden', false)
+        $('#referenceConcept').prop('disabled', true)
+    })
+    $('#canceleditbtn').click(function () {
+        $('input').prop('disabled', true)
+        $('select').prop('disabled', true)
+        $('textarea').prop('disabled', true)
+        $('#canceleditbtn').prop('hidden', true)
+        $('#retireTestType').prop('disabled', false)
+    })
 </script>
 
 {% endblock %}

@@ -146,6 +146,7 @@
   function showModal(uuid) {
     $('#modal').prop('hidden', false)
     $('#modal').removeClass('opacity-0')
+    $('html,body').animate({ scrollTop: $('body').offset().top }, 'slow');
     let output = ''
 
     $.ajax(

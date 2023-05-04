@@ -1690,7 +1690,7 @@ def edit_test_type(req, uuid):
             "name": req.POST["testname"],
             "testGroup": req.POST["testgroup"],
             "requiresSpecimen": True if req.POST["requirespecimen"] == "Yes" else False,
-            "referenceConcept": req.POST["referenceconcept"],
+            "referenceConcept": req.POST["referenceConceptuuid"],
             "description": req.POST["description"],
             "shortName": None if req.POST["shortname"] == "" else req.POST["shortname"],
         }
@@ -1932,6 +1932,7 @@ def edit_lab_test(req, patientid, orderid):
             context["laborder"]["order"]["encounter"]["uuid"],
             "uuid",
         )
+        testgroups = list(dict.fromkeys(testgroups))
         context["testgroups"] = util.remove_given_str_from_arr(
             testgroups, context["laborder"]["labtesttype"]["testGroup"]
         )
@@ -1949,7 +1950,6 @@ def delete_lab_test(req, patientid, orderid):
 
     status, response = ru.delete(req, f"commonlab/labtestorder/{orderid}")
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-    mu.add_url_to_breadcrumb(req, context["title"])
     if status:
         return redirect("managetestorders", uuid=patientid)
 
