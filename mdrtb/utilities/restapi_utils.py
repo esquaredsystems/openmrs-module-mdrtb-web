@@ -26,7 +26,7 @@ def initiate_session(req, username, password):
             logger.info("User Authenticated")
             req.session["session_id"] = response.json()["sessionId"]
             if "user" in response.json():
-                req.session["logged_user"] = response.json()["user"]
+                req.session["logged_user"] = response.json()
             req.session["encoded_credentials"] = encoded_credentials
             req.session["locale"] = response.json()["locale"]
             return True

@@ -9,8 +9,7 @@
 {% block content %}
 
 
-
-<div class="m-4">
+<div class="m-16">
     <div class="flex items-center justify-between">
         {% if state == 'edit' %}
         <div id="form-info" class="flex-center space-x-4">
@@ -96,6 +95,46 @@
 
         </div>
         <div class="input-container">
+            <label class="input-label"
+                for="name">{{'general.careSetting'|get_message_commonlab:request.session.locale}}</label>
+            <div class="flex items-center justify-start space-x-4 w-full">
+                <div class="flex-center space-x-2">
+                    <label class="" for="yes">{{care_setting.inpatient.name}}</label>
+                    {% if state == 'edit' %}
+                    {% if laborder.careSetting.uuid == care_setting.inpatient.value %}
+                    <input checked name="careSetting" type="radio" value="{{care_setting.inpatient.value}}"
+                        class="radio-input" />
+                    {% else %}
+                    <input name="careSetting" type="radio" value="{{care_setting.inpatient.value}}"
+                        class="radio-input" />
+                    {% endif %}
+                    {% else %}
+                    <input name="careSetting" type="radio" value="{{care_setting.inpatient.value}}"
+                        class="radio-input" />
+                    {% endif %}
+
+                </div>
+                <div class="flex-center space-x-2">
+
+                    <label for="no">{{care_setting.outpatient.name}}</label>
+                    {% if state == 'edit' %}
+                    {% if laborder.careSetting.uuid == care_setting.outpatient.value %}
+                    <input checked name="careSetting" type="radio" value="{{care_setting.outpatient.value}}"
+                        class="radio-input" />
+                    {% else %}
+                    <input name="careSetting" type="radio" value="{{care_setting.outpatient.value}}"
+                        class="radio-input" />
+                    {% endif %}
+                    {% else %}
+                    <input name="careSetting" type="radio" value="{{care_setting.outpatient.value}}"
+                        class="radio-input" />
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+
+        <div class="input-container">
             <label class="input-label" for="">
                 {{'commonlabtest.order.labReferenceNo'|get_message_commonlab:request.session.locale}}
 
@@ -130,36 +169,37 @@
 
 <script>
     let labtests = JSON.parse("{{labtests | escapejs}}")
-    $('#group-select').change(function () {
+    function setTestTypes() {
         $('#test-select').html('')
         let group = $('#group-select').val()
         if (group != 'None') {
             let testsByGroup = labtests.filter(test => test.testGroup === group)
             $('#test-select').prop('disabled', false)
-            if (testsByGroup.length === 1) {
+            testsByGroup.forEach(item => {
                 $('#test-select').append(
                     $("<option>", {
-                        value: testsByGroup[0].uuid,
-                        text: testsByGroup[0].name,
-                        selected: true
+                        value: item.uuid,
+                        text: item.name,
                     })
                 )
-            } else {
-                testsByGroup.forEach(item => {
-                    $('#test-select').append(
-                        $("<option>", {
-                            value: item.uuid,
-                            text: item.name,
-                        })
-                    )
-                })
-            }
+            })
+            // if (testsByGroup.length === 1) {
+            //     $('#test-select').append(
+            //         $("<option>", {
+            //             value: testsByGroup[0].uuid,
+            //             text: testsByGroup[0].name,
+            //         })
+            //     )} 
+            //     else {
+
+            // }
         } else {
             $('#test-select').prop('disabled', true)
 
         }
 
-    })
+    }
+    $('#group-select').change(setTestTypes)
 
     const disableSubmit = () => {
         $('#submitBtn').prop('disabled', true)
@@ -199,6 +239,9 @@
         $('textarea').prop('disabled', false)
         $('#canceleditbtn').prop('hidden', false)
         $('#referenceConcept').prop('disabled', true)
+        let selectedType = $('#test-select').val()
+        setTestTypes()
+        $('#test-select').val(selectedType)
     })
     $('#canceleditbtn').click(function () {
         $('input').prop('disabled', true)

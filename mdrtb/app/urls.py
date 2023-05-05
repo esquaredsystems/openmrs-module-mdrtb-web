@@ -171,6 +171,11 @@ urlpatterns = [
         name="addtestsample",
     ),
     path(
+        "commonlab/order/<str:orderid>/sample/<str:sampleid>/editsample",
+        views.edit_test_sample,
+        name="edittestsample",
+    ),
+    path(
         "commonlab/retiretesttype/<str:uuid>",
         views.retire_test_type,
         name="retiretesttype",

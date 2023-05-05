@@ -222,6 +222,10 @@ def get_custome_lab_order(full_order):
             "name": full_order["labTestType"]["name"],
             "testGroup": full_order["labTestType"]["testGroup"],
         },
+        "careSetting": {
+            "uuid": full_order["order"]["careSetting"]["uuid"],
+            "name": full_order["order"]["careSetting"]["display"],
+        },
     }
 
 
