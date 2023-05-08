@@ -5,7 +5,9 @@
 {% block content %}
 
 <div id="modal-parent" class="relative">
-
+  <div class="m-4">
+    {% include 'app/components/breadcrumbs.html'%}
+  </div>
   <section hidden id="modal"
     class="flex flex-col justify-center transition-opacity ease-in-out duration-500 opacity-0 backdrop-blur-3xl inset-0 z-50 shadow-2xl  m-10  bg-white w-3/5 mx-auto p-8 absolute top-0 left-0 right-0 bottom-0 h-min">
     <div class="flex items-center justify-between ">

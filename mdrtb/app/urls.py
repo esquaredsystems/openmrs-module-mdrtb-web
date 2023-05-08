@@ -176,9 +176,19 @@ urlpatterns = [
         name="edittestsample",
     ),
     path(
+        "commonlab/order/<str:orderid>/sample/<str:sampleid>/deletesample",
+        views.delete_sample,
+        name="deletesample",
+    ),
+    path(
         "commonlab/retiretesttype/<str:uuid>",
         views.retire_test_type,
         name="retiretesttype",
+    ),
+    path(
+    "commonlab/order/<str:orderid>/sample/<str:sampleid>/changesamplestatus",
+    views.change_sample_status,
+    name="changesamplestatus",
     ),
     path(
         "commonlab/order/<str:orderid>/addtestresults",

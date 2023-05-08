@@ -1719,7 +1719,6 @@ def retire_test_type(req, uuid):
         if status:
             return redirect("managetesttypes")
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-    mu.add_url_to_breadcrumb(req, context["title"])
     return render(req, "app/commonlab/addtesttypes.html")
 
 
@@ -2063,8 +2062,8 @@ def edit_test_sample(req, orderid, sampleid):
             "specimenType": req.POST["specimentype"],
             "specimenSite": req.POST["specimensite"],
             "sampleIdentifier": req.POST["specimenid"],
-            "quantity": "" if not req.POST["quantity"] else req.POST["quantity"],
-            "units": "" if not req.POST["units"] else req.POST["units"],
+            "quantity": "" if "quantity" not in req.POST else req.POST["quantity"],
+            "units": "" if "units" not in  req.POST else req.POST["units"],
             "collectionDate": req.POST["collectedon"],
             "status": "COLLECTED",
             "collector": req.session["logged_user"]["currentProvider"]["uuid"],
@@ -2080,17 +2079,42 @@ def edit_test_sample(req, orderid, sampleid):
     mu.add_url_to_breadcrumb(req, context["title"])
     status, response = ru.get(req, f"commonlab/labtestsample/{sampleid}", {"v": "full"})
     if status:
-        context["sample"] = response
-    context["specimentype"] = cu.get_commonlab_concepts_by_type(
-        req, "commonlabtest.specimenTypeConceptUuid"
-    )
-    context["specimensite"] = cu.get_commonlab_concepts_by_type(
-        req, "commonlabtest.specimenSiteConceptUuid"
-    )
-    context["units"] = cu.get_sample_units(req)
+        sample = response
+        specimen_type = cu.get_commonlab_concepts_by_type(req, "commonlabtest.specimenTypeConceptUuid")
+        specimen_site = cu.get_commonlab_concepts_by_type(req, "commonlabtest.specimenSiteConceptUuid")
+        context['specimentype'] = util.remove_obj_from_objarr(specimen_type, sample['specimenType']['uuid'],'uuid')
+        context["specimensite"] = util.remove_obj_from_objarr(specimen_site, sample['specimenSite']['uuid'],'uuid')
+        units = cu.get_sample_units(req)
+        context["units"] = util.remove_obj_from_objarr(units,sample['units'],'uuid')
+        context['sample'] = sample
+        # context["sample"] = response
+    
+    
 
     return render(req, "app/commonlab/addsample.html", context=context)
 
+def change_sample_status(req,orderid,sampleid):
+    statuses = {"Accept":"ACCEPTED","Reject": "REJECTED"}
+    if req.method == "POST":
+        try:
+            sample_status = statuses[req.POST['status']]
+            status,_ = ru.post(req,f"commonlab/labtestsample/{sampleid}",{"status":sample_status})
+            if status:
+                if sample_status == "ACCEPTED":
+                    messages.success(req,f"Sample {sample_status}")
+                else:
+                    messages.warning(req,f"Sample {sample_status}")
+        except Exception as e:
+            messages.error(req,f"Sample {sample_status}")
+    return redirect("managetestsamples", orderid=orderid)
+
+def delete_sample(req,orderid,sampleid):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    status,reponse = ru.delete(req,f'commonlab/labtestsample/{sampleid}')
+    if status:
+        return redirect(req.session["redirect_url"])
+    
 
 def add_test_results(req, orderid):
     if not check_if_session_alive(req):

@@ -7,7 +7,9 @@
 
 
 {% block content %}
-
+<div class="m-4">
+    {% include 'app/components/breadcrumbs.html'%}
+</div>
 
 <div class="m-16">
     {% if state == 'edit' %}
@@ -24,7 +26,7 @@
 
         </button>
         <button hidden type="button" id="canceleditbtn" class="cancel-button">Cancel</button>
-        <a href="#" type="button" id="dellabtest">
+        <a href="{% url 'deletesample' orderid=orderid sampleid=sample.uuid %}" type="button" id="dellabtest">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -39,18 +41,25 @@
         {{'commonlabtest.labtestsample.add'|get_message_commonlab:request.session.locale}}
     </h2>
     {% endif %}
-    <form class="m-10 flex-column-center space-y-6" action="{% url 'addtestsample' orderid=orderid %}" method="post">
-        {% csrf_token %}0
+    <form onsubmit="disableSubmit()" class="m-10 flex-column-center space-y-6"
+        action="{% if state == 'edit' %}{% url 'edittestsample' sampleid=sample.uuid orderid=orderid %}{% else %}{% url 'addtestsample' orderid=orderid %}{% endif %}"
+        method="post">
+        {% csrf_token %}
         <div class="input-container">
             <label class="input-label required">
                 {{'general.specimenType'|get_message_commonlab:request.session.locale}}
 
             </label>
             <select required name="specimentype" class="input form-control">
+                {% if state == 'edit' %}
+                <option selected value="{{sample.specimenType.uuid}}">{{sample.specimenType.display}}</option>
+                {% else %}
                 <option selected value="">Select</option>
+                {% endif %}
                 {% for type in specimentype %}
                 <option value="{{ type.uuid }}">{{ type.name }}</option>
                 {% endfor %}
+
             </select>
         </div>
         <div class="input-container">
@@ -59,7 +68,11 @@
 
             </label>
             <select required name="specimensite" id="group-select" class="input form-control">
+                {% if state == 'edit' %}
+                <option selected value="{{sample.specimenSite.uuid}}">{{sample.specimenSite.display}}</option>
+                {% else %}
                 <option selected value="">Select</option>
+                {% endif %}
 
                 {% for site in specimensite %}
                 <option value="{{ site.uuid }}">{{ site.name }}</option>
@@ -71,15 +84,26 @@
                 {{'commonlabtest.labtestsample.quantity'|get_message_commonlab:request.session.locale}}
 
             </label>
+            {% if state == 'edit' %}
+            <input class="input form-control" value="{{sample.quantity}}" type="number" name="quantity">
+            {% else %}
             <input class="input form-control" type="number" name="quantity">
+            {% endif %}
+
         </div>
         <div class="input-container">
             <label class="input-label">
                 {{'commonlabtest.labtestsample.unit'|get_message_commonlab:request.session.locale}}
 
             </label>
+
             <select name="units" class="input form-control">
+                {% if state == 'edit' %}
+                <option selected value="{{sample.units}}">{{sample.units|get_conept_by_uuid}}
+                </option>
+                {% else %}
                 <option selected value="">Select</option>
+                {% endif %}
 
                 {% for unit in units %}
                 <option value="{{ unit.uuid }}">{{ unit.name }}</option>
@@ -92,7 +116,12 @@
                 {{'commonlabtest.labtestsample.sampleIdentifier'|get_message_commonlab:request.session.locale}}
 
             </label>
+            {% if state == 'edit' %}
+            <input class="input form-control" type="text" name="specimenid" value="{{sample.sampleIdentifier}}">
+            {% else %}
             <input class="input form-control" type="text" name="specimenid" value="{{'placeholder' | get_datenow}}">
+            {% endif %}
+
 
         </div>
         <div class="input-container">
@@ -100,11 +129,19 @@
                 {{'commonlabtest.labtestsample.collectionDate'|get_message_commonlab:request.session.locale}}
 
             </label>
+            {% if state == 'edit' %}
+            <input class="input form-control" type="date" name="collectedon"
+                value="{{sample.collectionDate | iso_to_normal_date}}">
+            {% else %}
             <input class="input form-control" type="date" name="collectedon">
+            {% endif %}
         </div>
         <div class="flex-center space-x-4">
-            <input type="submit" class="button-primary w-1/5"
-                value="{{'general.save'|get_message_openMRS:request.session.locale}}" />
+            <button type="submit" id="submitBtn" class="button-primary w-1/5">
+                {{'general.save'|get_message_openMRS:request.session.locale}}
+
+
+            </button>
             <a href="javascript:history.go(-1)" class="cancel-button">
                 {{'general.cancel'|get_message_openMRS:request.session.locale}}</a>
         </div>
@@ -112,5 +149,44 @@
     </form>
 </div>
 
+<script>
+    let date = new Date();
+    maxDate = date.toISOString().substring(0, 10);
+    $('input[type="date"]').prop("max", maxDate)
+
+    let state = '{{state | escapejs}}'
+    if (state === 'edit') {
+        $('input').prop('disabled', true)
+        $('input[name=csrfmiddlewaretoken]').prop('disabled', false)
+        $('select').prop('disabled', true).prop('', false)
+        $('textarea').prop('disabled', true).prop('', false)
+        $('#canceleditbtn').prop('hidden', true)
+    }
+    $('#editbtn').click(function () {
+        $('input').prop('disabled', false)
+        $('select').prop('disabled', false)
+        $('textarea').prop('disabled', false)
+        $('#canceleditbtn').prop('hidden', false)
+        $('#referenceConcept').prop('disabled', true)
+    })
+    $('#canceleditbtn').click(function () {
+        $('input').prop('disabled', true)
+        $('select').prop('disabled', true)
+        $('textarea').prop('disabled', true)
+        $('#canceleditbtn').prop('hidden', true)
+    })
+    const disableSubmit = () => {
+        $('#submitBtn').prop('disabled', true)
+        $('#submitBtn').removeClass('button-primary')
+        $('#submitBtn').html(`
+        <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
+                colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+            </lord-icon>
+
+        
+        `)
+    }
+
+</script>
 
 {% endblock %}

@@ -6,9 +6,12 @@
 
 
 
-
+<div class="m-4">
+  {% include 'app/components/breadcrumbs.html'%}
+</div>
 
 <div>
+
   <section>
     <div class="m-5 md:m-2">
       <div class="py-8">
@@ -58,8 +61,8 @@
                     Actions
                   </th>
                   <th
-                    class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
-
+                    class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
+                    Accept / Reject
                   </th>
 
 
@@ -89,7 +92,8 @@
                     </p>
                   </td>
                   <td class="px-5 py-5 border-b border-gray-200 w-min text-sm">
-                    <p class="text-gray-900 whitespace-no-wrap">
+                    <p
+                      class="whitespace-no-wrap {% if sample.status == 'ACCEPTED' %}text-green-600{% elif sample.status == 'REJECTED' %}text-red-600{% else %}text-gray-900{% endif %}">
                       {{sample.status}}
                     </p>
                   </td>
@@ -107,12 +111,26 @@
                   </td>
                   {% if sample.status == 'COLLECTED' %}
                   <td class="px-5 py-5 border-b w-min border-gray-200  text-sm">
+                    <form method="post" action="{% url 'changesamplestatus' orderid=orderid sampleid=sample.uuid %}"
+                      class="flex-center justify-center space-x-2">
+                      {% csrf_token %}
+                      <input type="submit" value="Accept" name="status"
+                        class="p-2 w-full rounded-md font-bold cursor-pointer text-white button-primary">
+
+                      <input type="submit" value="Reject" name="status" class="cancel-button">
+
+                    </form>
+                  </td>
+                  {% else %}
+                  <td class="px-5 py-5 border-b w-min border-gray-200  text-sm">
                     <div class="flex-center justify-center space-x-2">
-                      <button
-                        class="p-2 w-full rounded-md font-bold cursor-pointer text-white button-primary">Accept</button>
-                      <button class="p-2 underline text-md w-full rounded-md font-bold cursor-pointer">Reject</button>
+                      <input disabled type="submit" value="Accept" name="status"
+                        class="p-2 pointer-events-none w-full rounded-md font-bold cursor-pointer text-white bg-gray-500">
+                      <input disabled type="submit" value="Reject" name="status"
+                        class="cancel-button text-gray-500 pointer-events-none">
                     </div>
                   </td>
+
                   {% endif %}
 
                 </tr>

@@ -295,6 +295,7 @@ def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
             f"commonlab/labtestorder",
             {
                 "patient": patientuuid,
+                "limit":3,
                 "v": "custom:(uuid,labTestType,labReferenceNumber,order)",
             },
         )
