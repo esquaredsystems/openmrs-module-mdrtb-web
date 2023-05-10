@@ -1,13 +1,32 @@
-{% extends 'app/base/base.html' %}
-
-
-{% block content %}
-<div class="m-12 flex items-center justify-center">
-    {% include 'app/components/breadcrumbs.html'%}
-</div>
-<script src="https://cdn.lordicon.com/ritcuqlt.js"></script>
-
-<script>
-
-</script>
-{% endblock %}
+<tr>
+    <td>
+        &nbsp;</td>
+    <td>
+        15-17</td>
+    <td>
+        {{ table1.newPulmonaryBCDetected1517|sum:table1.newPulmonaryCDDetected1517|sum:table1.newExtrapulmonaryDetected1517 }}</td>
+    <td>
+        {{ table1.newPulmonaryBCEligible1517|sum:table1.newPulmonaryCDEligible1517|sum:
+        table1.newExtrapulmonaryEligible1517 }}</td>
+    <td>
+        {{ table1.newPulmonaryBCCured1517|sum:table1.newPulmonaryCDCured1517|sum:table1.newExtrapulmonaryCured1517 }}</td>
+    </td>
+    <td>
+        {{ table1.newPulmonaryBCCompleted1517|sum:table1.newPulmonaryCDCompleted1517|sum:table1.newExtrapulmonaryCompleted1517 }}</td>
+    <td>
+        {{ table1.newPulmonaryBCDiedTB1517|sum:table1.newPulmonaryCDDiedTB1517|sum:table1.newExtrapulmonaryDiedTB1517 }}</td>
+    <td>
+        {{ table1.newPulmonaryBCDiedNotTB1517|sum:table1.newPulmonaryCDDiedNotTB1517|sum:table1.newExtrapulmonaryDiedNotTB1517 }}</td>
+    <td>
+        {{ table1.newPulmonaryBCFailed1517|sum:table1.newPulmonaryCDFailed1517|sum:table1.newExtrapulmonaryFailed1517 }}</td>
+    <td>
+        {{ table1.newPulmonaryBCDefaulted1517|sum:table1.newPulmonaryCDDefaulted1517|sum:table1.newExtrapulmonaryDefaulted1517 }}</td>
+    <td>
+        {{ table1.newPulmonaryBCEligible1517|sum:table1.newPulmonaryCDEligible1517|sum:table1.newExtrapulmonaryEligible1517 }}</td>
+    <td>
+        {{ table1.newPulmonaryBCSLD1517|sum:table1.newPulmonaryCDSLD1517|sum:table1.newExtrapulmonarySLD1517}}</td>
+    <td>
+        {{ table1.newPulmonaryBCCanceled1517|sum:table1.newPulmonaryCDCanceled1517|sum:table1.newExtrapulmonaryCanceled1517 }}</td>
+    <td>
+        {{ table1.newPulmonaryBCDetected1517|sum:table1.newPulmonaryCDDetected1517|sum:table1.newExtrapulmonaryDetected1517|sub:table1.newPulmonaryBCEligible1517|sum:table1.newPulmonaryCDEligible1517|sum:table1.newExtrapulmonaryEligible1517|sum:table1.newPulmonaryBCSLD1517|sum:table1.newPulmonaryCDSLD1517|sum:table1.newExtrapulmonarySLD1517|sum:table1.newPulmonaryBCCanceled1517|sum:table1.newPulmonaryCDCanceled1517|sum:table1.newExtrapulmonaryCanceled1517}}</td>
+</tr>

@@ -16,22 +16,28 @@ def initiate_session(req, username, password):
     encoded_credentials = base64.b64encode(
         f"{username}:{password}".encode("ascii")
     ).decode("ascii")
+    print(encoded_credentials)
     url = REST_API_BASE_URL + "session"
     headers = {"Authorization": f"Basic {encoded_credentials}"}
     response = requests.get(url, headers=headers)
-    response.raise_for_status()
-    if response.status_code == 200 and response.json()["authenticated"]:
-        logger.info("User Authenticated")
-        req.session["session_id"] = response.json()["sessionId"]
-        if "user" in response.json():
-            req.session["logged_user"] = response.json()["user"]
-        req.session["encoded_credentials"] = encoded_credentials
-        req.session["locale"] = response.json()["locale"]
-        return True
+    print(response.json())
+    if response.status_code == 200:
+        if response.json()["authenticated"]:
+            logger.info("User Authenticated")
+            req.session["session_id"] = response.json()["sessionId"]
+            if "user" in response.json():
+                req.session["logged_user"] = response.json()["user"]
+            req.session["encoded_credentials"] = encoded_credentials
+            req.session["locale"] = response.json()["locale"]
+            return True
+        else:
+            logger.warning("Invalid credentials")
+            raise Exception(
+                mu.get_global_msgs("auth.password.invalid", source="OpenMRS")
+            )
     else:
         logger.error(f"Status_code = {response.status_code}", exc_info=True)
-        clear_session(req)
-        raise Exception(mu.get_global_msgs("auth.password.invalid", source="OpenMRS"))
+        raise Exception(response.json()["error"]["message"])
 
 
 def clear_session(req):
@@ -42,8 +48,9 @@ def clear_session(req):
             + "?"
             + urlencode(query_params, safe="-[]',")
             if query_params
-            else req.session.get("redirect_url") if req.path != '/logout'
-            else '/'
+            else req.session.get("redirect_url")
+            if req.path != "/logout"
+            else "/"
         )
         cache.clear()
         req.session.flush()
@@ -61,18 +68,17 @@ def get(req, endpoint, parameters):
         headers=get_auth_headers(req),
         params=parameters,
     )
+    print("STATUS CODE: ", response.status_code)
     logger.info(f"'Making GET call to /{endpoint}'")
     if response.status_code == 403:
-        logger.warning("Session expired")
+        session_expired_msg = mu.get_global_msgs("require.login", source="OpenMRS")
+        messages.info(req, session_expired_msg)
+        logger.info("Session expired")
         clear_session(req)
-        session_expired_msg = mu.get_global_msgs(
-            "auth.session.expired", source="OpenMRS"
-        )
-        messages.error(req, session_expired_msg)
         raise Exception(session_expired_msg)
     response.raise_for_status()
     logger.info(
-        f"'GET Request successful to /{endpoint}, status: {response.status_code}'"
+        f"GET Request successful to /{endpoint}, status: {response.status_code}"
     )
     return True, response.json()
 
@@ -83,12 +89,16 @@ def post(req, endpoint, data):
         url=REST_API_BASE_URL + endpoint, headers=get_auth_headers(req), json=data
     )
     logger.info(f"'Making POST call to /{endpoint}'")
-    response.raise_for_status()
     if response.ok:
         logger.info(f"POST Request successful, status: {response.status_code}")
         return True, response.json()
     logger.info(f"'POST Request failed to /{endpoint}, status: {response.status_code}'")
-    return False, response.json()
+    if "error" in response.json():
+        logger.error(response.json(), exc_info=True)
+        raise Exception(
+            response.json()["error"]["message"].replace("[", "").replace("]", "")
+        )
+    response.raise_for_status()
 
 
 @handle_rest_exceptions

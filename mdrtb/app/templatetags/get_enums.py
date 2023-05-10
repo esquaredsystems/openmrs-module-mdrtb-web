@@ -11,3 +11,8 @@ def get_concept(name):
 @register.filter
 def get_constant(name):
     return Constants[name].value
+
+
+@register.filter
+def get_privileges(name):
+    return Privileges[name].value

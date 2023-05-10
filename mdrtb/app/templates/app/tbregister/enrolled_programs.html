@@ -4,6 +4,7 @@
 {% endblock %}
 {% block content %}
 
+{% if view_patient_programs_privilege %}
 
 <section id="modal"
   class="flex flex-col justify-center transition-opacity ease-in-out duration-500 opacity-0 backdrop-blur-3xl inset-0 z-50 shadow-2xl  m-10  bg-white w-fit mx-auto p-8 absolute top-0 left-0 right-0 bottom-0 h-min my-auto ">
@@ -217,4 +218,10 @@
     $('#modal-body').html(``)
   }
 </script>
+{% else %}
+<div class="search-page-container">
+  <h1>You dont have privileges to <strong><i>View Patient Programs</i></strong> <a class="cancel-button"
+      href="javascript:history.go(-1)">Go back</a></h1>
+</div>
+{% endif %}
 {% endblock %}

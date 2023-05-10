@@ -1,0 +1,19 @@
+{% load static %}
+
+<header class="base-header">
+    <div>
+        <a href="{% url 'searchPatientsView' %}"><img class="openmrs-logo"
+                src="../../../static/app/imgs/OpenMRS-full-logo.png" alt="OpemMRS logo" /></a>
+    </div>
+    <div class="navbar">
+        {% if request.session.session_id %}
+        <a class="nav-item" href="#">{{'header.logged.in'|get_message_openMRS:request.session.locale}}
+            {{request.session.logged_user.person.display}}</a>
+        <a class="nav-item"
+            href="{% url 'profile' %}">{{'Navigation.options'|get_message_openMRS:request.session.locale}}</a>
+        <a class="nav-item" href="{% url 'logout' %}">{{'header.logout'|get_message_openMRS:request.session.locale}}</a>
+        {% else %}
+        <a class="nav-item" href="{% url 'login' %}">Login</a>
+        {% endif %}
+    </div>
+</header>

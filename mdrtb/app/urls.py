@@ -34,11 +34,6 @@ urlpatterns = [
         views.edit_mdrtb_program,
         name="editmdrtbprogram",
     ),
-    # path(
-    #     "patient/<str:uuid>/program/<str:programid>",
-    #     views.delete_program,
-    #     name="deleteprogram",
-    # ),
     path(
         "patient/<str:uuid>/enrolledprograms",
         views.enrolled_programs,
@@ -90,9 +85,6 @@ urlpatterns = [
         name="editregimen",
     ),
     path("regimen/<str:formid>", views.delete_regimen_form, name="deleteregimen"),
-    #     path('patient/<str:patientid>/manageadverseevents',
-    #          views.manage_adverse_events, name='manageae'),
-    #     path('manageregimens', views.manage_regimens, name='manageregimens'),
     path(
         "patient/<str:patientid>/adverseevents",
         views.adverse_events_form,
@@ -113,7 +105,23 @@ urlpatterns = [
         "patient/<str:uuid>/tb03u/<str:formid>", views.edit_tb03u_form, name="edittb03u"
     ),
     path("tb03u/<str:formid>", views.delete_tb03u_form, name="deletetb03u"),
-    path("patientlist", views.patientList, name="patientlist"),
+    path("patientlist", views.patient_list, name="patientlist"),
+    # Reporting Urls
+    path("tb03export", views.tb03_report_form, name="tb03export"),
+    path("tb03results", views.tb03_report, name="tb03Results"),
+    path("tb03uexport", views.tb03u_report_form, name="tb03uexport"),
+    path("tb03uresults", views.tb03u_report, name="tb03uResults"),
+    path("form89export", views.form89_report_form, name="form89export"),
+    path("form89results", views.form89_report, name="form89results"),
+    path("tb08export", views.tb08_report_form, name="tb08export"),
+    path("tb08results", views.tb08_report, name="tb08results"),
+    path("tb08uexport", views.tb08u_report_form, name="tb08uexport"),
+    path("tb08uresults", views.tb08u_report, name="tb08uresults"),
+    path("tb07uexport", views.tb07u_report_form, name="tb07uexport"),
+    path("tb07uresults", views.tb07u_report, name="tb07uresults"),
+
+
+    # CommonLab Urls
     path("commonlab/managetesttypes", views.manage_test_types, name="managetesttypes"),
     path("commonlab/fetchattributes", views.fetch_attributes, name="fetchattributes"),
     path("commonlab/addtesttypes", views.add_test_type, name="addtesttype"),

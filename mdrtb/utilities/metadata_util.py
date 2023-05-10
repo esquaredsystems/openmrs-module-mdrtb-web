@@ -12,30 +12,30 @@ from urllib.parse import urlencode
 def get_global_msgs(message_code, locale=None, default=None, source=None):
     # No messages file for en_GB
     if message_code:
-        value = ''
-        dir = f'{u.get_project_root()}/resources'
+        value = ""
+        dir = f"{u.get_project_root()}/resources"
         if source is None:
             if locale is None or locale == "en_GB":
-                file = f'{dir}/messages.properties'
+                file = f"{dir}/messages.properties"
             else:
-                file = f'{dir}/messages_{locale}.properties'
+                file = f"{dir}/messages_{locale}.properties"
 
-        if source == 'OpenMRS':
+        if source == "OpenMRS":
             if locale is None or locale == "en_GB":
                 file = f"{dir}/openMRS_messages.properties"
             else:
                 file = f"{dir}/openMRS_messages_{locale}.properties"
 
-        if source == 'commonlab':
+        if source == "commonlab":
             if locale is None or locale == "en_GB":
-                file = f'{dir}/commonlab_messages.properties'
+                file = f"{dir}/commonlab_messages.properties"
             else:
-                file = f'{dir}/commonlab_messages_{locale}.properties'
+                file = f"{dir}/commonlab_messages_{locale}.properties"
 
-        data = u.read_properties_file(file, 'r', encoding='utf-8')
+        data = u.read_properties_file(file, "r", encoding="utf-8")
         if data is not None:
             for message in data:
-                split_msg = message.split('=')
+                split_msg = message.split("=")
                 if split_msg[0].strip() == message_code.strip():
                     value = split_msg[1]
                 elif default:
@@ -44,16 +44,16 @@ def get_global_msgs(message_code, locale=None, default=None, source=None):
             value = message_code
         if len(value) < 1:
             value = message_code
-        cleaner = re.compile('<.*?>')
-        return re.sub(cleaner, ' ', value.strip())
+        cleaner = re.compile("<.*?>")
+        return re.sub(cleaner, " ", value.strip())
 
     else:
         raise Exception("Please provide a valid message code")
 
 
 def get_concept_from_cache(uuid):
-    concepts = cache.get('concepts', [])
-    concept = next((c for c in concepts if c['uuid'] == uuid), {})
+    concepts = cache.get("concepts", [])
+    concept = next((c for c in concepts if c["uuid"] == uuid), {})
     return bool(concept), concept
 
 
@@ -63,59 +63,67 @@ def get_concept(req, uuid):
         return concept
     try:
         status, response = ru.get(
-            req, f'concept/{uuid}', {'v': "full", 'lang': req.session['locale']})
+            req, f"concept/{uuid}", {"v": "full", "lang": req.session["locale"]}
+        )
         if status:
-            concepts = cache.get('concepts', [])
+            concepts = cache.get("concepts", [])
             concepts.append(response)
-            cache.set('concepts', concepts, timeout=None)
+            cache.set("concepts", concepts, timeout=None)
             return response
     except Exception as e:
-        
         raise Exception(str(e))
 
 
-def get_location(uuid):
-    pass
+def get_location(req,uuid):
+    try:
+        status, response = ru.get(req,f"location/{uuid}",{})
+        if status:
+            return {'location':response['display'],'parent': response['parentLocation']['display']}
+    except Exception as e:
+        raise Exception(str(e))
 
 
 def get_user(req, username):
-    status, response = ru.get(req, 'user', {'q': username, 'v': 'full'})
+    status, response = ru.get(req, "user", {"q": username, "v": "full"})
     if status:
         return response
     else:
-        raise Exception('Cant find user')
+        raise Exception("Cant find user")
 
 
 def get_patient_identifier_types(req):
-    status, response = ru.get(req, 'patientidentifiertype', {
-                              'v': 'custom:(uuid,name)'})
+    status, response = ru.get(req, "patientidentifiertype", {"v": "custom:(uuid,name)"})
     if status:
-        return response['results']
+        return response["results"]
     else:
-        raise Exception('Cant find patient identifier types')
+        raise Exception("Cant find patient identifier types")
 
 
 def get_global_properties(req, key):
     try:
-        status, response = ru.get(req, 'systemsetting', {'q': key,
-                                                         'v': 'custom:(value)'})
+        status, response = ru.get(
+            req, "systemsetting", {"q": key, "v": "custom:(value)"}
+        )
         if status:
-            return response['results'][0]['value']
+            return response["results"][0]["value"]
     except Exception as e:
         raise Exception(e)
 
 
-def check_if_user_has_privilege(privilege_to_check, user_privileges):
+def check_if_user_has_privilege(req, privilege_to_check, user_privileges):
+    # Check if user is admin grant all privileges
+    if req.session["logged_user"]["systemId"] == "admin":
+        return True
     has_privilege = False
     for privilege in user_privileges:
-        if privilege['display'] == privilege_to_check:
+        if privilege["uuid"] == privilege_to_check:
             has_privilege = True
     return has_privilege
 
 
 def get_encounter_by_uuid(req, uuid):
     try:
-        status, response = ru.get(req, f'encounter/{uuid}', {'v': 'full'})
+        status, response = ru.get(req, f"encounter/{uuid}", {"v": "full"})
         if status:
             return response
     except Exception as e:
@@ -124,19 +132,19 @@ def get_encounter_by_uuid(req, uuid):
 
 def add_url_to_breadcrumb(req, name, query_params=None):
     try:
-        breadcrumbs = req.session.get('breadcrumbs', [])
+        breadcrumbs = req.session.get("breadcrumbs", [])
         url = req.path_info
         if query_params:
-            url += '?' + urlencode(query_params)
+            url += "?" + urlencode(query_params)
         index = None
         for i, bc in enumerate(breadcrumbs):
-            if bc['name'] == name:
+            if bc["name"] == name:
                 index = i
                 break
         if index is not None:
-            breadcrumbs = breadcrumbs[:index+1]
+            breadcrumbs = breadcrumbs[: index + 1]
         else:
-            breadcrumbs.append({'name': name, 'url': url})
-        req.session['breadcrumbs'] = breadcrumbs
+            breadcrumbs.append({"name": name, "url": url})
+        req.session["breadcrumbs"] = breadcrumbs
     except Exception as e:
         raise Exception(e)

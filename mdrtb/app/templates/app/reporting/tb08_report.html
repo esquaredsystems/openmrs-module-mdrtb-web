@@ -1,0 +1,1537 @@
+{% extends 'app/reporting/report_base.html' %}
+
+{% block content %}
+
+
+
+<div>
+    <script type="text/javascript">
+
+        function printForm() {
+            var mywindow = window.open('', 'PRINT', 'height=400,width=600');
+
+            mywindow.document.write('<html><head><title>{{"mdrtb.tb08"|get_message:request.session.locale}}</title>');
+            mywindow.document.write('</head><body >');
+            // mywindow.document.write('<h1>{{"mdrtb.pv.aeForm"|get_message:request.session.locale}}</h1>');
+            mywindow.document.write(document.getElementById("tb08").innerHTML);
+
+            mywindow.document.write('</body></html>');
+
+            mywindow.document.close(); // necessary for IE >= 10
+            mywindow.focus(); // necessary for IE >= 10*/
+
+            mywindow.print();
+            mywindow.close();
+
+            return true;
+        }
+        var tableToExcel = (function () {
+            var uri = 'data:application/vnd.ms-excel;base64,'
+                , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>TB03</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>'
+                , base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) }
+                , format = function (s, c) { return s.replace(/{(\w|sum:)}/g, function (m, p) { return c[p]; }) }
+            return function (table, name) {
+                if (!table.nodeType) table = document.getElementById(table)
+                var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
+                window.location.href = uri + base64(format(template, ctx))
+            }
+        })
+        function savePdf(action, reportName, formPath) {
+            var tableData = (document.getElementById("tb08")).innerHTML.toString();
+            var oblast = "{{ oblast }}";
+            var district = "{{ district }}";
+            var facility = "{{ facility }}";
+            var year = "{{ year }}";
+            if (!"{{quarter}}") {
+                var quarter = "'\'+ {{quarter}}" + "\"";
+            } else {
+                var quarter = "";
+            }
+            if (!"{{month}}") {
+                var month = "\"" + "{{month}}" + "\"";
+            } else {
+                var month = "";
+            }
+            var reportDate = "{{ reportDate }}";
+
+            var form = document.createElement("FORM");
+
+            form.setAttribute("id", "closeReportForm");
+            form.setAttribute("name", "closeReportForm");
+            form.setAttribute("method", "post");
+            form.setAttribute("action", action);
+
+            document.body.appendChild(form);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "oblast");
+            input.setAttribute("name", "oblast");
+            input.setAttribute("value", oblast);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "district");
+            input.setAttribute("name", "district");
+            input.setAttribute("value", district);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "facility");
+            input.setAttribute("name", "facility");
+            input.setAttribute("value", facility);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "year");
+            input.setAttribute("name", "year");
+            input.setAttribute("value", year);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "quarter");
+            input.setAttribute("name", "quarter");
+            input.setAttribute("value", quarter);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "month");
+            input.setAttribute("name", "month");
+            input.setAttribute("value", month);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "reportDate");
+            input.setAttribute("name", "reportDate");
+            input.setAttribute("value", reportDate);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "table");
+            input.setAttribute("name", "table");
+            input.setAttribute("value", tableData);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "formPath");
+            input.setAttribute("name", "formPath");
+            input.setAttribute("value", formPath);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "reportName");
+            input.setAttribute("name", "reportName");
+            input.setAttribute("value", reportName);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "reportType");
+            input.setAttribute("name", "reportType");
+            input.setAttribute("value", "DOTSTB");
+            form.appendChild(input);
+
+            form.submit();
+        }
+        $(document).ready(function () {
+            $("#tableToSql").bind("click", function () {
+                if (confirm('{{"mdrtb.closeReportMessage"|get_message:request.session.locale}}')) {
+                    savePdf("closeReport.form", "TB-08", "tb08Results");
+                }
+            });
+            /* $("#tableToPdf").click(function(){
+                savePdf("exportReport.form", "TB 08", "tb08Results");
+            }); */
+        });
+    </script>
+
+    <div id="tb08" style="font-size:smaller; width:980px;">
+        <style>
+            th {
+                vertical-align: top;
+                text-align: center;
+            }
+
+            th,
+            td {
+                font-size: smaller;
+                border: 1px solid #000000
+            }
+
+            border {
+                border: 1px solid #000000
+            }
+        </style>
+
+
+        <table width="100%" border="0">
+            <tr>
+                <td align="left" width="90%" style="font-size:14px; font-weight:bold;border:0px">&nbsp;
+                </td>
+                <td align="right" width="10%" style="font-size:14px; font-weight:bold;border:0px">TB 08</td>
+            </tr>
+            <tr>
+                <td style="font-size:14px; font-weight:bold;border:0px">&nbsp;</td>
+                <td style="font-size:14px; font-weight:bold;border:0px">&nbsp;</td>
+            </tr>
+            <tr>
+
+                <td width="90%" align="center" style="font-size:14px; font-weight:bold;border:0px">
+                    {{"mdrtb.tb08.title"|get_message:request.session.locale}}
+                </td>
+                <td width="10%" align="right" style="font-size:14px; font-weight:bold;border:0px;" valign="top"
+                    border="0">&nbsp;</td>
+            </tr>
+        </table>
+        <br /><br />
+        <table border="1" width="100%">
+            <tr>
+                <td>
+                    {{"mdrtb.tb08u.nameOfFacility"|get_message:request.session.locale}} <u>&nbsp; {{ location.location}}
+                        &nbsp;</u>
+                    <br />
+                    {{"mdrtb.tb08u.regionCityDistrict"|get_message:request.session.locale}} <u> {{location.parent}}
+                    </u><br />
+                    {{"mdrtb.tb08u.tbCoordinatorName"|get_message:request.session.locale}}
+                    ____________________{{"mdrtb.tb08u.signature"|get_message:request.session.locale}}
+                    ____________<br />
+                </td>
+
+                <td>
+                    {{"mdrtb.tb08u.tbCasesDetectedDuringQuarterYear"|get_message:request.session.locale}}
+                    {{request.GET.quarter}}-{{request.GET.year}}
+                    <br />
+                    {{"mdrtb.tb08u.dateOfReport"|get_message:request.session.locale}}
+                </td>
+            </tr>
+        </table>
+        <br /><br />
+
+
+        <table border="1" cellpadding="1" cellspacing="1" style="width:100%;">
+            {% for table1 in patientSet%}
+            <tr>
+                <td rowspan="2">&nbsp;</td>
+                <td rowspan="2">&nbsp;</td>
+                <td rowspan="2" style="text-align:center;">
+                    {{"mdrtb.tb08u.totatTBCasesDetected"|get_message:request.session.locale}}
+                </td>
+                <td rowspan="2">
+                    <div style="text-align:center;">
+                        {{"mdrtb.tb08u.eligibleCohort"|get_message:request.session.locale}}&nbsp;
+                    </div>
+                </td>
+                <td rowspan="2" style="text-align:center;">{{"mdrtb.tb08u.cured"|get_message:request.session.locale}}
+                </td>
+                <td rowspan="2">
+                    <div style="text-align:center;">{{"mdrtb.tb08u.txCompleted"|get_message:request.session.locale}}
+                    </div>
+                </td>
+                <td colspan="2" rowspan="1">
+                    <div style="text-align:center;">{{"mdrtb.tb08u.died"|get_message:request.session.locale}}&nbsp;
+                    </div>
+                </td>
+                <td rowspan="2" style="text-align:center;">{{"mdrtb.tb08u.failure"|get_message:request.session.locale}}
+                </td>
+                <td rowspan="2" style="text-align:center;">{{"mdrtb.tb08u.ltfu"|get_message:request.session.locale}}
+                </td>
+                <td rowspan="2">
+                    <div style="text-align:center;">
+                        {{"mdrtb.tb08u.totalEvaluated"|get_message:request.session.locale}}&nbsp;
+                    </div>
+                </td>
+                <td rowspan="2">
+                    <div style="text-align:center;">
+                        {{"mdrtb.tb08u.startedSLD"|get_message:request.session.locale}}&nbsp;
+                    </div>
+                </td>
+                <td rowspan="2">
+                    <div style="text-align:center;">{{"mdrtb.tb08u.canceled"|get_message:request.session.locale}}&nbsp;
+                    </div>
+                </td>
+                <td rowspan="2">
+                    <div style="text-align:center;">
+                        {{"mdrtb.tb08u.notEvaluated"|get_message:request.session.locale}}&nbsp;
+                    </div>
+                </td>
+            </tr>
+            <tr align="center">
+                <td>{{"mdrtb.tb08u.tb"|get_message:request.session.locale}}
+                </td>
+                <td>{{"mdrtb.tb08u.notTb"|get_message:request.session.locale}}
+                </td>
+            </tr>
+            <tr align="center">
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+                <td>4</td>
+                <td>5</td>
+                <td>6</td>
+                <td>7</td>
+                <td>8</td>
+                <td>9</td>
+                <td>10</td>
+                <td>11</td>
+                <td>12</td>
+            </tr>
+            <tr>
+                <td style="font:bold;">1</td>
+                <td style="font:bold;">
+                    {{"mdrtb.tb08u.newCases"|get_message:request.session.locale}}
+                </td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>1.1</td>
+                <td>{{"mdrtb.tb08u.pulmonaryBC"|get_message:request.session.locale}}&nbsp;
+                </td>
+                <td>{{table1.newPulmonaryBCDetected}}</td>
+                <td>{{table1.newPulmonaryBCEligible}}</td>
+                <td>{{table1.newPulmonaryBCCured}}</td>
+                <td>{{table1.newPulmonaryBCCompleted}}</td>
+                <td>{{table1.newPulmonaryBCDiedTB}}</td>
+                <td>{{table1.newPulmonaryBCDiedNotTB}}</td>
+                <td>{{table1.newPulmonaryBCFailed}}</td>
+                <td>{{table1.newPulmonaryBCDefaulted}}</td>
+                <td>{{table1.newPulmonaryBCEligible}}</td>
+                <td>{{table1.newPulmonaryBCSLD}}</td>
+                <td>{{table1.newPulmonaryBCCanceled}}</td>
+                <td>{{table1.newPulmonaryBCDetected|sub:table1.newPulmonaryBCEligible|sub:table1.newPulmonaryBCSLD|sub:table1.newPulmonaryBCCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td>1.1.1</td>
+                <td>0-4&nbsp;</td>
+                <td>{{table1.newPulmonaryBCDetected04}}</td>
+                <td>{{table1.newPulmonaryBCEligible04}}</td>
+                <td>{{table1.newPulmonaryBCCured04}}</td>
+                <td>{{table1.newPulmonaryBCCompleted04}}</td>
+                <td>{{table1.newPulmonaryBCDiedTB04}}</td>
+                <td>{{table1.newPulmonaryBCDiedNotTB04}}</td>
+                <td>{{table1.newPulmonaryBCFailed04}}</td>
+                <td>{{table1.newPulmonaryBCDefaulted04}}</td>
+                <td>{{table1.newPulmonaryBCEligible04}}</td>
+                <td>{{table1.newPulmonaryBCSLD04}}</td>
+                <td>{{table1.newPulmonaryBCCanceled04}}</td>
+                <td>{{table1.newPulmonaryBCDetected04|sub:table1.newPulmonaryBCEligible04|sub:table1.newPulmonaryBCSLD04|sub:table1.newPulmonaryBCCanceled04}}
+                </td>
+            </tr>
+            <tr>
+                <td>1.1.2</td>
+                <td>5-14&nbsp;</td>
+                <td>{{table1.newPulmonaryBCDetected0514}}</td>
+                <td>{{table1.newPulmonaryBCEligible0514}}</td>
+                <td>{{table1.newPulmonaryBCCured0514}}</td>
+                <td>{{table1.newPulmonaryBCCompleted0514}}</td>
+                <td>{{table1.newPulmonaryBCDiedTB0514}}</td>
+                <td>{{table1.newPulmonaryBCDiedNotTB0514}}</td>
+                <td>{{table1.newPulmonaryBCFailed0514}}</td>
+                <td>{{table1.newPulmonaryBCDefaulted0514}}</td>
+                <td>{{table1.newPulmonaryBCEligible0514}}</td>
+                <td>{{table1.newPulmonaryBCSLD0514}}</td>
+                <td>{{table1.newPulmonaryBCCanceled0514}}</td>
+                <td>{{table1.newPulmonaryBCDetected0514|sub:table1.newPulmonaryBCEligible0514|sub:table1.newPulmonaryBCSLD0514|sub:table1.newPulmonaryBCCanceled0514}}
+                </td>
+            </tr>
+            <tr>
+                <td>1.1.3</td>
+                <td>15-17&nbsp;</td>
+                <td>{{table1.newPulmonaryBCDetected1517}}</td>
+                <td>{{table1.newPulmonaryBCEligible1517}}</td>
+                <td>{{table1.newPulmonaryBCCured1517}}</td>
+                <td>{{table1.newPulmonaryBCCompleted1517}}</td>
+                <td>{{table1.newPulmonaryBCDiedTB1517}}</td>
+                <td>{{table1.newPulmonaryBCDiedNotTB1517}}</td>
+                <td>{{table1.newPulmonaryBCFailed1517}}</td>
+                <td>{{table1.newPulmonaryBCDefaulted1517}}</td>
+                <td>{{table1.newPulmonaryBCEligible1517}}</td>
+                <td>{{table1.newPulmonaryBCSLD1517}}</td>
+                <td>{{table1.newPulmonaryBCCanceled1517}}</td>
+                <td>{{table1.newPulmonaryBCDetected1517|sub:table1.newPulmonaryBCEligible1517|sub:table1.newPulmonaryBCSLD1517|sub:table1.newPulmonaryBCCanceled1517}}
+                </td>
+            </tr>
+            <tr>
+                <td>1.2</td>
+                <td>{{"mdrtb.tb08u.pulmonaryCD"|get_message:request.session.locale}}
+                </td>
+                <td>{{table1.newPulmonaryCDDetected}}</td>
+                <td>{{table1.newPulmonaryCDEligible}}</td>
+                <td>{{table1.newPulmonaryCDCured}}</td>
+                <td>{{table1.newPulmonaryCDCompleted}}</td>
+                <td>{{table1.newPulmonaryCDDiedTB}}</td>
+                <td>{{table1.newPulmonaryCDDiedNotTB}}</td>
+                <td>{{table1.newPulmonaryCDFailed}}</td>
+                <td>{{table1.newPulmonaryCDDefaulted}}</td>
+                <td>{{table1.newPulmonaryCDEligible}}</td>
+                <td>{{table1.newPulmonaryCDSLD}}</td>
+                <td>{{table1.newPulmonaryCDCanceled}}</td>
+                <td>{{table1.newPulmonaryCDDetected|sub:table1.newPulmonaryCDEligible|sub:table1.newPulmonaryCDSLD|sub:table1.newPulmonaryCDCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td>1.2.1</td>
+                <td>0-4</td>
+                <td>{{table1.newPulmonaryCDDetected04}}</td>
+                <td>{{table1.newPulmonaryCDEligible04}}</td>
+                <td>{{table1.newPulmonaryCDCured04}}</td>
+                <td>{{table1.newPulmonaryCDCompleted04}}</td>
+                <td>{{table1.newPulmonaryCDDiedTB04}}</td>
+                <td>{{table1.newPulmonaryCDDiedNotTB04}}</td>
+                <td>{{table1.newPulmonaryCDFailed04}}</td>
+                <td>{{table1.newPulmonaryCDDefaulted04}}</td>
+                <td>{{table1.newPulmonaryCDEligible04}}</td>
+                <td>{{table1.newPulmonaryCDSLD04}}</td>
+                <td>{{table1.newPulmonaryCDCanceled04}}</td>
+                <td>{{table1.newPulmonaryCDDetected04|sub:table1.newPulmonaryCDEligible04|sub:table1.newPulmonaryCDSLD04|sub:table1.newPulmonaryCDCanceled04}}
+                </td>
+            </tr>
+            <tr>
+                <td>1.2.2</td>
+                <td>5-14</td>
+                <td>{{table1.newPulmonaryCDDetected0514}}</td>
+                <td>{{table1.newPulmonaryCDEligible0514}}</td>
+                <td>{{table1.newPulmonaryCDCured0514}}</td>
+                <td>{{table1.newPulmonaryCDCompleted0514}}</td>
+                <td>{{table1.newPulmonaryCDDiedTB0514}}</td>
+                <td>{{table1.newPulmonaryCDDiedNotTB0514}}</td>
+                <td>{{table1.newPulmonaryCDFailed0514}}</td>
+                <td>{{table1.newPulmonaryCDDefaulted0514}}</td>
+                <td>{{table1.newPulmonaryCDEligible0514}}</td>
+                <td>{{table1.newPulmonaryCDSLD0514}}</td>
+                <td>{{table1.newPulmonaryCDCanceled0514}}</td>
+                <td>{{table1.newPulmonaryCDDetected0514|sub:table1.newPulmonaryCDEligible0514|sub:table1.newPulmonaryCDSLD0514|sub:table1.newPulmonaryCDCanceled0514}}
+                </td>
+            </tr>
+            <tr>
+                <td>1.2.3</td>
+                <td>15-17</td>
+                <td>{{table1.newPulmonaryCDDetected1517}}</td>
+                <td>{{table1.newPulmonaryCDEligible1517}}</td>
+                <td>{{table1.newPulmonaryCDCured1517}}</td>
+                <td>{{table1.newPulmonaryCDCompleted1517}}</td>
+                <td>{{table1.newPulmonaryCDDiedTB1517}}</td>
+                <td>{{table1.newPulmonaryCDDiedNotTB1517}}</td>
+                <td>{{table1.newPulmonaryCDFailed1517}}</td>
+                <td>{{table1.newPulmonaryCDDefaulted1517}}</td>
+                <td>{{table1.newPulmonaryCDEligible1517}}</td>
+                <td>{{table1.newPulmonaryCDSLD1517}}</td>
+                <td>{{table1.newPulmonaryCDCanceled1517}}</td>
+                <td>{{table1.newPulmonaryCDDetected0514|sub:table1.newPulmonaryCDEligible0514|sub:table1.newPulmonaryCDSLD0514|sub:table1.newPulmonaryCDCanceled0514}}
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;1.3</td>
+                <td>{{"mdrtb.tb08u.eptb"|get_message:request.session.locale}}
+                </td>
+                <td>{{table1.newExtrapulmonaryDetected}}</td>
+                <td>{{table1.newExtrapulmonaryEligible}}</td>
+                <td>{{table1.newExtrapulmonaryCured}}</td>
+                <td>{{table1.newExtrapulmonaryCompleted}}</td>
+                <td>{{table1.newExtrapulmonaryDiedTB}}</td>
+                <td>{{table1.newExtrapulmonaryDiedNotTB}}</td>
+                <td>{{table1.newExtrapulmonaryFailed}}</td>
+                <td>{{table1.newExtrapulmonaryDefaulted}}</td>
+                <td>{{table1.newExtrapulmonaryEligible}}</td>
+                <td>{{table1.newExtrapulmonarySLD}}</td>
+                <td>{{table1.newExtrapulmonaryCanceled}}</td>
+                <td>{{table1.newExtrapulmonaryDetected|sub:table1.newExtrapulmonaryEligible|sub:table1.newExtrapulmonarySLD|sub:table1.newExtrapulmonaryCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td>1.3.1</td>
+                <td>0-4</td>
+                <td>{{table1.newExtrapulmonaryDetected04}}</td>
+                <td>{{table1.newExtrapulmonaryEligible04}}</td>
+                <td>{{table1.newExtrapulmonaryCured04}}</td>
+                <td>{{table1.newExtrapulmonaryCompleted04}}</td>
+                <td>{{table1.newExtrapulmonaryDiedTB04}}</td>
+                <td>{{table1.newExtrapulmonaryDiedNotTB04}}</td>
+                <td>{{table1.newExtrapulmonaryFailed04}}</td>
+                <td>{{table1.newExtrapulmonaryDefaulted04}}</td>
+                <td>{{table1.newExtrapulmonaryEligible04}}</td>
+                <td>{{table1.newExtrapulmonarySLD04}}</td>
+                <td>{{table1.newExtrapulmonaryCanceled04}}</td>
+                <td>{{table1.newExtrapulmonaryDetected04|sub:table1.newExtrapulmonaryEligible04|sub:table1.newExtrapulmonarySLD04|sub:table1.newExtrapulmonaryCanceled04}}
+                </td>
+            </tr>
+            <tr>
+                <td>1.3.2</td>
+                <td>5-14</td>
+                <td>{{table1.newExtrapulmonaryDetected0514}}
+                </td>
+                <td>{{table1.newExtrapulmonaryEligible0514}}
+                </td>
+                <td>{{table1.newExtrapulmonaryCured0514}}</td>
+                <td>{{table1.newExtrapulmonaryCompleted0514}}
+                </td>
+                <td>{{table1.newExtrapulmonaryDiedTB0514}}</td>
+                <td>{{table1.newExtrapulmonaryDiedNotTB0514}}
+                </td>
+                <td>{{table1.newExtrapulmonaryFailed0514}}</td>
+                <td>{{table1.newExtrapulmonaryDefaulted0514}}
+                </td>
+                <td>{{table1.newExtrapulmonaryEligible0514}}
+                </td>
+                <td>{{table1.newExtrapulmonarySLD0514}}</td>
+                <td>{{table1.newExtrapulmonaryCanceled0514}}
+                </td>
+                <td>{{table1.newExtrapulmonaryDetected0514|sub:table1.newExtrapulmonaryEligible0514|sub:table1.newExtrapulmonarySLD0514|sub:table1.newExtrapulmonaryCanceled0514}}
+                </td>
+            </tr>
+            <tr>
+                <td>1.3.3</td>
+                <td>15-17</td>
+                <td>{{table1.newExtrapulmonaryDetected1517}}
+                </td>
+                <td>{{table1.newExtrapulmonaryEligible1517}}
+                </td>
+                <td>{{table1.newExtrapulmonaryCured1517}}</td>
+                <td>{{table1.newExtrapulmonaryCompleted1517}}
+                </td>
+                <td>{{table1.newExtrapulmonaryDiedTB1517}}</td>
+                <td>{{table1.newExtrapulmonaryDiedNotTB1517}}
+                </td>
+                <td>{{table1.newExtrapulmonaryFailed1517}}</td>
+                <td>{{table1.newExtrapulmonaryDefaulted1517}}
+                </td>
+                <td>{{table1.newExtrapulmonaryEligible1517}}
+                </td>
+                <td>{{table1.newExtrapulmonarySLD1517}}</td>
+                <td>{{table1.newExtrapulmonaryCanceled1517}}
+                </td>
+                <td>{{table1.newExtrapulmonaryDetected1517|sub:table1.newExtrapulmonaryEligible1517|sum:table1.newExtrapulmonarySLD1517|sum:table1.newExtrapulmonaryCanceled1517}}
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td style="font:bold;">
+                    {{"mdrtb.tb08.total1"|get_message:request.session.locale}}
+                </td>
+                <td>{{table1.newPulmonaryBCDetected|sum:table1.newPulmonaryCDDetected|sum:table1.newExtrapulmonaryDetected}}
+                </td>
+                <td>{{table1.newPulmonaryBCEligible|sum:table1.newPulmonaryCDEligible|sum:table1.newExtrapulmonaryEligible}}
+                </td>
+                <td>{{table1.newPulmonaryBCEligible|sum:table1.newPulmonaryCDEligible|sum:table1.newExtrapulmonaryEligible}}
+                </td>
+                </td>
+                <td>{{table1.newPulmonaryBCCompleted|sum:table1.newPulmonaryCDCompleted|sum:table1.newExtrapulmonaryCompleted}}
+                </td>
+                <td>{{table1.newPulmonaryBCDiedTB|sum:table1.newPulmonaryCDDiedTB|sum:table1.newExtrapulmonaryDiedTB}}
+                </td>
+                <td>{{table1.newPulmonaryBCDiedNotTB|sum:table1.newPulmonaryCDDiedNotTB|sum:table1.newExtrapulmonaryDiedNotTB}}
+                </td>
+                <td>{{table1.newPulmonaryBCFailed|sum:table1.newPulmonaryCDFailed|sum:table1.newExtrapulmonaryFailed}}
+                </td>
+                <td>{{table1.newPulmonaryBCDefaulted|sum:table1.newPulmonaryCDDefaulted|sum:table1.newExtrapulmonaryDefaulted}}
+                </td>
+                <td>{{table1.newPulmonaryBCEligible|sum:table1.newPulmonaryCDEligible|sum:table1.newExtrapulmonaryEligible}}
+                </td>
+                <td>{{table1.newPulmonaryBCSLD|sum:table1.newPulmonaryCDSLD|sum:table1.newExtrapulmonarySLD}}
+                </td>
+                <td>{{table1.newPulmonaryBCCanceled|sum:table1.newPulmonaryCDCanceled|sum:table1.newExtrapulmonaryCanceled}}
+                </td>
+                <td>{{table1.newPulmonaryBCDetected|sum:table1.newPulmonaryCDDetected|sum:table1.newExtrapulmonaryDetected|sum:table1.newPulmonaryCDEligible|sum:table1.newExtrapulmonaryEligible|sum:table1.newPulmonaryBCSLD|sum:table1.newPulmonaryCDSLD|sum:table1.newExtrapulmonarySLD|sum:table1.newPulmonaryBCCanceled|sum:table1.newPulmonaryCDCanceled|sum:table1.newExtrapulmonaryCanceled|sub:table1.newPulmonaryBCEligible}}
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>0-4</td>
+                <td>{{table1.newPulmonaryBCDetected04|sum:table1.newPulmonaryCDDetected04|sum:table1.newExtrapulmonaryDetected04}}
+                </td>
+                <td>{{table1.newPulmonaryBCEligible04|sum:table1.newPulmonaryCDEligible04|sum:table1.newExtrapulmonaryEligible04}}
+                </td>
+                <td>{{table1.newPulmonaryBCCured04|sum:table1.newPulmonaryCDCured04|sum:table1.newExtrapulmonaryCured04}}
+                </td>
+                </td>
+                <td>{{table1.newPulmonaryBCCompleted04|sum:table1.newPulmonaryCDCompleted04|sum:table1.newExtrapulmonaryCompleted04}}
+                </td>
+                <td>{{table1.newPulmonaryBCDiedTB04|sum:table1.newPulmonaryCDDiedTB04|sum:table1.newExtrapulmonaryDiedTB04}}
+                </td>
+                <td>{{table1.newPulmonaryBCDiedNotTB04|sum:table1.newPulmonaryCDDiedNotTB04|sum:table1.newExtrapulmonaryDiedNotTB04}}
+                </td>
+                <td>{{table1.newPulmonaryBCFailed04|sum:table1.newPulmonaryCDFailed04|sum:table1.newExtrapulmonaryFailed04}}
+                </td>
+                <td>{{table1.newPulmonaryBCDefaulted04|sum:table1.newPulmonaryCDDefaulted04|sum:table1.newExtrapulmonaryDefaulted04}}
+                </td>
+                <td>{{table1.newPulmonaryBCEligible04|sum:table1.newPulmonaryCDEligible04|sum:table1.newExtrapulmonaryEligible04}}
+                </td>
+                <td>{{table1.newPulmonaryBCSLD04|sum:table1.newPulmonaryCDSLD04|sum:table1.newExtrapulmonarySLD04}}
+                </td>
+                <td>{{table1.newPulmonaryBCCanceled04|sum:table1.newPulmonaryCDCanceled04|sum:table1.newExtrapulmonaryCanceled04}}
+                </td>
+                <td>{{table1.newPulmonaryBCDetected04|sum:table1.newPulmonaryCDDetected04|sum:table1.newExtrapulmonaryDetected04|sub:table1.newPulmonaryBCEligible04|sum:table1.newPulmonaryCDEligible04|sum:table1.newExtrapulmonaryEligible04|sum:table1.newPulmonaryBCSLD04|sum:table1.newPulmonaryCDSLD04|sum:table1.newExtrapulmonarySLD04|sum:table1.newPulmonaryBCCanceled04|sum:table1.newPulmonaryCDCanceled04|sum:table1.newExtrapulmonaryCanceled04}}
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>5-14</td>
+                <td>{{table1.newPulmonaryBCDetected0514|sum:table1.newPulmonaryCDDetected0514|sum:table1.newExtrapulmonaryDetected0514}}
+                </td>
+                <td>{{table1.newPulmonaryBCEligible0514|sum:table1.newPulmonaryCDEligible0514|sum:table1.newExtrapulmonaryEligible0514}}
+                </td>
+                <td>{{table1.newPulmonaryBCCured0514|sum:table1.newPulmonaryCDCured0514|sum:table1.newExtrapulmonaryCured0514}}
+                </td>
+                </td>
+                <td>{{table1.newPulmonaryBCCompleted0514|sum:table1.newPulmonaryCDCompleted0514|sum:table1.newExtrapulmonaryCompleted0514}}
+                </td>
+                <td>{{table1.newPulmonaryBCDiedTB0514|sum:table1.newPulmonaryCDDiedTB0514|sum:table1.newExtrapulmonaryDiedTB0514}}
+                </td>
+                <td>{{table1.newPulmonaryBCDiedNotTB0514|sum:table1.newPulmonaryCDDiedNotTB0514|sum:table1.newExtrapulmonaryDiedNotTB0514}}
+                </td>
+                <td>{{table1.newPulmonaryBCFailed0514|sum:table1.newPulmonaryCDFailed0514|sum:table1.newExtrapulmonaryFailed0514}}
+                </td>
+                <td>{{table1.newPulmonaryBCDefaulted0514|sum:table1.newPulmonaryCDDefaulted0514|sum:table1.newExtrapulmonaryDefaulted0514}}
+                </td>
+                <td>{{table1.newPulmonaryBCEligible0514|sum:table1.newPulmonaryCDEligible0514|sum:table1.newExtrapulmonaryEligible0514}}
+                </td>
+                <td>{{table1.newPulmonaryBCSLD0514|sum:table1.newPulmonaryCDSLD0514|sum:table1.newExtrapulmonarySLD0514}}
+                </td>
+                <td>{{table1.newPulmonaryBCCanceled0514|sum:table1.newPulmonaryCDCanceled0514|sum:table1.newExtrapulmonaryCanceled0514}}
+                </td>
+                <td>{{table1.newPulmonaryBCDetected0514|sum:table1.newPulmonaryCDDetected0514|sum:table1.newExtrapulmonaryDetected0514|sub:table1.newPulmonaryBCEligible0514|sum:table1.newPulmonaryCDEligible0514|sum:table1.newExtrapulmonaryEligible0514|sum:table1.newPulmonaryBCSLD0514|sum:table1.newPulmonaryCDSLD0514|sum:table1.newExtrapulmonarySLD0514|sum:table1.newPulmonaryBCCanceled0514|sum:table1.newPulmonaryCDCanceled0514|sum:table1.newExtrapulmonaryCanceled0514}}
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>15-17</td>
+                <td>{{table1.newPulmonaryBCDetected1517|sum:table1.newPulmonaryCDDetected1517|sum:table1.newExtrapulmonaryDetected1517}}
+                </td>
+                <td>{{table1.newPulmonaryBCEligible1517|sum:table1.newPulmonaryCDEligible1517|sum:table1.newExtrapulmonaryEligible1517}}
+                </td>
+                <td>{{table1.newPulmonaryBCCured1517|sum:table1.newPulmonaryCDCured1517|sum:table1.newExtrapulmonaryCured1517}}
+                </td>
+                </td>
+                <td>{{table1.newPulmonaryBCCompleted1517|sum:table1.newPulmonaryCDCompleted1517|sum:table1.newExtrapulmonaryCompleted1517}}
+                </td>
+                <td>{{table1.newPulmonaryBCDiedTB1517|sum:table1.newPulmonaryCDDiedTB1517|sum:table1.newExtrapulmonaryDiedTB1517}}
+                </td>
+                <td>{{table1.newPulmonaryBCDiedNotTB1517|sum:table1.newPulmonaryCDDiedNotTB1517|sum:table1.newExtrapulmonaryDiedNotTB1517}}
+                </td>
+                <td>{{table1.newPulmonaryBCFailed1517|sum:table1.newPulmonaryCDFailed1517|sum:table1.newExtrapulmonaryFailed1517}}
+                </td>
+                <td>{{table1.newPulmonaryBCDefaulted1517|sum:table1.newPulmonaryCDDefaulted1517|sum:table1.newExtrapulmonaryDefaulted1517}}
+                </td>
+                <td>{{table1.newPulmonaryBCEligible1517|sum:table1.newPulmonaryCDEligible1517|sum:table1.newExtrapulmonaryEligible1517}}
+                </td>
+                <td>{{table1.newPulmonaryBCSLD1517|sum:table1.newPulmonaryCDSLD1517|sum:table1.newExtrapulmonarySLD1517}}
+                </td>
+                <td>{{table1.newPulmonaryBCCanceled1517|sum:table1.newPulmonaryCDCanceled1517|sum:table1.newExtrapulmonaryCanceled1517}}
+                </td>
+                <td>{{table1.newPulmonaryBCDetected1517|sum:table1.newPulmonaryCDDetected1517|sum:table1.newExtrapulmonaryDetected1517|sub:table1.newPulmonaryBCEligible1517|sum:table1.newPulmonaryCDEligible1517|sum:table1.newExtrapulmonaryEligible1517|sum:table1.newPulmonaryBCSLD1517|sum:table1.newPulmonaryCDSLD1517|sum:table1.newExtrapulmonarySLD1517|sum:table1.newPulmonaryBCCanceled1517|sum:table1.newPulmonaryCDCanceled1517|sum:table1.newExtrapulmonaryCanceled1517}}
+                </td>
+            </tr>
+            <tr>
+                <td style="font:bold;">2</td>
+                <td style="font:bold;">
+                    {{"mdrtb.tb08u.relapses"|get_message:request.session.locale}}
+                </td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>2.1</td>
+                <td>{{"mdrtb.tb08u.pulmonaryBC"|get_message:request.session.locale}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDetected}}</td>
+                <td>{{table1.relapsePulmonaryBCEligible}}</td>
+                <td>{{table1.relapsePulmonaryBCCured}}</td>
+                <td>{{table1.relapsePulmonaryBCCompleted}}</td>
+                <td>{{table1.relapsePulmonaryBCDiedTB}}</td>
+                <td>{{table1.relapsePulmonaryBCDiedNotTB}}</td>
+                <td>{{table1.relapsePulmonaryBCFailed}}</td>
+                <td>{{table1.relapsePulmonaryBCDefaulted}}</td>
+                <td>{{table1.relapsePulmonaryBCEligible}}</td>
+                <td>{{table1.relapsePulmonaryBCSLD}}</td>
+                <td>{{table1.relapsePulmonaryBCCanceled}}</td>
+                <td>{{table1.relapsePulmonaryBCDetected|sub:table1.relapsePulmonaryBCEligible|sum:table1.relapsePulmonaryBCSLD|sum:table1.relapsePulmonaryBCCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td>2.1.1</td>
+                <td>0-4</td>
+                <td>{{table1.relapsePulmonaryBCDetected04}}</td>
+                <td>{{table1.relapsePulmonaryBCEligible04}}</td>
+                <td>{{table1.relapsePulmonaryBCCured04}}</td>
+                <td>{{table1.relapsePulmonaryBCCompleted04}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDiedTB04}}</td>
+                <td>{{table1.relapsePulmonaryBCDiedNotTB04}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCFailed04}}</td>
+                <td>{{table1.relapsePulmonaryBCDefaulted04}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCEligible04}}</td>
+                <td>{{table1.relapsePulmonaryBCSLD04}}</td>
+                <td>{{table1.relapsePulmonaryBCCanceled04}}</td>
+                <td>{{table1.relapsePulmonaryBCDetected04|sub:table1.relapsePulmonaryBCEligible04|sum:table1.relapsePulmonaryBCSLD04|sum:table1.relapsePulmonaryBCCanceled04}}
+                </td>
+            </tr>
+            <tr>
+                <td>2.1.2</td>
+                <td>5-14</td>
+                <td>{{table1.relapsePulmonaryBCDetected0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCEligible0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCCured0514}}</td>
+                <td>{{table1.relapsePulmonaryBCCompleted0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDiedTB0514}}</td>
+                <td>{{table1.relapsePulmonaryBCDiedNotTB0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCFailed0514}}</td>
+                <td>{{table1.relapsePulmonaryBCDefaulted0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCEligible0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCSLD0514}}</td>
+                <td>{{table1.relapsePulmonaryBCCanceled0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDetected0514|sub:table1.relapsePulmonaryBCEligible0514|sum:table1.relapsePulmonaryBCSLD0514|sum:table1.relapsePulmonaryBCCanceled0514}}
+                </td>
+            </tr>
+            <tr>
+                <td>2.1.3</td>
+                <td>15-17</td>
+                <td>{{table1.relapsePulmonaryBCDetected1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCEligible1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCCured1517}}</td>
+                <td>{{table1.relapsePulmonaryBCCompleted1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDiedTB1517}}</td>
+                <td>{{table1.relapsePulmonaryBCDiedNotTB1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCFailed1517}}</td>
+                <td>{{table1.relapsePulmonaryBCDefaulted1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCEligible1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCSLD1517}}</td>
+                <td>{{table1.relapsePulmonaryBCCanceled1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDetected1517|sub:table1.relapsePulmonaryBCEligible1517|sum:table1.relapsePulmonaryBCSLD1517|sum:table1.relapsePulmonaryBCCanceled1517}}
+                </td>
+            </tr>
+            <tr>
+                <td>2.2</td>
+                <td>{{"mdrtb.tb08u.pulmonaryCD"|get_message:request.session.locale}}
+                </td>
+                <td>{{table1.relapsePulmonaryCDDetected}}</td>
+                <td>{{table1.relapsePulmonaryCDEligible}}</td>
+                <td>{{table1.relapsePulmonaryCDCured}}</td>
+                <td>{{table1.relapsePulmonaryCDCompleted}}</td>
+                <td>{{table1.relapsePulmonaryCDDiedTB}}</td>
+                <td>{{table1.relapsePulmonaryCDDiedNotTB}}</td>
+                <td>{{table1.relapsePulmonaryCDFailed}}</td>
+                <td>{{table1.relapsePulmonaryCDDefaulted}}</td>
+                <td>{{table1.relapsePulmonaryCDEligible}}</td>
+                <td>{{table1.relapsePulmonaryCDSLD}}</td>
+                <td>{{table1.relapsePulmonaryCDCanceled}}</td>
+                <td>{{table1.relapsePulmonaryCDDetected|sub:table1.relapsePulmonaryCDEligible|sum:table1.relapsePulmonaryCDSLD|sum:table1.relapsePulmonaryCDCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td>2.2.1</td>
+                <td>0-4</td>
+                <td>{{table1.relapsePulmonaryCDDetected04}}</td>
+                <td>{{table1.relapsePulmonaryCDEligible04}}</td>
+                <td>{{table1.relapsePulmonaryCDCured04}}</td>
+                <td>{{table1.relapsePulmonaryCDCompleted04}}
+                </td>
+                <td>{{table1.relapsePulmonaryCDDiedTB04}}</td>
+                <td>{{table1.relapsePulmonaryCDDiedNotTB04}}
+                </td>
+                <td>{{table1.relapsePulmonaryCDFailed04}}</td>
+                <td>{{table1.relapsePulmonaryCDDefaulted04}}
+                </td>
+                <td>{{table1.relapsePulmonaryCDEligible04}}</td>
+                <td>{{table1.relapsePulmonaryCDSLD04}}</td>
+                <td>{{table1.relapsePulmonaryCDCanceled04}}</td>
+                <td>{{table1.relapsePulmonaryCDDetected04|sub:table1.relapsePulmonaryCDEligible04|sum:table1.relapsePulmonaryCDSLD04|sum:table1.relapsePulmonaryCDCanceled04}}
+                </td>
+            </tr>
+            <tr>
+                <td>2.2.2</td>
+                <td>5-14</td>
+                <td>{{table1.relapsePulmonaryCDDetected0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryCDEligible0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryCDCured0514}}</td>
+                <td>{{table1.relapsePulmonaryCDCompleted0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryCDDiedTB0514}}</td>
+                <td>{{table1.relapsePulmonaryCDDiedNotTB0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryCDFailed0514}}</td>
+                <td>{{table1.relapsePulmonaryCDDefaulted0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryCDEligible0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryCDSLD0514}}</td>
+                <td>{{table1.relapsePulmonaryCDCanceled0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryCDDetected0514|sub:table1.relapsePulmonaryCDEligible0514|sum:table1.relapsePulmonaryCDSLD0514|sum:table1.relapsePulmonaryCDCanceled0514}}
+                </td>
+            </tr>
+            <tr>
+                <td>2.2.3</td>
+                <td>15-17</td>
+                <td>{{table1.relapsePulmonaryCDDetected1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryCDEligible1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryCDCured1517}}</td>
+                <td>{{table1.relapsePulmonaryCDCompleted1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryCDDiedTB1517}}</td>
+                <td>{{table1.relapsePulmonaryCDDiedNotTB1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryCDFailed1517}}</td>
+                <td>{{table1.relapsePulmonaryCDDefaulted1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryCDEligible1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryCDSLD1517}}</td>
+                <td>{{table1.relapsePulmonaryCDCanceled1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryCDDetected1517|sub:table1.relapsePulmonaryCDEligible1517|sum:table1.relapsePulmonaryCDSLD1517|sum:table1.relapsePulmonaryCDCanceled1517}}
+                </td>
+            </tr>
+            <tr>
+                <td>2.3</td>
+                <td>{{"mdrtb.tb08u.eptb"|get_message:request.session.locale}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryDetected}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryEligible}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryCured}}</td>
+                <td>{{table1.relapseExtrapulmonaryCompleted}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryDiedTB}}</td>
+                <td>{{table1.relapseExtrapulmonaryDiedNotTB}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryFailed}}</td>
+                <td>{{table1.relapseExtrapulmonaryDefaulted}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryEligible}}
+                </td>
+                <td>{{table1.relapseExtrapulmonarySLD}}</td>
+                <td>{{table1.relapseExtrapulmonaryCanceled}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryDetected|sub:table1.relapseExtrapulmonaryEligible|sum:table1.relapseExtrapulmonarySLD|sum:table1.relapseExtrapulmonaryCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td>2.3.1</td>
+                <td>0-4</td>
+                <td>{{table1.relapseExtrapulmonaryDetected04}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryEligible04}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryCured04}}</td>
+                <td>{{table1.relapseExtrapulmonaryCompleted04}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryDiedTB04}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryDiedNotTB04}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryFailed04}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryDefaulted04}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryEligible04}}
+                </td>
+                <td>{{table1.relapseExtrapulmonarySLD04}}</td>
+                <td>{{table1.relapseExtrapulmonaryCanceled04}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryDetected04|sub:table1.relapseExtrapulmonaryEligible04|sum:table1.relapseExtrapulmonarySLD04|sum:table1.relapseExtrapulmonaryCanceled04}}
+                </td>
+            </tr>
+            <tr>
+                <td>2.3.2</td>
+                <td>5-14</td>
+                <td>{{table1.relapseExtrapulmonaryDetected0514}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryEligible0514}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryCured0514}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryCompleted0514}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryDiedTB0514}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryDiedNotTB0514}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryFailed0514}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryDefaulted0514}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryEligible0514}}
+                </td>
+                <td>{{table1.relapseExtrapulmonarySLD0514}}</td>
+                <td>{{table1.relapseExtrapulmonaryCanceled0514}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryDetected0514|sub:table1.relapseExtrapulmonaryEligible0514|sum:table1.relapseExtrapulmonarySLD0514|sum:table1.relapseExtrapulmonaryCanceled0514}}
+                </td>
+            </tr>
+            <tr>
+                <td>2.3.3</td>
+                <td>15-17</td>
+                <td>{{table1.relapseExtrapulmonaryDetected1517}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryEligible1517}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryCured1517}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryCompleted1517}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryDiedTB1517}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryDiedNotTB1517}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryFailed1517}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryDefaulted1517}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryEligible1517}}
+                </td>
+                <td>{{table1.relapseExtrapulmonarySLD1517}}</td>
+                <td>{{table1.relapseExtrapulmonaryCanceled1517}}
+                </td>
+                <td>{{table1.relapseExtrapulmonaryDetected1517|sub:table1.relapseExtrapulmonaryEligible1517|sum:table1.relapseExtrapulmonarySLD1517|sum:table1.relapseExtrapulmonaryCanceled1517}}
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td style="font:bold;">
+                    {{"mdrtb.tb08.total2"|get_message:request.session.locale}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDetected|sum:table1.relapsePulmonaryCDDetected|sum:table1.relapseExtrapulmonaryDetected}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCEligible|sum:table1.relapsePulmonaryCDEligible|sum:table1.relapseExtrapulmonaryEligible}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCCured|sum:table1.relapsePulmonaryCDCured|sum:table1.relapseExtrapulmonaryCured}}
+                </td>
+                </td>
+                <td>{{table1.relapsePulmonaryBCCompleted|sum:table1.relapsePulmonaryCDCompleted|sum:table1.relapseExtrapulmonaryCompleted}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDiedTB|sum:table1.relapsePulmonaryCDDiedTB|sum:table1.relapseExtrapulmonaryDiedTB}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDiedNotTB|sum:table1.relapsePulmonaryCDDiedNotTB|sum:table1.relapseExtrapulmonaryDiedNotTB}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCFailed|sum:table1.relapsePulmonaryCDFailed|sum:table1.relapseExtrapulmonaryFailed}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDefaulted|sum:table1.relapsePulmonaryCDDefaulted|sum:table1.relapseExtrapulmonaryDefaulted}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCEligible|sum:table1.relapsePulmonaryCDEligible|sum:table1.relapseExtrapulmonaryEligible}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCSLD|sum:table1.relapsePulmonaryCDSLD|sum:table1.relapseExtrapulmonarySLD}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCCanceled|sum:table1.relapsePulmonaryCDCanceled|sum:table1.relapseExtrapulmonaryCanceled}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDetected|sum:table1.relapsePulmonaryCDDetected|sum:table1.relapseExtrapulmonaryDetected|sub:table1.relapsePulmonaryBCEligible|sum:table1.relapsePulmonaryCDEligible|sum:table1.relapseExtrapulmonaryEligible|sum:table1.relapsePulmonaryBCSLD|sum:table1.relapsePulmonaryCDSLD|sum:table1.relapseExtrapulmonarySLD|sum:table1.relapsePulmonaryBCCanceled|sum:table1.relapsePulmonaryCDCanceled|sum:table1.relapseExtrapulmonaryCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>0-4</td>
+                <td>{{table1.relapsePulmonaryBCDetected04|sum:table1.relapsePulmonaryCDDetected04|sum:table1.relapseExtrapulmonaryDetected04}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCEligible04|sum:table1.relapsePulmonaryCDEligible04|sum:table1.relapseExtrapulmonaryEligible04}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCCured04|sum:table1.relapsePulmonaryCDCured04|sum:table1.relapseExtrapulmonaryCured04}}
+                </td>
+                </td>
+                <td>{{table1.relapsePulmonaryBCCompleted04|sum:table1.relapsePulmonaryCDCompleted04|sum:table1.relapseExtrapulmonaryCompleted04}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDiedTB04|sum:table1.relapsePulmonaryCDDiedTB04|sum:table1.relapseExtrapulmonaryDiedTB04}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDiedNotTB04|sum:table1.relapsePulmonaryCDDiedNotTB04|sum:table1.relapseExtrapulmonaryDiedNotTB04}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCFailed04|sum:table1.relapsePulmonaryCDFailed04|sum:table1.relapseExtrapulmonaryFailed04}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDefaulted04|sum:table1.relapsePulmonaryCDDefaulted04|sum:table1.relapseExtrapulmonaryDefaulted04}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCEligible04|sum:table1.relapsePulmonaryCDEligible04|sum:table1.relapseExtrapulmonaryEligible04}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCSLD04|sum:table1.relapsePulmonaryCDSLD04|sum:table1.relapseExtrapulmonarySLD04}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCCanceled04|sum:table1.relapsePulmonaryCDCanceled04|sum:table1.relapseExtrapulmonaryCanceled04}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDetected04|sum:table1.relapsePulmonaryCDDetected04|sum:table1.relapseExtrapulmonaryDetected04|sub:table1.relapsePulmonaryBCEligible04|sum:table1.relapsePulmonaryCDEligible04|sum:table1.relapseExtrapulmonaryEligible04|sum:table1.relapsePulmonaryBCSLD04|sum:table1.relapsePulmonaryCDSLD04|sum:table1.relapseExtrapulmonarySLD04|sum:table1.relapsePulmonaryBCCanceled04|sum:table1.relapsePulmonaryCDCanceled04|sum:table1.relapseExtrapulmonaryCanceled04}}
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>5-14</td>
+                <td>{{table1.relapsePulmonaryBCDetected0514|sum:table1.relapsePulmonaryCDDetected0514|sum:table1.relapseExtrapulmonaryDetected0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCEligible0514|sum:table1.relapsePulmonaryCDEligible0514|sum:table1.relapseExtrapulmonaryEligible0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCCured0514|sum:table1.relapsePulmonaryCDCured0514|sum:table1.relapseExtrapulmonaryCured0514}}
+                </td>
+                </td>
+                <td>{{table1.relapsePulmonaryBCCompleted0514|sum:table1.relapsePulmonaryCDCompleted0514|sum:table1.relapseExtrapulmonaryCompleted0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDiedTB0514|sum:table1.relapsePulmonaryCDDiedTB0514|sum:table1.relapseExtrapulmonaryDiedTB0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDiedNotTB0514|sum:table1.relapsePulmonaryCDDiedNotTB0514|sum:table1.relapseExtrapulmonaryDiedNotTB0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCFailed0514|sum:table1.relapsePulmonaryCDFailed0514|sum:table1.relapseExtrapulmonaryFailed0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDefaulted0514|sum:table1.relapsePulmonaryCDDefaulted0514|sum:table1.relapseExtrapulmonaryDefaulted0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCEligible0514|sum:table1.relapsePulmonaryCDEligible0514|sum:table1.relapseExtrapulmonaryEligible0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCSLD0514|sum:table1.relapsePulmonaryCDSLD0514|sum:table1.relapseExtrapulmonarySLD0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCCanceled0514|sum:table1.relapsePulmonaryCDCanceled0514|sum:table1.relapseExtrapulmonaryCanceled0514}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDetected0514|sum:table1.relapsePulmonaryCDDetected0514|sum:table1.relapseExtrapulmonaryDetected0514|sub:table1.relapsePulmonaryBCEligible0514|sum:table1.relapsePulmonaryCDEligible0514|sum:table1.relapseExtrapulmonaryEligible0514|sum:table1.relapsePulmonaryBCSLD0514|sum:table1.relapsePulmonaryCDSLD0514|sum:table1.relapseExtrapulmonarySLD0514|sum:table1.relapsePulmonaryBCCanceled0514|sum:table1.relapsePulmonaryCDCanceled0514|sum:table1.relapseExtrapulmonaryCanceled0514}}
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>15-17</td>
+                <td>{{table1.relapsePulmonaryBCDetected1517|sum:table1.relapsePulmonaryCDDetected1517|sum:table1.relapseExtrapulmonaryDetected1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCEligible1517|sum:table1.relapsePulmonaryCDEligible1517|sum:table1.relapseExtrapulmonaryEligible1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCCured1517|sum:table1.relapsePulmonaryCDCured1517|sum:table1.relapseExtrapulmonaryCured1517}}
+                </td>
+                </td>
+                <td>{{table1.relapsePulmonaryBCCompleted1517|sum:table1.relapsePulmonaryCDCompleted1517|sum:table1.relapseExtrapulmonaryCompleted1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDiedTB1517|sum:table1.relapsePulmonaryCDDiedTB1517|sum:table1.relapseExtrapulmonaryDiedTB1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDiedNotTB1517|sum:table1.relapsePulmonaryCDDiedNotTB1517|sum:table1.relapseExtrapulmonaryDiedNotTB1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCFailed1517|sum:table1.relapsePulmonaryCDFailed1517|sum:table1.relapseExtrapulmonaryFailed1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDefaulted1517|sum:table1.relapsePulmonaryCDDefaulted1517|sum:table1.relapseExtrapulmonaryDefaulted1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCEligible1517|sum:table1.relapsePulmonaryCDEligible1517|sum:table1.relapseExtrapulmonaryEligible1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCSLD1517|sum:table1.relapsePulmonaryCDSLD1517|sum:table1.relapseExtrapulmonarySLD1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCCanceled1517|sum:table1.relapsePulmonaryCDCanceled1517|sum:table1.relapseExtrapulmonaryCanceled1517}}
+                </td>
+                <td>{{table1.relapsePulmonaryBCDetected1517|sum:table1.relapsePulmonaryCDDetected1517|sum:table1.relapseExtrapulmonaryDetected1517|sub:table1.relapsePulmonaryBCEligible1517|sum:table1.relapsePulmonaryCDEligible1517|sum:table1.relapseExtrapulmonaryEligible1517|sum:table1.relapsePulmonaryBCSLD1517|sum:table1.relapsePulmonaryCDSLD1517|sum:table1.relapseExtrapulmonarySLD1517|sum:table1.relapsePulmonaryBCCanceled1517|sum:table1.relapsePulmonaryCDCanceled1517|sum:table1.relapseExtrapulmonaryCanceled1517}}
+                </td>
+            </tr>
+            <tr>
+                <td style="font:bold;">3</td>
+                <td style="font:bold;">
+                    {{"mdrtb.tb08u.afterFailure"|get_message:request.session.locale}}
+                </td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>3.1</td>
+                <td>{{"mdrtb.tb08u.pulmonaryBC"|get_message:request.session.locale}}
+                </td>
+                <td>{{table1.failurePulmonaryBCDetected}}</td>
+                <td>{{table1.failurePulmonaryBCEligible}}</td>
+                <td>{{table1.failurePulmonaryBCCured}}</td>
+                <td>{{table1.failurePulmonaryBCCompleted}}</td>
+                <td>{{table1.failurePulmonaryBCDiedTB}}</td>
+                <td>{{table1.failurePulmonaryBCDiedNotTB}}</td>
+                <td>{{table1.failurePulmonaryBCFailed}}</td>
+                <td>{{table1.failurePulmonaryBCDefaulted}}</td>
+                <td>{{table1.failurePulmonaryBCEligible}}</td>
+                <td>{{table1.failurePulmonaryBCSLD}}</td>
+                <td>{{table1.failurePulmonaryBCCanceled}}</td>
+                <td>{{table1.failurePulmonaryBCDetected|sub:table1.failurePulmonaryBCEligible|sum:table1.failurePulmonaryBCSLD|sum:table1.failurePulmonaryBCCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td>3.2</td>
+                <td>{{"mdrtb.tb08u.pulmonaryCD"|get_message:request.session.locale}}
+                </td>
+                <td>{{table1.failurePulmonaryCDDetected}}</td>
+                <td>{{table1.failurePulmonaryCDEligible}}</td>
+                <td>{{table1.failurePulmonaryCDCured}}</td>
+                <td>{{table1.failurePulmonaryCDCompleted}}</td>
+                <td>{{table1.failurePulmonaryCDDiedTB}}</td>
+                <td>{{table1.failurePulmonaryCDDiedNotTB}}</td>
+                <td>{{table1.failurePulmonaryCDFailed}}</td>
+                <td>{{table1.failurePulmonaryCDDefaulted}}</td>
+                <td>{{table1.failurePulmonaryCDEligible}}</td>
+                <td>{{table1.failurePulmonaryCDSLD}}</td>
+                <td>{{table1.failurePulmonaryCDCanceled}}</td>
+                <td>{{table1.failurePulmonaryCDDetected|sub:table1.failurePulmonaryCDEligible|sum:table1.failurePulmonaryCDSLD|sum:table1.failurePulmonaryCDCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td>3.3</td>
+                <td>{{"mdrtb.tb08u.eptb"|get_message:request.session.locale}}
+                </td>
+                <td>{{table1.failureExtrapulmonaryDetected}}
+                </td>
+                <td>{{table1.failureExtrapulmonaryEligible}}
+                </td>
+                <td>{{table1.failureExtrapulmonaryCured}}</td>
+                <td>{{table1.failureExtrapulmonaryCompleted}}
+                </td>
+                <td>{{table1.failureExtrapulmonaryDiedTB}}</td>
+                <td>{{table1.failureExtrapulmonaryDiedNotTB}}
+                </td>
+                <td>{{table1.failureExtrapulmonaryFailed}}</td>
+                <td>{{table1.failureExtrapulmonaryDefaulted}}
+                </td>
+                <td>{{table1.failureExtrapulmonaryEligible}}
+                </td>
+                <td>{{table1.failureExtrapulmonarySLD}}</td>
+                <td>{{table1.failureExtrapulmonaryCanceled}}
+                </td>
+                <td>{{table1.failureExtrapulmonaryDetected|sub:table1.failureExtrapulmonaryEligible|sum:table1.failureExtrapulmonarySLD|sum:table1.failureExtrapulmonaryCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td style="font:bold;">
+                    <b>{{"mdrtb.tb08u.total"|get_message:request.session.locale}}</b>
+                </td>
+                <td>{{table1.failurePulmonaryBCDetected|sum:table1.failurePulmonaryCDDetected|sum:table1.failureExtrapulmonaryDetected}}
+                </td>
+                <td>{{table1.failurePulmonaryBCEligible|sum:table1.failurePulmonaryCDEligible|sum:table1.failureExtrapulmonaryEligible}}
+                </td>
+                <td>{{table1.failurePulmonaryBCCured|sum:table1.failurePulmonaryCDCured|sum:table1.failureExtrapulmonaryCured}}
+                </td>
+                </td>
+                <td>{{table1.failurePulmonaryBCCompleted|sum:table1.failurePulmonaryCDCompleted|sum:table1.failureExtrapulmonaryCompleted}}
+                </td>
+                <td>{{table1.failurePulmonaryBCDiedTB|sum:table1.failurePulmonaryCDDiedTB|sum:table1.failureExtrapulmonaryDiedTB}}
+                </td>
+                <td>{{table1.failurePulmonaryBCDiedNotTB|sum:table1.failurePulmonaryCDDiedNotTB|sum:table1.failureExtrapulmonaryDiedNotTB}}
+                </td>
+                <td>{{table1.failurePulmonaryBCFailed|sum:table1.failurePulmonaryCDFailed|sum:table1.failureExtrapulmonaryFailed}}
+                </td>
+                <td>{{table1.failurePulmonaryBCDefaulted|sum:table1.failurePulmonaryCDDefaulted|sum:table1.failureExtrapulmonaryDefaulted}}
+                </td>
+                <td>{{table1.failurePulmonaryBCEligible|sum:table1.failurePulmonaryCDEligible|sum:table1.failureExtrapulmonaryEligible}}
+                </td>
+                <td>{{table1.failurePulmonaryBCSLD|sum:table1.failurePulmonaryCDSLD|sum:table1.failureExtrapulmonarySLD}}
+                </td>
+                <td>{{table1.failurePulmonaryBCCanceled|sum:table1.failurePulmonaryCDCanceled|sum:table1.failureExtrapulmonaryCanceled}}
+                </td>
+                <td>{{table1.failurePulmonaryBCDetected|sum:table1.failurePulmonaryCDDetected|sum:table1.failureExtrapulmonaryDetected|sub:table1.failurePulmonaryBCEligible|sum:table1.failurePulmonaryCDEligible|sum:table1.failureExtrapulmonaryEligible|sum:table1.failurePulmonaryBCSLD|sum:table1.failurePulmonaryCDSLD|sum:table1.failureExtrapulmonarySLD|sum:table1.failurePulmonaryBCCanceled|sum:table1.failurePulmonaryCDCanceled|sum:table1.failureExtrapulmonaryCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td style="font:bold;">4</td>
+                <td style="font:bold;">
+                    {{"mdrtb.tb08u.afterDefault"|get_message:request.session.locale}}
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>4.1</td>
+                <td>{{"mdrtb.tb08u.pulmonaryBC"|get_message:request.session.locale}}
+                </td>
+                <td>{{table1.defaultPulmonaryBCDetected}}</td>
+                <td>{{table1.defaultPulmonaryBCEligible}}</td>
+                <td>{{table1.defaultPulmonaryBCCured}}</td>
+                <td>{{table1.defaultPulmonaryBCCompleted}}</td>
+                <td>{{table1.defaultPulmonaryBCDiedTB}}</td>
+                <td>{{table1.defaultPulmonaryBCDiedNotTB}}</td>
+                <td>{{table1.defaultPulmonaryBCFailed}}</td>
+                <td>{{table1.defaultPulmonaryBCDefaulted}}</td>
+                <td>{{table1.defaultPulmonaryBCEligible}}</td>
+                <td>{{table1.defaultPulmonaryBCSLD}}</td>
+                <td>{{table1.defaultPulmonaryBCCanceled}}</td>
+                <td>{{table1.defaultPulmonaryBCDetected|sub:table1.defaultPulmonaryBCEligible|sum:table1.defaultPulmonaryBCSLD|sum:table1.defaultPulmonaryBCCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td>4.2</td>
+                <td>{{"mdrtb.tb08u.pulmonaryCD"|get_message:request.session.locale}}
+                </td>
+                <td>{{table1.defaultPulmonaryCDDetected}}</td>
+                <td>{{table1.defaultPulmonaryCDEligible}}</td>
+                <td>{{table1.defaultPulmonaryCDCured}}</td>
+                <td>{{table1.defaultPulmonaryCDCompleted}}</td>
+                <td>{{table1.defaultPulmonaryCDDiedTB}}</td>
+                <td>{{table1.defaultPulmonaryCDDiedNotTB}}</td>
+                <td>{{table1.defaultPulmonaryCDFailed}}</td>
+                <td>{{table1.defaultPulmonaryCDDefaulted}}</td>
+                <td>{{table1.defaultPulmonaryCDEligible}}</td>
+                <td>{{table1.defaultPulmonaryCDSLD}}</td>
+                <td>{{table1.defaultPulmonaryCDCanceled}}</td>
+                <td>{{table1.defaultPulmonaryCDDetected|sub:table1.defaultPulmonaryCDEligible|sum:table1.defaultPulmonaryCDSLD|sum:table1.defaultPulmonaryCDCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td>4.3</td>
+                <td>{{"mdrtb.tb08u.eptb"|get_message:request.session.locale}}
+                </td>
+                <td>{{table1.defaultExtrapulmonaryDetected}}
+                </td>
+                <td>{{table1.defaultExtrapulmonaryEligible}}
+                </td>
+                <td>{{table1.defaultExtrapulmonaryCured}}</td>
+                <td>{{table1.defaultExtrapulmonaryCompleted}}
+                </td>
+                <td>{{table1.defaultExtrapulmonaryDiedTB}}</td>
+                <td>{{table1.defaultExtrapulmonaryDiedNotTB}}
+                </td>
+                <td>{{table1.defaultExtrapulmonaryFailed}}</td>
+                <td>{{table1.defaultExtrapulmonaryDefaulted}}
+                </td>
+                <td>{{table1.defaultExtrapulmonaryEligible}}
+                </td>
+                <td>{{table1.defaultExtrapulmonarySLD}}</td>
+                <td>{{table1.defaultExtrapulmonaryCanceled}}
+                </td>
+                <td>{{table1.defaultExtrapulmonaryDetected|sub:table1.defaultExtrapulmonaryEligible|sum:table1.defaultExtrapulmonarySLD|sum:table1.defaultExtrapulmonaryCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td style="font:bold;">
+                    <b>{{"mdrtb.tb08u.total"|get_message:request.session.locale}}</b>
+                </td>
+                <td>{{table1.defaultPulmonaryBCDetected|sum:table1.defaultPulmonaryCDDetected|sum:table1.defaultExtrapulmonaryDetected}}
+                </td>
+                <td>{{table1.defaultPulmonaryBCEligible|sum:table1.defaultPulmonaryCDEligible|sum:table1.defaultExtrapulmonaryEligible}}
+                </td>
+                <td>{{table1.defaultPulmonaryBCCured|sum:table1.defaultPulmonaryCDCured|sum:table1.defaultExtrapulmonaryCured}}
+                </td>
+                </td>
+                <td>{{table1.defaultPulmonaryBCCompleted|sum:table1.defaultPulmonaryCDCompleted|sum:table1.defaultExtrapulmonaryCompleted}}
+                </td>
+                <td>{{table1.defaultPulmonaryBCDiedTB|sum:table1.defaultPulmonaryCDDiedTB|sum:table1.defaultExtrapulmonaryDiedTB}}
+                </td>
+                <td>{{table1.defaultPulmonaryBCDiedNotTB|sum:table1.defaultPulmonaryCDDiedNotTB|sum:table1.defaultExtrapulmonaryDiedNotTB}}
+                </td>
+                <td>{{table1.defaultPulmonaryBCFailed|sum:table1.defaultPulmonaryCDFailed|sum:table1.defaultExtrapulmonaryFailed}}
+                </td>
+                <td>{{table1.defaultPulmonaryBCDefaulted|sum:table1.defaultPulmonaryCDDefaulted|sum:table1.defaultExtrapulmonaryDefaulted}}
+                </td>
+                <td>{{table1.defaultPulmonaryBCEligible|sum:table1.defaultPulmonaryCDEligible|sum:table1.defaultExtrapulmonaryEligible}}
+                </td>
+                <td>{{table1.defaultPulmonaryBCSLD|sum:table1.defaultPulmonaryCDSLD|sum:table1.defaultExtrapulmonarySLD}}
+                </td>
+                <td>{{table1.defaultPulmonaryBCCanceled|sum:table1.defaultPulmonaryCDCanceled|sum:table1.defaultExtrapulmonaryCanceled}}
+                </td>
+                <td>{{table1.defaultPulmonaryBCDetected|sum:table1.defaultPulmonaryCDDetected|sum:table1.defaultExtrapulmonaryDetected|sub:table1.defaultPulmonaryBCEligible|sum:table1.defaultPulmonaryCDEligible|sum:table1.defaultExtrapulmonaryEligible|sum:table1.defaultPulmonaryBCSLD|sum:table1.defaultPulmonaryCDSLD|sum:table1.defaultExtrapulmonarySLD|sum:table1.defaultPulmonaryBCCanceled|sum:table1.defaultPulmonaryCDCanceled|sum:table1.defaultExtrapulmonaryCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td style="font:bold;">5</td>
+                <td style="font:bold;">
+                    {{"mdrtb.tb08u.other"|get_message:request.session.locale}}
+                </td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>5.1</td>
+                <td>{{"mdrtb.tb08u.pulmonaryBC"|get_message:request.session.locale}}
+                </td>
+                <td>{{table1.otherPulmonaryBCDetected}}</td>
+                <td>{{table1.otherPulmonaryBCEligible}}</td>
+                <td>{{table1.otherPulmonaryBCCured}}</td>
+                <td>{{table1.otherPulmonaryBCCompleted}}</td>
+                <td>{{table1.otherPulmonaryBCDiedTB}}</td>
+                <td>{{table1.otherPulmonaryBCDiedNotTB}}</td>
+                <td>{{table1.otherPulmonaryBCFailed}}</td>
+                <td>{{table1.otherPulmonaryBCDefaulted}}</td>
+                <td>{{table1.otherPulmonaryBCEligible}}</td>
+                <td>{{table1.otherPulmonaryBCSLD}}</td>
+                <td>{{table1.otherPulmonaryBCCanceled}}</td>
+                <td>{{table1.otherPulmonaryBCDetected|sub:table1.otherPulmonaryBCEligible|sum:table1.otherPulmonaryBCSLD|sum:table1.otherPulmonaryBCCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td>5.2</td>
+                <td>{{"mdrtb.tb08u.pulmonaryCD"|get_message:request.session.locale}}
+                </td>
+                <td>{{table1.otherPulmonaryCDDetected}}</td>
+                <td>{{table1.otherPulmonaryCDEligible}}</td>
+                <td>{{table1.otherPulmonaryCDCured}}</td>
+                <td>{{table1.otherPulmonaryCDCompleted}}</td>
+                <td>{{table1.otherPulmonaryCDDiedTB}}</td>
+                <td>{{table1.otherPulmonaryCDDiedNotTB}}</td>
+                <td>{{table1.otherPulmonaryCDFailed}}</td>
+                <td>{{table1.otherPulmonaryCDDefaulted}}</td>
+                <td>{{table1.otherPulmonaryCDEligible}}</td>
+                <td>{{table1.otherPulmonaryCDSLD}}</td>
+                <td>{{table1.otherPulmonaryCDCanceled}}</td>
+                <td>{{table1.otherPulmonaryCDDetected|sub:table1.otherPulmonaryCDEligible|sum:table1.otherPulmonaryCDSLD|sum:table1.otherPulmonaryCDCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td>5.3</td>
+                <td>{{"mdrtb.tb08u.eptb"|get_message:request.session.locale}}
+                </td>
+                <td>{{table1.otherExtrapulmonaryDetected}}</td>
+                <td>{{table1.otherExtrapulmonaryEligible}}</td>
+                <td>{{table1.otherExtrapulmonaryCured}}</td>
+                <td>{{table1.otherExtrapulmonaryCompleted}}</td>
+                <td>{{table1.otherExtrapulmonaryDiedTB}}</td>
+                <td>{{table1.otherExtrapulmonaryDiedNotTB}}</td>
+                <td>{{table1.otherExtrapulmonaryFailed}}</td>
+                <td>{{table1.otherExtrapulmonaryDefaulted}}</td>
+                <td>{{table1.otherExtrapulmonaryEligible}}</td>
+                <td>{{table1.otherExtrapulmonarySLD}}</td>
+                <td>{{table1.otherExtrapulmonaryCanceled}}</td>
+                <td>{{table1.otherExtrapulmonaryDetected|sub:table1.otherExtrapulmonaryEligible|sum:table1.otherExtrapulmonarySLD|sum:table1.otherExtrapulmonaryCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td style="font:bold;">
+                    <b>{{"mdrtb.tb08u.total"|get_message:request.session.locale}}</b>
+                </td>
+                <td>{{table1.otherPulmonaryBCDetected|sum:table1.otherPulmonaryCDDetected|sum:table1.otherExtrapulmonaryDetected}}
+                </td>
+                <td>{{table1.otherPulmonaryBCEligible|sum:table1.otherPulmonaryCDEligible|sum:table1.otherExtrapulmonaryEligible}}
+                </td>
+                <td>{{table1.otherPulmonaryBCCured|sum:table1.otherPulmonaryCDCured|sum:table1.otherExtrapulmonaryCured}}
+                </td>
+                </td>
+                <td>{{table1.otherPulmonaryBCCompleted|sum:table1.otherPulmonaryCDCompleted|sum:table1.otherExtrapulmonaryCompleted}}
+                </td>
+                <td>{{table1.otherPulmonaryBCDiedTB|sum:table1.otherPulmonaryCDDiedTB|sum:table1.otherExtrapulmonaryDiedTB}}
+                </td>
+                <td>{{table1.otherPulmonaryBCDiedNotTB|sum:table1.otherPulmonaryCDDiedNotTB|sum:table1.otherExtrapulmonaryDiedNotTB}}
+                </td>
+                <td>{{table1.otherPulmonaryBCFailed|sum:table1.otherPulmonaryCDFailed|sum:table1.otherExtrapulmonaryFailed}}
+                </td>
+                <td>{{table1.otherPulmonaryBCDefaulted|sum:table1.otherPulmonaryCDDefaulted|sum:table1.otherExtrapulmonaryDefaulted}}
+                </td>
+                <td>{{table1.otherPulmonaryBCEligible|sum:table1.otherPulmonaryCDEligible|sum:table1.otherExtrapulmonaryEligible}}
+                </td>
+                <td>{{table1.otherPulmonaryBCSLD|sum:table1.otherPulmonaryCDSLD|sum:table1.otherExtrapulmonarySLD}}
+                </td>
+                <td>{{table1.otherPulmonaryBCCanceled|sum:table1.otherPulmonaryCDCanceled|sum:table1.otherExtrapulmonaryCanceled}}
+                </td>
+                <td>{{table1.otherPulmonaryBCDetected|sum:table1.otherPulmonaryCDDetected|sum:table1.otherExtrapulmonaryDetected|sub:table1.otherPulmonaryBCEligible|sum:table1.otherPulmonaryCDEligible|sum:table1.otherExtrapulmonaryEligible|sum:table1.otherPulmonaryBCSLD|sum:table1.otherPulmonaryCDSLD|sum:table1.otherExtrapulmonarySLD|sum:table1.otherPulmonaryBCCanceled|sum:table1.otherPulmonaryCDCanceled|sum:table1.otherExtrapulmonaryCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td style="font:bold;">
+                    {{"mdrtb.tb08u.totalRetreatments"|get_message:request.session.locale}}
+                </td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>{{"mdrtb.tb08u.pulmonaryBC"|get_message:request.session.locale}}
+                </td>
+                <td>{{table1.failurePulmonaryBCDetected|sum:table1.defaultPulmonaryBCDetected|sum:table1.otherPulmonaryBCDetected}}
+                </td>
+                <td>{{table1.failurePulmonaryBCEligible|sum:table1.defaultPulmonaryBCEligible|sum:table1.otherPulmonaryBCEligible}}
+                </td>
+                <td>{{table1.failurePulmonaryBCCured|sum:table1.defaultPulmonaryBCCured|sum:table1.otherPulmonaryBCCured}}
+                </td>
+                <td>{{table1.failurePulmonaryBCCompleted|sum:table1.defaultPulmonaryBCCompleted|sum:table1.otherPulmonaryBCCompleted}}
+                </td>
+                <td>{{table1.failurePulmonaryBCDiedTB|sum:table1.defaultPulmonaryBCDiedTB|sum:table1.otherPulmonaryBCDiedTB}}
+                </td>
+                <td>{{table1.failurePulmonaryBCDiedNotTB|sum:table1.defaultPulmonaryBCDiedNotTB|sum:table1.otherPulmonaryBCDiedNotTB}}
+                </td>
+                <td>{{table1.failurePulmonaryBCFailed|sum:table1.defaultPulmonaryBCFailed|sum:table1.otherPulmonaryBCFailed}}
+                </td>
+                <td>{{table1.failurePulmonaryBCDefaulted|sum:table1.defaultPulmonaryBCDefaulted|sum:table1.otherPulmonaryBCDefaulted}}
+                </td>
+                <td>{{table1.failurePulmonaryBCEligible|sum:table1.defaultPulmonaryBCEligible|sum:table1.otherPulmonaryBCEligible}}
+                </td>
+                <td>{{table1.failurePulmonaryBCSLD|sum:table1.defaultPulmonaryBCSLD|sum:table1.otherPulmonaryBCSLD}}
+                </td>
+                <td>{{table1.failurePulmonaryBCCanceled|sum:table1.defaultPulmonaryBCCanceled|sum:table1.otherPulmonaryBCCanceled}}
+                </td>
+                <td>{{table1.failurePulmonaryBCDetected|sum:table1.defaultPulmonaryBCDetected|sum:table1.otherPulmonaryBCDetected|sub:table1.failurePulmonaryBCEligible|sum:table1.defaultPulmonaryBCEligible|sum:table1.otherPulmonaryBCEligible|sum:table1.failurePulmonaryBCSLD|sum:table1.defaultPulmonaryBCSLD|sum:table1.otherPulmonaryBCSLD|sum:table1.failurePulmonaryBCCanceled|sum:table1.defaultPulmonaryBCCanceled|sum:table1.otherPulmonaryBCCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>{{"mdrtb.tb08u.pulmonaryCD"|get_message:request.session.locale}}
+                </td>
+                <td>{{table1.failurePulmonaryCDDetected|sum:table1.defaultPulmonaryCDDetected|sum:table1.otherPulmonaryCDDetected}}
+                </td>
+                <td>{{table1.failurePulmonaryCDEligible|sum:table1.defaultPulmonaryCDEligible|sum:table1.otherPulmonaryCDEligible}}
+                </td>
+                <td>{{table1.failurePulmonaryCDCured|sum:table1.defaultPulmonaryCDCured|sum:table1.otherPulmonaryCDCured}}
+                </td>
+                <td>{{table1.failurePulmonaryCDCompleted|sum:table1.defaultPulmonaryCDCompleted|sum:table1.otherPulmonaryCDCompleted}}
+                </td>
+                <td>{{table1.failurePulmonaryCDDiedTB|sum:table1.defaultPulmonaryCDDiedTB|sum:table1.otherPulmonaryCDDiedTB}}
+                </td>
+                <td>{{table1.failurePulmonaryCDDiedNotTB|sum:table1.defaultPulmonaryCDDiedNotTB|sum:table1.otherPulmonaryCDDiedNotTB}}
+                </td>
+                <td>{{table1.failurePulmonaryCDFailed|sum:table1.defaultPulmonaryCDFailed|sum:table1.otherPulmonaryCDFailed}}
+                </td>
+                <td>{{table1.failurePulmonaryCDDefaulted|sum:table1.defaultPulmonaryCDDefaulted|sum:table1.otherPulmonaryCDDefaulted}}
+                </td>
+                <td>{{table1.failurePulmonaryCDEligible|sum:table1.defaultPulmonaryCDEligible|sum:table1.otherPulmonaryCDEligible}}
+                </td>
+                <td>{{table1.failurePulmonaryCDSLD|sum:table1.defaultPulmonaryCDSLD|sum:table1.otherPulmonaryCDSLD}}
+                </td>
+                <td>{{table1.failurePulmonaryCDCanceled|sum:table1.defaultPulmonaryCDCanceled|sum:table1.otherPulmonaryCDCanceled}}
+                </td>
+                <td>{{table1.failurePulmonaryCDDetected|sum:table1.defaultPulmonaryCDDetected|sum:table1.otherPulmonaryCDDetected|sub:table1.failurePulmonaryCDEligible|sum:table1.defaultPulmonaryCDEligible|sum:table1.otherPulmonaryCDEligible|sum:table1.failurePulmonaryCDSLD|sum:table1.defaultPulmonaryCDSLD|sum:table1.otherPulmonaryCDSLD|sum:table1.failurePulmonaryCDCanceled|sum:table1.defaultPulmonaryCDCanceled|sum:table1.otherPulmonaryCDCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>{{"mdrtb.tb08u.eptb"|get_message:request.session.locale}}
+                </td>
+                <td>{{table1.failureExtrapulmonaryDetected|sum:table1.defaultExtrapulmonaryDetected|sum:table1.otherExtrapulmonaryDetected}}
+                </td>
+                <td>{{table1.failureExtrapulmonaryEligible|sum:table1.defaultExtrapulmonaryEligible|sum:table1.otherExtrapulmonaryEligible}}
+                </td>
+                <td>{{table1.failureExtrapulmonaryCured|sum:table1.defaultExtrapulmonaryCured|sum:table1.otherExtrapulmonaryCured}}
+                </td>
+                <td>{{table1.failureExtrapulmonaryCompleted|sum:table1.defaultExtrapulmonaryCompleted|sum:table1.otherExtrapulmonaryCompleted}}
+                </td>
+                <td>{{table1.failureExtrapulmonaryDiedTB|sum:table1.defaultExtrapulmonaryDiedTB|sum:table1.otherExtrapulmonaryDiedTB}}
+                </td>
+                <td>{{table1.failureExtrapulmonaryDiedNotTB|sum:table1.defaultExtrapulmonaryDiedNotTB|sum:table1.otherExtrapulmonaryDiedNotTB}}
+                </td>
+                <td>{{table1.failureExtrapulmonaryFailed|sum:table1.defaultExtrapulmonaryFailed|sum:table1.otherExtrapulmonaryFailed}}
+                </td>
+                <td>{{table1.failureExtrapulmonaryDefaulted|sum:table1.defaultExtrapulmonaryDefaulted|sum:table1.otherExtrapulmonaryDefaulted}}
+                </td>
+                <td>{{table1.failureExtrapulmonaryEligible|sum:table1.defaultExtrapulmonaryEligible|sum:table1.otherExtrapulmonaryEligible}}
+                </td>
+                <td>{{table1.failureExtrapulmonarySLD|sum:table1.defaultExtrapulmonarySLD|sum:table1.otherExtrapulmonarySLD}}
+                </td>
+                <td>{{table1.failureExtrapulmonaryCanceled|sum:table1.defaultExtrapulmonaryCanceled|sum:table1.otherExtrapulmonaryCanceled}}
+                </td>
+                <td>{{table1.failurePulmonaryCDDetected|sum:table1.defaultPulmonaryCDDetected|sum:table1.otherPulmonaryCDDetected|sub:table1.failurePulmonaryCDEligible|sum:table1.defaultPulmonaryCDEligible|sum:table1.otherPulmonaryCDEligible|sum:table1.failurePulmonaryCDSLD|sum:table1.defaultPulmonaryCDSLD|sum:table1.otherPulmonaryCDSLD|sum:table1.failurePulmonaryCDCanceled|sum:table1.defaultPulmonaryCDCanceled|sum:table1.otherPulmonaryCDCanceled}}
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td style="font:bold;">
+                    {{"mdrtb.tb08.retreatmentTotalBreakdown"|get_message:request.session.locale}}
+                </td>
+                <td>{{table1.failureAllDetected|sum:table1.defaultAllDetected|sum:table1.otherAllDetected}}
+                </td>
+                <td>{{table1.failureAllEligible|sum:table1.defaultAllEligible|sum:table1.otherAllEligible}}
+                </td>
+                <td>{{table1.failureAllCured|sum:table1.defaultAllCured|sum:table1.otherAllCured}}
+                </td>
+                <td>{{table1.failureAllCompleted|sum:table1.defaultAllCompleted|sum:table1.otherAllCompleted}}
+                </td>
+                <td>{{table1.failureAllDiedTB|sum:table1.defaultAllDiedTB|sum:table1.otherAllDiedTB}}
+                </td>
+                <td>{{table1.failureAllDiedNotTB|sum:table1.defaultAllDiedNotTB|sum:table1.otherAllDiedNotTB}}
+                </td>
+                <td>{{table1.failureAllFailed|sum:table1.defaultAllFailed|sum:table1.otherAllFailed}}
+                </td>
+                <td>{{table1.failureAllDefaulted|sum:table1.defaultAllDefaulted|sum:table1.otherAllDefaulted}}
+                </td>
+                <td>{{table1.failureAllEligible|sum:table1.defaultAllEligible|sum:table1.otherAllEligible}}
+                </td>
+                <td>{{table1.failureAllSLD|sum:table1.defaultAllSLD|sum:table1.otherAllSLD}}
+                </td>
+                <td>{{table1.failureAllCanceled|sum:table1.defaultAllCanceled|sum:table1.otherAllCanceled}}
+                </td>
+                <td>{{table1.failureAllDetected|sum:table1.defaultAllDetected|sum:table1.otherAllDetected}}-{{table1.failureAllEligible|sum:table1.defaultAllEligible|sum:table1.otherAllEligible|sum:table1.failureAllSLD|sum:table1.defaultAllSLD|sum:table1.otherAllSLD|sum:table1.failureAllCanceled|sum:table1.defaultAllCanceled|sum:table1.otherAllCanceled}}
+                </td>
+            </tr>
+            {%endfor%}
+        </table>
+    </div>
+
+    <input type="button" onclick="tableToExcel('tb08', 'TB08')"
+        value="{{'mdrtb.exportToExcelBtn'|get_message:request.session.locale}}" />
+    <input type="button" id="tableToSql" name="tableToSql"
+        value="{{'mdrtb.closeReportBtn'|get_message:request.session.locale}}" />
+
+    <button>
+        <a style="text-decoration: none; color: black;" href="javascript:history.go(-1)">
+            {{'mdrtb.back'|get_message:request.session.locale}}
+        </a>
+    </button>
+    <input type="button" onclick="printForm()" value="{{'mdrtb.print'|get_message:request.session.locale}}" />
+
+    <script>
+        console.log("{{ reportStatus }}");
+        if ("{{ reportStatus }}" === "true") {
+            document.getElementById("tableToSql").disabled = true;
+        } else {
+            document.getElementById("tableToSql").disabled = false;
+        }
+    </script>
+</div>
+
+{% endblock %}

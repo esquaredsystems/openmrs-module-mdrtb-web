@@ -33,41 +33,23 @@
 </style>
 
 <body>
-	<header class="base-header">
-		<div>
-			<a href="{% url 'searchPatientsView' %}"><img class="openmrs-logo"
-					src="https://openmrs.org/wp-content/uploads/2021/08/cropped-OpenMRSlogo-transparent.png"
-					alt="OpemMRS logo" /></a>
-		</div>
-		<div class="navbar">
-			{% if request.session.session_id %}
-			<a class="nav-item" href="#">{{'header.logged.in'|get_message_openMRS:request.session.locale}}
-				{{request.session.logged_user.person.display}}</a>
-			<a class="nav-item"
-				href="{% url 'profile' %}">{{'Navigation.options'|get_message_openMRS:request.session.locale}}</a>
-			<a class="nav-item"
-				href="{% url 'logout' %}">{{'header.logout'|get_message_openMRS:request.session.locale}}</a>
-			{% else %}
-			<a class="nav-item" href="{% url 'login' %}">Login</a>
-			{% endif %}
-		</div>
-	</header>
+	{% include 'app/components/header.html' %}
 	{% if messages %}
 	{% for message in messages %}
 	{% if message.tags %}
 
-	<div class="left-0 transition-all animate-bounce duration-200 
+	<div class="left-0 animate-bounce transition-all duration-200 
 		alert 
 		{% if message.tags == 'error' %}
-        alert-danger
+        alert-danger 
         {% elif message.tags == 'success' %}
-        alert-success
+        alert-success  alert-er
         {% elif message.tags == 'warning' %}
-        alert-warning
+        alert-warning  alert-er
         {% elif message.tags == 'info' %}
-        alert-info
+        alert-info  alert-er
         {% endif %} 
-		m-4 w-fit flex-center space-x-4 alert-er">
+		m-4 w-fit flex-center space-x-4 ">
 		<div>
 			{% if message.tags == 'error' %}
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
@@ -100,6 +82,18 @@
 		<div>{{message}}</div>
 	</div>
 	<script>
+		$('.alert-danger').each(() => {
+			setTimeout(() => {
+				$('.alert-danger').removeClass('left-0')
+				$('.alert-danger').addClass('-left-40')
+
+			}, 4000)
+			setTimeout(() => {
+				$('.alert-danger').remove()
+
+
+			}, 4100)
+		})
 		$('.alert-er').each(() => {
 			setTimeout(() => {
 				$('.alert-er').removeClass('left-0')
@@ -121,11 +115,13 @@
 
 
 
-
 	<div>
 		{%block content%}
 		{% endblock %}
 	</div>
+	<script>
+		var locationByUuids;
+
 	<script>
 		var locationByUuids;
 
@@ -146,14 +142,20 @@
 									$('#region-select').append(`<option value=${location.uuid}>${location.name}</option>`)
 								}
 							})
+							$("#region-select").prop("disabled", false);
+							$("#region-select").prop("title", "");
+
+
 						}
 					},
 					error: (err) => { }
 				}
 			)
 		}
-		if (document.getElementById("locations-container") || document.getElementById("region-select")) {
+		if ($("#locations-container").length > 0) {
 			try {
+				$("#region-select").prop("disabled", true);
+				$("#region-select").prop("title", "Fetching Locations");
 				getLocations()
 			} catch (error) {
 				console.log(error)
@@ -178,7 +180,6 @@
 				for (district of districts) {
 					if (district.uuid === selectedLocation && district.children.length > 0) {
 						for (facility of district.children) {
-							$(insertInto).prop('required', true)
 							$(insertInto).prop('disabled', false)
 
 							if (facility.level === level.toUpperCase()) {
@@ -204,13 +205,11 @@
 			if (children.length > 0) {
 				for (district of children) {
 					if (district.level === 'district'.toUpperCase()) {
-						$('#district-select').prop('required', true)
 						$('#district-select').prop('disabled', false)
 						$('#district-select').append(`<option value=${district.uuid}>${district.name}</option>`)
 					}
 					if (district.level === 'subregion'.toUpperCase()) {
 						$('#subregion-container').removeClass('hidden')
-						$('#subregion-select').prop('required', true)
 						$('#subregion-select').prop('disabled', false)
 						$('#subregion-select').append(`<option value=${district.uuid}>${district.name}</option>`)
 					}

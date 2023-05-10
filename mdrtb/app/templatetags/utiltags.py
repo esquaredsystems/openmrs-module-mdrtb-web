@@ -31,3 +31,18 @@ def get_id_from_name(name):
 @register.filter
 def get_year(date):
     return date[:4]
+
+
+@register.filter
+def get_range(number):
+    return range(int(number))
+
+
+@register.filter
+def sum(a, b):
+    return a + b
+
+
+@register.filter
+def sub(a, b):
+    return a - b

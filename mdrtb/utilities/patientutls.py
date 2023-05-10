@@ -1,5 +1,6 @@
 from utilities import common_utils as u
 from utilities import restapi_utils as ru
+from utilities import metadata_util as mu
 from utilities import formsutil as fu
 from resources.enums.constants import Constants
 from resources.enums.mdrtbConcepts import Concepts
@@ -145,7 +146,7 @@ def enroll_patient_in_program(req, patientid, data):
         if status:
             return response["uuid"]
     except Exception as e:
-        logger.error(e,exc_info=True)
+        logger.error(e, exc_info=True)
         raise Exception(str(e))
 
 
@@ -246,7 +247,7 @@ def get_enrolled_programs_by_patient(req, uuid, enrollment_id=None):
                     "states": get_program_states(program=response),
                 }
         except Exception as e:
-            logger.error(e,exc_info=True)
+            logger.error(e, exc_info=True)
             raise Exception(str(e))
 
     try:
@@ -276,7 +277,7 @@ def get_enrolled_programs_by_patient(req, uuid, enrollment_id=None):
             ]
             return programs_info
     except Exception as e:
-        logger.error(e,exc_info=True)
+        logger.error(e, exc_info=True)
         raise Exception(e)
 
 
@@ -337,4 +338,3 @@ def check_if_patient_enrolled_in_mdrtb(req, patient_uuid):
         return False
     except Exception as e:
         raise Exception(e)
-    pass
