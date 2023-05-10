@@ -74,11 +74,14 @@ def get_concept(req, uuid):
         raise Exception(str(e))
 
 
-def get_location(req,uuid):
+def get_location(req, uuid):
     try:
-        status, response = ru.get(req,f"location/{uuid}",{})
+        status, response = ru.get(req, f"location/{uuid}", {})
         if status:
-            return {'location':response['display'],'parent': response['parentLocation']['display']}
+            return {
+                "location": response["display"],
+                "parent": response["parentLocation"]["display"],
+            }
     except Exception as e:
         raise Exception(str(e))
 
@@ -112,7 +115,7 @@ def get_global_properties(req, key):
 
 def check_if_user_has_privilege(req, privilege_to_check, user_privileges):
     # Check if user is admin grant all privileges
-    if req.session["logged_user"]["systemId"] == "admin":
+    if req.session["logged_user"]["user"]["systemId"] == "admin":
         return True
     has_privilege = False
     for privilege in user_privileges:
