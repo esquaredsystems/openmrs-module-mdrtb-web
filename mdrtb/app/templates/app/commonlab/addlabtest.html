@@ -1,4 +1,4 @@
-{% extends 'app/base/base_without_menu.html' %}
+{% extends 'app/base/base.html' %}
 
 
 {% block title %}
@@ -7,18 +7,43 @@
 
 
 {% block content %}
-
-
-
 <div class="m-4">
-    <h1 class="primary-heading">
+    {% include 'app/components/breadcrumbs.html'%}
+</div>
+
+<div class="m-16">
+    <div class="flex items-center justify-between">
         {% if state == 'edit' %}
-        {{'commonlabtest.order.edit'|get_message_commonlab:request.session.locale}}
+        <div id="form-info" class="flex-center space-x-4">
+            <h1 class="text-[#2D9CDB] text-3xl font-bold">
+                {{'commonlabtest.order.edit'|get_message_commonlab:request.session.locale}}
+            </h1>
+            <button type="button" id="editbtn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                </svg>
+
+            </button>
+            <button hidden type="button" id="canceleditbtn" class="cancel-button">Cancel</button>
+            <a href="{% url 'dellabtest' patientid=patientid orderid=orderid %}" type="button" id="dellabtest">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                </svg>
+            </a>
+
+
+        </div>
         {% else %}
-        {{'commonlabtest.order.add'|get_message_commonlab:request.session.locale}}
+        <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
+            {{'commonlabtest.order.add'|get_message_commonlab:request.session.locale}}
+        </h2>
         {% endif %}
-    </h1>
-    <form
+    </div>
+    <form onsubmit="disableSubmit()"
         action="{% if state == 'edit' %} {% url 'editlabtest' orderid=orderid patientid=patientid %}{% else %}{% url 'addlabtest' uuid=patient %}{% endif %}"
         method="post" class="m-10 flex-column-center space-y-6" action="">
         {% csrf_token %}
@@ -28,7 +53,7 @@
                 {{'ConceptProposal.encounter'|get_message_openMRS:request.session.locale}}
 
             </label>
-            <select name="encounter" class="input">
+            <select name="encounter" class="input form-control">
                 {% if state == 'edit' %}
                 <option selected value="{{laborder.order.encounter.uuid}}">{{laborder.order.encounter.name}}</option>
                 {% endif %}
@@ -42,7 +67,7 @@
                 {{'general.testGroup'|get_message_commonlab:request.session.locale}}
 
             </label>
-            <select name="testGroup" id="group-select" class="input">
+            <select name="testGroup" id="group-select" class="input form-control">
                 {% if state == 'edit' %}
                 <option selected value="{{laborder.labtesttype.testGroup}}">{{laborder.labtesttype.testGroup}}</option>
                 {% else %}
@@ -60,11 +85,11 @@
 
             </label>
             {% if state == 'edit' %}
-            <select name="testType" id="test-select" class="input">
+            <select name="testType" id="test-select" class="input form-control">
                 <option selected value="{{laborder.labtesttype.uuid}}">{{laborder.labtesttype.name}}</option>
             </select>
             {% else %}
-            <select disabled name="testType" id="test-select" class="input">
+            <select disabled name="testType" id="test-select" class="input form-control">
             </select>
             {% endif %}
 
@@ -72,14 +97,55 @@
 
         </div>
         <div class="input-container">
+            <label class="input-label"
+                for="name">{{'general.careSetting'|get_message_commonlab:request.session.locale}}</label>
+            <div class="flex items-center justify-start space-x-4 w-full">
+                <div class="flex-center space-x-2">
+                    <label class="" for="yes">{{care_setting.inpatient.name}}</label>
+                    {% if state == 'edit' %}
+                    {% if laborder.careSetting.uuid == care_setting.inpatient.value %}
+                    <input checked name="careSetting" type="radio" value="{{care_setting.inpatient.value}}"
+                        class="radio-input" />
+                    {% else %}
+                    <input name="careSetting" type="radio" value="{{care_setting.inpatient.value}}"
+                        class="radio-input" />
+                    {% endif %}
+                    {% else %}
+                    <input name="careSetting" type="radio" value="{{care_setting.inpatient.value}}"
+                        class="radio-input" />
+                    {% endif %}
+
+                </div>
+                <div class="flex-center space-x-2">
+
+                    <label for="no">{{care_setting.outpatient.name}}</label>
+                    {% if state == 'edit' %}
+                    {% if laborder.careSetting.uuid == care_setting.outpatient.value %}
+                    <input checked name="careSetting" type="radio" value="{{care_setting.outpatient.value}}"
+                        class="radio-input" />
+                    {% else %}
+                    <input name="careSetting" type="radio" value="{{care_setting.outpatient.value}}"
+                        class="radio-input" />
+                    {% endif %}
+                    {% else %}
+                    <input name="careSetting" type="radio" value="{{care_setting.outpatient.value}}"
+                        class="radio-input" />
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+
+        <div class="input-container">
             <label class="input-label" for="">
                 {{'commonlabtest.order.labReferenceNo'|get_message_commonlab:request.session.locale}}
 
             </label>
             {% if state == 'edit' %}
-            <input name="labref" id="labref" class="input" type="text" value="{{laborder.labref}}">
+            <input name="labref" id="labref" class="input form-control" type="text" value="{{laborder.labref}}">
             {% else %}
-            <input name="labref" id="labref" class="input" type="text" value="{{'placeholder' | get_datenow}}">
+            <input name="labref" id="labref" class="input form-control" type="text"
+                value="{{'placeholder' | get_datenow}}">
             {% endif %}
         </div>
         <div class="input-container">
@@ -88,13 +154,13 @@
 
             </label>
             {% if state == 'edit' %}
-            <textarea name="instructions" class="input">{{laborder.order.instructions}}</textarea>
+            <textarea name="instructions" class="input form-control">{{laborder.order.instructions}}</textarea>
             {% else %}
-            <textarea name="instructions" id="" class="input"></textarea>
+            <textarea name="instructions" id="" class="input form-control"></textarea>
             {% endif %}
         </div>
         <div class="flex-center space-x-4">
-            <button type="submit"
+            <button type="submit" id="submitBtn"
                 class="button-primary w-1/5">{{'general.save'|get_message_openMRS:request.session.locale}}</button>
             <a href="javascript:history.go(-1)"
                 class="cancel-button">{{'general.cancel'|get_message_openMRS:request.session.locale}}</a>
@@ -105,37 +171,87 @@
 
 <script>
     let labtests = JSON.parse("{{labtests | escapejs}}")
-    $('#group-select').change(function () {
+    function setTestTypes() {
         $('#test-select').html('')
         let group = $('#group-select').val()
         if (group != 'None') {
             let testsByGroup = labtests.filter(test => test.testGroup === group)
             $('#test-select').prop('disabled', false)
-            if (testsByGroup.length === 1) {
+            testsByGroup.forEach(item => {
                 $('#test-select').append(
                     $("<option>", {
-                        value: testsByGroup[0].uuid,
-                        text: testsByGroup[0].name,
-                        selected: true
+                        value: item.uuid,
+                        text: item.name,
                     })
                 )
-            } else {
-                testsByGroup.forEach(item => {
-                    $('#test-select').append(
-                        $("<option>", {
-                            value: item.uuid,
-                            text: item.name,
-                        })
-                    )
-                })
-            }
+            })
+            // if (testsByGroup.length === 1) {
+            //     $('#test-select').append(
+            //         $("<option>", {
+            //             value: testsByGroup[0].uuid,
+            //             text: testsByGroup[0].name,
+            //         })
+            //     )} 
+            //     else {
+
+            // }
         } else {
             $('#test-select').prop('disabled', true)
 
         }
 
-    })
+    }
+    $('#group-select').change(setTestTypes)
 
+    const disableSubmit = () => {
+        $('#submitBtn').prop('disabled', true)
+        $('#submitBtn').removeClass('button-primary')
+        $('#submitBtn').html(`
+        <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
+                colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+            </lord-icon>
+
+        
+        `)
+        if (state === 'edit') {
+            $('#updateBtn').prop('disabled', true)
+            $('#updateBtn').removeClass('button-primary')
+            $('#updateBtn').html(`
+          <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
+                  colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+              </lord-icon>
+
+          
+          `)
+
+        }
+    }
+    let state = '{{state | escapejs}}'
+    if (state === 'edit') {
+        $('input').prop('disabled', true)
+        $('input[name=csrfmiddlewaretoken]').prop('disabled', false)
+        $('select').prop('disabled', true).prop('', false)
+        $('textarea').prop('disabled', true).prop('', false)
+        $('#canceleditbtn').prop('hidden', true)
+        $('#retireTestType').prop('disabled', false)
+    }
+    $('#editbtn').click(function () {
+        $('input').prop('disabled', false)
+        $('select').prop('disabled', false)
+        $('textarea').prop('disabled', false)
+        $('#canceleditbtn').prop('hidden', false)
+        $('#referenceConcept').prop('disabled', true)
+        let selectedType = $('#test-select').val()
+        setTestTypes()
+        $('#test-select').val(selectedType)
+    })
+    $('#canceleditbtn').click(function () {
+        $('input').prop('disabled', true)
+        $('select').prop('disabled', true)
+        $('textarea').prop('disabled', true)
+        $('#canceleditbtn').prop('hidden', true)
+        $('#retireTestType').prop('disabled', false)
+    })
 
 </script>
 

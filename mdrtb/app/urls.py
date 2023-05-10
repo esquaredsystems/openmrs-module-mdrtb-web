@@ -5,6 +5,7 @@ urlpatterns = [
     path("login", views.login, name="login"),
     path("", views.search_patients_view, name="searchPatientsView"),
     path("locations", views.get_locations, name="locations"),
+    path("concepts", views.get_concepts, name="concepts"),
     path("search", views.search_patients_query, name="search"),
     path("tbdashboard/patient/<str:uuid>", views.patient_dashboard, name="dashboard"),
     path(
@@ -119,8 +120,6 @@ urlpatterns = [
     path("tb08uresults", views.tb08u_report, name="tb08uresults"),
     path("tb07uexport", views.tb07u_report_form, name="tb07uexport"),
     path("tb07uresults", views.tb07u_report, name="tb07uresults"),
-
-
     # CommonLab Urls
     path("commonlab/managetesttypes", views.manage_test_types, name="managetesttypes"),
     path("commonlab/fetchattributes", views.fetch_attributes, name="fetchattributes"),
@@ -172,9 +171,24 @@ urlpatterns = [
         name="addtestsample",
     ),
     path(
+        "commonlab/order/<str:orderid>/sample/<str:sampleid>/editsample",
+        views.edit_test_sample,
+        name="edittestsample",
+    ),
+    path(
+        "commonlab/order/<str:orderid>/sample/<str:sampleid>/deletesample",
+        views.delete_sample,
+        name="deletesample",
+    ),
+    path(
         "commonlab/retiretesttype/<str:uuid>",
         views.retire_test_type,
         name="retiretesttype",
+    ),
+    path(
+    "commonlab/order/<str:orderid>/sample/<str:sampleid>/changesamplestatus",
+    views.change_sample_status,
+    name="changesamplestatus",
     ),
     path(
         "commonlab/order/<str:orderid>/addtestresults",

@@ -140,7 +140,6 @@ def enroll_patient_in_program(req, patientid, data):
             identifier_status, iden_response = ru.post(
                 req, f"patient/{patientid}/identifier", patient_identifier
             )
-            print(iden_response, "RESPONSE=======================")
 
         status, response = ru.post(req, "programenrollment", program_body)
         if status:
@@ -291,6 +290,17 @@ def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
         transfer_out = fu.get_encounters_by_patient_and_type(
             req, patientuuid, EncounterType.TRANSFER_OUT.value
         )
+        lab_results_status, lab_results_response = ru.get(
+            req,
+            f"commonlab/labtestorder",
+            {
+                "patient": patientuuid,
+                "limit":3,
+                "v": "custom:(uuid,labTestType,labReferenceNumber,order)",
+            },
+        )
+        if lab_results_status:
+            lab_results = lab_results_response["results"]
         if isMdrtb:
             forms = {
                 "tb03us": fu.get_encounters_by_patient_and_type(
@@ -315,7 +325,7 @@ def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
                     req, patientuuid, EncounterType.FROM_89.value
                 ),
             }
-        return patient, program, transfer_out, forms
+        return (patient, program, transfer_out, forms, lab_results)
     except Exception as e:
         raise Exception(str(e))
 

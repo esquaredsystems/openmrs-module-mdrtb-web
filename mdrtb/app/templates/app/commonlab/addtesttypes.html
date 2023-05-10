@@ -1,4 +1,4 @@
-{% extends 'app/base/base_without_menu.html' %}
+{% extends 'app/base/base.html' %}
 
 
 {% block title %}
@@ -7,14 +7,31 @@
 
 {% block content %}
 
-
+<div class="m-4">
+  {% include 'app/components/breadcrumbs.html'%}
+</div>
 <div class="m-16">
+
   <div class="flex flex-col">
     <div class="flex items-center justify-between">
       {% if state == 'edit' %}
-      <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
-        {{'commonlabtest.labtesttype.edit'|get_message_commonlab:request.session.locale}}
-      </h2>
+      <div id="form-info" class="flex-center space-x-4">
+        <h1 class="text-[#2D9CDB] text-3xl font-bold">
+          {{'commonlabtest.labtesttype.edit'|get_message_commonlab:request.session.locale}}
+        </h1>
+        <button type="button" id="editbtn">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+          </svg>
+
+        </button>
+        <button hidden type="button" id="canceleditbtn" class="cancel-button">Cancel</button>
+
+
+
+      </div>
       <a href="{% url 'manageattr' uuid=testType.uuid %}" class="text-[#044062] font-bold underline">
         {{'commonlabtest.labtestattributetype.manage'|get_message_commonlab:request.session.locale}}
       </a>
@@ -26,35 +43,32 @@
     </div>
 
     <div class="m-4">
-      <form method="post"
+      <form onsubmit="disableSubmit()" method="post"
         action="{% if state == 'edit' %} {% url 'edittesttype' uuid=testType.uuid %} {% else %} {% url 'addtesttype' %} {% endif %}"
         class="flex flex-col p-4">
         {% csrf_token %}
         <div class="flex py-4 space-x-12">
           <div class="space-y-3 w-3/4">
             <div class="input-container">
-              <label class="input-label w-4/5" for="gender">
-                {{'general.referenceConcept'|get_message_commonlab:request.session.locale}}
-              </label>
-              <select class="input" name="referenceconcept" required>
-                <option value="{{testType.referenceConcept.uuid}}">
-                  {{testType.referenceConcept.name}}
-                </option>
-
-                {% for concept in referenceConcepts %}
-                <option value="{{concept.uuid}}">{{concept.name}}</option>
-
-                {% endfor %}
-              </select>
+              <label class="input-label w-4/5" for="testgroup">Search Reference Concept</label>
+              <input type="text" class="input form-control" id="concept">
             </div>
+
+
+
+            <div id="search-results" class="search-result-container bg-white shadow-md w-full mx-auto z-10">
+
+            </div>
+
+
 
             <div class="input-container">
               <label class="input-label w-4/5"
                 for="testname">{{'general.testName'|get_message_commonlab:request.session.locale}}</label>
               {% if state == 'edit' %}
-              <input required class="input" value="{{testType.name}}" type="text" name="testname" />
+              <input required class="input form-control" value="{{testType.name}}" type="text" name="testname" />
               {% else %}
-              <input required class="input" type="text" name="testname" />
+              <input required class="input form-control" type="text" name="testname" />
               {% endif %}
             </div>
 
@@ -62,19 +76,36 @@
               <label class="input-label w-4/5"
                 for="shortname">{{'general.shortName'|get_message_commonlab:request.session.locale}}</label>
               {% if state == 'edit' %}
-              <input class="input" type="text" value="{{testType.shortName}}" name="shortname" />
+              <input class="input form-control" type="text" value="{{testType.shortName}}" name="shortname" />
               {% else %}
-              <input class="input" type="text" name="shortname" />
+              <input class="input form-control" type="text" name="shortname" />
               {% endif %}
             </div>
           </div>
 
           <div class="space-y-3 w-2/4">
             <div class="input-container">
+              <label class="input-label w-4/5" for="referenceconcept">
+                {{'general.referenceConcept'|get_message_commonlab:request.session.locale}}
+              </label>
+              {% if state == 'edit' %}
+              <input hidden type="text" class="input form-control" name="referenceConceptuuid" id="referenceConceptuuid"
+                value="{{testType.referenceConcept.uuid}}" />
+              <input disabled type="text" class="input form-control" name="referenceConcept" id="referenceConcept"
+                value="{{testType.referenceConcept.name}}" />
+              {% else %}
+              <input hidden type="text" class="input form-control" name="referenceConceptuuid"
+                id="referenceConceptuuid">
+              <input disabled type="text" class="input form-control" name="referenceConcept" id="referenceConcept">
+              {% endif %}
+
+            </div>
+
+            <div class="input-container">
               <label class="input-label w-4/5"
                 for="testgroup">{{'general.testGroup'|get_message_commonlab:request.session.locale}}</label>
 
-              <select class="input" name="testgroup">
+              <select class="input form-control" name="testgroup">
                 <option selected value="{{testType.testGroup}}">
                   {{testType.testGroup}}
                 </option>
@@ -124,11 +155,11 @@
           {% if state == 'edit' %}
           <input class="input ml-4" type="text" value="{{testType.description}}" name="description" />
           {% else %}
-          <input class="input" type="text" name="description" />
+          <input class="input form-control" type="text" name="description" />
           {% endif %}
         </div>
         <div class="flex-center space-x-4">
-          <button type="submit" class="bg-[#2D9CDB] text-white rounded-md p-2 w-1/5">
+          <button type="submit" id="submitBtn" class="button-primary w-1/5">
             {% if state == 'edit' %}
             {{'commonlabtest.labtesttype.edit'|get_message_commonlab:request.session.locale}}
             {% else %}
@@ -140,24 +171,170 @@
         </div>
       </form>
       {% if state == 'edit' %}
-      <form class="flex flex-col bg-white p-4 shadow-lg space-y-4 mt-4"
+      <form onsubmit="disableSubmit()" class="flex flex-col bg-white p-4 shadow-lg space-y-4 mt-4"
         action="{% url 'retiretesttype' uuid=testType.uuid %}" method="post">
         {% csrf_token %}
 
         <div class="input-container -mt-3">
           <label class="w-1/6 text-[#9E9E9E] input-label"
             for="testname">{{'commonlabtest.labtesttype.void'|get_message_commonlab:request.session.locale}}</label>
-          <input class="input" placeholder="{{'general.retireReason'|get_message_commonlab:request.session.locale}}"
-            type="text" name="Retire" required />
+          <input id="retireTestType" class="input form-control"
+            placeholder="{{'general.retireReason'|get_message_commonlab:request.session.locale}}" type="text"
+            name="Retire" required />
         </div>
-        <button type="submit" class="bg-[#2D9CDB] text-white rounded-md p-2 w-1/5">
+        <button id="updateBtn" type="submit" class="button-primary  w-1/5">
           {{'commonlabtest.labtesttype.void'|get_message_commonlab:request.session.locale}}
         </button>
-        
+
       </form>
       {% endif %}
     </div>
   </div>
 </div>
 
+
+
+
+<script>
+  const handleSearch = (searchQuery) => {
+    if (searchQuery.length < 0) {
+
+      $('#search-results').addClass('hidden')
+      $('#search-results').removeClass('flex')
+      $('#search-results').html("")
+
+    } else if (searchQuery.length >= 1) {
+      $('#search-results').html("")
+      $('#search-results').append(`
+
+        <div class="loader-box">
+<lord-icon
+    src="https://cdn.lordicon.com/xjovhxra.json"
+    trigger="loop"
+    colors="primary:#121331,secondary:#2d9cdb"
+    style="width:50px;height:50px">
+</lord-icon>
+          </div>
+
+`)
+      $.ajax({
+        url: "{% url 'concepts'%}?q=" + `${searchQuery}`,
+        method: 'GET',
+        success: function (data) {
+          if (data.error) {
+            $('#search-results').html(
+              `
+    <div class="patient-notfound-box">
+      <h3>
+        Error finding concept
+        </h3>
+  </div>
+    `
+            )
+          }
+          else if (data.results.length === 0) {
+
+            $('#search-results').html("")
+            $('#search-results').append(
+              `
+    <div class="patient-notfound-box">
+      <h3>
+        Could not find any concept according to your search
+        </h3>
+  </div>
+    `
+            )
+          } else {
+            $('#search-results').html("")
+            for (i = 0; i < data.results.length; i++) {
+              let uuid = data.results[i].uuid
+              let name = data.results[i].display
+              $('#search-results').append(
+                `
+      
+        <div  class="flex  items-center space-x-4 m-2 cursor-pointer hover:bg-gray-200 p-1">
+          <input id="concept" name="concept" hidden value=${uuid} />
+          <button type="button" onclick="selectConcept('${uuid}','${name}')" class="border-none bg-transparent text-left" >${name}</button>
+  </div>
+        
+        `
+              )
+            }
+          }
+
+        }
+
+
+      })
+
+      $('#search-results').removeClass('hidden')
+      $('#search-results').addClass('flex')
+    }
+  }
+
+  let state = '{{state | escapejs}}'
+  if (state === 'edit') {
+    $('input').prop('disabled', true)
+    $('input[name=csrfmiddlewaretoken]').prop('disabled', false)
+    $('select').prop('disabled', true).prop('', false)
+    $('textarea').prop('disabled', true).prop('', false)
+    $('#canceleditbtn').prop('hidden', true)
+    $('#retireTestType').prop('disabled', false)
+  }
+  $('#editbtn').click(function () {
+    $('input').prop('disabled', false)
+    $('select').prop('disabled', false)
+    $('textarea').prop('disabled', false)
+    $('#canceleditbtn').prop('hidden', false)
+    $('#referenceConcept').prop('disabled', true)
+  })
+  $('#canceleditbtn').click(function () {
+    $('input').prop('disabled', true)
+    $('select').prop('disabled', true)
+    $('textarea').prop('disabled', true)
+    $('#canceleditbtn').prop('hidden', true)
+    $('#retireTestType').prop('disabled', false)
+  })
+  const disableSubmit = () => {
+    $('#submitBtn').prop('disabled', true)
+    $('#submitBtn').removeClass('button-primary')
+    $('#submitBtn').html(`
+        <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
+                colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+            </lord-icon>
+
+        
+        `)
+    if (state === 'edit') {
+      $('#updateBtn').prop('disabled', true)
+      $('#updateBtn').removeClass('button-primary')
+      $('#updateBtn').html(`
+          <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
+                  colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+              </lord-icon>
+
+          
+          `)
+
+    }
+  }
+
+
+  $('#concept').keyup(function (e) {
+    if (e.target.value.length > 1) {
+
+      handleSearch(e.target.value)
+    } else {
+      $('#search-results').addClass('hidden')
+    }
+  })
+
+  function selectConcept(uuid, name) {
+    console.log(uuid, name)
+    $('#search-results').addClass('hidden')
+    $('#referenceConceptuuid').val(uuid)
+    $('#referenceConcept').val(name)
+    $('#concept').val('')
+  }
+</script>
 {% endblock %}

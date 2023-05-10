@@ -203,7 +203,7 @@
       <div class="flex-center space-x-4">
         <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.labResults'|get_message:request.session.locale}}
         </h2>
-        <a href="#" class="cancel-button">
+        <a href="{% url 'managetestorders' uuid=uuid %}" class="cancel-button">
           View All Lab Tests
         </a>
       </div>
@@ -216,111 +216,65 @@
             <tr>
               <th
                 class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                Name
+                {{'general.labTestType'|get_message_commonlab:request.session.locale}}
               </th>
               <th
                 class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                Result
+                {{'ConceptProposal.encounter'|get_message_openMRS:request.session.locale}}
               </th>
               <th
                 class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                Collected On
+                {{'commonlabtest.order.labReferenceNo'|get_message_commonlab:request.session.locale}}
               </th>
 
               <th
                 class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                Actions
+                {{'ActiveLists.actions'|get_message_openMRS:request.session.locale}}
               </th>
             </tr>
           </thead>
           <tbody>
+            {% for lab_result in lab_results %}
             <tr>
               <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                {{'mdrtb.mostRecentSmear'|get_message:request.session.locale}}
+                <div class="flex">
+                  <div class="ml-3">
+                    <p class="text-gray-900 whitespace-no-wrap">
+                      {{lab_result.labTestType.name}}
+                    </p>
+                </div>
+                </div>
               </td>
               <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                Failed
+                <p class="text-gray-900 whitespace-no-wrap">{{lab_result.order.encounter.display|get_encounter_name}}
+                </p>
               </td>
               <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                11/11/2022
+                <p class="text-gray-900 whitespace-no-wrap">
+                  {{lab_result.labReferenceNumber}}
+                </p>
               </td>
-              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                <div class="flex items-center space-x-4 cursor-pointer">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-5 h-5 cursor-pointer">
+              <td class="px-5 py-5 border-b w-1/5 border-gray-200 bg-white text-sm">
+                <div class="flex space-x-4">
+                  <a href="{% url 'managetestorders' uuid=uuid %}" target="_blank">
+                    <svg id="detail-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                      stroke-width="1.5" stroke="currentColor" class="w-5 h-5 hover:text-blue-500 cursor-pointer">
                     <path stroke-linecap="round" stroke-linejoin="round"
                       d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
-                  <a href="#">
+                  </a>
+                  <a href="{% url 'editlabtest' orderid=lab_result.uuid patientid=uuid %}">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                       stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
                       <path stroke-linecap="round" stroke-linejoin="round"
                         d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
                     </svg>
                   </a>
-
                 </div>
               </td>
             </tr>
-            <tr>
-              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                {{'mdrtb.mostRecentHAIN'|get_message:request.session.locale}}
-              </td>
-              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                Success
-              </td>
-              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                11/11/2022
-              </td>
-              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                <div class="flex items-center space-x-4 cursor-pointer">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-5 h-5 cursor-pointer">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  <a href="#">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                      stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
-                      <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-                    </svg>
-                  </a>
-
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                {{'mdrtb.mostRecentHAIN2'|get_message:request.session.locale}}
-              </td>
-              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                Failed
-              </td>
-              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                11/11/2022
-              </td>
-              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                <div class="flex items-center space-x-4 cursor-pointer">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-5 h-5 cursor-pointer">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  <a href="#">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                      stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
-                      <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-                    </svg>
-                  </a>
-
-                </div>
-              </td>
-            </tr>
+            {% endfor %}
 
           </tbody>
         </table>

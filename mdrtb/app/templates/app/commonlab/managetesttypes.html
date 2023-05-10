@@ -1,13 +1,15 @@
-{% extends 'app/base/base_without_menu.html' %}
+{% extends 'app/base/base.html' %}
 {% block title %}
 {{title}}
 {% endblock %}
 {% block content %}
 
-<div id="modal-parent" class="relative ">
-
-  <section id="modal"
-    class="flex flex-col justify-center transition-opacity ease-in-out duration-500 opacity-0 backdrop-blur-3xl inset-0 z-50 shadow-2xl  m-10  bg-white w-3/5 mx-auto p-8 absolute top-0 left-0 right-0 bottom-0 h-min my-auto ">
+<div id="modal-parent" class="relative">
+  <div class="m-4">
+    {% include 'app/components/breadcrumbs.html'%}
+  </div>
+  <section hidden id="modal"
+    class="flex flex-col justify-center transition-opacity ease-in-out duration-500 opacity-0 backdrop-blur-3xl inset-0 z-50 shadow-2xl  m-10  bg-white w-3/5 mx-auto p-8 absolute top-0 left-0 right-0 bottom-0 h-min">
     <div class="flex items-center justify-between ">
       <h3 id="modal-testType" class="text-3xl">Sort Weight Order</h3>
       <svg id="close-modal" onclick="closeModal()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -144,14 +146,19 @@
 </div>
 <script defer>
   function showModal(uuid) {
-    let output = ''
+    $('#modal').prop('hidden', false)
     $('#modal').removeClass('opacity-0')
+    $('html,body').animate({ scrollTop: $('body').offset().top }, 'slow');
+    let output = ''
+
     $.ajax(
       {
         url: "{% url 'fetchattributes' %}?uuid=" + `${uuid}`,
         method: 'GET',
         success: function (data) {
-          console.log(data)
+
+
+
           $('#attrAccordion').html('')
           for (i = 0; i < data.attributes.length; i++) {
             $('#attrbox').append(
@@ -175,6 +182,7 @@
 
   function closeModal() {
     $('#modal').addClass('opacity-0')
+    $('#modal').prop('hidden', true)
     $('#attrbox').html(
       `
       <div class="search-result-items font-bold">

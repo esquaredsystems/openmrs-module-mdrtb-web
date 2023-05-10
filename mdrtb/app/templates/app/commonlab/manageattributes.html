@@ -1,11 +1,13 @@
-{% extends 'app/base/base_without_menu.html' %}
+{% extends 'app/base/base.html' %}
 {% block title %}
 {{title}}
 {% endblock %}
 
 
 {% block content %}
-
+<div class="m-4">
+  {% include 'app/components/breadcrumbs.html'%}
+</div>
 <div id="modal-parent" class="relative">
   <section>
     <div class="container mx-auto px-4 sm:px-8">
@@ -47,10 +49,10 @@
                     {{'general.labTestType'|get_message_commonlab:request.session.locale}}
                   </th>
 
-                  <th
+                  <!-- <th
                     class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     {{'general.testGroup'|get_message_commonlab:request.session.locale}}
-                  </th>
+                  </th> -->
                   <th
                     class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     {{'ActiveLists.actions'|get_message_openMRS:request.session.locale}}
@@ -80,11 +82,11 @@
                       {{attr.labTestType.name}}
                     </p>
                   </td>
-                  <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                  <!-- <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                     <p class="text-gray-900 whitespace-no-wrap">
                       {{attr.groupName}}
                     </p>
-                  </td>
+                  </td> -->
                   <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                     <a href="{% url 'editattr' testid=labTestUuid attrid=attr.uuid %}">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
