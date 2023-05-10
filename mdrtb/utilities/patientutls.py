@@ -140,6 +140,7 @@ def enroll_patient_in_program(req, patientid, data):
             identifier_status, iden_response = ru.post(
                 req, f"patient/{patientid}/identifier", patient_identifier
             )
+            print(iden_response, "RESPONSE=======================")
 
         status, response = ru.post(req, "programenrollment", program_body)
         if status:
