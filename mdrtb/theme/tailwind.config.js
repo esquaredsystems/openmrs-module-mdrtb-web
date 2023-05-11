@@ -969,5 +969,8 @@ module.exports = {
       50: "50",
     },
   },
-  plugins: [require("tw-elements/dist/plugin")],
+  plugins: [
+    require("tw-elements/dist/plugin"),
+    require("tailwind-scrollbar-hide"),
+  ],
 };

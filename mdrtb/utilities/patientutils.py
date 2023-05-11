@@ -6,6 +6,8 @@ from resources.enums.constants import Constants
 from resources.enums.mdrtbConcepts import Concepts
 from resources.enums.encounterType import EncounterType
 import logging
+from django.contrib import messages
+
 
 logger = logging.getLogger("django")
 
@@ -14,15 +16,19 @@ def get_patient(req, uuid):
     patient = {}
     status, patient_data = ru.get(req, f"patient/{uuid}", {"v": "full"})
     if status:
-        patient["uuid"] = uuid
-        patient["name"] = patient_data["person"]["display"]
-        patient["age"] = patient_data["person"]["age"]
-        patient["dob"] = patient_data["person"]["birthdate"]
-        patient["gender"] = patient_data["person"]["gender"]
-        patient["address"] = patient_data["person"]["preferredAddress"]["display"]
-        patient["identifiers"] = patient_data["identifiers"]
-        patient["auditInfo"] = patient_data["auditInfo"]
-        return patient
+        try:
+            patient["uuid"] = uuid
+            patient["name"] = patient_data["person"]["display"]
+            patient["age"] = patient_data["person"]["age"]
+            patient["dob"] = patient_data["person"]["birthdate"]
+            patient["gender"] = patient_data["person"]["gender"]
+            patient["address"] = patient_data["person"]["preferredAddress"]["display"]
+            patient["identifiers"] = patient_data["identifiers"]
+            patient["auditInfo"] = patient_data["auditInfo"]
+            return patient
+        except Exception as e:
+            messages.error(req,"Error getting patient info")
+            pass
     else:
         return None
 

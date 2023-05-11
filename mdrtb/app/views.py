@@ -3,7 +3,7 @@ from django.http import JsonResponse
 import utilities.restapi_utils as ru
 import utilities.metadata_util as mu
 import utilities.commonlab_util as cu
-import utilities.patientutls as pu
+import utilities.patientutils as pu
 import utilities.formsutil as fu
 import utilities.common_utils as util
 import utilities.locationsutil as lu
