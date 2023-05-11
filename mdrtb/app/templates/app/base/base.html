@@ -120,6 +120,8 @@
 		{%block content%}
 		{% endblock %}
 	</div>
+	<script>
+		var locationByUuids;
 
 	<script>
 		var locationByUuids;
@@ -204,13 +206,11 @@
 			if (children.length > 0) {
 				for (district of children) {
 					if (district.level === 'district'.toUpperCase()) {
-
 						$('#district-select').prop('disabled', false)
 						$('#district-select').append(`<option value=${district.uuid}>${district.name}</option>`)
 					}
 					if (district.level === 'subregion'.toUpperCase()) {
 						$('#subregion-container').removeClass('hidden')
-
 						$('#subregion-select').prop('disabled', false)
 						$('#subregion-select').append(`<option value=${district.uuid}>${district.name}</option>`)
 					}
