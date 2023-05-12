@@ -36,7 +36,7 @@
                         <option value="ru">Russian</option>
                         <option value="tj">Tajik</option>
                         {% for locale in allowed_locales %}
-                        <option value="{{locale.value}}">{{locale.name}}</option>
+                        <option disabled value="{{locale.value}}">{{locale.name}}</option>
                         {% endfor %}
                     </select>
                 </div>

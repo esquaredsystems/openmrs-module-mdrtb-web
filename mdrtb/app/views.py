@@ -1148,7 +1148,7 @@ def user_profile(req):
         allowed_locales.remove(default_locale)
         status, person = ru.get(
             req,
-            "person/{}".format(req.session["logged_user"]["person"]["uuid"]),
+            "person/{}".format(req.session["logged_user"]["user"]["person"]["uuid"]),
             {"v": "full"},
         )
         if status:
@@ -1276,7 +1276,7 @@ def patient_list(req):
             context["string_data"] = response["results"][0]["stringData"]
             return render(req, "app/reporting/patientlist_report.html", context=context)
 
-    return render(req, "app/tbregister/patientlist.html", context=context)
+    return render(req, "app/reporting/patientlist_report_form.html", context=context)
 
 
 def tb03_report_form(req):
@@ -2063,7 +2063,7 @@ def edit_test_sample(req, orderid, sampleid):
             "specimenSite": req.POST["specimensite"],
             "sampleIdentifier": req.POST["specimenid"],
             "quantity": "" if "quantity" not in req.POST else req.POST["quantity"],
-            "units": "" if "units" not in  req.POST else req.POST["units"],
+            "units": "" if "units" not in req.POST else req.POST["units"],
             "collectionDate": req.POST["collectedon"],
             "status": "COLLECTED",
             "collector": req.session["logged_user"]["currentProvider"]["uuid"],
@@ -2080,41 +2080,51 @@ def edit_test_sample(req, orderid, sampleid):
     status, response = ru.get(req, f"commonlab/labtestsample/{sampleid}", {"v": "full"})
     if status:
         sample = response
-        specimen_type = cu.get_commonlab_concepts_by_type(req, "commonlabtest.specimenTypeConceptUuid")
-        specimen_site = cu.get_commonlab_concepts_by_type(req, "commonlabtest.specimenSiteConceptUuid")
-        context['specimentype'] = util.remove_obj_from_objarr(specimen_type, sample['specimenType']['uuid'],'uuid')
-        context["specimensite"] = util.remove_obj_from_objarr(specimen_site, sample['specimenSite']['uuid'],'uuid')
+        specimen_type = cu.get_commonlab_concepts_by_type(
+            req, "commonlabtest.specimenTypeConceptUuid"
+        )
+        specimen_site = cu.get_commonlab_concepts_by_type(
+            req, "commonlabtest.specimenSiteConceptUuid"
+        )
+        context["specimentype"] = util.remove_obj_from_objarr(
+            specimen_type, sample["specimenType"]["uuid"], "uuid"
+        )
+        context["specimensite"] = util.remove_obj_from_objarr(
+            specimen_site, sample["specimenSite"]["uuid"], "uuid"
+        )
         units = cu.get_sample_units(req)
-        context["units"] = util.remove_obj_from_objarr(units,sample['units'],'uuid')
-        context['sample'] = sample
+        context["units"] = util.remove_obj_from_objarr(units, sample["units"], "uuid")
+        context["sample"] = sample
         # context["sample"] = response
-    
-    
 
     return render(req, "app/commonlab/addsample.html", context=context)
 
-def change_sample_status(req,orderid,sampleid):
-    statuses = {"Accept":"ACCEPTED","Reject": "REJECTED"}
+
+def change_sample_status(req, orderid, sampleid):
+    statuses = {"Accept": "ACCEPTED", "Reject": "REJECTED"}
     if req.method == "POST":
         try:
-            sample_status = statuses[req.POST['status']]
-            status,_ = ru.post(req,f"commonlab/labtestsample/{sampleid}",{"status":sample_status})
+            sample_status = statuses[req.POST["status"]]
+            status, _ = ru.post(
+                req, f"commonlab/labtestsample/{sampleid}", {"status": sample_status}
+            )
             if status:
                 if sample_status == "ACCEPTED":
-                    messages.success(req,f"Sample {sample_status}")
+                    messages.success(req, f"Sample {sample_status}")
                 else:
-                    messages.warning(req,f"Sample {sample_status}")
+                    messages.warning(req, f"Sample {sample_status}")
         except Exception as e:
-            messages.error(req,f"Sample {sample_status}")
+            messages.error(req, f"Sample {sample_status}")
     return redirect("managetestsamples", orderid=orderid)
 
-def delete_sample(req,orderid,sampleid):
+
+def delete_sample(req, orderid, sampleid):
     if not check_if_session_alive(req):
         return redirect("login")
-    status,reponse = ru.delete(req,f'commonlab/labtestsample/{sampleid}')
+    status, reponse = ru.delete(req, f"commonlab/labtestsample/{sampleid}")
     if status:
         return redirect(req.session["redirect_url"])
-    
+
 
 def add_test_results(req, orderid):
     if not check_if_session_alive(req):

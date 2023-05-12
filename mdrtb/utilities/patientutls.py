@@ -6,8 +6,6 @@ from resources.enums.constants import Constants
 from resources.enums.mdrtbConcepts import Concepts
 from resources.enums.encounterType import EncounterType
 import logging
-from django.contrib import messages
-
 
 logger = logging.getLogger("django")
 
@@ -16,19 +14,15 @@ def get_patient(req, uuid):
     patient = {}
     status, patient_data = ru.get(req, f"patient/{uuid}", {"v": "full"})
     if status:
-        try:
-            patient["uuid"] = uuid
-            patient["name"] = patient_data["person"]["display"]
-            patient["age"] = patient_data["person"]["age"]
-            patient["dob"] = patient_data["person"]["birthdate"]
-            patient["gender"] = patient_data["person"]["gender"]
-            patient["address"] = patient_data["person"]["preferredAddress"]["display"]
-            patient["identifiers"] = patient_data["identifiers"]
-            patient["auditInfo"] = patient_data["auditInfo"]
-            return patient
-        except Exception as e:
-            messages.error(req, "Error getting patient info")
-            pass
+        patient["uuid"] = uuid
+        patient["name"] = patient_data["person"]["display"]
+        patient["age"] = patient_data["person"]["age"]
+        patient["dob"] = patient_data["person"]["birthdate"]
+        patient["gender"] = patient_data["person"]["gender"]
+        patient["address"] = patient_data["person"]["preferredAddress"]["display"]
+        patient["identifiers"] = patient_data["identifiers"]
+        patient["auditInfo"] = patient_data["auditInfo"]
+        return patient
     else:
         return None
 
@@ -146,7 +140,6 @@ def enroll_patient_in_program(req, patientid, data):
             identifier_status, iden_response = ru.post(
                 req, f"patient/{patientid}/identifier", patient_identifier
             )
-            print(iden_response, "RESPONSE=======================")
 
         status, response = ru.post(req, "programenrollment", program_body)
         if status:
