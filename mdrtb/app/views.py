@@ -1597,19 +1597,27 @@ def manage_test_types(req):
 
     context = {"title": "Manage Test Types"}
     if req.method == "POST":
-        search_results = cu.get_test_types_by_search(req, req.POST["search"])
-        if len(search_results) > 0:
-            context["response"] = search_results
-            return render(req, "app/commonlab/managetesttypes.html", context=context)
-        else:
-            status, response = ru.get(req, "commonlab/labtesttype", {"v": "full"})
-            context["response"] = response["results"]
-            return render(req, "app/commonlab/managetesttypes.html", context=context)
-    status, response = ru.get(req, "commonlab/labtesttype", {"v": "full"})
-    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-    mu.add_url_to_breadcrumb(req, context["title"])
-    context["response"] = response["results"] if status else []
-    return render(req, "app/commonlab/managetesttypes.html", context=context)
+        try:
+            search_results = cu.get_test_types_by_search(req, req.POST["search"])
+            if len(search_results) > 0:
+                context["response"] = search_results
+                return render(req, "app/commonlab/managetesttypes.html", context=context)
+            else:
+                status, response = ru.get(req, "commonlab/labtesttype", {"v": "full"})
+                context["response"] = response["results"]
+                return render(req, "app/commonlab/managetesttypes.html", context=context)
+        except Exception as e:
+            messages.error(req, e)
+            return redirect(req.session['redirect_url'])
+    try:
+        status, response = ru.get(req, "commonlab/labtesttype", {"v": "full"})
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+        mu.add_url_to_breadcrumb(req, context["title"])
+        context["response"] = response["results"] if status else []
+        return render(req, "app/commonlab/managetesttypes.html", context=context)
+    except Exception as e:
+        messages.error(req, e)
+        return redirect(req.session['redirect_url'])
 
 
 def fetch_attributes(req):
