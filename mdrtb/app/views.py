@@ -1273,6 +1273,7 @@ def patient_list(req):
         if status:
             context["year"] = year
             context["listname"] = util.get_patient_list_options(listname)
+            context["location"] = lu.get_location_by_uuid(req, location)['name']
             context["string_data"] = response["results"][0]["stringData"]
             return render(req, "app/reporting/patientlist_report.html", context=context)
 
@@ -1601,14 +1602,18 @@ def manage_test_types(req):
             search_results = cu.get_test_types_by_search(req, req.POST["search"])
             if len(search_results) > 0:
                 context["response"] = search_results
-                return render(req, "app/commonlab/managetesttypes.html", context=context)
+                return render(
+                    req, "app/commonlab/managetesttypes.html", context=context
+                )
             else:
                 status, response = ru.get(req, "commonlab/labtesttype", {"v": "full"})
                 context["response"] = response["results"]
-                return render(req, "app/commonlab/managetesttypes.html", context=context)
+                return render(
+                    req, "app/commonlab/managetesttypes.html", context=context
+                )
         except Exception as e:
             messages.error(req, e)
-            return redirect(req.session['redirect_url'])
+            return redirect(req.session["redirect_url"])
     try:
         status, response = ru.get(req, "commonlab/labtesttype", {"v": "full"})
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
@@ -1617,7 +1622,7 @@ def manage_test_types(req):
         return render(req, "app/commonlab/managetesttypes.html", context=context)
     except Exception as e:
         messages.error(req, e)
-        return redirect(req.session['redirect_url'])
+        return redirect(req.session["redirect_url"])
 
 
 def fetch_attributes(req):

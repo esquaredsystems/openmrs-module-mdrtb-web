@@ -5,7 +5,16 @@ from django.shortcuts import redirect
 from resources.enums.constants import Constants
 
 
-def get_locations(req):
+def get_locations(req, uuid=None):
+    if uuid:
+        try:
+            single_location_status, location_status = ru.get(
+                req, f"location/{uuid}", {"v": "full"}
+            )
+            if single_location_status:
+                return location_status
+        except Exception as e:
+            raise Exception(e)
     try:
         status, locations = ru.get(
             req,
@@ -23,6 +32,10 @@ def get_locations(req):
         return non_retired_locations
     except Exception as e:
         raise Exception(str(e))
+
+
+def get_location_by_uuid(req, uuid):
+    return get_locations(req, uuid)
 
 
 def get_location_level(uuid, location_by_uuids):
