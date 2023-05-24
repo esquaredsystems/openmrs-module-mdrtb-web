@@ -7,6 +7,20 @@ import utilities.common_utils as cu
 
 
 def get_form_concepts(concept_ids, req):
+    """
+    Retrieves concepts and their answers based on the provided concept IDs.
+
+    Parameters:
+        concept_ids (list): A list of concept IDs.
+        req (object): The request object.
+
+    Returns:
+        dict: A dictionary mapping concepts to their answers.
+
+    Raises:
+        Exception: If an error occurs while retrieving the concepts.
+
+    """
     concept_dict = {}
     for concept in concept_ids:
         try:
@@ -25,6 +39,17 @@ def get_form_concepts(concept_ids, req):
 
 
 def get_patient_tb03_forms(req, patientuuid):
+    """
+    Retrieves the TB03 forms for a specific patient.
+
+    Parameters:
+        req (object): The request object.
+        patientuuid (str): The UUID of the patient.
+
+    Returns:
+        list or None: A list of TB03 forms if they exist for the patient, None otherwise.
+
+    """
     status, response = ru.get(req, "mdrtb/tb03", {"v": "full", "q": patientuuid})
     if status:
         return response["results"]
@@ -33,6 +58,18 @@ def get_patient_tb03_forms(req, patientuuid):
 
 
 def get_tb03_by_uuid(req, uuid):
+    """
+    Retrieves a specific TB03 form by uuid.
+
+    Parameters:
+        req (object): The request object.
+        patientuuid (str): The UUID of the Form.
+
+    Returns:
+        dict or None: A dict of TB03 form if exists , None otherwise.
+
+    """
+
     status, response = ru.get(req, f"mdrtb/tb03/{uuid}", {"v": "full"})
     if status:
         return response
@@ -41,6 +78,22 @@ def get_tb03_by_uuid(req, uuid):
 
 
 def create_update_tb03(req, patientuuid, data, formid=None):
+    """
+    Creates or updates a TB03 form for a specific patient.
+
+    Parameters:
+        req (object): The request object.
+        patientuuid (str): The UUID of the patient.
+        data (dict): The data for the TB03 form.
+        formid (str, optional): The UUID of the form to be updated. Defaults to None.
+
+    Returns:
+        bool: True if the TB03 form is successfully created or updated, False otherwise.
+
+    Raises:
+        Exception: If an error occurs while creating or updating the TB03 form.
+
+    """
     patient_program_uuid = req.session["current_patient_program_flow"][
         "current_program"
     ]["uuid"]
@@ -130,6 +183,18 @@ def create_update_tb03(req, patientuuid, data, formid=None):
 
 
 def get_encounters_by_patient_and_type(req, patientid, encounterType):
+    """
+    Retrieves encounters for a specific patient and encounter type.
+
+    Parameters:
+        req (object): The request object.
+        patientid (str): The UUID of the patient.
+        encounterType (str): The UUID of the encounter type.
+
+    Returns:
+        list: A list of encounters for the patient and encounter type, or None if an error occurs.
+
+    """
     try:
         status, response = ru.get(
             req,
@@ -147,6 +212,17 @@ def get_encounters_by_patient_and_type(req, patientid, encounterType):
 
 
 def remove_duplicate_concepts(concept_field, form_field):
+    """
+    Removes duplicate concepts from a concept field based on a form field.
+
+    Parameters:
+        concept_field (list): The list of concepts to remove duplicates from.
+        form_field (dict): The form field containing the concept to compare against.
+
+    Returns:
+        None
+
+    """
     if form_field:
         for concept in concept_field:
             if form_field["uuid"] == concept["uuid"]:
@@ -154,6 +230,16 @@ def remove_duplicate_concepts(concept_field, form_field):
 
 
 def remove_tb03_duplicates(concepts, form_data):
+    """
+    Removes duplicate concepts from a TB03 form data.
+
+    Parameters:
+        concepts (dict): The dictionary of concepts.
+        form_data (dict): The form data containing the concepts.
+
+    Returns:
+        None
+    """
     remove_duplicate_concepts(
         concepts.get("treatmentcenterforip", []), form_data.get("treatmentSiteIP", None)
     )
@@ -183,6 +269,23 @@ def remove_tb03_duplicates(concepts, form_data):
 
 
 def create_update_tb03u(req, patientuuid, data, formid=None):
+    """
+    Creates or updates a TB03u form for a specific patient.
+
+    Parameters:
+        req (object): The request object.
+        patientuuid (str): The UUID of the patient.
+        data (dict): The data for the TB03 form.
+        formid (str, optional): The UUID of the form to be updated. Defaults to None.
+
+    Returns:
+        bool: True if the TB03 form is successfully created or updated, False otherwise.
+
+    Raises:
+        Exception: If an error occurs while creating or updating the TB03 form.
+
+    """
+
     patient_program_uuid = req.session["current_patient_program_flow"][
         "current_program"
     ]["uuid"]
@@ -271,6 +374,18 @@ def create_update_tb03u(req, patientuuid, data, formid=None):
 
 
 def get_tb03u_by_uuid(req, uuid):
+    """
+    Retrieves a specific TB03 form by uuid.
+
+    Parameters:
+        req (object): The request object.
+        patientuuid (str): The UUID of the Form.
+
+    Returns:
+        dict or None: A dict of TB03 form if exists , None otherwise.
+
+    """
+
     status, response = ru.get(req, f"mdrtb/tb03u/{uuid}", {"v": "full"})
     if status:
         return response
@@ -279,6 +394,16 @@ def get_tb03u_by_uuid(req, uuid):
 
 
 def remove_tb03u_duplicates(concepts, form_data):
+    """
+    Removes duplicate concepts from a TB03 form data.
+
+    Parameters:
+        concepts (dict): The dictionary of concepts.
+        form_data (dict): The form data containing the concepts.
+
+    Returns:
+        None
+    """
     remove_duplicate_concepts(
         concepts.get("siteoftbdisease", []), form_data.get("anatomicalSite", None)
     )
@@ -312,6 +437,23 @@ def remove_tb03u_duplicates(concepts, form_data):
 
 
 def create_update_adverse_event(req, patientuuid, data, formid=None):
+    """
+    Creates or updates a Adverse Events form for a specific patient.
+
+    Parameters:
+        req (object): The request object.
+        patientuuid (str): The UUID of the patient.
+        data (dict): The data for the TB03 form.
+        formid (str, optional): The UUID of the form to be updated. Defaults to None.
+
+    Returns:
+        bool: True if the TB03 form is successfully created or updated, False otherwise.
+
+    Raises:
+        Exception: If an error occurs while creating or updating the TB03 form.
+
+    """
+
     patient_program_uuid = req.session["current_patient_program_flow"][
         "current_program"
     ]["uuid"]
@@ -362,7 +504,9 @@ def create_update_adverse_event(req, patientuuid, data, formid=None):
             "encounter": {
                 "patient": patientuuid,
                 "encounterType": encounter_type,
-                "encounterDatetime": current_date_time if not any(data.get("encounterDateTime")) else data.get("encounterDateTime"),
+                "encounterDatetime": current_date_time
+                if not any(data.get("encounterDateTime"))
+                else data.get("encounterDateTime"),
                 "location": patient_location,
                 "obs": [
                     {
@@ -400,6 +544,18 @@ def create_update_adverse_event(req, patientuuid, data, formid=None):
 
 
 def get_ae_by_uuid(req, uuid):
+    """
+    Retrieves a specific AE form by uuid.
+
+    Parameters:
+        req (object): The request object.
+        patientuuid (str): The UUID of the Form.
+
+    Returns:
+        dict or None: A dict of TB03 form if exists , None otherwise.
+
+    """
+
     status, response = ru.get(req, f"mdrtb/adverseevents/{uuid}", {"v": "full"})
     if status:
         return response
@@ -408,6 +564,17 @@ def get_ae_by_uuid(req, uuid):
 
 
 def remove_ae_duplicates(concepts, form_data):
+    """
+    Removes duplicate concepts from an AE form data.
+
+    Parameters:
+        concepts (dict): The dictionary of concepts.
+        form_data (dict): The form data containing the concepts.
+
+    Returns:
+        None
+    """
+
     clone_concepts = concepts.copy()
     remove_duplicate_concepts(
         clone_concepts.get("adverseevent", []), form_data.get("advereEvent", None)
@@ -477,6 +644,23 @@ def remove_ae_duplicates(concepts, form_data):
 
 
 def create_update_form89(req, patientuuid, data, formid=None):
+    """
+    Creates or updates a Form89 for a specific patient.
+
+    Parameters:
+        req (object): The request object.
+        patientuuid (str): The UUID of the patient.
+        data (dict): The data for the TB03 form.
+        formid (str, optional): The UUID of the form to be updated. Defaults to None.
+
+    Returns:
+        bool: True if the TB03 form is successfully created or updated, False otherwise.
+
+    Raises:
+        Exception: If an error occurs while creating or updating the TB03 form.
+
+    """
+
     patient_program_uuid = req.session["current_patient_program_flow"][
         "current_program"
     ]["uuid"]
@@ -562,6 +746,18 @@ def create_update_form89(req, patientuuid, data, formid=None):
 
 
 def get_form89_by_uuid(req, uuid):
+    """
+    Retrieves a specific Form89 by uuid.
+
+    Parameters:
+        req (object): The request object.
+        patientuuid (str): The UUID of the Form.
+
+    Returns:
+        dict or None: A dict of TB03 form if exists , None otherwise.
+
+    """
+
     try:
         status, response = ru.get(req, f"mdrtb/form89/{uuid}", {"v": "full"})
         if status:
@@ -573,6 +769,17 @@ def get_form89_by_uuid(req, uuid):
 
 
 def remove_form89_duplicates(concepts, form_data):
+    """
+    Removes duplicate concepts from a Form89  data.
+
+    Parameters:
+        concepts (dict): The dictionary of concepts.
+        form_data (dict): The form data containing the concepts.
+
+    Returns:
+        None
+    """
+
     clone_concepts = concepts.copy()
     remove_duplicate_concepts(
         clone_concepts.get("circumstancesofdetection", []),
@@ -610,6 +817,23 @@ def remove_form89_duplicates(concepts, form_data):
 
 
 def create_update_regimen_form(req, patientuuid, data, formid=None):
+    """
+    Creates or updates a Regimen Form for a specific patient.
+
+    Parameters:
+        req (object): The request object.
+        patientuuid (str): The UUID of the patient.
+        data (dict): The data for the TB03 form.
+        formid (str, optional): The UUID of the form to be updated. Defaults to None.
+
+    Returns:
+        bool: True if the TB03 form is successfully created or updated, False otherwise.
+
+    Raises:
+        Exception: If an error occurs while creating or updating the TB03 form.
+
+    """
+
     patient_program_uuid = req.session["current_patient_program_flow"][
         "current_program"
     ]["uuid"]
@@ -660,7 +884,9 @@ def create_update_regimen_form(req, patientuuid, data, formid=None):
             "encounter": {
                 "patient": patientuuid,
                 "encounterType": encounter_type,
-                "encounterDatetime": current_date_time if not any(data.get("encounterDateTime")) else data.get("encounterDateTime"),
+                "encounterDatetime": current_date_time
+                if not any(data.get("encounterDateTime"))
+                else data.get("encounterDateTime"),
                 "location": patient_location,
                 "obs": [
                     {
@@ -700,6 +926,18 @@ def create_update_regimen_form(req, patientuuid, data, formid=None):
 
 
 def get_regimen_by_uuid(req, uuid):
+    """
+    Retrieves a specific Regimen form by uuid.
+
+    Parameters:
+        req (object): The request object.
+        patientuuid (str): The UUID of the Form.
+
+    Returns:
+        dict or None: A dict of TB03 form if exists , None otherwise.
+
+    """
+
     try:
         status, response = ru.get(req, f"mdrtb/regimen/{uuid}", {"v": "full"})
         if status:
@@ -711,6 +949,17 @@ def get_regimen_by_uuid(req, uuid):
 
 
 def remove_regimen_duplicates(concepts, form_data):
+    """
+    Removes duplicate concepts from a Regimen form data.
+
+    Parameters:
+        concepts (dict): The dictionary of concepts.
+        form_data (dict): The form data containing the concepts.
+
+    Returns:
+        None
+    """
+
     clone_concepts = concepts.copy()
     remove_duplicate_concepts(
         clone_concepts.get("fundingsource", []), form_data.get("fundingSource", None)
@@ -729,6 +978,18 @@ def remove_regimen_duplicates(concepts, form_data):
 
 
 def get_drug_resistance_form_by_uuid(req, uuid):
+    """
+    Retrieves a specific Drug Resistance form by uuid.
+
+    Parameters:
+        req (object): The request object.
+        patientuuid (str): The UUID of the Form.
+
+    Returns:
+        dict or None: A dict of TB03 form if exists , None otherwise.
+
+    """
+
     try:
         status, response = ru.get(req, f"mdrtb/drugresistance/{uuid}", {"v": "full"})
         if status:
@@ -740,6 +1001,23 @@ def get_drug_resistance_form_by_uuid(req, uuid):
 
 
 def create_update_drug_resistence_form(req, patientuuid, data, formid=None):
+    """
+    Creates or updates a Drug resistance Form for a specific patient.
+
+    Parameters:
+        req (object): The request object.
+        patientuuid (str): The UUID of the patient.
+        data (dict): The data for the TB03 form.
+        formid (str, optional): The UUID of the form to be updated. Defaults to None.
+
+    Returns:
+        bool: True if the TB03 form is successfully created or updated, False otherwise.
+
+    Raises:
+        Exception: If an error occurs while creating or updating the TB03 form.
+
+    """
+
     patient_program_uuid = req.session["current_patient_program_flow"][
         "current_program"
     ]["uuid"]
@@ -828,6 +1106,17 @@ def create_update_drug_resistence_form(req, patientuuid, data, formid=None):
 
 
 def remove_drug_resistance_duplicates(concepts, form_data):
+    """
+    Removes duplicate concepts from a Regimen form data.
+
+    Parameters:
+        concepts (dict): The dictionary of concepts.
+        form_data (dict): The form data containing the concepts.
+
+    Returns:
+        None
+    """
+
     clone_concepts = concepts.copy()
     remove_duplicate_concepts(
         clone_concepts.get("drugresistanceduringtreatment", []),
@@ -837,6 +1126,18 @@ def remove_drug_resistance_duplicates(concepts, form_data):
 
 
 def get_transfer_out_by_uuid(req, uuid):
+    """
+    Retrieves a specific Transfer out form by uuid.
+
+    Parameters:
+        req (object): The request object.
+        patientuuid (str): The UUID of the Form.
+
+    Returns:
+        dict or None: A dict of TB03 form if exists , None otherwise.
+
+    """
+
     try:
         status, response = ru.get(req, f"mdrtb/transferout/{uuid}", {"v": "full"})
         if status:
@@ -848,6 +1149,23 @@ def get_transfer_out_by_uuid(req, uuid):
 
 
 def create_update_tranfer_out_form(req, patientuuid, data, formid=None):
+    """
+    Creates or updates a Transfer out Form for a specific patient.
+
+    Parameters:
+        req (object): The request object.
+        patientuuid (str): The UUID of the patient.
+        data (dict): The data for the TB03 form.
+        formid (str, optional): The UUID of the form to be updated. Defaults to None.
+
+    Returns:
+        bool: True if the TB03 form is successfully created or updated, False otherwise.
+
+    Raises:
+        Exception: If an error occurs while creating or updating the TB03 form.
+
+    """
+
     patient_program_uuid = req.session["current_patient_program_flow"][
         "current_program"
     ]["uuid"]
@@ -915,6 +1233,16 @@ def create_update_tranfer_out_form(req, patientuuid, data, formid=None):
 
 
 def get_patient_site_of_TB(req, patientuuid):
+    """
+    Retrieves the site of TB for a patient.
+
+    Parameters:
+        req: The request object.
+        patientuuid (str): The UUID of the patient.
+
+    Returns:
+        dict: A dictionary containing the UUID and name of the site of TB.
+    """
     try:
         status, response = ru.get(
             req,

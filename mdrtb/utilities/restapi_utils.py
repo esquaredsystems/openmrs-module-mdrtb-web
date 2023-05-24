@@ -1,3 +1,9 @@
+"""
+This file contains functions for interacting with the REST API.
+It uses @handle_rest_exceptions decorator to handle any exceptions occured during the REST calls.
+"""
+
+
 import requests
 import base64
 from utilities import metadata_util as mu
@@ -13,6 +19,25 @@ logger = logging.getLogger("django")
 
 @handle_rest_exceptions
 def initiate_session(req, username, password):
+    """
+    Initiates a session by sending an HTTP GET request to the /session endpoint.
+
+
+    Parameters:
+    - req (object): The request object representing the incoming HTTP request.
+    - username (str): The username used for authentication.
+    - password (str): The password used for authentication.
+
+    Returns:
+    - bool: True if the session is initiated successfully, False otherwise.
+
+    Raises:
+    - Exception: If the credentials are invalid or an error occurs during the session initiation.
+
+    Example Usage:
+        initiate_session(req, "john_doe", "password123")
+
+    """
     encoded_credentials = base64.b64encode(
         f"{username}:{password}".encode("ascii")
     ).decode("ascii")
@@ -41,6 +66,9 @@ def initiate_session(req, username, password):
 
 
 def clear_session(req):
+    """
+    Clears any data associated with the session and creates a new session.
+    """
     try:
         query_params = req.session.get("redirect_query_params", {})
         redirect_url = (
@@ -63,6 +91,25 @@ def clear_session(req):
 
 @handle_rest_exceptions
 def get(req, endpoint, parameters):
+    """
+    Sends an HTTP GET request to a REST API endpoint.
+
+    Parameters:
+    - req (object): The request object representing the incoming HTTP request.
+    - endpoint (str): The endpoint of the REST API to send the GET request to.
+    - parameters (dict): Optional parameters to include in the GET request.
+
+    Returns:
+    - tuple: A tuple containing a boolean indicating the success of the request (True if successful),
+             and the JSON response from the endpoint.
+
+    Raises:
+    - Exception: If the session has expired, or if an error occurs during the GET request.
+
+    Example Usage:
+        get(request, "patients", {"name": "John Doe"})
+
+    """
     response = requests.get(
         url=REST_API_BASE_URL + endpoint,
         headers=get_auth_headers(req),
@@ -85,6 +132,25 @@ def get(req, endpoint, parameters):
 
 @handle_rest_exceptions
 def post(req, endpoint, data):
+    """
+    Sends an HTTP POST request to a REST API endpoint.
+
+    Parameters:
+    - req (object): The request object representing the incoming HTTP request.
+    - endpoint (str): The endpoint of the REST API to send the POST request to.
+    - data (dict): The JSON data to include in the POST request body.
+
+    Returns:
+    - tuple: A tuple containing a boolean indicating the success of the request (True if successful),
+             and the JSON response from the endpoint.
+
+    Raises:
+    - Exception: If an error occurs during the POST request, or if the response contains an error.
+
+    Example Usage:
+        post(request, "users", {"name": "John Doe", "email": "john@example.com"})
+
+    """
     response = requests.post(
         url=REST_API_BASE_URL + endpoint, headers=get_auth_headers(req), json=data
     )
@@ -103,6 +169,24 @@ def post(req, endpoint, data):
 
 @handle_rest_exceptions
 def delete(req, endpoint):
+    """
+    Sends an HTTP DELETE request to a REST API endpoint.
+
+    Parameters:
+    - req (object): The request object representing the incoming HTTP request.
+    - endpoint (str): The endpoint of the REST API to send the DELETE request to.
+
+    Returns:
+    - tuple: A tuple containing a boolean indicating the success of the request (True if successful),
+             and the response object from the DELETE request.
+
+    Raises:
+    - Exception: If an error occurs during the DELETE request.
+
+    Example Usage:
+         delete(request, "users/1")
+
+    """
     response = requests.delete(
         url=REST_API_BASE_URL + endpoint, headers=get_auth_headers(req)
     )
@@ -115,6 +199,19 @@ def delete(req, endpoint):
 
 
 def get_auth_headers(req):
+    """
+    Retrieves the authentication headers for a given request.
+
+    Parameters:
+    - req (object): The request object representing the incoming HTTP request.
+
+    Returns:
+    - dict: A dictionary containing the authentication headers.
+
+    Raises:
+    - Exception: If the required session data is missing or expired.
+
+    """
     try:
         headers = {
             "Authorization": "Basic {}".format(req.session["encoded_credentials"]),
