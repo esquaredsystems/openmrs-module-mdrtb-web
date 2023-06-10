@@ -11,6 +11,30 @@ from urllib.parse import urlencode
 
 def get_global_msgs(message_code, locale=None, default=None, source=None):
     # No messages file for en_GB
+    """
+    Retrieves a global message based on the provided message code.
+
+    It looks for the message code in different message files based on the locale, source, and default properties file names.
+    It uses the u.get_project_root function to determine the project root directory.
+
+    Parameters:
+    - message_code (str): The code of the message to retrieve.
+    - locale (str, optional): The locale code. Defaults to None.
+    - default (str, optional): The default value to return if the message code is not found. Defaults to None.
+    - source (str, optional): The source of the message. Can be "OpenMRS" or "commonlab". Defaults to None.
+
+    Returns:
+    - str: The retrieved global message.
+           Returns the message code itself if the corresponding message is not found.
+
+    Raises:
+    - Exception: If no message code is provided.
+
+    Example:
+        get_global_msgs("mdrtb.allCasesEnrolled", locale="en_US", source="OpenMRS")
+    "All cases enrolled"
+    """
+
     if message_code:
         value = ""
         dir = f"{u.get_project_root()}/resources"
@@ -52,12 +76,45 @@ def get_global_msgs(message_code, locale=None, default=None, source=None):
 
 
 def get_concept_from_cache(uuid):
+    """
+    Retrieves a concept from the cache based on the provided UUID.
+
+    Parameters:
+    - uuid (str): The UUID of the concept to retrieve.
+
+    Returns:
+    - tuple: A tuple consisting of a boolean value indicating the presence of the concept (True/False)
+             and the concept itself. If the concept is found, the boolean value is True and the concept is returned.
+             If the concept is not found, the boolean value is False and an empty dictionary is returned.
+
+    Example:
+        get_concept_from_cache("abc123")
+    (True, {"uuid": "abc123", "name": "Concept Name", ...})
+    """
     concepts = cache.get("concepts", [])
     concept = next((c for c in concepts if c["uuid"] == uuid), {})
     return bool(concept), concept
 
 
 def get_concept(req, uuid):
+    """
+    Retrieves a concept from the cache or by making a request to the server if not found in the cache.
+
+    Parameters:
+    - req: The request object.
+    - uuid (str): The UUID of the concept to retrieve.
+
+    Returns:
+    - dict: The retrieved concept as a dictionary.
+
+    Raises:
+    - Exception: If an error occurs while retrieving the concept.
+
+    Example:
+    >>> get_concept(request, "abc123")
+    {"uuid": "abc123", "name": "Concept Name", ...}
+    """
+
     found, concept = get_concept_from_cache(uuid)
     if found:
         return concept
@@ -75,6 +132,24 @@ def get_concept(req, uuid):
 
 
 def get_location(req, uuid):
+    """
+    Retrieves location information from the server based on the given UUID.
+
+    Parameters:
+    - req: The request object.
+    - uuid (str): The UUID of the location to retrieve.
+
+    Returns:
+    - dict: A dictionary containing the location information, including the location name and its parent location.
+
+    Raises:
+    - Exception: If an error occurs while retrieving the location.
+
+    Example:
+        get_location(request, "abc123")
+    {"location": "Location Name", "parent": "Parent Location Name"}
+    """
+
     try:
         status, response = ru.get(req, f"location/{uuid}", {})
         if status:
@@ -87,6 +162,20 @@ def get_location(req, uuid):
 
 
 def get_user(req, username):
+    """
+    Retrieves user information based on the provided username.
+
+    Parameters:
+        req (object): Request object representing the current request.
+        username (str): The username of the user to retrieve information for.
+
+    Returns:
+        dict: User information as a dictionary.
+
+    Raises:
+        Exception: If the request to retrieve user information fails.
+    """
+
     status, response = ru.get(req, "user", {"q": username, "v": "full"})
     if status:
         return response
@@ -95,6 +184,19 @@ def get_user(req, username):
 
 
 def get_patient_identifier_types(req):
+    """
+    Retrieves a list of patient identifier types.
+
+    Parameters:
+        req (Request): The request object.
+
+    Returns:
+        list: A list of patient identifier types, each represented as a dictionary with 'uuid' and 'name' fields.
+
+    Raises:
+        Exception: If patient identifier types cannot be found.
+    """
+
     status, response = ru.get(req, "patientidentifiertype", {"v": "custom:(uuid,name)"})
     if status:
         return response["results"]
@@ -103,6 +205,19 @@ def get_patient_identifier_types(req):
 
 
 def get_global_properties(req, key):
+    """
+    Retrieves the value of a global property.
+
+    Parameters:
+        req (Request): The request object.
+        key (str): The key of the global property.
+
+    Returns:
+        str: The value of the global property.
+
+    Raises:
+        Exception: If the global property cannot be found or an error occurs.
+    """
     try:
         status, response = ru.get(
             req, "systemsetting", {"q": key, "v": "custom:(value)"}
@@ -114,6 +229,17 @@ def get_global_properties(req, key):
 
 
 def check_if_user_has_privilege(req, privilege_to_check, user_privileges):
+    """
+    Checks if a user has a specific privilege.
+
+    Parameters:
+        req (Request): The request object.
+        privilege_to_check (str): The UUID of the privilege to check.
+        user_privileges (list): A list of user privileges.
+
+    Returns:
+        bool: True if the user has the privilege, False otherwise.
+    """
     # Check if user is admin grant all privileges
     if req.session["logged_user"]["user"]["systemId"] == "admin":
         return True
@@ -125,6 +251,16 @@ def check_if_user_has_privilege(req, privilege_to_check, user_privileges):
 
 
 def get_encounter_by_uuid(req, uuid):
+    """
+    Retrieves an encounter by its UUID.
+
+    Parameters:
+        req (Request): The request object.
+        uuid (str): The UUID of the encounter to retrieve.
+
+    Returns:
+        dict: The encounter information if found, None otherwise.
+    """
     try:
         status, response = ru.get(req, f"encounter/{uuid}", {"v": "full"})
         if status:
@@ -134,6 +270,20 @@ def get_encounter_by_uuid(req, uuid):
 
 
 def add_url_to_breadcrumb(req, name, query_params=None):
+    """
+    Adds a URL to the breadcrumb trail in the user's session.
+
+    Parameters:
+        req (Request): The request object.
+        name (str): The name or label for the breadcrumb.
+        query_params (dict, optional): Query parameters to include in the URL. Default is None.
+
+    Raises:
+        Exception: If there's an error while adding the URL to the breadcrumb.
+
+    Note:
+        The function modifies the `req.session` object to update the breadcrumb trail.
+    """
     try:
         breadcrumbs = req.session.get("breadcrumbs", [])
         url = req.path_info

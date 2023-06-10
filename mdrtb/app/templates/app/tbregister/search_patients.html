@@ -9,7 +9,7 @@
 
 {% if view_patients_privilege %}
 {% include 'app/components/nav.html' %}
-<div class="search-page-container">
+<div class="search-page-container scrollbar-hide">
   <div class="search-input-container">
 
     <div class="search-box">
@@ -27,12 +27,7 @@
 
 
     <div id="search-results" class="search-result-container">
-      <div id="search-results" class="search-results-box scrollbar-hide">
 
-
-
-
-      </div>
     </div>
 
     {% if add_patients_privilege %}
@@ -110,7 +105,7 @@
                 $('#search-results').append(
                   `
         <a href="${path}">
-          <div class="search-result-items">
+          <div class="search-result-items hover:bg-gray-800 hover:text-white transition-colors duration-200">
         <p>${data.results[i].identifiers[0].identifier}</p>
         <p class="text-wrap col-span-2">${data.results[i].person.display}</p>
         <p>${data.results[i].person.age}</p>
@@ -135,7 +130,15 @@
 
 
     $('#search-input').keyup(function (e) {
-      handleSearch(e.target.value)
+      if (e.target.value.length > minSearchCharacters) {
+        handleSearch(e.target.value)
+
+      } else {
+        $('#search-results').removeClass('flex')
+
+        $('#search-results').addClass('hidden')
+
+      }
     })
   </script>
 

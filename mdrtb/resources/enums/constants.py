@@ -32,3 +32,12 @@ class Constants(enum.Enum):
 
     # Location attribute Types
     LEVEL = "6b738ed1-78b3-4cdb-81f6-7fdc5da20a3d"
+
+    # Order Types
+    DRUG = "33ccf820-0370-102d-b0e3-001ec94a0cc1"
+    DRUG_ORDER = "131168f4-15f5-102d-96e4-000c29c2a5d7"
+    TEST_ORDER = "52a447d3-a64a-11e3-9aeb-50e549534c5e"
+
+    # Care Setting
+    OUTPATIENT = "6f0c9a92-6f24-11e3-af88-005056821db0"
+    INPATIENT = "c365e560-c3ec-11e3-9c1a-0800200c9a66"

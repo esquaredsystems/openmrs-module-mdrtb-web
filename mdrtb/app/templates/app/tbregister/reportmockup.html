@@ -1,32 +1,56 @@
-<tr>
-    <td>
-        &nbsp;</td>
-    <td>
-        15-17</td>
-    <td>
-        {{ table1.newPulmonaryBCDetected1517|sum:table1.newPulmonaryCDDetected1517|sum:table1.newExtrapulmonaryDetected1517 }}</td>
-    <td>
-        {{ table1.newPulmonaryBCEligible1517|sum:table1.newPulmonaryCDEligible1517|sum:
-        table1.newExtrapulmonaryEligible1517 }}</td>
-    <td>
-        {{ table1.newPulmonaryBCCured1517|sum:table1.newPulmonaryCDCured1517|sum:table1.newExtrapulmonaryCured1517 }}</td>
-    </td>
-    <td>
-        {{ table1.newPulmonaryBCCompleted1517|sum:table1.newPulmonaryCDCompleted1517|sum:table1.newExtrapulmonaryCompleted1517 }}</td>
-    <td>
-        {{ table1.newPulmonaryBCDiedTB1517|sum:table1.newPulmonaryCDDiedTB1517|sum:table1.newExtrapulmonaryDiedTB1517 }}</td>
-    <td>
-        {{ table1.newPulmonaryBCDiedNotTB1517|sum:table1.newPulmonaryCDDiedNotTB1517|sum:table1.newExtrapulmonaryDiedNotTB1517 }}</td>
-    <td>
-        {{ table1.newPulmonaryBCFailed1517|sum:table1.newPulmonaryCDFailed1517|sum:table1.newExtrapulmonaryFailed1517 }}</td>
-    <td>
-        {{ table1.newPulmonaryBCDefaulted1517|sum:table1.newPulmonaryCDDefaulted1517|sum:table1.newExtrapulmonaryDefaulted1517 }}</td>
-    <td>
-        {{ table1.newPulmonaryBCEligible1517|sum:table1.newPulmonaryCDEligible1517|sum:table1.newExtrapulmonaryEligible1517 }}</td>
-    <td>
-        {{ table1.newPulmonaryBCSLD1517|sum:table1.newPulmonaryCDSLD1517|sum:table1.newExtrapulmonarySLD1517}}</td>
-    <td>
-        {{ table1.newPulmonaryBCCanceled1517|sum:table1.newPulmonaryCDCanceled1517|sum:table1.newExtrapulmonaryCanceled1517 }}</td>
-    <td>
-        {{ table1.newPulmonaryBCDetected1517|sum:table1.newPulmonaryCDDetected1517|sum:table1.newExtrapulmonaryDetected1517|sub:table1.newPulmonaryBCEligible1517|sum:table1.newPulmonaryCDEligible1517|sum:table1.newExtrapulmonaryEligible1517|sum:table1.newPulmonaryBCSLD1517|sum:table1.newPulmonaryCDSLD1517|sum:table1.newExtrapulmonarySLD1517|sum:table1.newPulmonaryBCCanceled1517|sum:table1.newPulmonaryCDCanceled1517|sum:table1.newExtrapulmonaryCanceled1517}}</td>
-</tr>
+{% extends 'app/base/base.html' %}
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+
+{%block content%}
+
+{% if view_patients_privilege %}
+{% include 'app/components/nav.html' %}
+<div class="search-page-container scrollbar-hide">
+    <div class="search-input-container">
+
+        <div class="search-box">
+            <input class="search-page-input" type="text" id="search-input" name="search"
+                placeholder="{{'Patient.searchBox.placeholder' | get_message_openMRS:request.session.locale }}"
+                title="Enter 2 or more characters" />
+            <span class="cursor-pointer" onclick="handleSearch($('#search-input').val())">
+                <svg id="search-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+            </span>
+        </div>
+
+
+        <div id="search-results" class="search-result-container">
+            <div class="search-result-items font-bold">
+                <p>Identifier</p>
+                <p class="col-span-2">Given Name</p>
+                <p>Age</p>
+                <p>Gender</p>
+            </div>
+        </div>
+
+        {% if add_patients_privilege %}
+        <div class="patient-create-new-box">
+            <p>{{'PatientSearch.noneFound'|get_message_openMRS:request.session.locale}}? </p>
+            <a href="{% url 'enrollPatient' %}"><button
+                    class="button-primary">{{'Patient.create'|get_message_openMRS:request.session.locale}}</button></a>
+        </div>
+        {% endif %}
+    </div>
+
+
+
+</div>
+{% else %}
+<div class="search-page-container">
+    <h1>You dont have privileges to <strong><i>Search and Create Patients</i></strong> <a class="cancel-button"
+            href="{% url 'logout' %}">Logout</a></h1>
+</div>
+{% endif %}
+{% endblock %}

@@ -4,15 +4,16 @@
 
 <head>
 	<title>{% block title %}{{title}}{% endblock %}</title>
-	<link rel="icon" type="image/png" href="/static/app/imgs/openmrs-favicon.png">
+	<link rel="icon" type="image/png"
+		href="https://openmrs.org/wp-content/uploads/2021/07/cropped-OpenMRS-App-Logo-192x192.png">
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
 		integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
-	<link rel="stylesheet" href="/static/app/css/styles.css">
-	<script type="application/x-javascript" src="/static/index.min.js"></script>
-	<script type="application/x-javascript" src="https://code.jquery.com/jquery-3.6.1.js"></script>
+	<link rel="stylesheet" href="../../../static/app/css/styles.css">
+	<script type="text/javascript" src="../../../static/index.min.js"></script>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.1.js"></script>
 	<script src="https://cdn.lordicon.com/qjzruarw.js"></script>
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
@@ -42,7 +43,7 @@
 	{% for message in messages %}
 	{% if message.tags %}
 
-	<div class="left-0 animate-bounce transition-all duration-200 
+	<div class="left-0 animate-bounce transition-all duration-200 flex justify-center items-center space-x-2
 		alert 
 		{% if message.tags == 'error' %}
         alert-danger 
@@ -53,10 +54,11 @@
         {% elif message.tags == 'info' %}
         alert-info  alert-er
         {% endif %} 
-		m-4 w-fit flex-center space-x-4 ">
+		m-4 w-fit space-x-4 ">
 		<div>
 			{% if message.tags == 'error' %}
-			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+			<svg onclick="closeError()" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+				class="w-6 h-6 cursor-pointer">
 				<path fill-rule="evenodd"
 					d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z"
 					clip-rule="evenodd" />
@@ -83,21 +85,17 @@
 
 			{% endif %}
 		</div>
+
 		<div>{{message}}</div>
+
 	</div>
 	<script>
-		$('.alert-danger').each(() => {
-			setTimeout(() => {
-				$('.alert-danger').removeClass('left-0')
-				$('.alert-danger').addClass('-left-40')
+		function closeError() {
+			$('.alert-danger').removeClass('left-0')
+			$('.alert-danger').addClass('-left-40')
+			$('.alert-danger').remove()
+		}
 
-			}, 4000)
-			setTimeout(() => {
-				$('.alert-danger').remove()
-
-
-			}, 4100)
-		})
 		$('.alert-er').each(() => {
 			setTimeout(() => {
 				$('.alert-er').removeClass('left-0')
@@ -119,13 +117,13 @@
 
 
 
-	<div>
+	<div class="scrollbar-hide">
 		{%block content%}
 		{% endblock %}
 	</div>
-
 	<script>
-		var locationByUuids;
+
+		let locationByUuids;
 
 		const getLocations = async () => {
 			await $.ajax(
@@ -207,13 +205,11 @@
 			if (children.length > 0) {
 				for (district of children) {
 					if (district.level === 'district'.toUpperCase()) {
-
 						$('#district-select').prop('disabled', false)
 						$('#district-select').append(`<option value=${district.uuid}>${district.name}</option>`)
 					}
 					if (district.level === 'subregion'.toUpperCase()) {
 						$('#subregion-container').removeClass('hidden')
-
 						$('#subregion-select').prop('disabled', false)
 						$('#subregion-select').append(`<option value=${district.uuid}>${district.name}</option>`)
 					}

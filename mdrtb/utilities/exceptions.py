@@ -7,6 +7,25 @@ logger = logging.getLogger("django")
 
 
 def handle_rest_exceptions(func):
+    """
+
+    Decorator function for handling exceptions that may occur during REST API calls.
+
+    Parameters:
+    - func (function): The function to be decorated.
+
+    Returns:
+    - function: The decorated function.
+
+    Example Usage:
+
+    @handle_rest_exceptions
+    def my_function():
+        # Function implementation
+
+
+    """
+
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         try:

@@ -213,8 +213,8 @@
     <input type="button" onclick="tableToExcel('tb03', 'TB03')"
         value="{{'mdrtb.exportToExcelBtn'|get_message:request.session.locale}}" />
 
-    <input type="button" id="back" name="back" value="{{'mdrtb.back'|get_message:request.session.locale}}"
-        onclick="document.location.href='{{ pageContext.request.contextPath }}/module/mdrtb/mdrtbIndex.form';" />
+    <a href="javascript:history.go(-1)" type="button" id="back"
+        name="back">{{'mdrtb.back'|get_message:request.session.locale}}</a>
     <input type="button" onclick="printForm()" value="{{'mdrtb.print'|get_message:request.session.locale}}" />
     <script type="text/javascript">
         function printForm() {

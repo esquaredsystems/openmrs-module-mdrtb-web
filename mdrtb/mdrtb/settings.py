@@ -13,9 +13,9 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import mimetypes
 import os
-from dotenv import load_dotenv
+from django.core.management.utils import get_random_secret_key
 
-load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,12 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = get_random_secret_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '172.17.15.130']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '172.17.15.130','*']
 
 
 # Application definition
@@ -150,8 +150,8 @@ TAILWIND_APP_NAME = "theme"
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
-# NPM_BIN_PATH = "C:\Program Files\\nodejs\\npm.cmd"
-REST_API_BASE_URL = os.environ.get("REST_API_BASE_URL")
+REST_API_IP = "46.20.206.173:38080" if DEBUG else "172.17.15.130:8080"
+REST_API_BASE_URL = f"http://{REST_API_IP}/openmrs/ws/rest/v1/"
 
 mimetypes.add_type('text/css', '.css', True)
 mimetypes.add_type('text/html', '.html', True)
