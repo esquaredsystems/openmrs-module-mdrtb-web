@@ -27,11 +27,15 @@ def get_form_concepts(concept_ids, req):
             response = mu.get_concept(req, concept)
             if response:
                 answers = []
-                for answer in response["answers"]:
-                    answers.append({"uuid": answer["uuid"], "name": answer["display"]})
-                    concept_dict[
-                        response["display"].lower().replace(" ", "").replace("-", "")
-                    ] = answers
+                if response['answers']:
+                    for answer in response["answers"]:
+                        if answer['name'] and answer['name']['conceptNameType'] == "FULLY_SPECIFIED":
+                            answers.append({"uuid": answer["uuid"], "name": answer["name"].get("name","display")})
+                            concept_dict[
+                            response["name"]['name'].lower().replace(" ", "").replace("-", "")
+                            ] = answers
+                        else:
+                            continue
 
         except Exception as e:
             raise Exception(str(e))
@@ -535,7 +539,6 @@ def create_update_adverse_event(req, patientuuid, data, formid=None):
                 )
     try:
         url = f"mdrtb/adverseevents/{formid}" if formid else "mdrtb/adverseevents"
-        print(ae)
         status, response = ru.post(req, url, ae)
         if status:
             return True
@@ -1224,7 +1227,6 @@ def create_update_tranfer_out_form(req, patientuuid, data, formid=None):
         }
     try:
         url = f"mdrtb/transferout/{formid}" if formid else "mdrtb/transferout"
-        print(transfer_out)
         status, _ = ru.post(req, url, transfer_out)
         if status:
             return True

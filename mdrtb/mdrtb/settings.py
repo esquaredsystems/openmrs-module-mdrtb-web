@@ -25,10 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = get_random_secret_key()
+SECRET_KEY = "myitnu=(*35g9jf8arh2we$l!3+20c=)s0^52mqo5+aw6d50wg"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '172.17.15.130','*']
 
@@ -80,7 +80,6 @@ WSGI_APPLICATION = "mdrtb.wsgi.application"
 
 SESSIONS_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-SESSION_COOKIE_AGE = 1800
 
 CACHES = {
     "default": {
