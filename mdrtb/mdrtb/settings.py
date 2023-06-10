@@ -150,7 +150,7 @@ TAILWIND_APP_NAME = "theme"
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
-REST_API_IP = "172.17.15.130:8080" if DEBUG else "46.20.206.173:38080"
+REST_API_IP = "46.20.206.173:38080" if DEBUG else "172.17.15.130:8080"
 REST_API_BASE_URL = f"http://{REST_API_IP}/openmrs/ws/rest/v1/"
 
 mimetypes.add_type('text/css', '.css', True)
