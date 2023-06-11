@@ -2,8 +2,8 @@
 
 <header class="base-header">
     <div>
-        <a href="{% url 'searchPatientsView' %}"><img class="openmrs-logo" src="
-            /static/app/imgs/OpenMRS-full-logo.png" alt="OpemMRS logo" /></a>
+        <a href="{% url 'searchPatientsView' %}"><img class="openmrs-logo"
+                src="{% static 'app/imgs/OpenMRS-full-logo.png' %}" alt="OpemMRS logo" /></a>
     </div>
     <div class="navbar">
         {% if request.session.session_id %}

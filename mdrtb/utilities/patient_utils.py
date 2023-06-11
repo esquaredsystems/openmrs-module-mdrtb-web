@@ -1,7 +1,7 @@
 from utilities import common_utils as u
 from utilities import restapi_utils as ru
 from utilities import metadata_util as mu
-from utilities import formsutil as fu
+from utilities import forms_util as fu
 from resources.enums.constants import Constants
 from resources.enums.mdrtbConcepts import Concepts
 from resources.enums.encounterType import EncounterType
@@ -477,7 +477,7 @@ def get_enrolled_programs_by_patient(req, uuid, enrollment_id=None):
         raise Exception(e)
 
 
-def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
+def get_patient_dashboard_info(req, patientuuid, programuuid, is_mdrtb=None,get_lab_data=True):
     """
     Retrieves the dashboard information for a patient.
 
@@ -506,18 +506,20 @@ def get_patient_dashboard_info(req, patientuuid, programuuid, isMdrtb=None):
         transfer_out = fu.get_encounters_by_patient_and_type(
             req, patientuuid, EncounterType.TRANSFER_OUT.value
         )
-        lab_results_status, lab_results_response = ru.get(
-            req,
-            f"commonlab/labtestorder",
-            {
-                "patient": patientuuid,
-                "limit": 3,
-                "v": "custom:(uuid,labTestType,labReferenceNumber,order)",
-            },
-        )
-        if lab_results_status:
-            lab_results = lab_results_response["results"]
-        if isMdrtb:
+        lab_results = None
+        if get_lab_data:
+            lab_results_status, lab_results_response = ru.get(
+                req,
+                f"commonlab/labtestorder",
+                {
+                    "patient": patientuuid,
+                    "limit": 3,
+                    "v": "custom:(uuid,labTestType,labReferenceNumber,order)",
+                },
+            )
+            if lab_results_status:
+                lab_results = lab_results_response["results"]
+        if is_mdrtb:
             forms = {
                 "tb03us": fu.get_encounters_by_patient_and_type(
                     req, patientuuid, EncounterType.TB03u_MDR.value

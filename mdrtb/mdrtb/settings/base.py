@@ -13,26 +13,20 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import mimetypes
 import os
-from django.core.management.utils import get_random_secret_key
 
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = get_random_secret_key()
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '172.17.15.130','*']
 
 
+ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
@@ -48,13 +42,13 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "app.middleware.SessionCheckMiddleware",
 ]
 
 ROOT_URLCONF = "mdrtb.urls"
@@ -80,7 +74,6 @@ WSGI_APPLICATION = "mdrtb.wsgi.application"
 
 SESSIONS_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-SESSION_COOKIE_AGE = 1800
 
 CACHES = {
     "default": {
@@ -89,7 +82,11 @@ CACHES = {
     }
 }
 
-
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -150,42 +147,9 @@ TAILWIND_APP_NAME = "theme"
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
-REST_API_IP = "46.20.206.173:38080" if DEBUG else "172.17.15.130:8080"
-REST_API_BASE_URL = f"http://{REST_API_IP}/openmrs/ws/rest/v1/"
 
 mimetypes.add_type('text/css', '.css', True)
 mimetypes.add_type('text/html', '.html', True)
 mimetypes.add_type('text/javascript', '.js', True)
 
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False if DEBUG else True,
-    "handlers": {
-        "file": {
-            "level": "WARNING",
-            "class": "logging.FileHandler",
-            "filename": "../mdrtb/logs/django.log",
-            "formatter": "simple"
-
-        },
-        "console": {
-            "level": "INFO",
-            "class": "logging.StreamHandler",
-            "formatter": "simple"
-
-        }
-
-    },
-    "formatters": {
-        "simple": {
-            "format": "%(levelname)s, when = %(asctime)s, where = %(module)s.%(funcName)s, line_no = %(lineno)d, message = %(message)s",
-        },
-    },
-    "loggers": {
-        "django": {
-            "level": "INFO",
-            "handlers": ["file", "console"]
-        }
-    }
-}

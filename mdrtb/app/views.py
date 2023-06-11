@@ -5,10 +5,10 @@ import utilities.restapi_utils as ru
 import utilities.metadata_util as mu
 
 import utilities.commonlab_util as cu
-import utilities.patientutils as pu
-import utilities.formsutil as fu
+import utilities.patient_utils as pu
+import utilities.forms_util as fu
 import utilities.common_utils as util
-import utilities.locationsutil as lu
+import utilities.locations_util as lu
 
 import json
 
@@ -136,7 +136,6 @@ def get_concepts(req):
 def render_login(req):
     if check_if_session_alive(req):
         redirect_page = req.session.get("redirect_url")
-
         logger.info("Redirecting from login page")
 
         return redirect(redirect_page if redirect_page else "searchPatientsView")
@@ -613,7 +612,7 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
             forms,
             lab_results,
         ) = pu.get_patient_dashboard_info(
-            req, uuid, program, isMdrtb=True if mdrtb else False
+            req, uuid, program, is_mdrtb= mdrtb is not None, get_lab_data= False
         )
 
         req.session["current_patient_program_flow"] = {
@@ -675,7 +674,6 @@ def render_tb03_form(req, uuid):
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
         tb03_concepts = [
             Concepts.TREATMENT_CENTER_FOR_IP.value,
             Concepts.TREATMENT_CENTER_FOR_CP.value,
@@ -702,6 +700,7 @@ def render_tb03_form(req, uuid):
         return render(req, "app/tbregister/dots/tb03.html", context=context)
 
     except Exception as e:
+        logger.error(e,exc_info=True)
         messages.error(req, str(e))
 
         return redirect(req.session["redirect_url"])
