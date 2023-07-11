@@ -223,24 +223,6 @@
                 </div>
 
             </form>
-            <!-- {% if state == 'edit' %}
-            <form onsubmit="disableSubmit()" class="flex flex-col bg-white p-4 shadow-lg space-y-4 mt-4"
-                action="{% url 'retiretesttype' uuid=testType.uuid %}" method="post">
-                {% csrf_token %}
-
-                <div class="input-container -mt-3">
-                    <label class="w-1/6 text-[#9E9E9E] input-label"
-                        for="testname">{{'commonlabtest.labtestattributetype.void'|get_message_commonlab:request.session.locale}}</label>
-                    <input id="retireTestType" class="input form-control"
-                        placeholder="{{'general.retireReason'|get_message_commonlab:request.session.locale}}"
-                        type="text" name="Retire" required />
-                </div>
-                <button id="updateBtn" type="submit" class="button-primary  w-1/5">
-                    {{'commonlabtest.labtestattributetype.void'|get_message_commonlab:request.session.locale}}
-                </button>
-
-            </form>
-            {% endif %} -->
         </div>
     </div>
 </div>

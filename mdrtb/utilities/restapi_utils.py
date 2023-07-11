@@ -41,11 +41,9 @@ def initiate_session(req, username, password):
     encoded_credentials = base64.b64encode(
         f"{username}:{password}".encode("ascii")
     ).decode("ascii")
-    print(encoded_credentials)
     url = REST_API_BASE_URL + "session"
     headers = {"Authorization": f"Basic {encoded_credentials}"}
     response = requests.get(url, headers=headers)
-    print(response.json())
     if response.status_code == 200:
         if response.json()["authenticated"]:
             logger.info("User Authenticated")
@@ -53,7 +51,7 @@ def initiate_session(req, username, password):
             if "user" in response.json():
                 req.session["logged_user"] = response.json()
             req.session["encoded_credentials"] = encoded_credentials
-            req.session["locale"] = response.json()["locale"]
+            req.session["locale"] = response.json()["user"]["userProperties"]["defaultLocale"]
             return True
         else:
             logger.warning("Invalid credentials")

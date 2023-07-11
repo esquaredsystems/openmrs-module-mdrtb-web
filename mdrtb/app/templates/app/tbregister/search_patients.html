@@ -83,7 +83,7 @@
               $('#search-results').append(
                 `
       <div class="patient-notfound-box">
-        <h3>
+        <h3 class="text-xl">
           Could not find any patient according to your search
           </h3>
     </div>
@@ -94,19 +94,19 @@
 
               $('#search-results').append(
                 `<div class="search-result-items font-bold">
-      <p>Identifier</p>
-      <p class="col-span-2">Given Name</p>
-      <p>Age</p>
-      <p>Gender</p>
+      <p>{{'mdrtb.Identifier'|get_message:request.session.locale}}</p>
+      <p class="col-span-2">{{'mdrtb.givenname'|get_message:request.session.locale}}</p>
+      <p>{{'mdrtb.age'|get_message:request.session.locale}}</p>
+      <p>{{'mdrtb.gender'|get_message:request.session.locale}}</p>
     </div>`
               )
               for (i = 0; i < data.results.length; i++) {
                 const path = `patient/${data.results[i].uuid}/enrolledprograms`
                 $('#search-results').append(
                   `
-        <a href="${path}">
+        <a class="no-underline text-black" href="${path}">
           <div class="search-result-items hover:bg-gray-800 hover:text-white transition-colors duration-200">
-        <p>${data.results[i].identifiers[0].identifier}</p>
+        <p class="">${data.results[i].identifiers[0].identifier}</p>
         <p class="text-wrap col-span-2">${data.results[i].person.display}</p>
         <p>${data.results[i].person.age}</p>
         <p>${data.results[i].person.gender}</p>

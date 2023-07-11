@@ -33,10 +33,8 @@
                         for="">{{'options.default.locale'|get_message_openMRS:request.session.locale}}</label>
                     <select required class="input form-control" name="locale">
                         <option selected value="{{default_locale.value}}">{{default_locale.name}}</option>
-                        <option value="ru">Russian</option>
-                        <option value="tj">Tajik</option>
-                        {% for locale in allowed_locales %}
-                        <option disabled value="{{locale.value}}">{{locale.name}}</option>
+                        {% for locale in app_locales %}
+                        <option value="{{locale.value}}">{{locale.name}}</option>
                         {% endfor %}
                     </select>
                 </div>

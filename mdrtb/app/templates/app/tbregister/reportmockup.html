@@ -7,50 +7,41 @@
 
 {%block content%}
 
-{% if view_patients_privilege %}
-{% include 'app/components/nav.html' %}
-<div class="search-page-container scrollbar-hide">
-    <div class="search-input-container">
-
-        <div class="search-box">
-            <input class="search-page-input" type="text" id="search-input" name="search"
-                placeholder="{{'Patient.searchBox.placeholder' | get_message_openMRS:request.session.locale }}"
-                title="Enter 2 or more characters" />
-            <span class="cursor-pointer" onclick="handleSearch($('#search-input').val())">
-                <svg id="search-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                    stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                </svg>
-            </span>
-        </div>
-
-
-        <div id="search-results" class="search-result-container">
-            <div class="search-result-items font-bold">
-                <p>Identifier</p>
-                <p class="col-span-2">Given Name</p>
-                <p>Age</p>
-                <p>Gender</p>
+<div class="m-4">
+    <div id="accordionExample">
+        <div class="rounded-t-lg border border-neutral-200 bg-white text-black ">
+            <h2 class="mb-0" id="headingOne">
+                <button
+                    class="group relative flex w-full items-center rounded-t-[15px] border-0 bg-white text-black px-5 py-4 text-left text-base  transition [overflow-anchor:none] hover:z-[2] focus:z-[3] focus:outline-none "
+                    type="button" data-te-collapse-init data-te-target="#collapseOne" aria-expanded="true"
+                    aria-controls="collapseOne">
+                    Accordion Item #1
+                    <span
+                        class="ml-auto h-5 w-5 shrink-0 rotate-[-180deg] fill-[#336dec] transition-transform duration-200 ease-in-out group-[[data-te-collapse-collapsed]]:rotate-0 group-[[data-te-collapse-collapsed]]:fill-[#212529] motion-reduce:transition-none dark:fill-blue-300 dark:group-[[data-te-collapse-collapsed]]:fill-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="h-6 w-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </span>
+                </button>
+            </h2>
+            <div id="collapseOne" class="!visible" data-te-collapse-item data-te-collapse-show
+                aria-labelledby="headingOne" data-te-parent="#accordionExample">
+                <div class="px-5 py-4">
+                    <strong>This is the first item's accordion body.</strong> It is
+                    shown by default, until the collapse plugin adds the appropriate
+                    classes that we use to style each element. These classes control
+                    the overall appearance, as well as the showing and hiding via CSS
+                    transitions. You can modify any of this with custom CSS or
+                    overriding our default variables. It's also worth noting that just
+                    about any HTML can go within the <code>.accordion-body</code>,
+                    though the transition does limit overflow.
+                </div>
             </div>
         </div>
 
-        {% if add_patients_privilege %}
-        <div class="patient-create-new-box">
-            <p>{{'PatientSearch.noneFound'|get_message_openMRS:request.session.locale}}? </p>
-            <a href="{% url 'enrollPatient' %}"><button
-                    class="button-primary">{{'Patient.create'|get_message_openMRS:request.session.locale}}</button></a>
-        </div>
-        {% endif %}
     </div>
-
-
-
 </div>
-{% else %}
-<div class="search-page-container">
-    <h1>You dont have privileges to <strong><i>Search and Create Patients</i></strong> <a class="cancel-button"
-            href="{% url 'logout' %}">Logout</a></h1>
-</div>
-{% endif %}
+
+
 {% endblock %}

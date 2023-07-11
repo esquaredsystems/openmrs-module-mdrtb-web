@@ -423,7 +423,7 @@ def get_custom_attribute_for_labresults(req, orderid):
                             "name": attribute["name"],
                             "datatype": attribute["datatypeClassname"],
                             "inputType": datatype["inputType"],
-                            "group": attribute["groupName"],
+                            "group": "BLOOD_BANK",
                         }
                     )
 

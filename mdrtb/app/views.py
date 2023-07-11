@@ -70,25 +70,7 @@ def check_privileges(req, privileges_required):
 
 def index(req):
     # This is a test function
-
-    context = {"title": "Report"}
-
-    status, response = ru.get(
-        req,
-        "mdrtb/tb03report",
-        {
-            "year": 2021,
-            "month": 1,
-            "location": "d5f57138-dd5b-4528-aa9e-95db379fbd3a",
-        },
-    )
-
-    if status:
-        context["patientSet"] = response["results"]
-
-        context["json"] = json.dumps(response["results"])
-
-    return render(req, "app/reporting/tb03u_report.html", context=context)
+    return render(req, "app/tbregister/reportmockup.html")
 
 
 def get_locations(req):
@@ -612,7 +594,7 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
             forms,
             lab_results,
         ) = pu.get_patient_dashboard_info(
-            req, uuid, program, is_mdrtb= mdrtb is not None, get_lab_data= False
+            req, uuid, program, is_mdrtb= mdrtb is not None, get_lab_data= True
         )
 
         req.session["current_patient_program_flow"] = {
@@ -1472,25 +1454,46 @@ def render_user_profile(req):
     context = {"title": "User Profile"}
 
     if req.method == "POST":
-        req.session["locale"] = req.POST["locale"]
+        try:
+            req.session["locale"] = req.POST["locale"]
 
-        return redirect(req.session["redirect_url"])
+            logged_in_user_uuid = req.session['logged_user']['user']['uuid']
+
+            status,response = ru.post(req,f"user/{logged_in_user_uuid}",{
+                "userProperties" : {
+                    "defaultLocale" : req.POST["locale"]
+
+                }
+            })
+
+            return redirect(req.session["redirect_url"])
+        except Exception as e:
+            messages.error(req, str(e))
+
+            return redirect(req.session["redirect_url"])
+
 
     try:
+        
+        
         req.session["redirect_url"] = req.META.get("HTTP_REFERER")
 
-        default_locale = req.session.get("logged_user")["user"]["userProperties"][
-            "defaultLocale"
-        ]
+        default_locale = req.session["locale"]
 
-        allowed_locales = [
+        print(default_locale)
+
+        app_locales = ["en","en_GB","ru","tj"]
+        if default_locale in app_locales:
+                app_locales.remove(default_locale)
+
+        
+
+        allowed_locales_openmrs = [
             locale.strip()
             for locale in mu.get_global_properties(req, "locale.allowed.list").split(
                 ","
             )
         ]
-
-        allowed_locales.remove(default_locale)
 
         status, person = ru.get(
             req,
@@ -1501,11 +1504,14 @@ def render_user_profile(req):
         if status:
             context["person"] = person
 
-        context["allowed_locales"] = [
+        context["allowed_locales_openmrs"] = [
             {"name": Constants[locale.upper()].value, "value": locale}
-            for locale in allowed_locales
+            for locale in allowed_locales_openmrs
         ]
-
+        context["app_locales"] = [
+            {"name": Constants[locale.upper()].value, "value": locale}
+            for locale in app_locales
+        ]
         context["default_locale"] = {
             "name": Constants[default_locale.upper()].value,
             "value": default_locale,
@@ -2576,7 +2582,7 @@ def render_edit_lab_test(req, patientid, orderid):
                     "careSetting": req.POST["careSetting"],
                 },
             }
-
+            print(body)
             status, response = ru.post(req, f"commonlab/labtestorder/{orderid}", body)
 
             if status:
