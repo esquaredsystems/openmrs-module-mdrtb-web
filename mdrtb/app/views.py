@@ -98,15 +98,20 @@ def get_locations(req):
         return JsonResponse(data={})
 
 
-def get_concepts(req):
+def get_concepts(req,uuid=None):
     if not check_if_session_alive(req):
         return redirect("login")
 
     try:
-        q = req.GET["q"]
+        url = f'concept/{uuid}' if uuid else 'concept'
+        
+        params = {}
+        if 'q' in req.GET:
+            params['q'] = req.GET['q']
 
-        _, response = ru.get(req, "concept", parameters={"q": q})
+        _, response = ru.get(req, url, parameters=params)
 
+    
     except Exception as e:
         messages.error(req, e)
 

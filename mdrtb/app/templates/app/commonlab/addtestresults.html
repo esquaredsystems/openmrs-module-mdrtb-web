@@ -55,7 +55,19 @@
             </div>
           `
         );
-      } else {
+      } else if (attribute.inputType === 'select') {
+        $("#attributes-container").append(
+          ` <div class="input-container">
+            <label class="input-label">${attribute.name}</label>
+            <select name=${attribute.uuid} class="input">
+              <option>1</option>
+            </select>
+            </div>
+          `
+        );
+      }
+
+      else {
         $("#attributes-container").append(
           ` <div class="input-container">
             <label class="input-label">${attribute.name}</label>
@@ -132,7 +144,27 @@
             </div>
           `
         );
-      } else {
+      } else if (attribute.inputType === "select") {
+        $(`#${attribute.group.toLowerCase()}_body`).append(
+          ` <div class="input-container">
+            <label class="input-label">${attribute.name}</label>
+            <select id=${attribute.uuid} name=${attribute.uuid} class="input">
+              <option value="" selected>Select</option>
+            </select>
+            </div>
+          `
+        );
+        for (answer of attribute.answers) {
+          $(`#${attribute.uuid}`).append(
+            `<option value=${answer.uuid}>
+                  ${answer.display}  
+                </option>`
+          )
+        }
+
+      }
+
+      else {
         $(`#${attribute.group.toLowerCase()}_body`).append(
           ` <div class="input-container">
             <label class="input-label">${attribute.name}</label>
