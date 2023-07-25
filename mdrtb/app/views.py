@@ -98,20 +98,19 @@ def get_locations(req):
         return JsonResponse(data={})
 
 
-def get_concepts(req,uuid=None):
+def get_concepts(req, uuid=None):
     if not check_if_session_alive(req):
         return redirect("login")
 
     try:
-        url = f'concept/{uuid}' if uuid else 'concept'
-        
+        url = f"concept/{uuid}" if uuid else "concept"
+
         params = {}
-        if 'q' in req.GET:
-            params['q'] = req.GET['q']
+        if "q" in req.GET:
+            params["q"] = req.GET["q"]
 
         _, response = ru.get(req, url, parameters=params)
 
-    
     except Exception as e:
         messages.error(req, e)
 
@@ -599,7 +598,7 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
             forms,
             lab_results,
         ) = pu.get_patient_dashboard_info(
-            req, uuid, program, is_mdrtb= mdrtb is not None, get_lab_data= True
+            req, uuid, program, is_mdrtb=mdrtb is not None, get_lab_data=True
         )
 
         req.session["current_patient_program_flow"] = {
@@ -687,7 +686,7 @@ def render_tb03_form(req, uuid):
         return render(req, "app/tbregister/dots/tb03.html", context=context)
 
     except Exception as e:
-        logger.error(e,exc_info=True)
+        logger.error(e, exc_info=True)
         messages.error(req, str(e))
 
         return redirect(req.session["redirect_url"])
@@ -1462,14 +1461,13 @@ def render_user_profile(req):
         try:
             req.session["locale"] = req.POST["locale"]
 
-            logged_in_user_uuid = req.session['logged_user']['user']['uuid']
+            logged_in_user_uuid = req.session["logged_user"]["user"]["uuid"]
 
-            status,response = ru.post(req,f"user/{logged_in_user_uuid}",{
-                "userProperties" : {
-                    "defaultLocale" : req.POST["locale"]
-
-                }
-            })
+            status, response = ru.post(
+                req,
+                f"user/{logged_in_user_uuid}",
+                {"userProperties": {"defaultLocale": req.POST["locale"]}},
+            )
 
             return redirect(req.session["redirect_url"])
         except Exception as e:
@@ -1477,21 +1475,16 @@ def render_user_profile(req):
 
             return redirect(req.session["redirect_url"])
 
-
     try:
-        
-        
         req.session["redirect_url"] = req.META.get("HTTP_REFERER")
 
         default_locale = req.session["locale"]
 
         print(default_locale)
 
-        app_locales = ["en","en_GB","ru","tj"]
+        app_locales = ["en", "en_GB", "ru", "tj"]
         if default_locale in app_locales:
-                app_locales.remove(default_locale)
-
-        
+            app_locales.remove(default_locale)
 
         allowed_locales_openmrs = [
             locale.strip()

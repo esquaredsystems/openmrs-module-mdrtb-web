@@ -417,29 +417,29 @@ def get_custom_attribute_for_labresults(req, orderid):
                 if datatype["value"].replace(".name", "") == attribute[
                     "datatypeClassname"
                 ].replace(".name", ""):
-                    if datatype['inputType'] == 'select':
+                    if datatype["inputType"] == "select":
                         # The hard code UUID will change to datatype config
-                        concept = mu.get_concept(req,"5a83a85a-8287-4ae6-8807-681a97b97667")
+                        concept = mu.get_concept(req, attribute["datatypeConfig"])
                         attrs.append(
-                        {
-                            "uuid": attribute["uuid"],
-                            "name": attribute["name"],
-                            "datatype": attribute["datatypeClassname"],
-                            "inputType": datatype["inputType"],
-                            "answers" : concept['answers'],
-                            "group": "BLOOD_BANK",
-                        })
+                            {
+                                "uuid": attribute["uuid"],
+                                "name": attribute["name"],
+                                "datatype": attribute["datatypeClassname"],
+                                "inputType": datatype["inputType"],
+                                "answers": concept["answers"],
+                                "group": attribute["groupName"],
+                            }
+                        )
                     else:
                         attrs.append(
-                        {
-                            "uuid": attribute["uuid"],
-                            "name": attribute["name"],
-                            "datatype": attribute["datatypeClassname"],
-                            "inputType": datatype["inputType"],
-                            # "datatypeConfig" : datatype["datatypeConfig"],
-                            "group": "BLOOD_BANK",
-                        }
-                    )
+                            {
+                                "uuid": attribute["uuid"],
+                                "name": attribute["name"],
+                                "datatype": attribute["datatypeClassname"],
+                                "inputType": datatype["inputType"],
+                                "group": attribute["groupName"],
+                            }
+                        )
 
         return attrs, response["labTestType"]["uuid"]
 
