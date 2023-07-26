@@ -12,11 +12,13 @@
       <div class="input-container">
         <label class="input-label">Attachment</label>
         <input type="file"
-          class="ml-4 w-full text-sm rounded-md leading-6 file:bg-gray-200 file:text-black file:font-semi-bold file:border-none file:px-4 file:py-1 file:mr-6 file:border-gray-200 border border-gray-300" />
+          class="ml-4 w-full text-sm rounded-md leading-6 file:bg-gray-200 file:text-black file:font-semi-bold file:border-none file:px-4 file:py-1 file:mr-6 file:border-gray-200 border border-gray-300 cursor-pointer" />
       </div>
     </div>
 
+    <div id="results_accordions" class='flex flex-column-center space-y-8'>
 
+    </div>
 
   </form>
 </div>
@@ -26,7 +28,7 @@
   let groups = [];
   if (attributes.length <= 0) {
     let url = "{% url 'manageattr' uuid=testType %}";
-    $("#results-form").html(
+    $("#results_accordions").html(
       `
                <div class="m-10 space-y-6 flex flex-col items-center justify-center">
                 <h3 class="font-bold text-3xl">NO ATTRIBUTES FOUND</h3>
@@ -44,7 +46,7 @@
         $("#attributes-container").append(
           ` <div class="input-container">
             <label class="input-label">${attribute.name}</label>
-            <input type=${attribute.inputType} name=${attribute.uuid} />
+            <input class="relative float-left -ml-[1.5rem] mr-[6px] mt-[0.15rem] h-[1.125rem] w-[1.125rem] appearance-none rounded-[0.25rem] border-[0.125rem] border-solid border-neutral-300 outline-none before:pointer-events-none before:absolute before:h-[0.875rem] before:w-[0.875rem] before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-[0px_0px_0px_13px_transparent] before:content-[''] checked:border-primary checked:bg-primary checked:before:opacity-[0.16] checked:after:absolute checked:after:-mt-px checked:after:ml-[0.25rem] checked:after:block checked:after:h-[0.8125rem] checked:after:w-[0.375rem] checked:after:rotate-45 checked:after:border-[0.125rem] checked:after:border-l-0 checked:after:border-t-0 checked:after:border-solid checked:after:border-white checked:after:bg-transparent checked:after:content-[''] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:shadow-none focus:transition-[border-color_0.2s] focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] focus:after:absolute focus:after:z-[1] focus:after:block focus:after:h-[0.875rem] focus:after:w-[0.875rem] focus:after:rounded-[0.125rem] focus:after:content-[''] checked:focus:before:scale-100 checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:after:-mt-px checked:focus:after:ml-[0.25rem] checked:focus:after:h-[0.8125rem] checked:focus:after:w-[0.375rem] checked:focus:after:rotate-45 checked:focus:after:rounded-none checked:focus:after:border-[0.125rem] checked:focus:after:border-l-0 checked:focus:after:border-t-0 checked:focus:after:border-solid checked:focus:after:border-white checked:focus:after:bg-transparent dark:border-neutral-600 dark:checked:border-primary dark:checked:bg-primary dark:focus:before:shadow-[0px_0px_0px_13px_rgba(255,255,255,0.4)] dark:checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca]" type=${attribute.inputType} name=${attribute.uuid} />
             </div>
           `
         );
@@ -84,10 +86,10 @@
   let duplicatesRemovedGroups = [...new Set(groups)];
   for (group of duplicatesRemovedGroups) {
     let group_name = group.toLowerCase();
-    $("#results-form").append(
+    $("#results_accordions").append(
       `
-    <div id="${group_name}_accordian">
-      <div class="rounded-t-lg border border-neutral-200 bg-white text-black">
+    
+      <div id="${group_name}_accordian" class="rounded-t-lg border border-neutral-200 bg-white text-black">
         <h2 id="${group_name}_heading" class="mb-0">
           <button
             class="group relative flex w-full items-center rounded-t-[15px] border-0 bg-white text-black px-5 py-4 text-left text-base  transition [overflow-anchor:none] hover:z-[2] focus:z-[3] focus:outline-none "
@@ -103,8 +105,8 @@
             </span>
           </button>
         </h2>
-        <div id="${group_name}_collapse" class="!visible" data-te-collapse-item data-te-collapse-show aria-labelledby="headingOne"
-          data-te-parent="#${group_name}_accordian">
+        <div id="${group_name}_collapse" class="hidden" data-te-collapse-item aria-labelledby="${group_name}_heading"
+          data-te-parent="#results_accordions">
           <div id="${group_name}_body" class="px-5 py-4 flex flex-col justify-center space-y-4">
             
           </div>
@@ -119,7 +121,7 @@
 
 
 
-    </div>
+    
     
     
     
@@ -132,8 +134,8 @@
       if (attribute.inputType === "checkbox") {
         $(`#${attribute.group.toLowerCase()}_body`).append(
           ` <div class="input-container">
-            <label class="input-label">${attribute.name}</label>
-            <input type=${attribute.inputType} name=${attribute.uuid} />
+            <label style="width:50%;" class="input-label w-1/2">${attribute.name}</label>
+            <input style="background-color:blue;" class="" type=${attribute.inputType} name=${attribute.uuid} />
             </div>
           `
         );
@@ -178,7 +180,7 @@
   }
 
   if (attributes.length > 0) {
-    $("#results-form").append(
+    $("#results_accordions").append(
       `
         <div class="flex-center space-x-3">
             <input type="submit" class="button-primary w-1/5" value="Submit">
@@ -187,5 +189,6 @@
         `
     );
   }
+
 </script>
 {% endblock %}
