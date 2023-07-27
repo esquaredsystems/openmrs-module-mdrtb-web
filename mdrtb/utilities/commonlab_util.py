@@ -271,7 +271,7 @@ def get_test_groups_and_tests(req):
         tuple: A tuple containing two lists. The first list contains the lab tests, and the second list contains the test groups.
 
     """
-    status, response = ru.get(req, "commonlab/labtesttype", {})
+    status, response = ru.get(req, "commonlab/labtesttype", None)
     if status:
         test_groups = [test["testGroup"] for test in response["results"]]
 

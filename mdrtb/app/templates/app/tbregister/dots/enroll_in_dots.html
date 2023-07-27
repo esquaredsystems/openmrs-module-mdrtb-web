@@ -134,13 +134,13 @@
     <div class="flex items-center p-4 space-x-8">
       <button type="submit" id="submitBtn" class="button-primary w-1/5">
         {% if state == 'edit' %}
-        Save
+        {{'general.save'|get_message_openMRS:request.session.locale}}
         {% else %}
-        Enroll
+        {{'Program.enrollButton'|get_message_openMRS:request.session.locale}}
         {% endif %}
       </button>
       <a href="javascript:history.go(-1)" class="cancel-button">
-        Cancel
+        {{'general.cancel'|get_message_openMRS:request.session.locale}}
       </a>
     </div>
   </form>

@@ -2523,7 +2523,11 @@ def render_add_lab_test(req, uuid):
         encounters = pu.get_patient_encounters(req, uuid)
 
         labtests, testgroups = cu.get_test_groups_and_tests(req)
-
+        print("================================================")
+        print(labtests)
+        print("================================================")
+        print(testgroups)
+        print("================================================")
         if encounters:
             context["encounters"] = encounters["results"]
 
@@ -2852,24 +2856,16 @@ def render_add_test_results(req, orderid):
             }
 
             for key, value in req.POST.items():
+                if key == "csrfmiddlewaretoken":
+                    continue
                 if value:
-                    if value == "on":
-                        body["attributes"].append(
-                            {"attributeType": key, "valueReference": True}
-                        )
+                    body["attributes"].append(
+                        {"attributeType": key, "valueReference": value}
+                    )
 
-                    elif value == "off":
-                        body["attributes"].append(
-                            {"attributeType": key, "valueReference": False}
-                        )
-
-                    else:
-                        body["attributes"].append(
-                            {"attributeType": key, "valueReference": value}
-                        )
-
-            body["attributes"].pop(0)
-
+            print("================================================")
+            print(body)
+            print("================================================")
         else:
             messages.error(req, "Error creating the order")
 

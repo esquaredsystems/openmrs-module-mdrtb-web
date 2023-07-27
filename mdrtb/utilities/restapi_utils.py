@@ -51,7 +51,9 @@ def initiate_session(req, username, password):
             if "user" in response.json():
                 req.session["logged_user"] = response.json()
             req.session["encoded_credentials"] = encoded_credentials
-            req.session["locale"] = response.json()["user"]["userProperties"]["defaultLocale"]
+            req.session["locale"] = response.json()["user"]["userProperties"][
+                "defaultLocale"
+            ]
             return True
         else:
             logger.warning("Invalid credentials")
@@ -108,12 +110,16 @@ def get(req, endpoint, parameters):
         get(request, "patients", {"name": "John Doe"})
 
     """
+
+    if "commonlab" not in endpoint:
+        default_parameter = {"lang": req.session["locale"]}
+        parameters.update(default_parameter)
+
     response = requests.get(
         url=REST_API_BASE_URL + endpoint,
         headers=get_auth_headers(req),
         params=parameters,
     )
-    print("STATUS CODE: ", response.status_code)
     logger.info(f"'Making GET call to /{endpoint}'")
     if response.status_code == 403:
         session_expired_msg = mu.get_global_msgs("require.login", source="OpenMRS")

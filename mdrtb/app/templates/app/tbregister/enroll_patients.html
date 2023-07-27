@@ -99,20 +99,22 @@
           <input type="text" class="input form-control" name="causeofdeath" />
         </div>
       </div>
-      <div class="input-container">
+      <!-- <div class="input-container">
         <label class="input-label md:w-16" for="deceased">Voided</label>
         <input id="voided" type="checkbox" class="border-none shadow-sm cursor-pointer" name="voided" />
       </div>
       <div id="voided-container" class="input-container hidden">
         <label class="text-[#9E9E9E] font-bold" for="Reason to void">Reason to Void</label>
         <input type="text" class="input form-control" name="reasontovoid" />
-      </div>
+      </div> -->
     </div>
 
     <div class="flex-center">
-      <button type="submit" id="submitBtn" class="button-primary w-1/5">Register</button>
+      <button type="submit" id="submitBtn"
+        class="button-primary w-1/5">{{'Program.enrollButton'|get_message_openMRS:request.session.locale}}</button>
 
-      <a href="javascript:history.go(-1)" class="cancel-button"> Cancel </a>
+      <a href="javascript:history.go(-1)" class="cancel-button">
+        {{'general.cancel'|get_message_openMRS:request.session.locale}} </a>
     </div>
   </div>
 </form>

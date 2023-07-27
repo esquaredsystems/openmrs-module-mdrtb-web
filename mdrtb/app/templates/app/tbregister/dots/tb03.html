@@ -370,11 +370,12 @@
       </div>
       <div class="p-4 flex items-center">
         <button id="submitBtn" type="submit" class="button-primary w-1/5">
-          Save
+          {{'general.save'|get_message_openMRS:request.session.locale}}
         </button>
 
         <a href="javascript:history.go(-1)" class="cancel-button">
-          Cancel
+          {{'general.cancel'|get_message_openMRS:request.session.locale}}
+
         </a>
       </div>
     </div>

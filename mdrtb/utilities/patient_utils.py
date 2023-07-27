@@ -244,10 +244,10 @@ def enroll_patient_in_program(req, patientid, data):
                 "identifierType": data["identifierType"],
                 "location": data.get("facility", data.get("district", None)),
             }
+
             identifier_status, iden_response = ru.post(
                 req, f"patient/{patientid}/identifier", patient_identifier
             )
-
         status, response = ru.post(req, "programenrollment", program_body)
         if status:
             return response["uuid"]
@@ -477,7 +477,9 @@ def get_enrolled_programs_by_patient(req, uuid, enrollment_id=None):
         raise Exception(e)
 
 
-def get_patient_dashboard_info(req, patientuuid, programuuid, is_mdrtb=None,get_lab_data=True):
+def get_patient_dashboard_info(
+    req, patientuuid, programuuid, is_mdrtb=None, get_lab_data=True
+):
     """
     Retrieves the dashboard information for a patient.
 

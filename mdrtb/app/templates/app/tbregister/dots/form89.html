@@ -846,8 +846,11 @@
 
       </div>
       <div class="px-4 flex-center space-x-4">
-        <button type="submit" id="submitBtn" class="button-primary w-1/5">Save</button>
-        <a href="javascript:history.go(-1)" type="button" class="cancel-button">Cancel</button>
+        <button type="submit" id="submitBtn" class="button-primary w-1/5">
+          {{'general.save'|get_message_openMRS:request.session.locale}}</button>
+        <a href="javascript:history.go(-1)" type="button" class="cancel-button">
+          {{'general.cancel'|get_message_openMRS:request.session.locale}}
+          </button>
       </div>
     </div>
   </form>

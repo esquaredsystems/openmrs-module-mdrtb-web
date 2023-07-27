@@ -201,10 +201,14 @@
   <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
     <div class="flex items-center justify-between space-x-4">
       <div class="flex-center space-x-4">
-        <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.labResults'|get_message:request.session.locale}}
+        <h2 class="text-[#2D9CDB] text-3xl font-bold">
+          {{'mdrtb.lab'|get_message:request.session.locale}}
+          {{'Order.header'|get_message_openMRS:request.session.locale}}
         </h2>
         <a href="{% url 'managetestorders' uuid=uuid %}" class="cancel-button">
-          View All Lab Tests
+          {{'general.view'|get_message_openMRS:request.session.locale}}
+          {{'mdrtb.all'|get_message:request.session.locale}}
+          {{'Order.header'|get_message_openMRS:request.session.locale}}
         </a>
       </div>
 

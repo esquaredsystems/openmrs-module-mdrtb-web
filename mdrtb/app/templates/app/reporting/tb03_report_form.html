@@ -32,9 +32,12 @@
 			</select>
 		</div>
 		<div class="flex-center space-x-4 mt-4">
-			<button type="submit" id="submitBtn" class="button-primary w-1/5">Submit</button>
+			<button type="submit" id="submitBtn"
+				class="button-primary w-1/5">{{'general.submit'|get_message_openMRS:request.session.locale}}</button>
 
-			<a href="javascript:history.go(-1)" class="cancel-button"> Cancel </a>
+			<a href="javascript:history.go(-1)" class="cancel-button">
+				{{'general.cancel'|get_message_openMRS:request.session.locale}}
+			</a>
 		</div>
 
 	</form>

@@ -88,7 +88,8 @@
     </div>
     <div class="flex items-center p-4 space-x-4">
       <button type="submit" id="submitBtn" class="button-primary w-1/5">
-        Submit
+        {{'general.submit'|get_message_openMRS:request.session.locale}}
+
       </button>
       <a href="javascript:history.go(-1)" type="button" class="cancel-button">
         Cancel
