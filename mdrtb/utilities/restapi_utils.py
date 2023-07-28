@@ -111,10 +111,6 @@ def get(req, endpoint, parameters):
 
     """
 
-    if "commonlab" not in endpoint:
-        default_parameter = {"lang": req.session["locale"]}
-        parameters.update(default_parameter)
-
     response = requests.get(
         url=REST_API_BASE_URL + endpoint,
         headers=get_auth_headers(req),

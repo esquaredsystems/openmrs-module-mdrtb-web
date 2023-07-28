@@ -96,7 +96,7 @@ def get_concept_from_cache(uuid):
     return bool(concept), concept
 
 
-def get_concept(req, uuid,lang='en'):
+def get_concept(req, uuid, lang=None):
     """
     Retrieves a concept from the cache or by making a request to the server if not found in the cache.
 
@@ -120,7 +120,7 @@ def get_concept(req, uuid,lang='en'):
         return concept
     try:
         status, response = ru.get(
-            req, f"concept/{uuid}", {"v": "full", "lang": lang}
+            req, f"concept/{uuid}", {"v": "full", "lang": req.session["locale"]}
         )
         if status:
             concepts = cache.get("concepts", [])

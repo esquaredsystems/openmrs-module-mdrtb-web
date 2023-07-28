@@ -1,13 +1,18 @@
 import requests
+from django.core.cache import cache
 
 from django.http import JsonResponse
 
 from . import restapi_utils as ru
 
 from . import common_utils as u
+import logging
 
 import utilities.metadata_util as mu
+import utilities.common_utils as utils
 from resources.enums.mdrtbConcepts import Concepts
+
+logger = logging.getLogger("django")
 
 
 def get_commonlab_concepts_by_type(req, type):
@@ -179,16 +184,18 @@ def get_attributes_of_labtest(req, uuid):
         Exception: If there is an error retrieving the attributes.
 
     """
+    attribute_types = cache.get("attribute_types")
+    if not attribute_types:
+        status, data = ru.get(
+            req, "commonlab/labtestattributetype", {"testTypeUuid": uuid, "v": "full"}
+        )
+        if status:
+            attribute_types = sorted(data["results"], key=lambda x: x["sortWeight"])
+            cache.set("attribute_types", attribute_types, timeout=None)
 
-    status, data = ru.get(
-        req, "commonlab/labtestattributetype", {"testTypeUuid": uuid, "v": "full"}
-    )
-    if status:
-        sortedAttr = sorted(data["results"], key=lambda x: x["sortWeight"])
-
-        return sortedAttr
-    else:
-        raise Exception(data["error"]["message"])
+        else:
+            raise Exception(data["error"]["message"])
+    return attribute_types
 
 
 def add_edit_test_type(req, data, url):
@@ -400,7 +407,6 @@ def get_custom_attribute_for_labresults(req, orderid):
         Exception: If an error occurs while retrieving the custom attributes.
 
     """
-    context = {"title": "Add Test Results"}
 
     datatypes = get_attributes_data_types()
 
@@ -418,7 +424,6 @@ def get_custom_attribute_for_labresults(req, orderid):
                     "datatypeClassname"
                 ].replace(".name", ""):
                     if datatype["inputType"] == "select":
-                        # The hard code UUID will change to datatype config
                         concept = mu.get_concept(req, attribute["datatypeConfig"])
                         attrs.append(
                             {
@@ -441,7 +446,86 @@ def get_custom_attribute_for_labresults(req, orderid):
                             }
                         )
 
-        return attrs, response["labTestType"]["uuid"]
+        return attrs
 
     except Exception as e:
         raise Exception(e)
+
+
+def get_result_date_if_exists(req, orderid):
+    try:
+        status, response = ru.get(
+            req, f"commonlab/labtestorder/{orderid}", {"v": "custom:(attributes)"}
+        )
+        if status:
+            if response:
+                attribute_status, attribute_response = ru.get(
+                    req,
+                    f"commonlab/labtestattribute/{response[0]['uuid']}",
+                    {"v": "full"},
+                )
+                if attribute_status:
+                    result_date = attribute_response["auditInfo"]["dateCreated"]
+                    return result_date
+            return None
+
+    except Exception as e:
+        raise Exception(str(e))
+
+
+def get_labtest_attributes(req, orderid):
+    attributes = []
+    try:
+        status, response = ru.get(req, f"commonlab/labtestorder/{orderid}", {})
+        datatypes = get_attributes_data_types()
+        attribute_types = get_attributes_of_labtest(
+            req, response["labTestType"]["uuid"]
+        )
+        for attribute in response["attributes"]:
+            for attribute_type in attribute_types:
+                if attribute["attributeType"]["uuid"] == attribute_type["uuid"]:
+                    for datatype in datatypes:
+                        if (
+                            datatype["value"].replace(".name", "")
+                            == attribute_type["datatypeClassname"]
+                        ):
+                            if datatype["inputType"] == "select":
+                                concept = mu.get_concept(
+                                    req, attribute_type["datatypeConfig"]
+                                )
+                                attributes.append(
+                                    {
+                                        "uuid": attribute["uuid"],
+                                        "valueReference": attribute["valueReference"],
+                                        "attributeType": {
+                                            "uuid": attribute_type["uuid"],
+                                            "name": attribute_type["name"],
+                                            "datatype": attribute_type[
+                                                "datatypeClassname"
+                                            ],
+                                            "inputType": datatype["inputType"],
+                                            "answers": concept["answers"],
+                                            "group": attribute_type["groupName"],
+                                        },
+                                    }
+                                )
+                            else:
+                                attributes.append(
+                                    {
+                                        "uuid": attribute["uuid"],
+                                        "valueReference": attribute["valueReference"],
+                                        "attributeType": {
+                                            "uuid": attribute_type["uuid"],
+                                            "name": attribute_type["name"],
+                                            "datatype": attribute_type[
+                                                "datatypeClassname"
+                                            ],
+                                            "inputType": datatype["inputType"],
+                                            "group": attribute_type["groupName"],
+                                        },
+                                    }
+                                )
+        return attributes
+    except Exception as e:
+        logger.info(str(e), exc_info=True)
+        raise Exception(str(e))

@@ -19,7 +19,7 @@ SECRET_KEY = "y^ie20@y6-(23i!+m(-&*w6&#&j()5pe4k$klp6*p&95-d*x$%"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -125,10 +125,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_ROOT = BASE_DIR / "static"
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     BASE_DIR / "app/static",
-    BASE_DIR / "theme/node_modules/tw-elements/dist/js/"
+    BASE_DIR / "theme/node_modules/tw-elements/dist/js/",
 ]
 
 # Default primary key field type
@@ -141,9 +141,9 @@ INTERNAL_IPS = [
 ]
 REST_API_BASE_URL = "http://46.20.206.173:38080/openmrs/ws/rest/v1/"
 
-mimetypes.add_type('text/css', '.css', True)
-mimetypes.add_type('text/html', '.html', True)
-mimetypes.add_type('text/javascript', '.js', True)
+mimetypes.add_type("text/css", ".css", True)
+mimetypes.add_type("text/html", ".html", True)
+mimetypes.add_type("text/javascript", ".js", True)
 
 
 LOGGING = {
@@ -154,26 +154,18 @@ LOGGING = {
             "level": "WARNING",
             "class": "logging.FileHandler",
             "filename": "../mdrtb/logs/django.log",
-            "formatter": "simple"
-
+            "formatter": "simple",
         },
         "console": {
             "level": "INFO",
             "class": "logging.StreamHandler",
-            "formatter": "simple"
-
-        }
-
+            "formatter": "simple",
+        },
     },
     "formatters": {
         "simple": {
             "format": "%(levelname)s, when = %(asctime)s, where = %(module)s.%(funcName)s, line_no = %(lineno)d, message = %(message)s",
         },
     },
-    "loggers": {
-        "django": {
-            "level": "INFO",
-            "handlers": ["file", "console"]
-        }
-    }
+    "loggers": {"django": {"level": "INFO", "handlers": ["file", "console"]}},
 }

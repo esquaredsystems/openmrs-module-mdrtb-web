@@ -129,7 +129,7 @@ def remove_given_str_from_obj_arr(arr, str, call=None):
         return temp
 
 
-def remove_obj_from_objarr(obj, uuid_to_remove, key=None):
+def remove_obj_from_objarr(objs, uuid_to_remove, key=None):
     """
     Removes an object from an array of objects based on a specified UUID.
 
@@ -143,10 +143,10 @@ def remove_obj_from_objarr(obj, uuid_to_remove, key=None):
                    If the object is not found, returns None.
 
     """
-    for item in obj[:]:
+    for item in objs[:]:
         if key and key in item and item[key] == uuid_to_remove:
-            obj.remove(item)
-            return obj
+            objs.remove(item)
+            return objs
 
     return None
 

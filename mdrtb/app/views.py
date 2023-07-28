@@ -2460,6 +2460,10 @@ def render_managetestorders(req, uuid):
             },
         )
 
+        # # result_date = cu.get_result_date_if_exists(req, orderid)
+        # if result_date:
+        #     context["result_date"] = result_date
+
         if status:
             context["orders"] = response["results"]
 
@@ -2849,7 +2853,7 @@ def render_add_test_results(req, orderid):
 
         if status:
             body = {
-                "order": laborder["uuid"],
+                "order": laborder["order"]["uuid"],
                 "labReferenceNumber": laborder["labReferenceNumber"],
                 "labTestType": laborder["labTestType"]["uuid"],
                 "attributes": [],
@@ -2858,14 +2862,25 @@ def render_add_test_results(req, orderid):
             for key, value in req.POST.items():
                 if key == "csrfmiddlewaretoken":
                     continue
-                if value:
+                if value.strip():
                     body["attributes"].append(
-                        {"attributeType": key, "valueReference": value}
+                        {
+                            "labTest": laborder["uuid"],
+                            "attributeType": key,
+                            "valueReference": value,
+                        }
                     )
+            try:
+                status, response = ru.post(
+                    req, f"commonlab/labtestorder/{orderid}", body
+                )
+                if status:
+                    return redirect(req.session["redirect_url"])
+            except Exception as e:
+                logger.error(e, exc_info=True)
+                messages.error(req, str(e))
+                return redirect(req.session["redirect_url"])
 
-            print("================================================")
-            print(body)
-            print("================================================")
         else:
             messages.error(req, "Error creating the order")
 
@@ -2876,11 +2891,19 @@ def render_add_test_results(req, orderid):
 
         mu.add_url_to_breadcrumb(req, context["title"])
 
-        attributes, testType = cu.get_custom_attribute_for_labresults(req, orderid)
+        status, response = ru.get(
+            req, f"commonlab/labtestorder/{orderid}", {"v": "custom:(attributes)"}
+        )
+        if status and len(response) > 0:
+            context["state"] = "edit"
+            attributes = cu.get_labtest_attributes(req, orderid)
+            if attributes:
+                context["attributes"] = json.dumps(attributes)
 
-        context["attributes"] = json.dumps(attributes)
+        else:
+            attributes = cu.get_custom_attribute_for_labresults(req, orderid)
 
-        context["testType"] = testType
+            context["attributes"] = json.dumps(attributes)
 
     except Exception as e:
         messages.error(req, e)
@@ -2888,6 +2911,17 @@ def render_add_test_results(req, orderid):
         return redirect("managetestorders", uuid=req.GET["patient"])
 
     return render(req, "app/commonlab/addtestresults.html", context=context)
+
+
+def render_edit_test_results(req, orderid):
+    try:
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+
+        attributes = cu.get_labtest_attributes(req, orderid)
+    except Exception as e:
+        messages.error(req, e)
+
+        return redirect(req.session["redirect_url"])
 
 
 def render_logout(req):
