@@ -1,11 +1,11 @@
 {% load static %}
 
 {% if request.session.session_id %}
-<div class="flex  justify-center  rounded-lg w-fit items-center mx-auto p-2 ">
+<div style="margin-top: 2rem;" class="flex  justify-center  rounded-lg w-fit items-center mx-auto p-2">
   <div>
     <div class="relative" data-te-dropdown-ref>
       <button
-        class="flex items-center space-x-4 rounded px-6 pt-2.5 pb-2 text-sm  transition duration-150 ease-in-out font-bold"
+        class="flex items-center space-x-4 rounded px-6 pt-2.5 pb-2 text-md  transition duration-150 ease-in-out font-bold"
         type="button" id="dropdownGeneral" data-te-dropdown-toggle-ref aria-expanded="false" data-te-ripple-init
         data-te-ripple-color="light">
         {{'mdrtb.general'|get_message:request.session.locale}}
@@ -31,7 +31,7 @@
   <div>
     <div class="relative" data-te-dropdown-ref>
       <button
-        class="flex items-center space-x-4 rounded px-6 pt-2.5 pb-2 text-sm font-bold transition duration-150 ease-in-out"
+        class="flex items-center space-x-4 rounded px-6 pt-2.5 pb-2 text-md  font-bold transition duration-150 ease-in-out"
         type="button" id="dropdownDotsReports" data-te-dropdown-toggle-ref aria-expanded="false" data-te-ripple-init
         data-te-ripple-color="light">
         {{'mdrtb.dotsreports'|get_message:request.session.locale}}
@@ -81,7 +81,7 @@
   <div>
     <div class="relative" data-te-dropdown-ref>
       <button
-        class="flex items-center space-x-4 rounded px-6 pt-2.5 pb-2 text-sm font-bold transition duration-150 ease-in-out"
+        class="flex items-center space-x-4 rounded px-6 pt-2.5 pb-2 text-md  font-bold transition duration-150 ease-in-out"
         type="button" id="dropdownMdrReports" data-te-dropdown-toggle-ref aria-expanded="false" data-te-ripple-init
         data-te-ripple-color="light">
         {{'mdrtb.mdrreports'|get_message:request.session.locale}}
@@ -124,7 +124,7 @@
   <div>
     <div class="relative" data-te-dropdown-ref>
       <button
-        class="flex items-center space-x-4 rounded px-6 pt-2.5 pb-2 text-sm font-bold transition duration-150 ease-in-out"
+        class="flex items-center space-x-4 rounded px-6 pt-2.5 pb-2 text-md  font-bold transition duration-150 ease-in-out"
         type="button" id="dropdownOtherReports" data-te-dropdown-toggle-ref aria-expanded="false" data-te-ripple-init
         data-te-ripple-color="light">
         {{'mdrtb.otherreports'|get_message:request.session.locale}}

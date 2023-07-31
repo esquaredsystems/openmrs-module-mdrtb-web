@@ -5,6 +5,7 @@
   <h1 class="primary-heading">
     {{'commonlabtest.result.add'|get_message_commonlab:request.session.locale}}
   </h1>
+
   <form id="results-form" class="m-10 flex-column-center space-y-8"
     action="{% url 'addtestresults' orderid=orderid %}?patient={{request.GET.patient}}" method="post">
     {% csrf_token %}
@@ -47,25 +48,25 @@
         if (attribute.attributeType.inputType === "checkbox") {
           $("#attributes-container").append(
             ` <div class="input-container">
-            <label class="input-label">${attribute.name}</label>
-            <input value=${attribute.valueReference} class="" type=${attribute.inputType} name=${attribute.uuid} />
+            <label class="input-label">${attribute.attributeType.uuid}</label>
+            <input value=${attribute.attributeType.valueReference} class="" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} />
             </div>
           `
           );
         } else if (attribute.attributeType.inputType === "textarea") {
           $("#attributes-container").append(
             ` <div class="input-container">
-            <label class="input-label">${attribute.name}</label>
-            <textarea  class="input" type=${attribute.attributeType.inputType} name=${attribute.uuid}>${attribute.valueReference}</textarea>
+            <label class="input-label">${attribute.attributeType.name}</label>
+            <textarea  class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid}>${attribute.attributeType.valueReference}</textarea>
             </div>
           `
           );
         } else if (attribute.attributeType.inputType === 'select') {
           $("#attributes-container").append(
             ` <div class="input-container">
-            <label class="input-label">${attribute.name}</label>
-            <select name=${attribute.uuid} class="input">
-              <option selected >${attribute.valueReference}</option>
+            <label class="input-label">${attribute.attributeType.name}</label>
+            <select name=${attribute.attributeType.uuid} class="input">
+              <option selected >${attribute.attributeType.valueReference}</option>
             </select>
             </div>
           `
@@ -75,8 +76,8 @@
         else {
           $("#attributes-container").append(
             ` <div class="input-container">
-            <label class="input-label">${attribute.name}</label>
-            <input class="input" type=${attribute.attributeType.inputType} name=${attribute.uuid} /input>
+            <label class="input-label">${attribute.attributeType.name}</label>
+            <input class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} /input>
             </div>
           `
           );
@@ -183,16 +184,16 @@
         if (attribute.attributeType.inputType === "checkbox") {
           $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
             ` <div class="input-container">
-            <label style="width:50%;" class="input-label w-1/2">${attribute.name}</label>
-            <input value=${attribute.valueReference} style="background-color:blue;" class="" type=${attribute.attributeType.inputType} name=${attribute.uuid} />
+            <label style="width:50%;" class="input-label w-1/2">${attribute.attributeType.name}</label>
+            <input value=${attribute.valueReference ? attribute.valueReference : false}style="background-color:blue;" class="" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} />
             </div>
           `
           );
         } else if (attribute.attributeType.inputType === "textarea") {
           $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
             ` <div class="input-container">
-            <label class="input-label">${attribute.name}</label>
-            <textarea class="input" type=${attribute.attributeType.inputType} name=${attribute.uuid}>${attribute.valueReference} </textarea>
+            <label class="input-label">${attribute.attributeType.name}</label>
+            <textarea class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid}>${attribute.valueReference && ""}</textarea>
             </div>
           `
           );
@@ -200,7 +201,7 @@
           $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
             ` <div class="input-container">
             <label class="input-label">${attribute.attributeType.name}</label>
-            <select id=${attribute.attributeType.uuid} name=${attribute.uuid} class="input">
+            <select id=${attribute.attributeType.uuid} name=${attribute.attributeType.uuid} class="input">
               <option value="" selected>Select</option>
             </select>
             </div>
@@ -216,7 +217,7 @@
               )
             } else {
               $(`#${attribute.attributeType.uuid}`).append(
-                `<option selected value=${answer.uuid}>
+                `<option value=${answer.uuid}>
                     ${answer.display}  
                   </option>`
               )
@@ -229,7 +230,7 @@
           $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
             ` <div class="input-container">
             <label class="input-label">${attribute.attributeType.name}</label>
-            <input value=${attribute.valueReference} class="input" type=${attribute.attributeType.inputType} name=${attribute.uuid} /input>
+            <input value=${attribute.valueReference ? attribute.valueReference : `''`} class="input form-control" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} />
             </div>
           `
           );
@@ -238,35 +239,35 @@
     }
   } else {
     for (attribute of attributes) {
-      if (attribute.group != null) {
-        if (attribute.inputType === "checkbox") {
-          $(`#${attribute.group.toLowerCase()}_body`).append(
+      if (attribute.attributeType.group != null) {
+        if (attribute.attributeType.inputType === "checkbox") {
+          $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
             ` <div class="input-container">
-            <label style="width:50%;" class="input-label w-1/2">${attribute.name}</label>
-            <input style="background-color:blue;" class="" type=${attribute.inputType} name=${attribute.uuid} />
+            <label style="width:50%;" class="input-label w-1/2">${attribute.attributeType.name}</label>
+            <input style="background-color:blue;" class="" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} />
             </div>
           `
           );
-        } else if (attribute.inputType === "textarea") {
-          $(`#${attribute.group.toLowerCase()}_body`).append(
+        } else if (attribute.attributeType.inputType === "textarea") {
+          $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
             ` <div class="input-container">
-            <label class="input-label">${attribute.name}</label>
-            <textarea class="input" type=${attribute.inputType} name=${attribute.uuid}> </textarea>
+            <label class="input-label">${attribute.attributeType.name}</label>
+            <textarea class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid}></textarea>
             </div>
           `
           );
         } else if (attribute.inputType === "select") {
-          $(`#${attribute.group.toLowerCase()}_body`).append(
+          $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
             ` <div class="input-container">
-            <label class="input-label">${attribute.name}</label>
-            <select id=${attribute.uuid} name=${attribute.uuid} class="input">
+            <label class="input-label">${attribute.attributeType.name}</label>
+            <select id=${attribute.attributeType.uuid} name=${attribute.attributeType.uuid} class="input">
               <option value="" selected>Select</option>
             </select>
             </div>
           `
           );
-          for (answer of attribute.answers) {
-            $(`#${attribute.uuid}`).append(
+          for (answer of attribute.attributeType.answers) {
+            $(`#${attribute.attributeType.uuid}`).append(
               `<option value=${answer.uuid}>
                   ${answer.display}  
                 </option>`
@@ -276,10 +277,10 @@
         }
 
         else {
-          $(`#${attribute.group.toLowerCase()}_body`).append(
+          $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
             ` <div class="input-container">
-            <label class="input-label">${attribute.name}</label>
-            <input class="input" type=${attribute.inputType} name=${attribute.uuid} /input>
+            <label class="input-label">${attribute.attributeType.name}</label>
+            <input class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} /input>
             </div>
           `
           );

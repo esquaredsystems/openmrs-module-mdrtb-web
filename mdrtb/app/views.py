@@ -98,6 +98,28 @@ def get_locations(req):
         return JsonResponse(data={})
 
 
+def change_locale(req, locale):
+    locale = locale
+    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+    try:
+        req.session["locale"] = locale
+
+        logged_in_user_uuid = req.session["logged_user"]["user"]["uuid"]
+
+        status, response = ru.post(
+            req,
+            f"user/{logged_in_user_uuid}",
+            {"userProperties": {"defaultLocale": locale}},
+        )
+
+        return redirect(req.session["redirect_url"])
+    except Exception as e:
+        messages.error(req, str(e))
+
+        return redirect(req.session["redirect_url"])
+    return redirect(req.session["redirect_url"])
+
+
 def get_concepts(req, uuid=None):
     if not check_if_session_alive(req):
         return redirect("login")
@@ -2870,6 +2892,9 @@ def render_add_test_results(req, orderid):
                             "valueReference": value,
                         }
                     )
+            print("================================")
+            print(body)
+            print("================================")
             try:
                 status, response = ru.post(
                     req, f"commonlab/labtestorder/{orderid}", body

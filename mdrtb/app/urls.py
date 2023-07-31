@@ -7,6 +7,7 @@ urlpatterns = [
     path("locations", views.get_locations, name="locations"),
     path("concepts", views.get_concepts, name="concepts"),
     path("concepts/<str:uuid>", views.get_concepts, name="conceptsbyuuid"),
+    path("changelocale/<str:locale>", views.change_locale, name="changelocale"),
     path("search", views.search_patients_query, name="search"),
     path(
         "tbdashboard/patient/<str:uuid>",
