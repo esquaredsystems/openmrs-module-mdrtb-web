@@ -477,103 +477,6 @@ def get_result_date_if_exists(req, orderid):
         raise Exception(str(e))
 
 
-# def get_labtest_attributes(req, orderid):
-#     attributes = []
-#     try:
-#         status, response = ru.get(req, f"commonlab/labtestorder/{orderid}", {})
-#         datatypes = get_attributes_data_types()
-#         attribute_types = get_attributes_of_labtest(
-#             req, response["labTestType"]["uuid"]
-#         )
-#         for attribute in response["attributes"]:
-#             for attribute_type in attribute_types:
-#                 for datatype in datatypes:
-#                     if (
-#                         datatype["value"].replace(".name", "")
-#                         == attribute_type["datatypeClassname"]
-#                     ):
-#                         if datatype["inputType"] == "select":
-#                             concept = mu.get_concept(
-#                                 req, attribute_type["datatypeConfig"]
-#                             )
-#                             if (
-#                                 attribute_type["uuid"]
-#                                 == attribute["attributeType"]["uuid"]
-#                             ):
-#                                 attributes.append(
-#                                     {
-#                                         "uuid": attribute["uuid"],
-#                                         "valueReference": attribute["valueReference"],
-#                                         "attributeType": {
-#                                             "uuid": attribute_type["uuid"],
-#                                             "name": attribute_type["name"],
-#                                             "datatype": attribute_type[
-#                                                 "datatypeClassname"
-#                                             ],
-#                                             "inputType": datatype["inputType"],
-#                                             "answers": concept["answers"],
-#                                             "group": attribute_type["groupName"],
-#                                         },
-#                                     }
-#                                 )
-#                             else:
-#                                 attributes.append(
-#                                     {
-#                                         "uuid": attribute["uuid"],
-#                                         "attributeType": {
-#                                             "uuid": attribute_type["uuid"],
-#                                             "name": attribute_type["name"],
-#                                             "datatype": attribute_type[
-#                                                 "datatypeClassname"
-#                                             ],
-#                                             "inputType": datatype["inputType"],
-#                                             "answers": concept["answers"],
-#                                             "group": attribute_type["groupName"],
-#                                         },
-#                                     }
-#                                 )
-#                         else:
-#                             if (
-#                                 attribute_type["uuid"]
-#                                 == attribute["attributeType"]["uuid"]
-#                             ):
-#                                 attributes.append(
-#                                     {
-#                                         "uuid": attribute["uuid"],
-#                                         "valueReference": attribute["valueReference"],
-#                                         "attributeType": {
-#                                             "uuid": attribute_type["uuid"],
-#                                             "name": attribute_type["name"],
-#                                             "datatype": attribute_type[
-#                                                 "datatypeClassname"
-#                                             ],
-#                                             "inputType": datatype["inputType"],
-#                                             "group": attribute_type["groupName"],
-#                                         },
-#                                     }
-#                                 )
-#                             else:
-#                                 attributes.append(
-#                                     {
-#                                         "uuid": attribute["uuid"],
-#                                         "attributeType": {
-#                                             "uuid": attribute_type["uuid"],
-#                                             "name": attribute_type["name"],
-#                                             "datatype": attribute_type[
-#                                                 "datatypeClassname"
-#                                             ],
-#                                             "inputType": datatype["inputType"],
-#                                             "group": attribute_type["groupName"],
-#                                         },
-#                                     }
-#                                 )
-
-#         return attributes
-#     except Exception as e:
-#         logger.info(str(e), exc_info=True)
-#         raise Exception(str(e))
-
-
 def get_labtest_attributes(req, orderid):
     attribute_types = get_custom_attribute_for_labresults(req, orderid)
     status, response = ru.get(req, f"commonlab/labtestorder/{orderid}", {})
@@ -583,5 +486,6 @@ def get_labtest_attributes(req, orderid):
                 attribute["attributeType"]["uuid"]
                 == attribute_type["attributeType"]["uuid"]
             ):
-                attribute_type.update({"valueReference": attribute["valueReference"]})
+                attribute_type["uuid"] = attribute["uuid"]
+                attribute_type["valueReference"] = attribute["valueReference"]
     return attribute_types

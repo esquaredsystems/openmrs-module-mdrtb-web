@@ -197,8 +197,16 @@ def search_patients_query(req):
 def render_search_patients_view(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
-    context = {"title": "Search Patients"}
+    title = (
+        mu.get_global_msgs(
+            "general.search", locale=req.session["locale"], source="OpenMRS"
+        )
+        + " "
+        + mu.get_global_msgs(
+            "general.patient", locale=req.session["locale"], source="OpenMRS"
+        )
+    )
+    context = {"title": title}
 
     privileges_required = [
         Privileges.VIEW_PATIENTS,
@@ -244,7 +252,10 @@ def render_enroll_patient(req):
             return redirect("searchPatientsView")
 
     try:
-        context = {"title": "Enroll new Patient"}
+        title = mu.get_global_msgs(
+            "mdrtb.enrollNewPatient", locale=req.session["locale"]
+        )
+        context = {"title": title}
 
         privileges_required = [Privileges.ADD_PATIENTS]
 
@@ -276,9 +287,17 @@ def render_enrolled_programs(req, uuid):
 
     if not check_if_session_alive(req):
         return redirect("login")
-
+    title = (
+        mu.get_global_msgs(
+            "Program.enrolled", locale=req.session["locale"], source="openMRS"
+        )
+        + " "
+        + mu.get_global_msgs(
+            "Program.header", locale=req.session["locale"], source="openMRS"
+        )
+    )
     context = {
-        "title": "Enrolled Programs",
+        "title": title,
         "uuid": uuid,
         "dots_program": Constants.DOTS_PROGRAM.value,
     }
@@ -316,8 +335,10 @@ def render_enroll_in_dots_program(req, uuid):
 
     if not check_if_session_alive(req):
         return redirect("login", permanent=True)
-
-    context = {"title": "Add a new Program", "uuid": uuid}
+    title = mu.get_global_msgs(
+        "Program.add", locale=req.session["locale"], source="openMRS"
+    )
+    context = {"title": title, "uuid": uuid}
 
     if req.method == "POST":
         try:
@@ -375,8 +396,10 @@ def render_enroll_in_dots_program(req, uuid):
 
 def render_enroll_patient_in_mdrtb(req, uuid):
     privileges_required = [Privileges.ADD_PATIENT_PROGRAMS]
-
-    context = {"title": "Enroll in MDRTB Program", "uuid": uuid}
+    title = mu.get_global_msgs(
+        "mdrtb.enrollment.enrollMdrtb", locale=req.session["locale"]
+    )
+    context = {"title": title, "uuid": uuid}
 
     if req.method == "POST":
         try:
@@ -469,7 +492,8 @@ def render_edit_dots_program(req, uuid, programid):
             return redirect("enrolledprograms", uuid=uuid)
 
     try:
-        context = {"title": "Edit Program", "uuid": uuid, "state": "edit"}
+        title = mu.get_global_msgs("mdrtb.editProgram", locale=req.session["locale"])
+        context = {"title": title, "uuid": uuid, "state": "edit"}
 
         context.update(check_privileges(req, privileges_required))
 
@@ -530,7 +554,8 @@ def render_edit_mdrtb_program(req, uuid, programid):
             return redirect("enrolledprograms", uuid=uuid)
 
     try:
-        context = {"title": "Edit Program", "uuid": uuid, "state": "edit"}
+        title = mu.get_global_msgs("mdrtb.editProgram", locale=req.session["locale"])
+        context = {"title": title, "uuid": uuid, "state": "edit"}
 
         context.update(check_privileges(req, privileges_required))
 
@@ -598,8 +623,11 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
     req.session["redirect_query_params"] = query_params
 
     program = req.GET["program"]
+    mu.get_global_msgs(
+        "Patient.dashboard.title", locale=req.session["locale"], source="openMRS"
+    )
 
-    context = {"uuid": uuid, "title": "Patient Dashboard"}
+    context = {"uuid": uuid, "title": title}
 
     try:
         context.update(check_privileges(req, privileges_required))
@@ -694,10 +722,10 @@ def render_tb03_form(req, uuid):
         ]
 
         concepts = fu.get_form_concepts(tb03_concepts, req)
-
+        title = mu.get_global_msgs("mdrtb.tb03", locale=req.session["locale"])
         context = {
             "concepts": concepts,
-            "title": "TB03",
+            "title": title,
             "uuid": uuid,
             "current_patient_program_flow": req.session["current_patient_program_flow"],
             "identifiers": pu.get_patient_identifiers(req, uuid),
@@ -736,9 +764,13 @@ def render_edit_tb03_form(req, uuid, formid):
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
+        title = (
+            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+            + " "
+            + mu.get_global_msgs("mdrtb.tb03", locale=req.session["locale"])
+        )
         context = {
-            "title": "Edit TB03",
+            "title": title,
             "state": "edit",
             "uuid": uuid,
             "current_patient_program_flow": req.session["current_patient_program_flow"],
@@ -836,9 +868,9 @@ def render_tb03u_form(req, uuid):
         ]
 
         concepts = fu.get_form_concepts(tb03u_concepts, req)
-
+        ttile = mu.get_global_msgs("mdrtb.tb03u", locale=req.session["locale"])
         context = {
-            "title": "TB03u",
+            "title": title,
             "concepts": concepts,
             "json": json.dumps(concepts),
             "uuid": uuid,
@@ -879,9 +911,13 @@ def render_edit_tb03u_form(req, uuid, formid):
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
+        title = (
+            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+            + " "
+            + mu.get_global_msgs("mdrtb.tb03u", locale=req.session["locale"])
+        )
         context = {
-            "title": "Edit TB03",
+            "title": title,
             "state": "edit",
             "uuid": uuid,
             "current_patient_program_flow": req.session["current_patient_program_flow"],
@@ -968,9 +1004,9 @@ def render_adverse_events_form(req, patientid):
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
+        title = mu.get_global_msgs("mdrtb.pv.aeForm", locale=req.session["locale"])
         context = {
-            "title": "Add Adverse Event",
+            "title": title,
             "patient_id": patientid,
             "current_patient_program_flow": req.session["current_patient_program_flow"],
             "constants": {
@@ -1040,9 +1076,13 @@ def render_edit_adverse_events_form(req, patientid, formid):
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
+        title = (
+            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+            + " "
+            + mu.get_global_msgs("mdrtb.pv.aeForm", locale=req.session["locale"])
+        )
         context = {
-            "title": "Edit Adverse Event",
+            "title": title,
             "patient_id": patientid,
             "state": "edit",
             "current_patient_program_flow": req.session["current_patient_program_flow"],
@@ -1132,9 +1172,9 @@ def render_drug_resistence_form(req, patientid):
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
 
         drug_resistance_concepts = [Concepts.DRUG_RESISTANCE_DURING_TREATMENT.value]
-
+        title = mu.get_global_msgs("mdrtb.drdt", locale=req.session["locale"])
         context = {
-            "title": "Drug Resistense",
+            "title": title,
             "concepts": fu.get_form_concepts(drug_resistance_concepts, req),
             "patient_id": patientid,
         }
@@ -1170,7 +1210,12 @@ def render_edit_drug_resistence_form(req, patientid, formid):
             return redirect(req.session["redirect_url"], permanent=True)
 
     try:
-        context = {"title": "Drug Resistanse", "patient_id": patientid, "state": "edit"}
+        title = (
+            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+            + " "
+            + mu.get_global_msgs("mdrtb.drdt", locale=req.session["locale"])
+        )
+        context = {"title": title, "patient_id": patientid, "state": "edit"}
 
         context.update(check_privileges(req, privileges_required))
 
@@ -1244,9 +1289,9 @@ def render_regimen_form(req, patientid):
             Concepts.FUNDING_SOURCE.value,
             Concepts.SLD_REGIMEN_TYPE.value,
         ]
-
+        title = mu.get_global_msgs("mdrtb.pv.regimenForm", locale=req.session["locale"])
         context = {
-            "title": "Regimen Form",
+            "title": title,
             "concepts": fu.get_form_concepts(concept_ids, req),
             "current_patient_program_flow": req.session["current_patient_program_flow"],
         }
@@ -1293,9 +1338,13 @@ def render_edit_regimen_form(req, patientid, formid):
         ]
 
         form = fu.get_regimen_by_uuid(req, formid)
-
+        title = title = (
+            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+            + " "
+            + mu.get_global_msgs("mdrtb.pv.regimenForm", locale=req.session["locale"])
+        )
         context = {
-            "title": "Regimen Form",
+            "title": title,
             "concepts": fu.remove_regimen_duplicates(
                 fu.get_form_concepts(concept_ids, req), form
             ),
@@ -1353,9 +1402,9 @@ def render_form_89(req, uuid):
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
+        title = mu.get_global_msgs("mdrtb.form89", locale=req.session["locale"])
         context = {
-            "title": "Form 89",
+            "title": title,
             "uuid": uuid,
             "current_patient_program_flow": req.session["current_patient_program_flow"],
             "identifiers": pu.get_patient_identifiers(req, uuid),
@@ -1417,9 +1466,13 @@ def render_edit_form_89(req, uuid, formid):
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
+        title = (
+            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+            + " "
+            + mu.get_global_msgs("mdrtb.form89", locale=req.session["locale"])
+        )
         context = {
-            "title": "Edit Form 89",
+            "title": title,
             "state": "edit",
             "uuid": uuid,
             "current_patient_program_flow": req.session["current_patient_program_flow"],
@@ -1477,7 +1530,8 @@ def render_delete_form_89(req, formid):
 
 
 def render_user_profile(req):
-    context = {"title": "User Profile"}
+    title = mu.get_global_msgs("options.title", locale=req.session["locale"])
+    context = {"title": title}
 
     if req.method == "POST":
         try:
@@ -1566,8 +1620,8 @@ def render_transferout_form(req, patientuuid):
 
     else:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
-        context = {"title": "Transfer Out", "patientuuid": patientuuid}
+        title = mu.get_global_msgs("mdrtb.transferOut", locale=req.session["locale"])
+        context = {"title": title, "patientuuid": patientuuid}
 
         mu.add_url_to_breadcrumb(req, context["title"])
 
@@ -1599,9 +1653,13 @@ def render_edit_transferout_form(req, patientuuid, formid):
         form = fu.get_transfer_out_by_uuid(req, formid)
 
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
+        title = (
+            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+            + " "
+            + mu.get_global_msgs("mdrtb.transferOut", locale=req.session["locale"])
+        )
         context = {
-            "title": "Edit Transfer Out",
+            "title": title,
             "patientuuid": patientuuid,
             "state": "edit",
         }
@@ -1640,11 +1698,11 @@ def render_delete_transferout_form(req, formid):
 def render_patient_list(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
+    title = mu.get_global_msgs("mdrtb.patientLists", locale=req.session["locale"])
     context = {
         "months": util.get_months(),
         "quarters": util.get_quarters(),
-        "title": "Patient List",
+        "title": title,
     }
 
     if req.method == "POST":
@@ -1699,9 +1757,9 @@ def render_patient_list(req):
 def render_tb03_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
+    title = mu.get_global_msgs("mdrtb.tb03Parameters", locale=req.session["locale"])
     context = {
-        "title": "TB03 Export",
+        "title": title,
         "months": util.get_months(),
         "quarters": util.get_quarters(),
     }
@@ -1773,9 +1831,9 @@ def render_tb03_report(req):
 def render_tb03u_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
+    title = mu.get_global_msgs("mdrtb.tb03uParameters", locale=req.session["locale"])
     context = {
-        "title": "TB03u Export",
+        "title": title,
         "months": util.get_months(),
         "quarters": util.get_quarters(),
     }
@@ -1847,9 +1905,9 @@ def render_tb03u_report(req):
 def render_form89_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
+    title = mu.get_global_msgs("mdrtb.form89Parameters", locale=req.session["locale"])
     context = {
-        "title": "Form89 Export",
+        "title": title,
         "months": util.get_months(),
         "quarters": util.get_quarters(),
     }
@@ -1921,9 +1979,9 @@ def render_form89_report(req):
 def render_tb08_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
+    title = mu.get_global_msgs("mdrtb.tb08Parameters", locale=req.session["locale"])
     context = {
-        "title": "TB08 Export",
+        "title": title,
         "months": util.get_months(),
         "quarters": util.get_quarters(),
     }
@@ -2002,9 +2060,9 @@ def render_tb08_report(req):
 def render_tb08u_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
+    title = mu.get_global_msgs("mdrtb.tb08uParameters", locale=req.session["locale"])
     context = {
-        "title": "TB08u Export",
+        "title": title,
         "months": util.get_months(),
         "quarters": util.get_quarters(),
     }
@@ -2083,9 +2141,9 @@ def render_tb08u_report(req):
 def render_tb07u_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
+    title = mu.get_global_msgs("mdrtb.tb07uParameters", locale=req.session["locale"])
     context = {
-        "title": "TB07u Export",
+        "title": title,
         "months": util.get_months(),
         "quarters": util.get_quarters(),
     }
@@ -2871,6 +2929,7 @@ def render_add_test_results(req, orderid):
     context = {"title": "Add Test Results", "orderid": orderid}
 
     if req.method == "POST":
+        state = req.POST["state"] if "state" in req.POST else None
         status, laborder = ru.get(req, f"commonlab/labtestorder/{orderid}", {})
 
         if status:
@@ -2884,7 +2943,20 @@ def render_add_test_results(req, orderid):
             for key, value in req.POST.items():
                 if key == "csrfmiddlewaretoken":
                     continue
+                if key == "state":
+                    continue
                 if value.strip():
+                    if state:
+                        for attribute in laborder["attributes"]:
+                            if attribute["attributeType"]["uuid"] == key:
+                                body["attributes"].append(
+                                    {
+                                        "uuid": attribute["uuid"],
+                                        "labTest": laborder["uuid"],
+                                        "attributeType": key,
+                                        "valueReference": value,
+                                    }
+                                )
                     body["attributes"].append(
                         {
                             "labTest": laborder["uuid"],
@@ -2892,10 +2964,10 @@ def render_add_test_results(req, orderid):
                             "valueReference": value,
                         }
                     )
-            print("================================")
-            print(body)
-            print("================================")
             try:
+                # print("================================")
+                # print(body)
+                # print("================================")
                 status, response = ru.post(
                     req, f"commonlab/labtestorder/{orderid}", body
                 )
@@ -2919,7 +2991,7 @@ def render_add_test_results(req, orderid):
         status, response = ru.get(
             req, f"commonlab/labtestorder/{orderid}", {"v": "custom:(attributes)"}
         )
-        if status and len(response) > 0:
+        if status and len(response["attributes"]) > 0:
             context["state"] = "edit"
             attributes = cu.get_labtest_attributes(req, orderid)
             if attributes:
@@ -2927,7 +2999,7 @@ def render_add_test_results(req, orderid):
 
         else:
             attributes = cu.get_custom_attribute_for_labresults(req, orderid)
-
+            print(len(attributes))
             context["attributes"] = json.dumps(attributes)
 
     except Exception as e:

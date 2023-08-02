@@ -276,7 +276,12 @@ def get_program_by_uuid(req, uuid):
     """
     try:
         status, response = ru.get(
-            req, f"program/{uuid}", {"v": "custom:(uuid,name,retired,allWorkflows)"}
+            req,
+            f"program/{uuid}",
+            {
+                "v": "custom:(uuid,name,retired,allWorkflows)",
+                "lang": req.session["locale"],
+            },
         )
         if status:
             return response
