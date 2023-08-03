@@ -428,7 +428,8 @@ def get_enrolled_programs_by_patient(req, uuid, enrollment_id=None):
                 req,
                 f"programenrollment/{enrollment_id}",
                 {
-                    "v": "custom:(uuid,program,states,dateEnrolled,dateCompleted,location,outcome)"
+                    "v": "custom:(uuid,program,states,dateEnrolled,dateCompleted,location,outcome)",
+                    "lang": req.session["locale"],
                 },
             )
             if status:
@@ -453,7 +454,9 @@ def get_enrolled_programs_by_patient(req, uuid, enrollment_id=None):
 
     try:
         status, response = ru.get(
-            req, "programenrollment", {"patient": uuid, "v": representation}
+            req,
+            "programenrollment",
+            {"patient": uuid, "v": representation, "lang": req.session["locale"]},
         )
         if status:
             if len(response["results"]) <= 0:

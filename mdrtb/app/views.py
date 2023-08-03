@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.http import JsonResponse
 import utilities.restapi_utils as ru
 import utilities.metadata_util as mu
+from django.core.cache import cache
 
 import utilities.commonlab_util as cu
 import utilities.patient_utils as pu
@@ -103,6 +104,7 @@ def change_locale(req, locale):
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
     try:
         req.session["locale"] = locale
+        cache.delete("concepts")
 
         logged_in_user_uuid = req.session["logged_user"]["user"]["uuid"]
 
@@ -289,11 +291,11 @@ def render_enrolled_programs(req, uuid):
         return redirect("login")
     title = (
         mu.get_global_msgs(
-            "Program.enrolled", locale=req.session["locale"], source="openMRS"
+            "Program.enrolled", locale=req.session["locale"], source="OpenMRS"
         )
         + " "
         + mu.get_global_msgs(
-            "Program.header", locale=req.session["locale"], source="openMRS"
+            "Program.header", locale=req.session["locale"], source="OpenMRS"
         )
     )
     context = {
@@ -336,7 +338,7 @@ def render_enroll_in_dots_program(req, uuid):
     if not check_if_session_alive(req):
         return redirect("login", permanent=True)
     title = mu.get_global_msgs(
-        "Program.add", locale=req.session["locale"], source="openMRS"
+        "Program.add", locale=req.session["locale"], source="OpenMRS"
     )
     context = {"title": title, "uuid": uuid}
 
@@ -623,8 +625,8 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
     req.session["redirect_query_params"] = query_params
 
     program = req.GET["program"]
-    mu.get_global_msgs(
-        "Patient.dashboard.title", locale=req.session["locale"], source="openMRS"
+    title = mu.get_global_msgs(
+        "Patient.dashboard.title", locale=req.session["locale"], source="OpenMRS"
     )
 
     context = {"uuid": uuid, "title": title}

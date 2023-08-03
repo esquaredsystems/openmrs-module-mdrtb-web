@@ -70,16 +70,17 @@ def clear_session(req):
     Clears any data associated with the session and creates a new session.
     """
     try:
-        query_params = req.session.get("redirect_query_params", {})
-        redirect_url = (
-            req.session.get("redirect_url")
-            + "?"
-            + urlencode(query_params, safe="-[]',")
-            if query_params
-            else req.session.get("redirect_url")
-            if req.path != "/logout"
-            else "/"
-        )
+        if req.path == "/logout":
+            redirect_url = "/"
+        else:
+            query_params = req.session.get("redirect_query_params", {})
+            redirect_url = (
+                req.session.get("redirect_url")
+                + "?"
+                + urlencode(query_params, safe="-[]',")
+                if query_params
+                else req.session.get("redirect_url")
+            )
         cache.clear()
         req.session.flush()
         req.session.create()
@@ -117,6 +118,7 @@ def get(req, endpoint, parameters):
         params=parameters,
     )
     logger.info(f"'Making GET call to /{endpoint}'")
+    logger.info(f"'with params {parameters}'")
     if response.status_code == 403:
         session_expired_msg = mu.get_global_msgs("require.login", source="OpenMRS")
         messages.info(req, session_expired_msg)

@@ -39,19 +39,19 @@ def get_global_msgs(message_code, locale=None, default=None, source=None):
         value = ""
         dir = f"{u.get_project_root()}/resources"
         if source is None:
-            if locale is None or locale == "en_GB":
+            if locale is None or locale == "en_GB" or locale == "en":
                 file = f"{dir}/messages.properties"
             else:
                 file = f"{dir}/messages_{locale}.properties"
 
         if source == "OpenMRS":
-            if locale is None or locale == "en_GB":
+            if locale is None or locale == "en_GB" or locale == "en":
                 file = f"{dir}/openMRS_messages.properties"
             else:
                 file = f"{dir}/openMRS_messages_{locale}.properties"
 
         if source == "commonlab":
-            if locale is None or locale == "en_GB":
+            if locale is None or locale == "en_GB" or locale == "en":
                 file = f"{dir}/commonlab_messages.properties"
             else:
                 file = f"{dir}/commonlab_messages_{locale}.properties"
@@ -120,7 +120,7 @@ def get_concept(req, uuid, lang=None):
         return concept
     try:
         status, response = ru.get(
-            req, f"concept/{uuid}", {"v": "full", "lang": req.session["locale"]}
+            req, f"concept/{uuid}", {"lang": req.session["locale"], "v": "full"}
         )
         if status:
             concepts = cache.get("concepts", [])

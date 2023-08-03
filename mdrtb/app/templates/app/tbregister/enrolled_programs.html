@@ -178,7 +178,7 @@
   const showStatesModal = (element, name) => {
     $('#modal').removeClass('opacity-0')
     let states = $(element).data('programStates')
-    $('#modal-title').html(`${name} States`)
+    $('#modal-title').html(`${name} {{'Program.states'|get_message_openMRS:request.session.locale}}`)
     let jsonStates = stringToJson(states)
     if (jsonStates.length > 0) {
       for (state of jsonStates) {

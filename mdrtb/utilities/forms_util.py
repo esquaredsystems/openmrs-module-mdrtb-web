@@ -27,12 +27,23 @@ def get_form_concepts(concept_ids, req):
             response = mu.get_concept(req, concept)
             if response:
                 answers = []
-                if response['answers']:
+                if response["answers"]:
                     for answer in response["answers"]:
-                        if answer['name'] and answer['name']['conceptNameType'] == "FULLY_SPECIFIED":
-                            answers.append({"uuid": answer["uuid"], "name": answer["name"].get("name","display")})
+                        if (
+                            answer["name"]
+                            and answer["name"]["conceptNameType"] == "FULLY_SPECIFIED"
+                        ):
+                            answers.append(
+                                {
+                                    "uuid": answer["uuid"],
+                                    "name": answer["name"].get("name", "display"),
+                                }
+                            )
                             concept_dict[
-                            response["name"]['name'].lower().replace(" ", "").replace("-", "")
+                                response["name"]["name"]
+                                .lower()
+                                .replace(" ", "")
+                                .replace("-", "")
                             ] = answers
                         else:
                             continue
