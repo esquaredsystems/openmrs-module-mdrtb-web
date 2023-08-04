@@ -14,7 +14,7 @@
 
     <div class="search-box">
       <input class="search-page-input" type="text" id="search-input" name="search"
-        placeholder="{{'Patient.searchBox.placeholder' | get_message_openMRS:request.session.locale }}"
+        placeholder="{{'mdrtb.enterPatientNameOrId' | get_message:request.session.locale }}"
         title="Enter 2 or more characters" />
       <span class="cursor-pointer" onclick="handleSearch($('#search-input').val())">
         <svg id="search-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -34,7 +34,7 @@
     <div class="patient-create-new-box">
       <p>{{'PatientSearch.noneFound'|get_message_openMRS:request.session.locale}}? </p>
       <a href="{% url 'enrollPatient' %}"><button
-          class="button-primary">{{'Patient.create'|get_message_openMRS:request.session.locale}}</button></a>
+          class="button-primary">{{'mdrtb.createNewPatient'|get_message:request.session.locale}}</button></a>
     </div>
     {% endif %}
   </div>

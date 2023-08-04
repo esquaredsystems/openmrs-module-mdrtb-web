@@ -36,15 +36,18 @@ def get_form_concepts(concept_ids, req):
                             answers.append(
                                 {
                                     "uuid": answer["uuid"],
-                                    "name": answer["name"].get("name", "display"),
+                                    "name": answer["name"]["name"],
                                 }
                             )
-                            concept_dict[
-                                response["name"]["name"]
-                                .lower()
-                                .replace(" ", "")
-                                .replace("-", "")
-                            ] = answers
+                            for name in response["names"]:
+                                if name["locale"] == "en":
+                                    key = (
+                                        name["name"]
+                                        .lower()
+                                        .replace(" ", "")
+                                        .replace("-", "")
+                                    )
+                                    concept_dict[key] = answers
                         else:
                             continue
 

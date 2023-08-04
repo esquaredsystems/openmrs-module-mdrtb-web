@@ -80,7 +80,7 @@
                   </th>
                   <th
                     class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
-                    {{'Patient.dashboard.title'|get_message_openMRS:request.session.locale}}
+                    {{'mdrtb.patientDashboard'|get_message:request.session.locale}}
                   </th>
 
 
@@ -136,13 +136,13 @@
                   {% if program.program.uuid == dots_program %}
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
                     <a href="{% url 'dashboard' uuid=uuid %}?program={{program.uuid}}" type="button"
-                      class="cancel-button">{{'Patient.dashboard.title'|get_message_openMRS:request.session.locale}}
+                      class="cancel-button">{{'mdrtb.patientDashboard'|get_message:request.session.locale}}
                     </a>
                   </td>
                   {% else %}
                   <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
                     <a href="{% url 'mdrdashboard' uuid=uuid mdrtb='mdrtb' %}?program={{program.uuid}}" type="button"
-                      class="cancel-button">{{'Patient.dashboard.title'|get_message_openMRS:request.session.locale}}
+                      class="cancel-button">{{'mdrtb.patientDashboard'|get_message:request.session.locale}}
                     </a>
                   </td>
                   {% endif %}
@@ -190,7 +190,7 @@
               `<span class="text-md font-bold">${state.answer.concept.name}
               ${state.answer.start_date != null ?
                 `
-              ( since ${state.answer.start_date.substring(0, 10)} )
+              ( {{'general.since'|get_message_openMRS:request.session.locale}} ${state.answer.start_date.substring(0, 10)} )
               `
                 : ''
               }
