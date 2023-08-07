@@ -15,7 +15,7 @@
     {% if state == 'edit' %}
     <div id="form-info" class="flex-center space-x-4">
         <h1 class="text-[#2D9CDB] text-3xl font-bold">
-            {{'commonlabtest.labtestsample.edit'|get_message_commonlab:request.session.locale}}
+            {{'commonlabtest.labtestsample.edit'|get_message:request.session.locale}}
         </h1>
         <button type="button" id="editbtn">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -38,7 +38,7 @@
     </div>
     {% else %}
     <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
-        {{'commonlabtest.labtestsample.add'|get_message_commonlab:request.session.locale}}
+        {{'commonlabtest.labtestsample.add'|get_message:request.session.locale}}
     </h2>
     {% endif %}
     <form onsubmit="disableSubmit()" class="m-10 flex-column-center space-y-6"
@@ -47,7 +47,7 @@
         {% csrf_token %}
         <div class="input-container">
             <label class="input-label required">
-                {{'general.specimenType'|get_message_commonlab:request.session.locale}}
+                {{'general.specimenType'|get_message:request.session.locale}}
 
             </label>
             <select required name="specimentype" class="input form-control">
@@ -64,7 +64,7 @@
         </div>
         <div class="input-container">
             <label class="input-label required">
-                {{'general.specimenSite'|get_message_commonlab:request.session.locale}}
+                {{'general.specimenSite'|get_message:request.session.locale}}
 
             </label>
             <select required name="specimensite" id="group-select" class="input form-control">
@@ -81,7 +81,7 @@
         </div>
         <div class="input-container">
             <label class="input-label">
-                {{'commonlabtest.labtestsample.quantity'|get_message_commonlab:request.session.locale}}
+                {{'commonlabtest.labtestsample.quantity'|get_message:request.session.locale}}
 
             </label>
             {% if state == 'edit' %}
@@ -93,7 +93,7 @@
         </div>
         <div class="input-container">
             <label class="input-label">
-                {{'commonlabtest.labtestsample.unit'|get_message_commonlab:request.session.locale}}
+                {{'commonlabtest.labtestsample.unit'|get_message:request.session.locale}}
 
             </label>
 
@@ -113,7 +113,7 @@
         </div>
         <div class="input-container">
             <label class="input-label required">
-                {{'commonlabtest.labtestsample.sampleIdentifier'|get_message_commonlab:request.session.locale}}
+                {{'commonlabtest.labtestsample.sampleIdentifier'|get_message:request.session.locale}}
 
             </label>
             {% if state == 'edit' %}
@@ -126,7 +126,7 @@
         </div>
         <div class="input-container">
             <label class="input-label required">
-                {{'commonlabtest.labtestsample.collectionDate'|get_message_commonlab:request.session.locale}}
+                {{'commonlabtest.labtestsample.collectionDate'|get_message:request.session.locale}}
 
             </label>
             {% if state == 'edit' %}

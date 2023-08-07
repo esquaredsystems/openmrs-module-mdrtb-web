@@ -16,7 +16,7 @@
         {% if state == 'edit' %}
         <div id="form-info" class="flex-center space-x-4">
             <h1 class="text-[#2D9CDB] text-3xl font-bold">
-                {{'commonlabtest.order.edit'|get_message_commonlab:request.session.locale}}
+                {{'commonlabtest.order.edit'|get_message:request.session.locale}}
             </h1>
             <button type="button" id="editbtn">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -39,7 +39,7 @@
         </div>
         {% else %}
         <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
-            {{'commonlabtest.order.add'|get_message_commonlab:request.session.locale}}
+            {{'commonlabtest.order.add'|get_message:request.session.locale}}
         </h2>
         {% endif %}
     </div>
@@ -64,7 +64,7 @@
         </div>
         <div class="input-container">
             <label class="input-label" for="">
-                {{'general.testGroup'|get_message_commonlab:request.session.locale}}
+                {{'general.testGroup'|get_message:request.session.locale}}
 
             </label>
             <select name="testGroup" id="group-select" class="input form-control">
@@ -81,7 +81,7 @@
         </div>
         <div class="input-container">
             <label class="input-label" for="">
-                {{'general.testType'|get_message_commonlab:request.session.locale}}
+                {{'general.testType'|get_message:request.session.locale}}
 
             </label>
             {% if state == 'edit' %}
@@ -98,7 +98,7 @@
         </div>
         <div class="input-container">
             <label class="input-label"
-                for="name">{{'general.careSetting'|get_message_commonlab:request.session.locale}}</label>
+                for="name">{{'general.careSetting'|get_message:request.session.locale}}</label>
             <div class="flex items-center justify-start space-x-4 w-full">
                 <div class="flex-center space-x-2">
                     <label class="" for="yes">{{care_setting.inpatient.name}}</label>
@@ -138,7 +138,7 @@
 
         <div class="input-container">
             <label class="input-label" for="">
-                {{'commonlabtest.order.labReferenceNo'|get_message_commonlab:request.session.locale}}
+                {{'commonlabtest.order.labReferenceNo'|get_message:request.session.locale}}
 
             </label>
             {% if state == 'edit' %}
@@ -150,7 +150,7 @@
         </div>
         <div class="input-container">
             <label class="input-label" for="">
-                {{'general.instructions'|get_message_commonlab:request.session.locale}}
+                {{'general.instructions'|get_message:request.session.locale}}
 
             </label>
             {% if state == 'edit' %}

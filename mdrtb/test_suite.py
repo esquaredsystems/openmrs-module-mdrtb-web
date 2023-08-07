@@ -9,7 +9,7 @@ suite = unittest.TestSuite()
 
 # add tests to the test suite
 # suite.addTests(loader.loadTestsFromModule(commonlab_utils_test))
-# suite.addTests(loader.loadTestsFromModule(common_utils_test))
+suite.addTests(loader.loadTestsFromModule(common_utils_test))
 suite.addTests(loader.loadTestsFromModule(metadata_test))
 suite.addTests(loader.loadTestsFromModule(restapi_test))
 

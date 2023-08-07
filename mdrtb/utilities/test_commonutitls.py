@@ -3,24 +3,24 @@ import utilities.common_utils as cu
 
 
 class TestCommonUtils(unittest.TestCase):
-
-    def test_get_project_root(self):
-        actual = str(cu.get_project_root())
-        expected = "D:\Abdul Basit\es\openmrs-module-mdrtb-web\mdrtb"
-        self.assertEqual(actual, expected)
-
     def test_read_properties_file(self):
         actual = cu.read_properties_file(
-            f'{cu.get_project_root()}/test_resources/messages.properties', 'r', encoding='utf-8')
-        test_key = actual[1].split('=')
-        expected = '9009'
+            f"{cu.get_project_root()}/test_resources/test_messages.properties",
+            "r",
+            encoding="utf-8",
+        )
+        test_key = actual[1].split("=")
+        expected = "testing1234testing"
         self.assertEqual(test_key[1].strip(), expected)
 
     def test_read_properties_file_wrong_path(self):
         actual = cu.read_properties_file(
-                f'{cu.get_project_root()}/test_resource/messages.properties', 'r', encoding='utf-8')
+            f"{cu.get_project_root()}/test_resource/messages.properties",
+            "r",
+            encoding="utf-8",
+        )
         self.assertIsNone(actual)
-        
+
     def test_calculate_age(self):
         actual = cu.calculate_age("03/05/2002")
         expected = 20
@@ -40,17 +40,17 @@ class TestCommonUtils(unittest.TestCase):
         self.assertIsNone(actual)
 
     def test_remove_given_str_from_arr(self):
-        actual = cu.remove_given_str_from_arr(['h', 'e', 'y'], 'h')
-        expected = ['e', 'y']
+        actual = cu.remove_given_str_from_arr(["h", "e", "y"], "h")
+        expected = ["e", "y"]
         self.assertEqual(actual, expected)
 
     def test_remove_given_str_from_arr_with_wrong_str(self):
-        actual = cu.remove_given_str_from_arr(['h', 'e', 'y'], '3')
-        expected = ['h', 'e', 'y']
+        actual = cu.remove_given_str_from_arr(["h", "e", "y"], "3")
+        expected = ["h", "e", "y"]
         self.assertEqual(actual, expected)
 
     def test_remove_given_str_from_arr_with_empty_arr(self):
-        actual = cu.remove_given_str_from_arr([], 'g')
+        actual = cu.remove_given_str_from_arr([], "g")
         expected = []
         self.assertEqual(actual, expected)
 

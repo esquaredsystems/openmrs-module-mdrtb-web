@@ -1535,7 +1535,9 @@ def render_delete_form_89(req, formid):
 
 
 def render_user_profile(req):
-    title = mu.get_global_msgs("options.title", locale=req.session["locale"])
+    title = mu.get_global_msgs(
+        "Navigation.options", locale=req.session["locale"], source="OpenMRS"
+    )
     context = {"title": title}
 
     if req.method == "POST":

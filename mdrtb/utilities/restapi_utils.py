@@ -118,7 +118,6 @@ def get(req, endpoint, parameters):
         params=parameters,
     )
     logger.info(f"'Making GET call to /{endpoint}'")
-    logger.info(f"'with params {parameters}'")
     if response.status_code == 403:
         session_expired_msg = mu.get_global_msgs("require.login", source="OpenMRS")
         messages.info(req, session_expired_msg)
