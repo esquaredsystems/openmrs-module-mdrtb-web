@@ -141,6 +141,11 @@ def get_attributes_data_types():
             "name": "Concept",
             "inputType": "select",
         },
+        {
+            "value": "org.openmrs.customdatatype.datatype.FloatDatatype",
+            "name": "Float",
+            "inputType": "number",
+        },
     ]
 
     return attributesDataTypes

@@ -89,7 +89,6 @@
         groups.push(attribute.attributeType.group);
       }
     }
-    console.log(groups)
   } else {
     for (attribute of attributes) {
       if (attribute.attributeType.group === null) {
@@ -261,21 +260,49 @@
           `
           );
         } else if (attribute.attributeType.inputType === "select") {
-          $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
-            ` <div class="input-container">
+          if (attribute.attributeType.answers.length <= 2) {
+            $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
+              ` <div class="input-container">
+            <label class="input-label">${attribute.attributeType.name}</label>
+            <div class="flex items-center justify-start space-x-4 w-full" id=${attribute.attributeType.uuid}>
+              <div class="flex-center space-x-2 w-full">
+                <label>Not selected</label>
+                <input checked name=${attribute.attributeType.uuid} type="radio" value=""
+                        class="radio-input" />
+                </div>
+              
+              </div>
+            </div>
+          `
+            )
+            for (answer of attribute.attributeType.answers) {
+              $(`#${attribute.attributeType.uuid}`).append(
+                `<div class="flex-center space-x-2 w-full">
+                <label>${answer.display}</label>
+                <input name=${attribute.attributeType.uuid} type="radio" value=${answer.uuid}
+                        class="radio-input" />
+                </div>`
+              )
+            }
+
+          } else {
+
+            $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
+              ` <div class="input-container">
             <label class="input-label">${attribute.attributeType.name}</label>
             <select id=${attribute.attributeType.uuid} name=${attribute.attributeType.uuid} class="input">
               <option value="" selected>Select</option>
             </select>
             </div>
           `
-          );
-          for (answer of attribute.attributeType.answers) {
-            $(`#${attribute.attributeType.uuid}`).append(
-              `<option value=${answer.uuid}>
+            );
+            for (answer of attribute.attributeType.answers) {
+              $(`#${attribute.attributeType.uuid}`).append(
+                `<option value=${answer.uuid}>
                   ${answer.display}  
                 </option>`
-            )
+              )
+            }
           }
 
         }
