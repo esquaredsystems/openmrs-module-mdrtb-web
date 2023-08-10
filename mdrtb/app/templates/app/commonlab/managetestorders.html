@@ -101,16 +101,22 @@
     </div>
   </section>
 
-  <script defer>
+  <script>
+
     let orders = JSON.parse("{{json_orders | escapejs}}");
     function showModal(uuid) {
       for (order of orders) {
         if (order.uuid === uuid) {
-          let samplesUrl = `{% url 'managetestsamples' orderid=122 %}`.replace('122', uuid)
-          let resultsUrl = `{% url 'addtestresults' orderid=122 %}?patient={{patient}}`.replace('122', uuid)
-          console.log(resultsUrl)
-          $("#modal").append(
-            `
+          let sample_exists = null;
+          $.ajax({
+            method: "GET",
+            url: `/commonlab/order/${uuid}/gettestsamples`,
+            success: (data) => {
+              sample_exists = data.sample_exists;
+              let samplesUrl = `{% url 'managetestsamples' orderid=122 %}`.replace('122', uuid)
+              let resultsUrl = `{% url 'addtestresults' orderid=122 %}?patient={{patient}}`.replace('122', uuid)
+              $("#modal").append(
+                `
             <div class="flex items-center justify-between">
       <h3 id="modal-testType" class="text-3xl">${order.labTestType.name}</h3>
       <svg id="close-modal" onclick="closeModal()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -146,7 +152,7 @@
             </a>` : `Sample not required`}
           </span>
         </div>
-        <div class="flex-center space-x-4  w-full border-gray-500">
+        ${sample_exists ? `<div class="flex-center space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
             Test Result:
           </span>
@@ -160,7 +166,15 @@
 
             </a>
           </span>
-        </div>
+        </div>`: `<div class="flex-center space-x-4  w-full border-gray-500">
+          <span class="font-bold w-2/5">
+            Test Result:
+          </span>
+          <span class="font-bold w-2/5">
+            Atleast one sample needs to be accepted to enter Test Results
+          </span>
+          </div>`}
+        
         <div class="flex-center space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
             Result Date:
@@ -181,12 +195,17 @@
 
 
             `
-          );
+              );
+
+            }
+          })
+
         }
       }
 
       $("#modal").addClass("opacity-100");
       $("#modal").removeClass("opacity-0");
+
     }
 
     function closeModal() {

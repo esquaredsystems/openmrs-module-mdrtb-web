@@ -2543,7 +2543,7 @@ def render_managetestorders(req, uuid):
             f"commonlab/labtestorder",
             {
                 "patient": uuid,
-                "v": "custom:(uuid,labTestType,labReferenceNumber,order)",
+                "v": "custom:(uuid,labTestType,labReferenceNumber,order,auditInfo,labTestSamples)",
             },
         )
 
@@ -3026,6 +3026,19 @@ def render_edit_test_results(req, orderid):
         messages.error(req, e)
 
         return redirect(req.session["redirect_url"])
+
+
+def check_if_sample_exists(req, orderid):
+    try:
+        status, response = ru.get(
+            req, f"commonlab/labtestorder/{orderid}", {"v": "custom:(labTestSamples)"}
+        )
+        if status:
+            if len(response["labTestSamples"]) > 0:
+                return JsonResponse({"sample_exists": True})
+    except Exception as e:
+        messages.error(req, "Error fetching Samples")
+        return JsonResponse({"sample_exists": False})
 
 
 def render_logout(req):

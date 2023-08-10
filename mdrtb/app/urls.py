@@ -223,5 +223,10 @@ urlpatterns = [
         views.render_add_test_results,
         name="addtestresults",
     ),
+    path(
+        "commonlab/order/<str:orderid>/gettestsamples",
+        views.check_if_sample_exists,
+        name="gettestsamples",
+    ),
     path("logout", views.render_logout, name="logout"),
 ]

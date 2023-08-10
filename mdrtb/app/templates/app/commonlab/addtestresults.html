@@ -65,15 +65,63 @@
           `
           );
         } else if (attribute.attributeType.inputType === 'select') {
-          $("#attributes-container").append(
-            ` <div class="input-container">
+          if (attribute.attributeType.answers.length <= 2) {
+            $(`#attributes-container`).append(
+              ` <div class="input-container">
             <label class="input-label">${attribute.attributeType.name}</label>
-            <select name=${attribute.attributeType.uuid} class="input">
-              <option selected >${attribute.attributeType.valueReference}</option>
+            <div class="flex items-center justify-start space-x-4 w-full" id=${attribute.attributeType.uuid}>
+              <div class="flex-center space-x-2 w-full">
+                <label>Not selected</label>
+                ${attribute.valueReference ? `<input  name=${attribute.attributeType.uuid} type="radio" value=""
+                        class="radio-input" />` : `<input checked  name=${attribute.attributeType.uuid} type="radio" value=""
+                        class="radio-input" />`}
+                
+                
+                </div>
+              
+              </div>
+            </div>
+          `
+            )
+            for (answer of attribute.attributeType.answers) {
+              $(`#${attribute.attributeType.uuid}`).append(
+                `<div class="flex-center space-x-2 w-full">
+                <label>${answer.display}</label>
+                ${attribute.valueReference === answer.uuid ? `<input checked name=${attribute.attributeType.uuid} type="radio" value=${answer.uuid}
+                        class="radio-input" />` : `<input name=${attribute.attributeType.uuid} type="radio" value=${answer.uuid}
+                        class="radio-input" />`}
+                
+                </div>`
+              )
+            }
+
+          } else {
+            $(`#attributes-container`).append(
+              ` <div class="input-container">
+            <label class="input-label">${attribute.attributeType.name}</label>
+            <select id=${attribute.attributeType.uuid} name=${attribute.attributeType.uuid} class="input">
+              <option value="" selected>Select</option>
             </select>
             </div>
           `
-          );
+            );
+            for (answer of attribute.attributeType.answers) {
+              if (answer.uuid === attribute.valueReference) {
+
+                $(`#${attribute.attributeType.uuid}`).append(
+                  `<option selected value=${answer.uuid}>
+                    ${answer.display}  
+                  </option>`
+                )
+              } else {
+                $(`#${attribute.attributeType.uuid}`).append(
+                  `<option value=${answer.uuid}>
+                    ${answer.display}  
+                  </option>`
+                )
+              }
+            }
+          }
         }
 
         else {
@@ -95,8 +143,8 @@
         if (attribute.attributeType.inputType === "checkbox") {
           $("#attributes-container").append(
             ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <input class="" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} />
+              <label style="width:50%;" class="input-label w-1/2">${attribute.attributeType.name}</label>
+            <input type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} />
             </div>
           `
           );
@@ -104,20 +152,55 @@
           $("#attributes-container").append(
             ` <div class="input-container">
             <label class="input-label">${attribute.attributeType.name}</label>
-            <textarea class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid}> </textarea>
+            <textarea class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid}></textarea>
             </div>
           `
           );
         } else if (attribute.attributeType.inputType === 'select') {
-          $("#attributes-container").append(
-            ` <div class="input-container">
+          if (attribute.attributeType.answers.length <= 2) {
+            $(`"#attributes-container"`).append(
+              ` <div class="input-container">
             <label class="input-label">${attribute.attributeType.name}</label>
-            <select name=${attribute.attributeType.uuid} class="input">
-              <option>1</option>
+            <div class="flex items-center justify-start space-x-4 w-full" id=${attribute.attributeType.uuid}>
+              <div class="flex-center space-x-2 w-full">
+                <label>Not selected</label>
+                <input checked name=${attribute.attributeType.uuid} type="radio" value=""
+                        class="radio-input" />
+                </div>
+              
+              </div>
+            </div>
+          `
+            )
+            for (answer of attribute.attributeType.answers) {
+              $(`#${attribute.attributeType.uuid}`).append(
+                `<div class="flex-center space-x-2 w-full">
+                <label>${answer.display}</label>
+                <input name=${attribute.attributeType.uuid} type="radio" value=${answer.uuid}
+                        class="radio-input" />
+                </div>`
+              )
+            }
+
+          } else {
+
+            $(`"#attributes-container"`).append(
+              ` <div class="input-container">
+            <label class="input-label">${attribute.attributeType.name}</label>
+            <select id=${attribute.attributeType.uuid} name=${attribute.attributeType.uuid} class="input">
+              <option value="" selected>Select</option>
             </select>
             </div>
           `
-          );
+            );
+            for (answer of attribute.attributeType.answers) {
+              $(`#${attribute.attributeType.uuid}`).append(
+                `<option value=${answer.uuid}>
+                  ${answer.display}  
+                </option>`
+              )
+            }
+          }
         }
 
         else {
@@ -201,31 +284,64 @@
           `
           );
         } else if (attribute.attributeType.inputType === "select") {
-          $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
-            ` <div class="input-container">
+          if (attribute.attributeType.answers.length <= 2) {
+            $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
+              ` <div class="input-container">
+            <label class="input-label">${attribute.attributeType.name}</label>
+            <div class="flex items-center justify-start space-x-4 w-full" id=${attribute.attributeType.uuid}>
+              <div class="flex-center space-x-2 w-full">
+                <label>Not selected</label>
+                ${attribute.valueReference ? `<input  name=${attribute.attributeType.uuid} type="radio" value=""
+                        class="radio-input" />` : `<input checked  name=${attribute.attributeType.uuid} type="radio" value=""
+                        class="radio-input" />`}
+                
+                
+                </div>
+              
+              </div>
+            </div>
+          `
+            )
+            for (answer of attribute.attributeType.answers) {
+              $(`#${attribute.attributeType.uuid}`).append(
+                `<div class="flex-center space-x-2 w-full">
+                <label>${answer.display}</label>
+                ${attribute.valueReference === answer.uuid ? `<input checked name=${attribute.attributeType.uuid} type="radio" value=${answer.uuid}
+                        class="radio-input" />` : `<input name=${attribute.attributeType.uuid} type="radio" value=${answer.uuid}
+                        class="radio-input" />`}
+                
+                </div>`
+              )
+            }
+
+          } else {
+            $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
+              ` <div class="input-container">
             <label class="input-label">${attribute.attributeType.name}</label>
             <select id=${attribute.attributeType.uuid} name=${attribute.attributeType.uuid} class="input">
               <option value="" selected>Select</option>
             </select>
             </div>
           `
-          );
-          for (answer of attribute.attributeType.answers) {
-            if (answer.uuid === attribute.valueReference) {
+            );
+            for (answer of attribute.attributeType.answers) {
+              if (answer.uuid === attribute.valueReference) {
 
-              $(`#${attribute.attributeType.uuid}`).append(
-                `<option selected value=${answer.uuid}>
+                $(`#${attribute.attributeType.uuid}`).append(
+                  `<option selected value=${answer.uuid}>
                     ${answer.display}  
                   </option>`
-              )
-            } else {
-              $(`#${attribute.attributeType.uuid}`).append(
-                `<option value=${answer.uuid}>
+                )
+              } else {
+                $(`#${attribute.attributeType.uuid}`).append(
+                  `<option value=${answer.uuid}>
                     ${answer.display}  
                   </option>`
-              )
+                )
+              }
             }
           }
+
 
         }
 
@@ -247,7 +363,7 @@
           $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
             ` <div class="input-container">
             <label style="width:50%;" class="input-label w-1/2">${attribute.attributeType.name}</label>
-            <input style="background-color:blue;" class="" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} />
+            <input type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} />
             </div>
           `
           );

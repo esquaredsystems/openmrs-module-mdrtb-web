@@ -535,3 +535,6 @@ class Concepts(enum.Enum):
     METHOD_OF_DETECTION = "207a0630-f0af-4208-9a81-326b8c37ebe2"
     PATIENT_RELAPSED = "53aaa4c7-49c0-4716-9af0-9098d35bacc5"
     IMIPENEM = "8d53d5ad-5477-4997-aadb-5c661c51b5e4"
+    # DRUG RESISTANCE
+    SUSCEPTIBLE = "57e8ebf0-67d8-4ae8-a566-e3e5d90a1aa8"
+    RESISTANT = "31b4bdc0-0370-102d-b0e3-001ec94a0cc1"
