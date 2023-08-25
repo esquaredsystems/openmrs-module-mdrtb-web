@@ -107,11 +107,13 @@ def change_locale(req, locale):
         cache.delete("concepts")
 
         logged_in_user_uuid = req.session["logged_user"]["user"]["uuid"]
+        user_properties = req.session["logged_user"]["user"]["userProperties"]
+        user_properties["defaultLocale":locale]
 
         status, response = ru.post(
             req,
             f"user/{logged_in_user_uuid}",
-            {"userProperties": {"defaultLocale": locale}},
+            {"userProperties": user_properties},
         )
 
         return redirect(req.session["redirect_url"])
@@ -1535,21 +1537,37 @@ def render_delete_form_89(req, formid):
 
 
 def render_user_profile(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
+
     title = mu.get_global_msgs(
         "Navigation.options", locale=req.session["locale"], source="OpenMRS"
     )
     context = {"title": title}
-
     if req.method == "POST":
         try:
+            user_properties = req.session["logged_user"]["user"]["userProperties"]
             req.session["locale"] = req.POST["locale"]
+            user_properties["defaultLocale"] = (
+                req.POST["locale"] if "locale" in req.POST else ""
+            )
+            user_properties["defaultLocation"] = (
+                req.POST["district"]
+                if "facility" not in req.POST
+                else req.POST["facility"]
+            )
 
+            user_properties["proficientLocales"] = (
+                req.POST["proficient_locales"]
+                if "proficient_locales" in req.POST
+                else ""
+            )
             logged_in_user_uuid = req.session["logged_user"]["user"]["uuid"]
 
             status, response = ru.post(
                 req,
                 f"user/{logged_in_user_uuid}",
-                {"userProperties": {"defaultLocale": req.POST["locale"]}},
+                {"userProperties": user_properties},
             )
 
             return redirect(req.session["redirect_url"])
@@ -1560,10 +1578,8 @@ def render_user_profile(req):
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER")
-
+        user_properties = req.session["logged_user"]["user"]["userProperties"]
         default_locale = req.session["locale"]
-
-        print(default_locale)
 
         app_locales = ["en", "en_GB", "ru", "tj"]
         if default_locale in app_locales:
@@ -1597,6 +1613,11 @@ def render_user_profile(req):
             "name": Constants[default_locale.upper()].value,
             "value": default_locale,
         }
+        if "defaultLocation" in user_properties:
+            context["default_location"] = mu.get_location(
+                req,
+                user_properties["defaultLocation"],
+            )
 
         mu.add_url_to_breadcrumb(req, context["title"])
 

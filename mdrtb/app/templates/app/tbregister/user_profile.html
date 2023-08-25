@@ -21,13 +21,43 @@
             <div class="enroll_form_bg w-full">
                 <h3 class="text-2xl font-bold">{{'options.default.legend'|get_message_openMRS:request.session.locale}}
                 </h3>
-                <div class="profile-input-container flex-col items-start">
+                {% if default_location %}
+                <div id="defaultLocationTrue" class="profile-input-container">
+                    <label class="profile-input-label text-md"
+                        for="defaultLocation">{{'options.default.location'|get_message_openMRS:request.session.locale}}</label>
+                    <button class="ml-4" id="editLocations" type="button">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                        </svg>
+                    </button>
+                    <input disabled type="text" class="input form-control" name="location" id="defaultLocation"
+                        value="{{default_location.location}}">
+
+                </div>
+                {% endif %}
+
+
+                <div hidden id="defaultLocationFalse" class="profile-input-container flex-col items-start">
+
                     <label class="profile-input-label text-lg" for="name">
-                        {{'options.default.location'|get_message_openMRS:request.session.locale}}</label>
+                        {{'options.default.location'|get_message_openMRS:request.session.locale}}
+                        <button type="button" hidden id="edit_cancel">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </label>
+
+
+
                     <div>
                         {% include 'app/components/locations.html' %}
                     </div>
                 </div>
+
                 <div class="profile-input-container">
                     <label class="profile-input-label"
                         for="">{{'options.default.locale'|get_message_openMRS:request.session.locale}}</label>
@@ -41,7 +71,7 @@
                 <div class="profile-input-container">
                     <label class="profile-input-label"
                         for="name">{{'options.proficient.locales'|get_message_openMRS:request.session.locale}}</label>
-                    <input class="input form-control" type="text" />
+                    <input class="input form-control" type="text" name="proficient_locales" />
                 </div>
                 <div class="profile-input-container">
                     <label class="profile-input-label w-1/6"
@@ -144,4 +174,16 @@
         </div>
     </form>
 </div>
+<script>
+    $('#editLocations').click(function () {
+        $('#defaultLocationTrue').prop('hidden', true);
+        $('#defaultLocationFalse').prop('hidden', false);
+        $('#edit_cancel').prop('hidden', false);
+    })
+    $('#edit_cancel').click(function () {
+        $('#defaultLocationTrue').prop('hidden', false);
+        $('#defaultLocationFalse').prop('hidden', true);
+        $('#edit_cancel').prop('hidden', true);
+    })
+</script>
 {% endblock %}

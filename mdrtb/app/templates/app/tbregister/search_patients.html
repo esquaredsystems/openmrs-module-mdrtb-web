@@ -145,10 +145,14 @@
 </div>
 {% else %}
 <div class="search-page-container">
+  {% if request.session.session_id %}
   <h1>
     {{'general.accountHasNoPrivilege'|get_message_openMRS:request.session.locale}}<strong><i>{{'Navigation.findCreatePatient'|get_message_openMRS:request.session.locale}}</i></strong>
     <a class="cancel-button" href="{% url 'logout' %}">Logout</a>
   </h1>
+  {% else %}
+  <a class="cancel-button" href="{% url 'logout' %}">Logout</a></h1>
+  {% endif %}
 </div>
 {% endif %}
 {% endblock %}
