@@ -107,6 +107,7 @@
     function showModal(uuid) {
       for (order of orders) {
         if (order.uuid === uuid) {
+
           let sample_exists = null;
           $.ajax({
             method: "GET",
@@ -181,7 +182,7 @@
 
           </span>
           <span id="test-results" class="w-3/5">
-              {{result_date}}
+            ${order.auditInfo.dateChanged === null ? order.auditInfo.dateCreated.slice(0, order.auditInfo.dateCreated.length - 18) : order.auditInfo.dateChanged.slice(0, order.auditInfo.dateChanged.length - 18)}
           </span>
         </div>
 

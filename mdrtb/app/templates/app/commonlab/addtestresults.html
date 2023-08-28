@@ -5,7 +5,20 @@
   <h1 class="primary-heading">
     {{'commonlabtest.result.add'|get_message:request.session.locale}}
   </h1>
-
+  <div class="bg-[#9e9e9e28] shadow-md p-4 flex items-center space-x-4 w-fit m-4">
+    <span class="font-bold">{{'general.dateCreated'|get_message_openMRS:request.session.locale}} : </span><span
+      class="input-label w-fit">{{auditInfo.dateCreated | iso_to_normal_date }}</span>
+    <span class="font-bold"> {{'general.createdBy'|get_message_openMRS:request.session.locale}} : </span><span
+      class="input-label w-fit">{{auditInfo.creator.display}}</span>
+    <span class="font-bold"> {{'general.dateChanged'|get_message_openMRS:request.session.locale}} : </span><span
+      class="input-label w-fit">
+      {% if auditInfo.dateChanged is None %}
+      {{auditInfo.dateCreated | iso_to_normal_date }}
+      {% else %}
+      {{auditInfo.dateChanged | iso_to_normal_date }}
+      {% endif %}
+    </span>
+  </div>
   <form id="results-form" class="m-10 flex-column-center space-y-8"
     action="{% url 'addtestresults' orderid=orderid %}?patient={{request.GET.patient}}" method="post">
     {% csrf_token %}

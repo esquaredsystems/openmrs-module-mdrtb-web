@@ -3017,18 +3017,19 @@ def render_add_test_results(req, orderid):
         mu.add_url_to_breadcrumb(req, context["title"])
 
         status, response = ru.get(
-            req, f"commonlab/labtestorder/{orderid}", {"v": "custom:(attributes)"}
+            req, f"commonlab/labtestorder/{orderid}", {"v": "custom:(attributes,auditInfo)"}
         )
         if status and len(response["attributes"]) > 0:
             context["state"] = "edit"
             attributes = cu.get_labtest_attributes(req, orderid)
             if attributes:
                 context["attributes"] = json.dumps(attributes)
+                context["auditInfo"] = response["auditInfo"]
 
         else:
             attributes = cu.get_custom_attribute_for_labresults(req, orderid)
-            print(len(attributes))
             context["attributes"] = json.dumps(attributes)
+            context["auditInfo"] = response["auditInfo"]
 
     except Exception as e:
         messages.error(req, e)
@@ -3057,6 +3058,8 @@ def check_if_sample_exists(req, orderid):
         if status:
             if len(response["labTestSamples"]) > 0:
                 return JsonResponse({"sample_exists": True})
+            else:
+                return JsonResponse({"sample_exists": False})
     except Exception as e:
         messages.error(req, "Error fetching Samples")
         return JsonResponse({"sample_exists": False})
