@@ -39,7 +39,7 @@
                 {% endif %}
 
 
-                <div hidden id="defaultLocationFalse" class="profile-input-container flex-col items-start">
+                <div id="defaultLocationFalse" class="profile-input-container flex-col items-start">
 
                     <label class="profile-input-label text-lg" for="name">
                         {{'options.default.location'|get_message_openMRS:request.session.locale}}
@@ -175,6 +175,13 @@
     </form>
 </div>
 <script>
+    let defaultLocation = "{{default_location | escapejs}}"
+    if (defaultLocation) {
+        $('#defaultLocationTrue').prop('hidden', false);
+        $('#defaultLocationFalse').prop('hidden', true);
+        $('#edit_cancel').prop('hidden', true);
+    }
+
     $('#editLocations').click(function () {
         $('#defaultLocationTrue').prop('hidden', true);
         $('#defaultLocationFalse').prop('hidden', false);

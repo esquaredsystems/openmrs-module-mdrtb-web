@@ -108,8 +108,7 @@ def change_locale(req, locale):
 
         logged_in_user_uuid = req.session["logged_user"]["user"]["uuid"]
         user_properties = req.session["logged_user"]["user"]["userProperties"]
-        user_properties["defaultLocale":locale]
-
+        user_properties["defaultLocale"] = locale
         status, response = ru.post(
             req,
             f"user/{logged_in_user_uuid}",
@@ -3017,7 +3016,9 @@ def render_add_test_results(req, orderid):
         mu.add_url_to_breadcrumb(req, context["title"])
 
         status, response = ru.get(
-            req, f"commonlab/labtestorder/{orderid}", {"v": "custom:(attributes,auditInfo)"}
+            req,
+            f"commonlab/labtestorder/{orderid}",
+            {"v": "custom:(attributes,auditInfo)"},
         )
         if status and len(response["attributes"]) > 0:
             context["state"] = "edit"
