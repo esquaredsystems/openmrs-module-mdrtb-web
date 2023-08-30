@@ -107,13 +107,12 @@
     function showModal(uuid) {
       for (order of orders) {
         if (order.uuid === uuid) {
-          console.log(order.order.encounter.display.substring(order.order.encounter.display.length, 10))
-          let sample_exists = null;
+          let sample_accepted = null;
           $.ajax({
             method: "GET",
             url: `/commonlab/order/${uuid}/gettestsamples`,
             success: (data) => {
-              sample_exists = data.sample_exists;
+              sample_accepted = data.sample_accepted;
               let samplesUrl = `{% url 'managetestsamples' orderid=122 %}`.replace('122', uuid)
               let resultsUrl = `{% url 'addtestresults' orderid=122 %}?patient={{patient}}`.replace('122', uuid)
               $("#modal").append(
@@ -153,7 +152,7 @@
             </a>` : `Sample not required`}
           </span>
         </div>
-        ${sample_exists ? `<div class="flex-center space-x-4  w-full border-gray-500">
+        ${sample_accepted ? `<div class="flex-center space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
             Test Result:
           </span>
@@ -182,7 +181,7 @@
 
           </span>
           <span id="test-results" class="w-3/5">
-            ${sample_exists ? order.auditInfo.dateChanged === null ? order.auditInfo.dateCreated.substring(0, 10) : order.auditInfo.dateChanged.substring(0, 10) : '-'}
+              {{result_date}}
           </span>
         </div>
 

@@ -92,6 +92,7 @@ def get_locations(req):
         except Exception as e:
             logger.error(str(e), exc_info=True)
             messages.error(req, e)
+            logger.error(str(e), exc_info=True)
 
             raise Exception(str(e))
 
@@ -118,7 +119,7 @@ def change_locale(req, locale):
         return redirect(req.session["redirect_url"])
     except Exception as e:
         messages.error(req, str(e))
-
+        logger.error(str(e), exc_info=True)
         return redirect(req.session["redirect_url"])
     return redirect(req.session["redirect_url"])
 
@@ -138,6 +139,7 @@ def get_concepts(req, uuid=None):
 
     except Exception as e:
         messages.error(req, e)
+        logger.error(str(e), exc_info=True)
 
         response = {"error": str(e)}
 
@@ -172,6 +174,7 @@ def render_login(req):
 
         except Exception as e:
             messages.error(req, e)
+            logger.error(str(e), exc_info=True)
             return redirect("login")
 
     else:
@@ -191,6 +194,7 @@ def search_patients_query(req):
 
     except Exception as e:
         messages.error(req, e)
+        logger.error(str(e), exc_info=True)
 
         response = {"error": str(e)}
 
@@ -234,6 +238,7 @@ def render_search_patients_view(req):
     except Exception as e:
         context["minSearchCharacters"] = 2
         messages.error(req, str(e))
+        logger.error(str(e), exc_info=True)
 
         return render(req, "app/tbregister/search_patients.html", context=context)
 
@@ -251,6 +256,7 @@ def render_enroll_patient(req):
 
         except Exception as e:
             messages.error(req, str(e))
+            logger.error(str(e), exc_info=True)
 
             return redirect("searchPatientsView")
 
@@ -281,6 +287,7 @@ def render_enroll_patient(req):
 
     except Exception as e:
         messages.error(req, e)
+        logger.error(str(e), exc_info=True)
 
         return redirect("searchPatientsView")
 
@@ -329,6 +336,7 @@ def render_enrolled_programs(req, uuid):
 
     except Exception as e:
         messages.error(req, str(e))
+        logger.error(str(e), exc_info=True)
 
         return redirect(req.session["redirect_url"])
 
@@ -367,6 +375,7 @@ def render_enroll_in_dots_program(req, uuid):
         except Exception as e:
             logger.error(e)
             messages.error(req, e)
+            logger.error(str(e), exc_info=True)
 
             return redirect("enrolledprograms", uuid=uuid)
 
@@ -388,11 +397,15 @@ def render_enroll_in_dots_program(req, uuid):
 
         else:
             messages.error(req, "Error fetching programs. Please try again later")
+            logger.error(
+                "Error fetching programs. Please try again later", exc_info=True
+            )
 
             return redirect("searchPatientsView")
 
     except Exception as e:
         messages.error(req, str(e))
+        logger.error(str(e), exc_info=True)
 
         return redirect("/")
 
@@ -427,6 +440,7 @@ def render_enroll_patient_in_mdrtb(req, uuid):
         except Exception as e:
             logger.error(e, exc_info=True)
             messages.error(req, e)
+            logger.error(str(e), exc_info=True)
             return redirect(req.session.get("redirect_url"))
 
     try:
@@ -447,11 +461,15 @@ def render_enroll_patient_in_mdrtb(req, uuid):
 
         else:
             messages.error(req, "Error fetching programs. Please try again later")
+            logger.error(
+                "Error fetching programs. Please try again later", exc_info=True
+            )
 
             return redirect("searchPatientsView")
 
     except Exception as e:
         messages.error(req, str(e))
+        logger.error(str(e), exc_info=True)
         return redirect(req.session.get("redirect_url"))
 
 
@@ -490,6 +508,7 @@ def render_edit_dots_program(req, uuid, programid):
 
         except Exception as e:
             messages.error(req, str(e))
+            logger.error(str(e), exc_info=True)
 
         finally:
             return redirect("enrolledprograms", uuid=uuid)
@@ -513,6 +532,7 @@ def render_edit_dots_program(req, uuid, programid):
 
     except Exception as e:
         messages.error(req, str(e))
+        logger.error(str(e), exc_info=True)
 
         return redirect("editdotsprogram", uuid=uuid, programid=programid)
 
@@ -552,6 +572,7 @@ def render_edit_mdrtb_program(req, uuid, programid):
 
         except Exception as e:
             messages.error(req, str(e))
+            logger.error(str(e), exc_info=True)
 
         finally:
             return redirect("enrolledprograms", uuid=uuid)
@@ -679,12 +700,14 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
 
         else:
             messages.error(req, "Error fetching patient info")
+            logger.error("Error fetching patient info", exc_info=True)
 
             return redirect(req.session["redirect_url"])
 
     except Exception as e:
         logger.error(e, exc_info=True)
         messages.error(req, str(e))
+        logger.error(str(e), exc_info=True)
 
         return redirect(req.session["redirect_url"])
 
@@ -702,6 +725,7 @@ def render_tb03_form(req, uuid):
 
         except Exception as e:
             messages.error(req, str(e))
+            logger.error(str(e), exc_info=True)
 
         finally:
             redirect_to = "/tbdashboard/patient/{}?program={}".format(
@@ -763,7 +787,8 @@ def render_edit_tb03_form(req, uuid, formid):
                 messages.success(req, "Form updated successfully")
 
         except Exception as e:
-            messages.error(req, str(e)),
+            messages.error(req, str(e))
+            logger.error(str(e), exc_info=True)
 
         finally:
             return redirect(req.session["redirect_url"])
@@ -815,6 +840,7 @@ def render_edit_tb03_form(req, uuid, formid):
 
     except Exception as e:
         messages.error(req, str(e))
+        logger.error(str(e), exc_info=True)
 
         return redirect(req.session["redirect_url"])
 
@@ -831,6 +857,7 @@ def render_delete_tb03_form(req, formid):
 
         except Exception as e:
             messages.error(req, str(e))
+            logger.error(str(e), exc_info=True)
 
         finally:
             return redirect(req.session["redirect_url"])
@@ -849,6 +876,7 @@ def render_tb03u_form(req, uuid):
 
         except Exception as e:
             messages.error(req, str(e))
+            logger.error(str(e), exc_info=True)
 
         finally:
             redirect_to = "/mdrtb/dashboard/patient/{}?program={}".format(
@@ -895,6 +923,7 @@ def render_tb03u_form(req, uuid):
     except Exception as e:
         logger.error(e, exc_info=True)
         messages.error(req, str(e))
+        logger.error(str(e), exc_info=True)
 
         return redirect(req.session["redirect_url"])
 
@@ -910,7 +939,8 @@ def render_edit_tb03u_form(req, uuid, formid):
             response = fu.create_update_tb03u(req, uuid, req.POST, formid=formid)
 
         except Exception as e:
-            messages.error(req, str(e)),
+            logger.error(str(e), exc_info=True)
+            messages.error(req, str(e))
 
         finally:
             return redirect(req.session["redirect_url"], permanent=True)
@@ -967,6 +997,7 @@ def render_edit_tb03u_form(req, uuid, formid):
 
     except Exception as e:
         messages.error(req, str(e))
+        logger.error(str(e), exc_info=True)
 
         return redirect(req.session["redirect_url"])
 
@@ -980,6 +1011,7 @@ def render_delete_tb03u_form(req, formid):
 
         except Exception as e:
             messages.error(req, str(e))
+            logger.error(str(e), exc_info=True)
 
         finally:
             return redirect(req.session["redirect_url"], permanent=True)
@@ -1004,6 +1036,7 @@ def render_adverse_events_form(req, patientid):
 
         except Exception as e:
             messages.error(req, str(e))
+            logger.error(str(e), exc_info=True)
 
         finally:
             return redirect(req.session["redirect_url"], permanent=True)
@@ -1076,6 +1109,7 @@ def render_edit_adverse_events_form(req, patientid, formid):
 
         except Exception as e:
             messages.error(req, str(e))
+            logger.error(str(e), exc_info=True)
 
         finally:
             return redirect(req.session["redirect_url"], permanent=True)
@@ -1139,6 +1173,7 @@ def render_edit_adverse_events_form(req, patientid, formid):
 
     except Exception as e:
         messages.error(req, str(e))
+        logger.error(str(e), exc_info=True)
 
         return redirect(req.session["redirect_url"])
 
@@ -1152,6 +1187,7 @@ def render_delete_adverse_events_form(req, formid):
 
     except Exception as e:
         messages.error(req, str(e))
+        logger.error(str(e), exc_info=True)
 
     finally:
         return redirect(req.session["redirect_url"], permanent=True)
@@ -1170,6 +1206,7 @@ def render_drug_resistence_form(req, patientid):
 
         except Exception as e:
             messages.error(req, str(e))
+            logger.error(str(e), exc_info=True)
 
         finally:
             return redirect(req.session["redirect_url"], permanent=True)
@@ -1191,6 +1228,7 @@ def render_drug_resistence_form(req, patientid):
 
     except Exception as e:
         messages.error(req, str(e))
+        logger.error(str(e), exc_info=True)
         return redirect(req.session.get("redirect_url"))
 
 
@@ -1211,6 +1249,7 @@ def render_edit_drug_resistence_form(req, patientid, formid):
 
         except Exception as e:
             messages.error(req, str(e))
+            logger.error(str(e), exc_info=True)
 
         finally:
             return redirect(req.session["redirect_url"], permanent=True)
@@ -1258,6 +1297,7 @@ def render_delete_drug_resistence_form(req, formid):
 
     except Exception as e:
         messages.error(req, e)
+        logger.error(str(e), exc_info=True)
 
     finally:
         return redirect(req.session.get("redirect_url"), permanent=True)
@@ -1282,6 +1322,7 @@ def render_regimen_form(req, patientid):
 
         except Exception as e:
             messages.error(req, str(e))
+            logger.error(str(e), exc_info=True)
 
         finally:
             return redirect(req.session["redirect_url"])
@@ -1329,6 +1370,7 @@ def render_edit_regimen_form(req, patientid, formid):
 
         except Exception as e:
             messages.error(req, str(e))
+            logger.error(str(e), exc_info=True)
 
         finally:
             return redirect(req.session["redirect_url"])
@@ -1372,6 +1414,7 @@ def render_edit_regimen_form(req, patientid, formid):
 
     except Exception as e:
         messages.error(req, str(e))
+        logger.error(str(e), exc_info=True)
         return redirect(req.session.get("redirect_url"))
 
 
@@ -1402,6 +1445,7 @@ def render_form_89(req, uuid):
 
         except Exception as e:
             messages.error(req, str(e))
+            logger.error(str(e), exc_info=True)
 
         finally:
             return redirect(req.session["redirect_url"], permanent=True)
@@ -1447,6 +1491,7 @@ def render_form_89(req, uuid):
     except Exception as e:
         logger.error(e, exc_info=True)
         messages.error(req, str(e))
+        logger.error(str(e), exc_info=True)
 
         return redirect(req.session["redirect_url"])
 
@@ -1520,6 +1565,7 @@ def render_edit_form_89(req, uuid, formid):
 
     except Exception as e:
         messages.error(req, str(e))
+        logger.error(str(e), exc_info=True)
 
         return redirect(req.session["redirect_url"])
 
@@ -1530,6 +1576,7 @@ def render_delete_form_89(req, formid):
 
     except Exception as e:
         messages.error(req, str(e))
+        logger.error(str(e), exc_info=True)
 
     finally:
         return redirect(req.session["redirect_url"])
@@ -1572,6 +1619,7 @@ def render_user_profile(req):
             return redirect(req.session["redirect_url"])
         except Exception as e:
             messages.error(req, str(e))
+            logger.error(str(e), exc_info=True)
 
             return redirect(req.session["redirect_url"])
 
@@ -1624,6 +1672,7 @@ def render_user_profile(req):
 
     except Exception as e:
         messages.error(req, str(e))
+        logger.error(str(e), exc_info=True)
 
         return redirect(req.session["redirect_url"])
 
@@ -1641,6 +1690,7 @@ def render_transferout_form(req, patientuuid):
 
         except Exception as e:
             messages.error(req, e)
+            logger.error(str(e), exc_info=True)
 
         finally:
             return redirect(req.session["redirect_url"])
@@ -1672,6 +1722,7 @@ def render_edit_transferout_form(req, patientuuid, formid):
 
         except Exception as e:
             messages.error(req, e)
+            logger.error(str(e), exc_info=True)
 
         finally:
             return redirect(req.session["redirect_url"])
@@ -1714,6 +1765,7 @@ def render_delete_transferout_form(req, formid):
 
     except Exception as e:
         messages.error(req, str(e))
+        logger.error(str(e), exc_info=True)
 
     finally:
         return redirect(req.session["redirect_url"])
@@ -1851,6 +1903,7 @@ def render_tb03_report(req):
 
     except Exception as e:
         messages.error(req, e)
+        logger.error(str(e), exc_info=True)
 
         return redirect("searchPatientsView")
 
@@ -1925,6 +1978,7 @@ def render_tb03u_report(req):
 
     except Exception as e:
         messages.error(req, e)
+        logger.error(str(e), exc_info=True)
 
         return redirect("searchPatientsView")
 
@@ -1999,6 +2053,7 @@ def render_form89_report(req):
 
     except Exception as e:
         messages.error(req, e)
+        logger.error(str(e), exc_info=True)
 
         return redirect("searchPatientsView")
 
@@ -2080,6 +2135,7 @@ def render_tb08_report(req):
 
     except Exception as e:
         messages.error(req, e)
+        logger.error(str(e), exc_info=True)
 
         return redirect(req.session["redirect_url"])
 
@@ -2161,6 +2217,7 @@ def render_tb08u_report(req):
 
     except Exception as e:
         messages.error(req, e)
+        logger.error(str(e), exc_info=True)
 
         return redirect(req.session["redirect_url"])
 
@@ -2242,6 +2299,7 @@ def render_tb07u_report(req):
 
     except Exception as e:
         messages.error(req, e)
+        logger.error(str(e), exc_info=True)
 
         return redirect(req.session["redirect_url"])
 
@@ -2275,6 +2333,7 @@ def render_manage_test_types(req):
 
         except Exception as e:
             messages.error(req, e)
+            logger.error(str(e), exc_info=True)
 
             return redirect(req.session["redirect_url"])
 
@@ -2291,6 +2350,7 @@ def render_manage_test_types(req):
 
     except Exception as e:
         messages.error(req, e)
+        logger.error(str(e), exc_info=True)
 
         return redirect(req.session["redirect_url"])
 
@@ -2580,6 +2640,7 @@ def render_managetestorders(req, uuid):
 
     except Exception as e:
         messages.error(req, e)
+        logger.error(str(e), exc_info=True)
 
         return redirect(req.session["redirect_url"])
 
@@ -2618,11 +2679,13 @@ def render_add_lab_test(req, uuid):
 
             else:
                 messages.error(req, response["error"]["message"])
+                logger.error(response["error"]["message"], exc_info=True)
 
                 return redirect("managetestorders", uuid=uuid)
 
         except Exception as e:
             messages.error(req, e)
+            logger.error(str(e), exc_info=True)
 
             return redirect(req.session["redirect_url"])
 
@@ -2661,6 +2724,7 @@ def render_add_lab_test(req, uuid):
 
     except Exception as e:
         messages.error(req, e)
+        logger.error(str(e), exc_info=True)
 
         return redirect(req.session["redirect_url"])
 
@@ -2695,14 +2759,14 @@ def render_edit_lab_test(req, patientid, orderid):
                     "careSetting": req.POST["careSetting"],
                 },
             }
-            print(body)
             status, response = ru.post(req, f"commonlab/labtestorder/{orderid}", body)
 
             if status:
                 return redirect("managetestorders", uuid=patientid)
 
             else:
-                messages.error(req, "dfsd")
+                messages.error(req, "Error creating test order")
+                logger.error("Error creating test order", exc_info=True)
 
                 return redirect("managetestorders", uuid=patientid)
 
@@ -2757,12 +2821,14 @@ def render_edit_lab_test(req, patientid, orderid):
             return render(req, "app/commonlab/addlabtest.html", context=context)
 
         else:
-            messages.error(req, "404")
+            messages.error(req, "Error getting lab test")
+            logger.error("Error getting lab test", exc_info=True)
 
             return redirect("managetestorders", uuid=patientid)
 
     except Exception as e:
         messages.error(req, e)
+        logger.error(str(e), exc_info=True)
 
         return redirect(req.session["redirect_url"])
 
@@ -2825,6 +2891,7 @@ def render_add_test_sample(req, orderid):
 
         else:
             messages.error(req, "Error adding samples")
+            logger.error("Error adding samples", exc_info=True)
 
             return redirect("managetestsamples", orderid=orderid)
 
@@ -2876,6 +2943,7 @@ def render_edit_test_sample(req, orderid, sampleid):
 
         else:
             messages.error(req, "Error adding samples")
+            logger.error("Error adding samples", exc_info=True)
 
             return redirect("managetestsamples", orderid=orderid)
 
@@ -2935,6 +3003,7 @@ def render_change_sample_status(req, orderid, sampleid):
 
         except Exception as e:
             messages.error(req, f"Sample {sample_status}")
+            logger.error(f"Sample {sample_status}", exc_info=True)
 
     return redirect("managetestsamples", orderid=orderid)
 
@@ -3003,10 +3072,12 @@ def render_add_test_results(req, orderid):
             except Exception as e:
                 logger.error(e, exc_info=True)
                 messages.error(req, str(e))
+
                 return redirect(req.session["redirect_url"])
 
         else:
             messages.error(req, "Error creating the order")
+            logger.error("Error creating the order", exc_info=True)
 
             return redirect("managetestorders", uuid=req.GET["patient"])
 
@@ -3034,6 +3105,7 @@ def render_add_test_results(req, orderid):
 
     except Exception as e:
         messages.error(req, e)
+        logger.error(str(e), exc_info=True)
 
         return redirect("managetestorders", uuid=req.GET["patient"])
 
@@ -3047,23 +3119,32 @@ def render_edit_test_results(req, orderid):
         attributes = cu.get_labtest_attributes(req, orderid)
     except Exception as e:
         messages.error(req, e)
+        logger.error(str(e), exc_info=True)
 
         return redirect(req.session["redirect_url"])
 
 
 def check_if_sample_exists(req, orderid):
+    sample_accepted = False
     try:
         status, response = ru.get(
             req, f"commonlab/labtestorder/{orderid}", {"v": "custom:(labTestSamples)"}
         )
         if status:
             if len(response["labTestSamples"]) > 0:
-                return JsonResponse({"sample_exists": True})
-            else:
-                return JsonResponse({"sample_exists": False})
+                for sample in response["labTestSamples"]:
+                    if sample["status"] in [
+                        Constants.ACCEPTED.value,
+                        Constants.PROCESSED.value,
+                    ]:
+                        sample_accepted = True
+                        break
+            return JsonResponse({"sample_accepted": sample_accepted})
     except Exception as e:
         messages.error(req, "Error fetching Samples")
-        return JsonResponse({"sample_exists": False})
+        logger.error(str(e), exc_info=True)
+
+        return JsonResponse({"sample_accepted": False})
 
 
 def render_logout(req):
@@ -3076,4 +3157,6 @@ def render_logout(req):
 
     except Exception as e:
         messages.error(req, str(e))
+        logger.error(str(e), exc_info=True)
+
         return redirect(req.session.get("redirect_url"))

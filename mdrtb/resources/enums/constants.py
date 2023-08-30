@@ -32,7 +32,6 @@ class Constants(enum.Enum):
     RU = "Russian"
     TJ = "Tajik"
 
-
     # Location attribute Types
     LEVEL = "6b738ed1-78b3-4cdb-81f6-7fdc5da20a3d"
 
@@ -44,3 +43,9 @@ class Constants(enum.Enum):
     # Care Setting
     OUTPATIENT = "6f0c9a92-6f24-11e3-af88-005056821db0"
     INPATIENT = "c365e560-c3ec-11e3-9c1a-0800200c9a66"
+
+    # Sample status
+    ACCEPTED = "ACCEPTED"
+    REJECTED = "REJECTED"
+    COLLECTED = "COLLECTED"
+    PROCESSED = "PROCESSED"
