@@ -2304,6 +2304,89 @@ def render_tb07u_report(req):
         return redirect(req.session["redirect_url"])
 
 
+def render_form8_report_form(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    title = mu.get_global_msgs("mdrtb.form8Parameters", locale=req.session["locale"])
+    context = {
+        "title": title,
+        "months": util.get_months(),
+        "quarters": util.get_quarters(),
+    }
+
+    if req.method == "POST":
+        month = req.POST.get("month")
+
+        quarter = req.POST.get("quarter")
+
+        keys_to_check = ["facility", "district", "region"]
+
+        location = None
+
+        for key in keys_to_check:
+            value = req.POST.get(key)
+
+            if value and len(value) > 0:
+                location = value
+
+                break
+
+        year = req.POST.get("year")
+
+        if month:
+            url = f"/form8results?year={year}&month={month}&location={location}"
+
+        elif quarter:
+            url = f"/form8results?year={year}&quarter={quarter}&location={location}"
+        return redirect(url)
+
+    return render(req, "app/reporting/form8_report_form.html", context)
+
+
+def render_form8_report(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
+
+    try:
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER")
+
+        context = {"title": "TB08 Report"}
+
+        month = req.GET.get("month")
+
+        quarter = req.GET.get("quarter")
+
+        location = req.GET.get("location")
+
+        year = req.GET.get("year")
+
+        params = {"year": year, "location": location}
+
+        if month:
+            params["month"] = month
+
+        elif quarter:
+            params["quarter"] = quarter
+
+        status, response = ru.get(req, "mdrtb/form8report", params)
+
+        if status:
+            context["location"] = mu.get_location(req, location)
+
+            context["form8data"] = response["results"][0]
+
+            return render(req, "app/reporting/form8_report.html", context)
+
+        return redirect("searchPatientsView")
+
+    except Exception as e:
+        raise Exception(e)
+        # messages.error(req, e)
+        # logger.error(str(e), exc_info=True)
+
+        # return redirect(req.session["redirect_url"])
+
+
 # CommonLab Views
 
 

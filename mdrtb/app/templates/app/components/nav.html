@@ -135,7 +135,8 @@
       </button>
       <ul class="tw-dropdown-item-list" aria-labelledby="dropdownOtherReports" data-te-dropdown-menu-ref>
         <li data-te-dropdown-item-ref>
-          <a class="tw-dropdown-item" href="#">{{'mdrtb.form8.title'|get_message:request.session.locale}}</a>
+          <a class="tw-dropdown-item"
+            href="{% url 'form8export' %}">{{'mdrtb.form8.title'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item" href="#">{{'mdrtb.pv.qtrReportTitle'|get_message:request.session.locale}}</a>

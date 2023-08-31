@@ -476,12 +476,6 @@
     </div>
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.1.js"></script>
-    <!-- <script type="text/javascript" src="/moduleResources/mdrtb/tableExport/js/tableExport.js"></script>
-        <script type="text/javascript" src="/moduleResources/mdrtb/tableExport/js/jquery.base64.js"></script>
-        <script type="text/javascript" src="/moduleResources/mdrtb/tableExport/js/jspdf/libs/sprintf.js"></script>
-        <script type="text/javascript" src="/moduleResources/mdrtb/tableExport/js/jspdf/jspdf.js"></script>
-        <script type="text/javascript" src="/moduleResources/mdrtb/tableExport/js/jspdf/libs/base64.js"></script> -->
-
     <script type="text/javascript">
         function printForm() {
             var mywindow = window.open('', 'PRINT', 'height=400,width=600');
@@ -616,7 +610,7 @@
             input.setAttribute("value", "DOTSTB");
             form.appendChild(input);
 
-            form.mit();
+            form.submit();
         }
         $(document).ready(function () {
             $("#tableToSql").bind("click", function () {

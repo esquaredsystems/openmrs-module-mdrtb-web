@@ -126,6 +126,8 @@ urlpatterns = [
     # Reporting Urls
     path("tb03export", views.render_tb03_report_form, name="tb03export"),
     path("tb03results", views.render_tb03_report, name="tb03Results"),
+    path("form8export", views.render_form8_report_form, name="form8export"),
+    path("form8results", views.render_form8_report, name="form8Results"),
     path("tb03uexport", views.render_tb03u_report_form, name="tb03uexport"),
     path("tb03uresults", views.render_tb03u_report, name="tb03uResults"),
     path("form89export", views.render_form89_report_form, name="form89export"),
