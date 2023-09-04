@@ -151,11 +151,14 @@ def get_location(req, uuid):
     """
 
     try:
-        status, response = ru.get(req, f"location/{uuid}", {})
+        status, response = ru.get(req, f"location/{uuid}", {"v": "full"})
         if status:
             return {
                 "location": response["display"],
                 "parent": response["parentLocation"]["display"],
+                "grandparent": response["parentLocation"]["parentLocation"]["display"]
+                if "parentLocation" in response["parentLocation"]
+                else None,
             }
     except Exception as e:
         raise Exception(str(e))

@@ -71,7 +71,7 @@ def check_privileges(req, privileges_required):
 
 def index(req):
     # This is a test function
-    return render(req, "app/tbregister/reportmockup.html")
+    return render(req, "app/tbregister/reportmockup.html", {"a": 1, "b": 2})
 
 
 def get_locations(req):
@@ -2233,31 +2233,35 @@ def render_tb07u_report_form(req):
     }
 
     if req.method == "POST":
-        month = req.POST.get("month")
+        try:
+            month = req.POST.get("month")
 
-        quarter = req.POST.get("quarter")
+            quarter = req.POST.get("quarter")
 
-        keys_to_check = ["facility", "district", "region"]
+            keys_to_check = ["facility", "district", "region"]
 
-        location = None
+            location = None
 
-        for key in keys_to_check:
-            value = req.POST.get(key)
+            for key in keys_to_check:
+                value = req.POST.get(key)
 
-            if value and len(value) > 0:
-                location = value
+                if value and len(value) > 0:
+                    location = value
 
-                break
+                    break
 
-        year = req.POST.get("year")
+            year = req.POST.get("year")
 
-        if month:
-            url = f"/tb07uresults?year={year}&month={month}&location={location}"
+            if month:
+                url = f"/tb07uresults?year={year}&month={month}&location={location}"
 
-        elif quarter:
-            url = f"/tb07uresults?year={year}&quarter={quarter}&location={location}"
-        return redirect(url)
-
+            elif quarter:
+                url = f"/tb07uresults?year={year}&quarter={quarter}&location={location}"
+            return redirect(url)
+        except Exception as e:
+            messages.error(req, e)
+            logger.error(str(e), exc_info=True)
+            return redirect(req.session["redirect_url"])
     return render(req, "app/reporting/tb07u_report_form.html", context)
 
 
@@ -2380,11 +2384,10 @@ def render_form8_report(req):
         return redirect("searchPatientsView")
 
     except Exception as e:
-        raise Exception(e)
-        # messages.error(req, e)
-        # logger.error(str(e), exc_info=True)
+        messages.error(req, e)
+        logger.error(str(e), exc_info=True)
 
-        # return redirect(req.session["redirect_url"])
+        return redirect(req.session["redirect_url"])
 
 
 # CommonLab Views

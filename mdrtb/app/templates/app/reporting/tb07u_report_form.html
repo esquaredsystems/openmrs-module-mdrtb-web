@@ -10,11 +10,11 @@
         </div>
         <div class="input-container">
             <label class="input-label w-1/6" for="year">{{"mdrtb.year"|get_message:request.session.locale}}</label>
-            <input type="text" class="input form-control" size="4" name="year" id="year">
+            <input required type="text" class="input form-control" size="4" name="year" id="year">
         </div>
         <div class="input-container">
             <label class="input-label w-1/6" for="month">{{"mdrtb.month"|get_message:request.session.locale}}</label>
-            <select name="month" id="month" class="input form-control">
+            <select required name="month" id="month" class="input form-control">
                 <option value="">Select</option>
                 {% for month in months %}
                 <option value="{{month.value}}">{{month.name}}</option>
@@ -24,7 +24,7 @@
         <div class="input-container">
             <label class="input-label w-1/6"
                 for="quarter">{{"mdrtb.quarter"|get_message:request.session.locale}}</label>
-            <select name="quarter" id="quarter" class="input form-control">
+            <select required name="quarter" id="quarter" class="input form-control">
                 <option value="">Select</option>
                 {% for quarter in quarters %}
                 <option value="{{quarter}}">{{quarter}}</option>
@@ -43,20 +43,25 @@
     </form>
 </div>
 <script type="text/javascript">
+    $('#region-select').prop('required', true);
     $('#month').change((e) => {
         if (e.target.value != '') {
             $('#quarter').prop('disabled', true)
+            $('#quarter').prop('required', false)
             $('#quarter').prop('title', 'Quarter cannot be selected with month')
         } else {
             $('#quarter').prop('disabled', false)
             $('#quarter').prop('title', '')
+            $('#quarter').prop('required', true)
         }
     })
     $('#quarter').change((e) => {
         if (e.target.value != '') {
             $('#month').prop('disabled', true)
+            $('#month').prop('required', false)
             $('#month').prop('title', 'Month cannot be selected with quarter')
         } else {
+            $('#month').prop('required', true)
             $('#month').prop('disabled', false)
             $('#month').prop('title', '')
         }
