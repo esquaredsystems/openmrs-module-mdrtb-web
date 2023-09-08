@@ -126,6 +126,14 @@ urlpatterns = [
     # Reporting Urls
     path("tb03export", views.render_tb03_report_form, name="tb03export"),
     path("tb03results", views.render_tb03_report, name="tb03Results"),
+    path(
+        "tb03singleexport",
+        views.render_tb03_single_report_form,
+        name="tb03singleexport",
+    ),
+    path(
+        "tb03singleresults", views.render_tb03_single_report, name="tb03singleResults"
+    ),
     path("form8export", views.render_form8_report_form, name="form8export"),
     path("form8results", views.render_form8_report, name="form8Results"),
     path("tb03uexport", views.render_tb03u_report_form, name="tb03uexport"),

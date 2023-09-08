@@ -61,7 +61,8 @@
         </li>
         <li data-te-dropdown-item-ref>
 
-          <a class="tw-dropdown-item" href="#">{{'mdrtb.tb03ExportSingleLine'|get_message:request.session.locale}}</a>
+          <a class="tw-dropdown-item"
+            href="{% url 'tb03singleexport' %}">{{'mdrtb.tb03ExportSingleLine'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item" href="{% url 'form89export' %}">

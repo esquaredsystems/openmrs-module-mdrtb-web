@@ -1908,6 +1908,83 @@ def render_tb03_report(req):
         return redirect("searchPatientsView")
 
 
+def render_tb03_single_report_form(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    title = mu.get_global_msgs("mdrtb.tb03Parameters", locale=req.session["locale"])
+    context = {
+        "title": title,
+        "months": util.get_months(),
+        "quarters": util.get_quarters(),
+    }
+
+    if req.method == "POST":
+        month = req.POST.get("month")
+
+        quarter = req.POST.get("quarter")
+
+        keys_to_check = ["facility", "district", "region"]
+
+        location = None
+
+        for key in keys_to_check:
+            value = req.POST.get(key)
+
+            if value and len(value) > 0:
+                location = value
+
+                break
+
+        year = req.POST.get("year")
+
+        if month:
+            url = f"/tb03results?year={year}&month={month}&location={location}"
+
+        elif quarter:
+            url = (
+                f"/tb03singleresults?year={year}&quarter={quarter}&location={location}"
+            )
+        return redirect(url)
+
+    return render(req, "app/reporting/tb03_single_report_form.html", context)
+
+
+def render_tb03_single_report(req):
+    context = {"title": "TB03 Report"}
+
+    try:
+        month = req.GET.get("month")
+
+        quarter = req.GET.get("quarter")
+
+        location = req.GET.get("location")
+
+        year = req.GET.get("year")
+
+        params = {"year": year, "location": location}
+
+        if month:
+            params["month"] = month
+
+        elif quarter:
+            params["quarter"] = quarter
+
+        status, response = ru.get(req, "mdrtb/tb03report", params)
+
+        if status:
+            context["patientSet"] = response["results"]
+
+            return render(req, "app/reporting/tb03_single_report.html", context)
+
+        return redirect("searchPatientsView")
+
+    except Exception as e:
+        messages.error(req, e)
+        logger.error(str(e), exc_info=True)
+
+        return redirect("searchPatientsView")
+
+
 def render_tb03u_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
@@ -2354,7 +2431,7 @@ def render_form8_report(req):
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER")
 
-        context = {"title": "TB08 Report"}
+        context = {"title": "Form8 Report"}
 
         month = req.GET.get("month")
 
