@@ -107,16 +107,12 @@
     function showModal(uuid) {
       for (order of orders) {
         if (order.uuid === uuid) {
-          let sample_accepted = null;
-          $.ajax({
-            method: "GET",
-            url: `/commonlab/order/${uuid}/gettestsamples`,
-            success: (data) => {
-              sample_accepted = data.sample_accepted;
-              let samplesUrl = `{% url 'managetestsamples' orderid=122 %}`.replace('122', uuid)
-              let resultsUrl = `{% url 'addtestresults' orderid=122 %}?patient={{patient}}`.replace('122', uuid)
-              $("#modal").append(
-                `
+          console.log(order)
+          let sample_accepted = order.sample_accepted;
+          let samplesUrl = `{% url 'managetestsamples' orderid=122 %}`.replace('122', uuid)
+          let resultsUrl = `{% url 'addtestresults' orderid=122 %}?patient={{patient}}`.replace('122', uuid)
+          $("#modal").append(
+            `
             <div class="flex items-center justify-between">
       <h3 id="modal-testType" class="text-3xl">${order.labTestType.name}</h3>
       <svg id="close-modal" onclick="closeModal()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -195,10 +191,7 @@
 
 
             `
-              );
-
-            }
-          })
+          );
 
         }
       }
@@ -211,7 +204,8 @@
     function closeModal() {
       $("#modal").removeClass("opacity-100");
       $("#modal").addClass("opacity-0");
-      $("#modal").html("");
+      $("#modal").empty();
+
     }
   </script>
 </div>

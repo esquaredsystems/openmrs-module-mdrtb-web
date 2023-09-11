@@ -127,11 +127,22 @@
       }
     }
 
+    function debounce(func, delay) {
+      let timerId;
+
+      return function (...args) {
+        clearTimeout(timerId);
+
+        timerId = setTimeout(() => {
+          func.apply(this, args);
+        }, delay);
+      };
+    }
 
 
     $('#search-input').keyup(function (e) {
       if (e.target.value.length > minSearchCharacters) {
-        handleSearch(e.target.value)
+        debounce(handleSearch(e.target.value), 1000)
 
       } else {
         $('#search-results').removeClass('flex')

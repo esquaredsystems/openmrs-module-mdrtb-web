@@ -682,6 +682,7 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
 
         if lab_results:
             context["lab_results"] = lab_results
+            context["lab_json"] = json.dumps(lab_results)
 
         if forms:
             context["forms"] = forms
@@ -2790,11 +2791,11 @@ def render_managetestorders(req, uuid):
             },
         )
 
-        # # result_date = cu.get_result_date_if_exists(req, orderid)
-        # if result_date:
-        #     context["result_date"] = result_date
-
         if status:
+            orders = response["results"]
+            for order in orders:
+                sample_accepted = check_if_sample_exists(req, order["uuid"])
+                order.update({"sample_accepted": sample_accepted})
             context["orders"] = response["results"]
 
             context["json_orders"] = json.dumps(response["results"])
@@ -3302,12 +3303,12 @@ def check_if_sample_exists(req, orderid):
                     ]:
                         sample_accepted = True
                         break
-            return JsonResponse({"sample_accepted": sample_accepted})
+            return sample_accepted
     except Exception as e:
         messages.error(req, "Error fetching Samples")
         logger.error(str(e), exc_info=True)
 
-        return JsonResponse({"sample_accepted": False})
+        return sample_accepted
 
 
 def render_logout(req):

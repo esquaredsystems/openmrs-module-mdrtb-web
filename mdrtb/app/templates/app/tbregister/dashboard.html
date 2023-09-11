@@ -9,7 +9,32 @@
 {%block content%}
 
 
-<div class="flex flex-col space-y-6 m-6">
+<div class="flex flex-col space-y-6 m-6 relative">
+  <section hidden id="modal"
+    class="flex flex-col justify-center transition-opacity ease-in-out duration-500 opacity-0 backdrop-blur-3xl inset-0 z-50 shadow-2xl  m-10  bg-white w-3/5 mx-auto p-8 absolute top-0 left-0 right-0 bottom-0 h-min">
+    <div class="flex items-center justify-between ">
+      <h3 id="modal-testType" class="text-3xl">Lab Results</h3>
+      <svg id="close-modal" onclick="closeModal()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+        stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white bg-red-700 cursor-pointer">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+
+
+    </div>
+    <div class="m-4">
+      <div id="resultsbox" class="grid grid-cols-1 space-y-4 h-min w-full bg-gray-200 p-4 rounded-md shadow-md">
+        <div class="search-result-items font-bold w-full">
+          <p class="col-span-2">Name</p>
+          <p>Group Name</p>
+          <p>Result</p>
+        </div>
+
+
+      </div>
+
+
+  </section>
+
   {% include 'app/components/patient_banner.html' %}
   <div class="m-4">
     {% include 'app/components/breadcrumbs.html'%}
@@ -265,14 +290,15 @@
               </td>
               <td class="px-5 py-5 border-b w-1/5 border-gray-200 bg-white text-sm">
                 <div class="flex space-x-4">
-                  <a href="{% url 'managetestorders' uuid=uuid %}" target="_blank">
+                  <button onclick="showModal(this,'{{lab_result.labTestType.name}}')"
+                    data-attributes="{{lab_result.attributes}}">
                     <svg id="detail-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                       stroke-width="1.5" stroke="currentColor" class="w-5 h-5 hover:text-blue-500 cursor-pointer">
                       <path stroke-linecap="round" stroke-linejoin="round"
                         d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                       <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                  </a>
+                  </button>
                   <a href="{% url 'editlabtest' orderid=lab_result.uuid patientid=uuid %}">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                       stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
@@ -348,5 +374,40 @@
   {% endif %}
 
 </div>
+
+<script>
+  const stringToJson = (string) => {
+    return JSON.parse(
+      string.replace(/'/g, '"')
+        .replace(/None/g, 'null')
+        .replace(/True/g, 'true')
+        .replace(/False/g, 'false'))
+  }
+
+  function showModal(element, name) {
+    console.log(name)
+    let attributes = stringToJson($(element).data('attributes'))
+    for (attribute of attributes) {
+      $('#resultsbox').append(
+        `
+            <div class="search-result-items font-bold">
+          <p class="col-span-2">${attribute.attributeType.name}</p>
+          <p>${attribute.attributeType.group}</p>
+          <p>${attribute.valueReference}</p>
+        </div>
+        `
+      )
+    }
+    $('#modal').prop('hidden', false)
+    $('#modal').removeClass('opacity-0')
+    $('html,body').animate({ scrollTop: $('body').offset().top }, 'slow');
+
+  }
+  function closeModal() {
+    $('#modal').addClass('opacity-0')
+    $('#modal').prop('hidden', true)
+    $('#resultsbox').html(``)
+  }
+</script>
 
 {% endblock %}

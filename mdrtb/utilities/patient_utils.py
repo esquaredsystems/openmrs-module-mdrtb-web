@@ -2,6 +2,7 @@ from utilities import common_utils as u
 from utilities import restapi_utils as ru
 from utilities import metadata_util as mu
 from utilities import forms_util as fu
+from utilities import commonlab_util as cu
 from resources.enums.constants import Constants
 from resources.enums.mdrtbConcepts import Concepts
 from resources.enums.encounterType import EncounterType
@@ -528,6 +529,10 @@ def get_patient_dashboard_info(
                 },
             )
             if lab_results_status:
+                for lab_result in lab_results_response["results"]:
+                    attributes = cu.get_labtest_attributes(req, lab_result["uuid"])
+                    lab_result.update({"attributes": attributes})
+
                 lab_results = lab_results_response["results"]
         if is_mdrtb:
             forms = {
