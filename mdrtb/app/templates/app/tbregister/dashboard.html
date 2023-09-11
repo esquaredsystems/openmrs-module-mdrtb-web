@@ -270,23 +270,13 @@
           <tbody>
             {% for lab_result in lab_results %}
             <tr>
-              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                <div class="flex">
-                  <div class="ml-3">
-                    <p class="text-gray-900 whitespace-no-wrap">
-                      {{lab_result.labTestType.name}}
-                    </p>
-                  </div>
-                </div>
+              <td class="px-5  border-b border-gray-200 bg-white text-sm">{{lab_result.labTestType.name}}</td>
+              <td class="px-5  border-b border-gray-200 bg-white text-sm">
+                {{lab_result.order.encounter.display|get_encounter_name}}
               </td>
-              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                <p class="text-gray-900 whitespace-no-wrap">{{lab_result.order.encounter.display|get_encounter_name}}
-                </p>
-              </td>
-              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                <p class="text-gray-900 whitespace-no-wrap">
-                  {{lab_result.labReferenceNumber}}
-                </p>
+              <td class="px-5  border-b border-gray-200 bg-white text-sm">
+                {{lab_result.labReferenceNumber}}
+
               </td>
               <td class="px-5 py-5 border-b w-1/5 border-gray-200 bg-white text-sm">
                 <div class="flex space-x-4">
@@ -376,38 +366,7 @@
 </div>
 
 <script>
-  const stringToJson = (string) => {
-    return JSON.parse(
-      string.replace(/'/g, '"')
-        .replace(/None/g, 'null')
-        .replace(/True/g, 'true')
-        .replace(/False/g, 'false'))
-  }
 
-  function showModal(element, name) {
-    console.log(name)
-    let attributes = stringToJson($(element).data('attributes'))
-    for (attribute of attributes) {
-      $('#resultsbox').append(
-        `
-            <div class="search-result-items font-bold">
-          <p class="col-span-2">${attribute.attributeType.name}</p>
-          <p>${attribute.attributeType.group}</p>
-          <p>${attribute.valueReference}</p>
-        </div>
-        `
-      )
-    }
-    $('#modal').prop('hidden', false)
-    $('#modal').removeClass('opacity-0')
-    $('html,body').animate({ scrollTop: $('body').offset().top }, 'slow');
-
-  }
-  function closeModal() {
-    $('#modal').addClass('opacity-0')
-    $('#modal').prop('hidden', true)
-    $('#resultsbox').html(``)
-  }
 </script>
 
 {% endblock %}

@@ -55,7 +55,7 @@
               <tbody>
                 {% for order in orders %}
                 <tr>
-                  <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                  <td class="px-5 pt-3 border-b border-gray-200 bg-white text-sm">
                     <div class="flex">
                       <div class="ml-3">
                         <p class="text-gray-900 whitespace-no-wrap">
@@ -64,15 +64,15 @@
                       </div>
                     </div>
                   </td>
-                  <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                  <td class="px-5 pt-3 border-b border-gray-200 bg-white text-sm">
                     <p class="text-gray-900 whitespace-no-wrap">{{order.order.encounter.display|get_encounter_name}}</p>
                   </td>
-                  <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                  <td class="px-5 pt-3 border-b border-gray-200 bg-white text-sm">
                     <p class="text-gray-900 whitespace-no-wrap">
                       {{order.labReferenceNumber}}
                     </p>
                   </td>
-                  <td class="px-5 py-5 border-b w-1/5 border-gray-200 bg-white text-sm">
+                  <td class="px-5 pt-3 border-b w-1/5 border-gray-200 bg-white text-sm">
                     <div class="flex space-x-4">
                       <svg id="detail-icon" onclick="showModal('{{order.uuid}}')" xmlns="http://www.w3.org/2000/svg"
                         fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"

@@ -71,26 +71,26 @@
               <tbody>
                 {% for sample in samples %}
                 <tr>
-                  <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
+                  <td class="px-5 pt-3 border-b border-gray-200 w-min  text-sm">
                     <p class="text-gray-900 whitespace-no-wrap">
                       {{sample.specimenType.display}}
                     </p>
                   </td>
-                  <td class="px-5 py-5 border-b border-gray-200 w-min text-sm">
+                  <td class="px-5 pt-3 border-b border-gray-200 w-min text-sm">
                     <p class="text-gray-900 whitespace-no-wrap">{{sample.specimenSite.display}}</p>
                   </td>
-                  <td class=" px-5 py-5 border-b border-gray-200 w-min text-sm">
+                  <td class=" px-5 pt-3 border-b border-gray-200 w-min text-sm">
                     <p class="text-gray-900 whitespace-no-wrap">
                       {{sample.collectionDate |iso_to_normal_date}}
                     </p>
                   </td>
-                  <td class="px-5 py-5 border-b border-gray-200 w-min text-sm">
+                  <td class="px-5 pt-3 border-b border-gray-200 w-min text-sm">
                     <p
                       class="whitespace-no-wrap {% if sample.status == 'ACCEPTED' %}text-green-600{% elif sample.status == 'REJECTED' %}text-red-600{% else %}text-gray-900{% endif %}">
                       {{sample.status}}
                     </p>
                   </td>
-                  <td class="px-5 py-5 border-b w-min border-gray-200 bg-white text-sm">
+                  <td class="px-5 pt-3 border-b w-min border-gray-200 bg-white text-sm">
                     <div class="flex space-x-4">
 
                       <a href="{% url 'edittestsample' orderid=orderid sampleid=sample.uuid %}">
@@ -103,7 +103,7 @@
                     </div>
                   </td>
                   {% if sample.status == 'COLLECTED' %}
-                  <td class="px-5 py-5 border-b w-min border-gray-200  text-sm">
+                  <td class="px-5 pt-3 border-b w-min border-gray-200  text-sm">
                     <form method="post" action="{% url 'changesamplestatus' orderid=orderid sampleid=sample.uuid %}"
                       class="flex-center justify-center space-x-2">
                       {% csrf_token %}
@@ -115,7 +115,7 @@
                     </form>
                   </td>
                   {% else %}
-                  <td class="px-5 py-5 border-b w-min border-gray-200  text-sm">
+                  <td class="px-5 py-3 border-b w-min border-gray-200  text-sm">
                     <div class="flex-center justify-center space-x-2">
                       <input disabled type="submit" value="Accept" name="status"
                         class="p-2 pointer-events-none w-full rounded-md font-bold cursor-pointer text-white bg-gray-500">

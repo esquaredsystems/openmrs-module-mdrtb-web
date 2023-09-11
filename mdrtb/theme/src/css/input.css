@@ -253,4 +253,12 @@
   .tw-accordian-span {
     @apply ml-auto h-5 w-5 shrink-0 rotate-[-180deg] fill-[#336dec] transition-transform duration-200 ease-in-out group-[[data-te-collapse-collapsed]]:rotate-0 group-[[data-te-collapse-collapsed]]:fill-[#212529] motion-reduce:transition-none;
   }
+
+
+.table-row{
+  @apply px-5 pt-3 border-b border-gray-200 bg-white text-sm;
 }
+
+}
+
+

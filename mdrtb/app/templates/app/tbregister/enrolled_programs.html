@@ -99,7 +99,7 @@
                 {% for program in programs %}
 
                 <tr>
-                  <td class="px-5 py-5 border-b border-gray-200 w-fit  text-sm">
+                  <td class="px-5 py-4 border-b border-gray-200 w-fit  text-sm">
                     <a href="{% if program.program.uuid == dots_program %}{% url 'editdotsprogram' uuid=uuid programid=program.uuid %}{% else %}{% url 'editmdrtbprogram' uuid=uuid programid=program.uuid %}{% endif %}"
                       class="cancel-button flex items-center space-x-3">
                       <div>{{program.program.name}}</div>
@@ -115,18 +115,18 @@
 
 
                   </td>
-                  <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
+                  <td class="px-5 py-4 border-b border-gray-200 w-min  text-sm">
                     {{program.dateEnrolled|iso_to_normal_date}}</td>
-                  <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
+                  <td class="px-5 py-4 border-b border-gray-200 w-min  text-sm">
                     {% if program.location %}
                     {{program.location.name}}
                     {% else %}
                     <p>None</p>
                     {% endif %}
                   </td>
-                  <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
+                  <td class="px-5 py-4 border-b border-gray-200 w-min  text-sm">
                     {{program.dateCompleted|iso_to_normal_date }}</td>
-                  <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
+                  <td class="px-5 py-4 border-b border-gray-200 w-min  text-sm">
                     <button onclick="showStatesModal(this,'{{program.program.name}}')"
                       data-program-states="{{program.states}}" type="button" class="button-primary">
                       {{'general.view'|get_message_openMRS:request.session.locale}}
@@ -134,13 +134,13 @@
                     </button>
                   </td>
                   {% if program.program.uuid == dots_program %}
-                  <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
+                  <td class="px-5 py-4 border-b border-gray-200 w-min  text-sm">
                     <a href="{% url 'dashboard' uuid=uuid %}?program={{program.uuid}}" type="button"
                       class="cancel-button">{{'mdrtb.patientDashboard'|get_message:request.session.locale}}
                     </a>
                   </td>
                   {% else %}
-                  <td class="px-5 py-5 border-b border-gray-200 w-min  text-sm">
+                  <td class="px-5 py-4 border-b border-gray-200 w-min  text-sm">
                     <a href="{% url 'mdrdashboard' uuid=uuid mdrtb='mdrtb' %}?program={{program.uuid}}" type="button"
                       class="cancel-button">{{'mdrtb.patientDashboard'|get_message:request.session.locale}}
                     </a>
