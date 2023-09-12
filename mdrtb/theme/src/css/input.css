@@ -259,6 +259,10 @@
   @apply px-5 pt-3 border-b border-gray-200 bg-white text-sm;
 }
 
+.lab_results_table_item{
+  @apply border border-gray-200 font-bold p-2;
+}
+
 }
 
 

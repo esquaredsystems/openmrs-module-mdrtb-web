@@ -1,14 +1,41 @@
 {% extends 'app/base/base.html' %}
-
 {% block title %}
 {{title}}
 {% endblock %}
+{% block content %}
 
+<div class="m-12 grid grid-cols-2 w-1/2 gap-4 p-4 bg-[#9e9e9e28]">
+    <div class="w-full bg-white p-2">
+        <h1 class="font-bold text-lg text-center">XPERT</h1>
+        <div class="grid grid-cols-2 place-items-center justify-items-center text-center p-2">
+            <div class="border border-gray-200 font-bold">Question</div>
+            <div class="border border-gray-200 font-bold">Answer</div>
+            <div class="border border-gray-200">Question</div>
+            <div class="border border-gray-200">Answer</div>
+            <div class="border border-gray-200">Question</div>
+            <div class="border border-gray-200">Answer</div>
+            <div class="border border-gray-200">Question</div>
+            <div class="border border-gray-200">Answer</div>
+            <div class="border border-gray-200">Question</div>
+            <div class="border border-gray-200">Answer</div>
 
-{%block content%}
+        </div>
+    </div>
+    <div class="w-full bg-white p-2">
+        <h1 class="font-bold text-lg text-center">XPERT</h1>
+        <div class="grid grid-cols-2 place-items-center justify-items-center text-center p-2">
+            <div class="border border-gray-200 font-bold">Question</div>
+            <div class="border border-gray-200 font-bold">Answer</div>
+            <div class="border border-gray-200">Question</div>
+            <div class="border border-gray-200">Answer</div>
+            <div class="border border-gray-200">Question</div>
+            <div class="border border-gray-200">Answer</div>
+            <div class="border border-gray-200">Question</div>
+            <div class="border border-gray-200">Answer</div>
+            <div class="border border-gray-200">Question</div>
+            <div class="border border-gray-200">Answer</div>
 
-<div>
-    {{a|sum:(b)}}
+        </div>
+    </div>
 </div>
-
 {% endblock %}

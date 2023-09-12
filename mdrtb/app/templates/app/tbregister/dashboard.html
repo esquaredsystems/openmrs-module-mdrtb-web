@@ -270,25 +270,27 @@
           <tbody>
             {% for lab_result in lab_results %}
             <tr>
-              <td class="px-5  border-b border-gray-200 bg-white text-sm">{{lab_result.labTestType.name}}</td>
-              <td class="px-5  border-b border-gray-200 bg-white text-sm">
+              <td class="px-5 border-b border-gray-200 bg-white text-sm">{{lab_result.labTestType.name}}</td>
+              <td class="px-5 border-b border-gray-200 bg-white text-sm">
                 {{lab_result.order.encounter.display|get_encounter_name}}
               </td>
-              <td class="px-5  border-b border-gray-200 bg-white text-sm">
+              <td class="px-5 border-b border-gray-200 bg-white text-sm">
                 {{lab_result.labReferenceNumber}}
 
               </td>
-              <td class="px-5 py-5 border-b w-1/5 border-gray-200 bg-white text-sm">
+              <td id="accordion{{forloop.counter}}" class="px-5 py-5 border-b w-1/5 border-gray-200 bg-white text-sm">
                 <div class="flex space-x-4">
-                  <button onclick="showModal(this,'{{lab_result.labTestType.name}}')"
-                    data-attributes="{{lab_result.attributes}}">
+                  <div onclick="showResults(this,'{{lab_result.uuid}}')" id="heading{{forloop.counter}}"
+                    data-attributes="{{lab_result.attributes}}" data-te-collapse-init
+                    data-te-target="#collapse{{forloop.counter}}" aria-expanded="false"
+                    aria-controls="collapse{{forloop.counter}}">
                     <svg id="detail-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                       stroke-width="1.5" stroke="currentColor" class="w-5 h-5 hover:text-blue-500 cursor-pointer">
                       <path stroke-linecap="round" stroke-linejoin="round"
                         d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                       <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                  </button>
+                  </div>
                   <a href="{% url 'editlabtest' orderid=lab_result.uuid patientid=uuid %}">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                       stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
@@ -296,6 +298,78 @@
                         d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
                     </svg>
                   </a>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="4" class="px-4 text-black w-full">
+                <div class="hidden" id="collapse{{forloop.counter}}" data-te-collapse-item
+                  aria-labelledby="heading{{forloop.counter}}" data-te-parent="#accordion{{forloop.counter}}">
+                  <div>
+                    <div class="py-4 grid grid-cols-2 gap-2">
+                      <div class="w-full bg-white p-2">
+                        <h1 class="font-bold text-lg text-center">Unknown</h1>
+                        <div id="{{lab_result.uuid}}unknown"
+                          class="grid grid-cols-2 place-items-center justify-items-center  p-2">
+                          <div class="border p-2 border-gray-200 font-bold">Question</div>
+                          <div class="border p-2 border-gray-200 font-bold">Answer</div>
+
+
+                        </div>
+                      </div>
+                      <div class="w-full bg-white p-2">
+                        <h1 class="font-bold text-lg text-center">XPERT</h1>
+                        <div id="{{lab_result.uuid}}xpert"
+                          class="grid grid-cols-2 place-items-center justify-items-center  p-2">
+                          <div class="border p-2 border-gray-200 font-bold">Question</div>
+                          <div class="border p-2 border-gray-200 font-bold">Answer</div>
+
+
+                        </div>
+                      </div>
+                      <div class="w-full bg-white p-2">
+                        <h1 class="font-bold text-lg text-center">HAIN</h1>
+                        <div id="{{lab_result.uuid}}hain"
+                          class="grid grid-cols-2 place-items-center justify-items-center  p-2">
+                          <div class="border p-2 border-gray-200 font-bold">Question</div>
+                          <div class="border p-2 border-gray-200 font-bold">Answer</div>
+
+
+                        </div>
+
+                      </div>
+                      <div class="w-full bg-white p-2">
+                        <h1 class="font-bold text-lg text-center">HAIN 2</h1>
+                        <div id="{{lab_result.uuid}}hain2"
+                          class="grid grid-cols-2 place-items-center justify-items-center p-2">
+                          <div class="border p-2 border-gray-200 font-bold">Question</div>
+                          <div class="border p-2 border-gray-200 font-bold">Answer</div>
+
+
+                        </div>
+                      </div>
+                      <div class="w-full bg-white p-2">
+                        <h1 class="font-bold text-lg text-center">CULTURE</h1>
+                        <div id="{{lab_result.uuid}}culture"
+                          class="grid grid-cols-2 place-items-center justify-items-center  p-2">
+                          <div class="border p-2 border-gray-200 font-bold">Question</div>
+                          <div class="border p-2 border-gray-200 font-bold">Answer</div>
+
+
+                        </div>
+                      </div>
+                      <div class="w-full bg-white p-2">
+                        <h1 class="font-bold text-lg text-center">SMEAR</h1>
+                        <div id="{{lab_result.uuid}}smear"
+                          class="grid grid-cols-2 place-items-center justify-items-center  p-2">
+                          <div class="border p-2 border-gray-200 font-bold">Question</div>
+                          <div class="border p-2 border-gray-200 font-bold">Answer</div>
+
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </td>
             </tr>
@@ -366,7 +440,81 @@
 </div>
 
 <script>
+  let itemsAppended = {}
 
+  const stringToJson = (string) => {
+    return JSON.parse(
+      string.replace(/'/g, '"')
+        .replace(/None/g, 'null')
+        .replace(/True/g, 'true')
+        .replace(/False/g, 'false'))
+  }
+  const showResults = (element, uuid) => {
+    if (itemsAppended[uuid]) {
+      return;
+    }
+    let attributes = stringToJson($(element).data('attributes'))
+    for (attribute of attributes) {
+      if (attribute.attributeType.group === null) {
+        if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.ConceptDatatype") {
+          if (attribute.valueReference) {
+            for (answer of attribute.attributeType.answers) {
+              if (answer.uuid === attribute.valueReference) {
+                $(`#${uuid}unknown`).append(
+                  `
+          <div class="border p-2 border-gray-200">${attribute.attributeType.name}</div>
+          <div class="border p-2 border-gray-200">${answer.display}</div>
+ 
+          `
+                )
+                break;
+              }
+
+            }
+          }
+        }
+        else {
+          $(`#${uuid}unknown`).append(
+            `
+          <div class="border p-2 border-gray-200">${attribute.attributeType.name}</div>
+          <div class="border p-2 border-gray-200">${attribute.valueReference ? attribute.valueReference : '-'}</div>
+ 
+          `
+          )
+        }
+
+      } else {
+        if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.ConceptDatatype") {
+          if (attribute.valueReference) {
+            for (answer of attribute.attributeType.answers) {
+              if (answer.uuid === attribute.valueReference) {
+                $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
+                  `
+          <div class="border p-2 border-gray-200">${attribute.attributeType.name}</div>
+          <div class="border p-2 border-gray-200">${answer.display}</div>
+ 
+          `
+                )
+                break;
+              }
+
+            }
+          }
+
+        } else {
+          $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
+            `
+          <div class="border p-2 border-gray-200">${attribute.attributeType.name}</div>
+          <div class="border p-2 border-gray-200">${attribute.valueReference ? attribute.valueReference : '-'}</div>
+
+          `
+          )
+        }
+
+      }
+    }
+    itemsAppended[uuid] = true;
+  }
 </script>
 
 {% endblock %}
