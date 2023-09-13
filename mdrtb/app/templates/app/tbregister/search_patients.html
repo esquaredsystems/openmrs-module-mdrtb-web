@@ -139,18 +139,21 @@
       };
     }
 
+    var searchTimeout; // Declare a variable to hold the timeout ID
 
     $('#search-input').keyup(function (e) {
+      clearTimeout(searchTimeout); // Clear the previous timeout
+
       if (e.target.value.length > minSearchCharacters) {
-        debounce(handleSearch(e.target.value), 1000)
-
+        // Set a new timeout of 1 second before making the API call
+        searchTimeout = setTimeout(function () {
+          handleSearch(e.target.value);
+        }, 500); // 1000 milliseconds (1 second)
       } else {
-        $('#search-results').removeClass('flex')
-
-        $('#search-results').addClass('hidden')
-
+        $('#search-results').removeClass('flex');
+        $('#search-results').addClass('hidden');
       }
-    })
+    });
   </script>
 
 </div>

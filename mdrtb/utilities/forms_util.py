@@ -310,9 +310,9 @@ def create_update_tb03u(req, patientuuid, data, formid=None):
     encounter_type = EncounterType.TB03u_MDR.value
     current_date_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     current_date_time_iso = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-    patient_location = req.session["current_patient_program_flow"]["current_program"][
-        "location"
-    ]["uuid"]
+    patient_default_location = req.session["current_patient_program_flow"][
+        "current_program"
+    ]["location"]["uuid"]
     if formid:
         try:
             response = mu.get_encounter_by_uuid(req, formid)
@@ -355,7 +355,9 @@ def create_update_tb03u(req, patientuuid, data, formid=None):
                 "patient": patientuuid,
                 "encounterType": encounter_type,
                 "encounterDatetime": current_date_time,
-                "location": patient_location,
+                "location": data.get(
+                    "facility", data.get("district", patient_default_location)
+                ),
                 "obs": [
                     # Patient Program Id
                     {
@@ -381,6 +383,9 @@ def create_update_tb03u(req, patientuuid, data, formid=None):
                     }
                 )
     try:
+        print("============")
+        print(tb03u)
+        print("============")
         # This returns the newly created TB03 form
         url = f"mdrtb/tb03u/{formid}" if formid else "mdrtb/tb03u"
 
