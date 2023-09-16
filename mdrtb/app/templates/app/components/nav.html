@@ -47,7 +47,8 @@
         </li>
         <li data-te-dropdown-item-ref>
 
-          <a class="tw-dropdown-item" href="#">{{'mdrtb.dotsreport07'|get_message:request.session.locale}}</a>
+          <a class="tw-dropdown-item"
+            href="{% url 'tb07export' %}">{{'mdrtb.dotsreport07'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
 
@@ -74,7 +75,8 @@
         </li>
         <li data-te-dropdown-item-ref>
 
-          <a class="tw-dropdown-item" href="#">{{'mdrtb.dq.missingtb03'|get_message:request.session.locale}}</a>
+          <a class="tw-dropdown-item"
+            href="{% url 'missingtb03export' %}">{{'mdrtb.dq.missingtb03'|get_message:request.session.locale}}</a>
         </li>
       </ul>
     </div>
@@ -117,7 +119,8 @@
           <a class="tw-dropdown-item" href="#">{{'mdrtb.sldreport'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
-          <a class="tw-dropdown-item" href="#">{{'mdrtb.dq.missingtb03u'|get_message:request.session.locale}}</a>
+          <a class="tw-dropdown-item"
+            href="{% url 'missingtb03uexport' %}">{{'mdrtb.dq.missingtb03u'|get_message:request.session.locale}}</a>
         </li>
       </ul>
     </div>

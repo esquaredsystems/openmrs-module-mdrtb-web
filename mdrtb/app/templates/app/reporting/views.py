@@ -2679,7 +2679,7 @@ def render_missing_tb03u_report_form(req):
     return render(req, "app/reporting/missing_tb03u_report_form.html", context)
 
 
-def render_missing_tb03u_report(req):
+def render_missing_tb03_report(req):
     if not check_if_session_alive(req):
         return redirect("login")
 
@@ -2708,10 +2708,10 @@ def render_missing_tb03u_report(req):
 
         if status:
             context["location"] = mu.get_location(req, location)
-            missing_tb03u_summary = response["results"][0]
-            missing_tb03u_data = response["results"][0]["dqItems"]
-            context["summary"] = missing_tb03u_summary
-            context["missingTB03u"] = missing_tb03u_data
+            missing_tb03_summary = response["results"][0]
+            missing_tb03_data = response["results"][0]["dqItems"]
+            context["summary"] = missing_tb03_summary
+            context["missingTB03"] = missing_tb03_data
 
             return render(req, "app/reporting/missing_tb03u_report.html", context)
 

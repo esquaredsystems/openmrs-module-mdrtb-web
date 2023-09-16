@@ -134,8 +134,30 @@ urlpatterns = [
     path(
         "tb03singleresults", views.render_tb03_single_report, name="tb03singleResults"
     ),
+    path(
+        "missingtb03export",
+        views.render_missing_tb03_report_form,
+        name="missingtb03export",
+    ),
+    path(
+        "missingtb03results",
+        views.render_missing_tb03_report,
+        name="missingtb03results",
+    ),
+    path(
+        "missingtb03uexport",
+        views.render_missing_tb03u_report_form,
+        name="missingtb03uexport",
+    ),
+    path(
+        "missingtb03uresults",
+        views.render_missing_tb03u_report,
+        name="missingtb03uresults",
+    ),
     path("form8export", views.render_form8_report_form, name="form8export"),
     path("form8results", views.render_form8_report, name="form8Results"),
+    path("tb07export", views.render_tb07_report_form, name="tb07export"),
+    path("tb07results", views.render_tb07_report, name="tb07results"),
     path("tb03uexport", views.render_tb03u_report_form, name="tb03uexport"),
     path("tb03uresults", views.render_tb03u_report, name="tb03uResults"),
     path("form89export", views.render_form89_report_form, name="form89export"),

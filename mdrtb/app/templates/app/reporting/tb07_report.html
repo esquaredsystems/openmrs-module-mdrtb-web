@@ -1,0 +1,1328 @@
+{% extends 'app/reporting/report_base.html' %}
+
+{% block content %}
+
+
+
+<div>
+    <div id="tb07" style="font-size:smaller; width:980px;">
+        <style type="text/css">
+            th {
+                vertical-align: top;
+                text-align: left;
+            }
+
+            th,
+            td {
+                font-size: smaller;
+                border: 1px solid #000000
+            }
+
+            border {
+                border: 1px solid #000000
+            }
+        </style>
+
+        <table border="0" width="100%">
+            <tbody>
+                <tr>
+                    <td align="center" style="font-size:14px; font-weight:bold;border:0px" width="90%">
+                        {{"mdrtb.tb07.title"|get_message:request.session.locale}}</td>
+                    <td align="right" style="font-size:14px; font-weight:bold;border:0px" valign="top" width="10%">TB 07
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        &nbsp;
+        <table width="100%" border="1">
+            <tr>
+                <td>
+                    {{"mdrtb.tb07u.nameOfFacility"|get_message:request.session.locale}} <u>&nbsp; {{ fName }}
+                        &nbsp;</u></br>
+                    {{"mdrtb.tb07u.regionCityDistrict"|get_message:request.session.locale}} <u> {{ oName }}/{{ dName }}
+                    </u></br>
+                    {{"mdrtb.tb07u.tbCoordinatorName"|get_message:request.session.locale}} ___________________ </br>
+                    {{"mdrtb.tb07u.signature"|get_message:request.session.locale}}_________________
+                </td>
+
+                <td>
+                    <spring:message code="mdrtb.tb07u.tbCasesDetectedDuringQuarterYear"
+                        arguments="{{ quarter }},{{ year }}" /></br>
+                    {{"mdrtb.tb07u.dateOfReport"|get_message:request.session.locale}}
+                </td>
+            </tr>
+
+
+        </table>
+
+
+
+        <h5>{{"mdrtb.tb07u.table1.title"|get_message:request.session.locale}}</h5>
+        <table border="1" cellpadding="1" cellspacing="1" dir="ltr" style="width: 980px;">
+            <tbody>
+                <tr>
+                    <td colspan="2" rowspan="1">{{"mdrtb.type"|get_message:request.session.locale}}</td>
+                    <td colspan="2" rowspan="1" style="text-align: center;">0-4</td>
+                    <td colspan="2" rowspan="1" style="text-align: center;">5-14</td>
+                    <td colspan="2" rowspan="1" style="text-align: center;">15-17</td>
+                    <td colspan="2" rowspan="1" style="text-align: center;">18-19</td>
+                    <td colspan="2" rowspan="1" style="text-align: center;">20-24</td>
+                    <td colspan="2" rowspan="1" style="text-align: center;">25-34</td>
+                    <td colspan="2" rowspan="1" style="text-align: center;">35-44</td>
+                    <td colspan="2" rowspan="1" style="text-align: center;">45-54</td>
+                    <td colspan="2" rowspan="1" style="text-align: center;">55-64</td>
+                    <td colspan="2" rowspan="1" style="text-align: center;">&gt;65</td>
+                    <td colspan="3" rowspan="1" style="text-align: center;">
+                        {{"mdrtb.tb07u.total"|get_message:request.session.locale}}</td>
+                </tr>
+                <tr>
+
+                    <td style="text-align: center;">&nbsp;</td>
+                    <td style="text-align: center;">&nbsp;</td>
+                    <td style="text-align: center;width: 3%">
+                        {{"mdrtb.tb03.gender.male"|get_message:request.session.locale}}
+                    </td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.female"|get_message:request.session.locale}}
+                    </td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.male"|get_message:request.session.locale}}</td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.female"|get_message:request.session.locale}}
+                    </td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.male"|get_message:request.session.locale}}</td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.female"|get_message:request.session.locale}}
+                    </td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.male"|get_message:request.session.locale}}</td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.female"|get_message:request.session.locale}}
+                    </td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.male"|get_message:request.session.locale}}</td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.female"|get_message:request.session.locale}}
+                    </td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.male"|get_message:request.session.locale}}</td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.female"|get_message:request.session.locale}}
+                    </td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.male"|get_message:request.session.locale}}</td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.female"|get_message:request.session.locale}}
+                    </td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.male"|get_message:request.session.locale}}</td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.female"|get_message:request.session.locale}}
+                    </td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.male"|get_message:request.session.locale}}</td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.female"|get_message:request.session.locale}}
+                    </td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.male"|get_message:request.session.locale}}</td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.female"|get_message:request.session.locale}}
+                    </td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.male"|get_message:request.session.locale}}</td>
+                    <td style="text-align: center;">{{"mdrtb.tb03.gender.female"|get_message:request.session.locale}}
+                    </td>
+                    <td style="text-align: center;">{{"mdrtb.tb07u.total"|get_message:request.session.locale}}</td>
+
+                </tr>
+                <tr>
+                    <td rowspan="6">
+                        {{"mdrtb.tb07u.newCases"|get_message:request.session.locale}}
+                    </td>
+                    <td>{{"mdrtb.tb07u.pulmonaryBC"|get_message:request.session.locale}}</td>
+
+                    <td>{{ table1.newMalePulmonaryBC04 }}</td>
+                    <td>{{ table1.newFemalePulmonaryBC04 }}</td>
+
+                    <td>{{ table1.newMalePulmonaryBC0514 }}</td>
+                    <td>{{ table1.newFemalePulmonaryBC0514 }}</td>
+
+                    <td>{{ table1.newMalePulmonaryBC1517 }}</td>
+                    <td>{{ table1.newFemalePulmonaryBC1517 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryBC1819 }}</td>
+                    <td>{{ table1.newFemalePulmonaryBC1819 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryBC2024 }}</td>
+                    <td>{{ table1.newFemalePulmonaryBC2024 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryBC2534 }}</td>
+                    <td>{{ table1.newFemalePulmonaryBC2534 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryBC3544 }}</td>
+                    <td>{{ table1.newFemalePulmonaryBC3544 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryBC4554 }}</td>
+                    <td>{{ table1.newFemalePulmonaryBC4554 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryBC5564 }}</td>
+                    <td>{{ table1.newFemalePulmonaryBC5564 }}</td>
+
+                    <td>{{ table1.newMalePulmonaryBC65 }}</td>
+                    <td>{{ table1.newFemalePulmonaryBC65 }}</td>
+
+                    <td>{{ table1.newMalePulmonaryBC }}</td>
+                    <td>{{ table1.newFemalePulmonaryBC }}</td>
+                    <td>{{ table1.newPulmonaryBC }}</td>
+                </tr>
+                <tr bgcolor="yellow">
+                    <td>{{"mdrtb.tb07u.ofTheseHIV"|get_message:request.session.locale}} </td>
+
+                    <td>{{ table1.newMalePulmonaryBCHIV04 }}</td>
+                    <td>{{ table1.newFemalePulmonaryBCHIV04 }}</td>
+
+                    <td>{{ table1.newMalePulmonaryBCHIV0514 }}</td>
+                    <td>{{ table1.newFemalePulmonaryBCHIV0514 }}</td>
+
+                    <td>{{ table1.newMalePulmonaryBCHIV1517 }}</td>
+                    <td>{{ table1.newFemalePulmonaryBCHIV1517 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryBCHIV1819 }}</td>
+                    <td>{{ table1.newFemalePulmonaryBCHIV1819 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryBCHIV2024 }}</td>
+                    <td>{{ table1.newFemalePulmonaryBCHIV2024 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryBCHIV2534 }}</td>
+                    <td>{{ table1.newFemalePulmonaryBCHIV2534 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryBCHIV3544 }}</td>
+                    <td>{{ table1.newFemalePulmonaryBCHIV3544 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryBCHIV4554 }}</td>
+                    <td>{{ table1.newFemalePulmonaryBCHIV4554 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryBCHIV5564 }}</td>
+                    <td>{{ table1.newFemalePulmonaryBCHIV5564 }}</td>
+
+                    <td>{{ table1.newMalePulmonaryBCHIV65 }}</td>
+                    <td>{{ table1.newFemalePulmonaryBCHIV65 }}</td>
+
+                    <td>{{ table1.newMalePulmonaryBCHIV }}</td>
+                    <td>{{ table1.newFemalePulmonaryBCHIV }}</td>
+                    <td>{{ table1.newPulmonaryBCHIV }}</td>
+
+                </tr>
+                <tr>
+                    <td>{{"mdrtb.tb07u.pulmonaryCD"|get_message:request.session.locale}} </td>
+                    <td>{{ table1.newMalePulmonaryCD04 }}</td>
+                    <td>{{ table1.newFemalePulmonaryCD04 }}</td>
+
+                    <td>{{ table1.newMalePulmonaryCD0514 }}</td>
+                    <td>{{ table1.newFemalePulmonaryCD0514 }}</td>
+
+                    <td>{{ table1.newMalePulmonaryCD1517 }}</td>
+                    <td>{{ table1.newFemalePulmonaryCD1517 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryCD1819 }}</td>
+                    <td>{{ table1.newFemalePulmonaryCD1819 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryCD2024 }}</td>
+                    <td>{{ table1.newFemalePulmonaryCD2024 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryCD2534 }}</td>
+                    <td>{{ table1.newFemalePulmonaryCD2534 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryCD3544 }}</td>
+                    <td>{{ table1.newFemalePulmonaryCD3544 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryCD4554 }}</td>
+                    <td>{{ table1.newFemalePulmonaryCD4554 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryCD5564 }}</td>
+                    <td>{{ table1.newFemalePulmonaryCD5564 }}</td>
+
+                    <td>{{ table1.newMalePulmonaryCD65 }}</td>
+                    <td>{{ table1.newFemalePulmonaryCD65 }}</td>
+
+                    <td>{{ table1.newMalePulmonaryCD }}</td>
+                    <td>{{ table1.newFemalePulmonaryCD }}</td>
+                    <td>{{ table1.newPulmonaryCD }}</td>
+                </tr>
+                <tr bgcolor="yellow">
+                    <td>{{"mdrtb.tb07u.ofTheseHIV"|get_message:request.session.locale}}</td>
+                    <td>{{ table1.newMalePulmonaryCDHIV04 }}</td>
+                    <td>{{ table1.newFemalePulmonaryCDHIV04 }}</td>
+
+                    <td>{{ table1.newMalePulmonaryCDHIV0514 }}</td>
+                    <td>{{ table1.newFemalePulmonaryCDHIV0514 }}</td>
+
+                    <td>{{ table1.newMalePulmonaryCDHIV1517 }}</td>
+                    <td>{{ table1.newFemalePulmonaryCDHIV1517 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryCDHIV1819 }}</td>
+                    <td>{{ table1.newFemalePulmonaryCDHIV1819 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryCDHIV2024 }}</td>
+                    <td>{{ table1.newFemalePulmonaryCDHIV2024 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryCDHIV2534 }}</td>
+                    <td>{{ table1.newFemalePulmonaryCDHIV2534 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryCDHIV3544 }}</td>
+                    <td>{{ table1.newFemalePulmonaryCDHIV3544 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryCDHIV4554 }}</td>
+                    <td>{{ table1.newFemalePulmonaryCDHIV4554 }}</td>
+
+
+                    <td>{{ table1.newMalePulmonaryCDHIV5564 }}</td>
+                    <td>{{ table1.newFemalePulmonaryCDHIV5564 }}</td>
+
+                    <td>{{ table1.newMalePulmonaryCDHIV65 }}</td>
+                    <td>{{ table1.newFemalePulmonaryCDHIV65 }}</td>
+
+                    <td>{{ table1.newMalePulmonaryCDHIV }}</td>
+                    <td>{{ table1.newFemalePulmonaryCDHIV }}</td>
+                    <td>{{ table1.newPulmonaryCDHIV }}</td>
+                </tr>
+                <tr>
+                    <td>{{"mdrtb.tb07u.eptb"|get_message:request.session.locale}}</td>
+                    <td>{{ table1.newMaleExtrapulmonary04 }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonary04 }}</td>
+
+                    <td>{{ table1.newMaleExtrapulmonary0514 }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonary0514 }}</td>
+
+                    <td>{{ table1.newMaleExtrapulmonary1517 }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonary1517 }}</td>
+
+
+                    <td>{{ table1.newMaleExtrapulmonary1819 }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonary1819 }}</td>
+
+
+                    <td>{{ table1.newMaleExtrapulmonary2024 }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonary2024 }}</td>
+
+
+                    <td>{{ table1.newMaleExtrapulmonary2534 }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonary2534 }}</td>
+
+
+                    <td>{{ table1.newMaleExtrapulmonary3544 }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonary3544 }}</td>
+
+
+                    <td>{{ table1.newMaleExtrapulmonary4554 }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonary4554 }}</td>
+
+
+                    <td>{{ table1.newMaleExtrapulmonary5564 }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonary5564 }}</td>
+
+                    <td>{{ table1.newMaleExtrapulmonary65 }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonary65 }}</td>
+
+                    <td>{{ table1.newMaleExtrapulmonary }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonary }}</td>
+                    <td>{{ table1.newExtrapulmonary }}</td>
+                </tr>
+                <tr bgcolor="yellow">
+                    <td>{{"mdrtb.tb07u.ofTheseHIV"|get_message:request.session.locale}}</td>
+                    <td>{{ table1.newMaleExtrapulmonaryHIV04 }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonaryHIV04 }}</td>
+
+                    <td>{{ table1.newMaleExtrapulmonaryHIV0514 }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonaryHIV0514 }}</td>
+
+                    <td>{{ table1.newMaleExtrapulmonaryHIV1517 }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonaryHIV1517 }}</td>
+
+
+                    <td>{{ table1.newMaleExtrapulmonaryHIV1819 }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonaryHIV1819 }}</td>
+
+
+                    <td>{{ table1.newMaleExtrapulmonaryHIV2024 }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonaryHIV2024 }}</td>
+
+
+                    <td>{{ table1.newMaleExtrapulmonaryHIV2534 }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonaryHIV2534 }}</td>
+
+
+                    <td>{{ table1.newMaleExtrapulmonaryHIV3544 }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonaryHIV3544 }}</td>
+
+
+                    <td>{{ table1.newMaleExtrapulmonaryHIV4554 }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonaryHIV4554 }}</td>
+
+
+                    <td>{{ table1.newMaleExtrapulmonaryHIV5564 }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonaryHIV5564 }}</td>
+
+                    <td>{{ table1.newMaleExtrapulmonaryHIV65 }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonaryHIV65 }}</td>
+
+                    <td>{{ table1.newMaleExtrapulmonaryHIV }}</td>
+                    <td>{{ table1.newFemaleExtrapulmonaryHIV }}</td>
+                    <td>{{ table1.newExtrapulmonaryHIV }}</td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="left">{{"mdrtb.tb07u.total"|get_message:request.session.locale}}</td>
+
+                    <td>{{ table1.newMale04 }}</td>
+                    <td>{{ table1.newFemale04 }}</td>
+
+                    <td>{{ table1.newMale0514 }}</td>
+                    <td>{{ table1.newFemale0514 }}</td>
+
+                    <td>{{ table1.newMale1517 }}</td>
+                    <td>{{ table1.newFemale1517 }}</td>
+
+
+                    <td>{{ table1.newMale1819 }}</td>
+                    <td>{{ table1.newFemale1819 }}</td>
+
+
+                    <td>{{ table1.newMale2024 }}</td>
+                    <td>{{ table1.newFemale2024 }}</td>
+
+
+                    <td>{{ table1.newMale2534 }}</td>
+                    <td>{{ table1.newFemale2534 }}</td>
+
+
+                    <td>{{ table1.newMale3544 }}</td>
+                    <td>{{ table1.newFemale3544 }}</td>
+
+
+                    <td>{{ table1.newMale4554 }}</td>
+                    <td>{{ table1.newFemale4554 }}</td>
+
+
+                    <td>{{ table1.newMale5564 }}</td>
+                    <td>{{ table1.newFemale5564 }}</td>
+
+                    <td>{{ table1.newMale65 }}</td>
+                    <td>{{ table1.newFemale65 }}</td>
+
+                    <td>{{ table1.newMale }}</td>
+                    <td>{{ table1.newFemale }}</td>
+                    <td>{{ table1.newAll }}</td>
+                </tr>
+                <tr bgcolor="yellow">
+                    <td colspan="2">{{"mdrtb.tb07u.ofTheseHIV"|get_message:request.session.locale}}</td>
+
+                    <td>{{ table1.newMaleHIV04 }}</td>
+                    <td>{{ table1.newFemaleHIV04 }}</td>
+
+                    <td>{{ table1.newMaleHIV0514 }}</td>
+                    <td>{{ table1.newFemaleHIV0514 }}</td>
+
+                    <td>{{ table1.newMaleHIV1517 }}</td>
+                    <td>{{ table1.newFemaleHIV1517 }}</td>
+
+
+                    <td>{{ table1.newMaleHIV1819 }}</td>
+                    <td>{{ table1.newFemaleHIV1819 }}</td>
+
+
+                    <td>{{ table1.newMaleHIV2024 }}</td>
+                    <td>{{ table1.newFemaleHIV2024 }}</td>
+
+
+                    <td>{{ table1.newMaleHIV2534 }}</td>
+                    <td>{{ table1.newFemaleHIV2534 }}</td>
+
+
+                    <td>{{ table1.newMaleHIV3544 }}</td>
+                    <td>{{ table1.newFemaleHIV3544 }}</td>
+
+
+                    <td>{{ table1.newMaleHIV4554 }}</td>
+                    <td>{{ table1.newFemaleHIV4554 }}</td>
+
+
+                    <td>{{ table1.newMaleHIV5564 }}</td>
+                    <td>{{ table1.newFemaleHIV5564 }}</td>
+
+                    <td>{{ table1.newMaleHIV65 }}</td>
+                    <td>{{ table1.newFemaleHIV65 }}</td>
+
+                    <td>{{ table1.newMaleHIV }}</td>
+                    <td>{{ table1.newFemaleHIV }}</td>
+                    <td>{{ table1.newAllHIV }}</td>
+                </tr>
+
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+
+                </tr>
+                <tr>
+                    <td rowspan="6">
+                        {{"mdrtb.tb07u.relapse"|get_message:request.session.locale}}
+                    </td>
+                    <td>{{"mdrtb.tb07u.pulmonaryBC"|get_message:request.session.locale}}</td>
+                    <td>{{ table1.relapseMalePulmonaryBC04 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBC04 }}</td>
+
+                    <td>{{ table1.relapseMalePulmonaryBC0514 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBC0514 }}</td>
+
+                    <td>{{ table1.relapseMalePulmonaryBC1517 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBC1517 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryBC1819 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBC1819 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryBC2024 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBC2024 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryBC2534 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBC2534 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryBC3544 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBC3544 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryBC4554 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBC4554 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryBC5564 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBC5564 }}</td>
+
+                    <td>{{ table1.relapseMalePulmonaryBC65 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBC65 }}</td>
+
+                    <td>{{ table1.relapseMalePulmonaryBC }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBC }}</td>
+                    <td>{{ table1.relapsePulmonaryBC }}</td>
+                </tr>
+                <tr bgcolor="yellow">
+                    <td>{{"mdrtb.tb07u.ofTheseHIV"|get_message:request.session.locale}} </td>
+
+                    <td>{{ table1.relapseMalePulmonaryBCHIV04 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBCHIV04 }}</td>
+
+                    <td>{{ table1.relapseMalePulmonaryBCHIV0514 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBCHIV0514 }}</td>
+
+                    <td>{{ table1.relapseMalePulmonaryBCHIV1517 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBCHIV1517 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryBCHIV1819 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBCHIV1819 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryBCHIV2024 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBCHIV2024 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryBCHIV2534 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBCHIV2534 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryBCHIV3544 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBCHIV3544 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryBCHIV4554 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBCHIV4554 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryBCHIV5564 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBCHIV5564 }}</td>
+
+                    <td>{{ table1.relapseMalePulmonaryBCHIV65 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBCHIV65 }}</td>
+
+                    <td>{{ table1.relapseMalePulmonaryBCHIV }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryBCHIV }}</td>
+                    <td>{{ table1.relapsePulmonaryBCHIV }}</td>
+
+                </tr>
+                <tr>
+                    <td>{{"mdrtb.tb07u.pulmonaryCD"|get_message:request.session.locale}} </td>
+                    <td>{{ table1.relapseMalePulmonaryCD04 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCD04 }}</td>
+
+                    <td>{{ table1.relapseMalePulmonaryCD0514 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCD0514 }}</td>
+
+                    <td>{{ table1.relapseMalePulmonaryCD1517 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCD1517 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryCD1819 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCD1819 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryCD2024 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCD2024 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryCD2534 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCD2534 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryCD3544 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCD3544 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryCD4554 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCD4554 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryCD5564 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCD5564 }}</td>
+
+                    <td>{{ table1.relapseMalePulmonaryCD65 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCD65 }}</td>
+
+                    <td>{{ table1.relapseMalePulmonaryCD }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCD }}</td>
+                    <td>{{ table1.relapsePulmonaryCD }}</td>
+                </tr>
+                <tr bgcolor="yellow">
+                    <td>{{"mdrtb.tb07u.ofTheseHIV"|get_message:request.session.locale}}</td>
+                    <td>{{ table1.relapseMalePulmonaryCDHIV04 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCDHIV04 }}</td>
+
+                    <td>{{ table1.relapseMalePulmonaryCDHIV0514 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCDHIV0514 }}</td>
+
+                    <td>{{ table1.relapseMalePulmonaryCDHIV1517 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCDHIV1517 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryCDHIV1819 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCDHIV1819 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryCDHIV2024 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCDHIV2024 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryCDHIV2534 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCDHIV2534 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryCDHIV3544 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCDHIV3544 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryCDHIV4554 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCDHIV4554 }}</td>
+
+
+                    <td>{{ table1.relapseMalePulmonaryCDHIV5564 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCDHIV5564 }}</td>
+
+                    <td>{{ table1.relapseMalePulmonaryCDHIV65 }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCDHIV65 }}</td>
+
+                    <td>{{ table1.relapseMalePulmonaryCDHIV }}</td>
+                    <td>{{ table1.relapseFemalePulmonaryCDHIV }}</td>
+                    <td>{{ table1.relapsePulmonaryCDHIV }}</td>
+
+                </tr>
+                </tr>
+                <tr>
+                    <td>{{"mdrtb.tb07u.eptb"|get_message:request.session.locale}}</td>
+                    <td>{{ table1.relapseMaleExtrapulmonary04 }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonary04 }}</td>
+
+                    <td>{{ table1.relapseMaleExtrapulmonary0514 }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonary0514 }}</td>
+
+                    <td>{{ table1.relapseMaleExtrapulmonary1517 }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonary1517 }}</td>
+
+
+                    <td>{{ table1.relapseMaleExtrapulmonary1819 }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonary1819 }}</td>
+
+
+                    <td>{{ table1.relapseMaleExtrapulmonary2024 }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonary2024 }}</td>
+
+
+                    <td>{{ table1.relapseMaleExtrapulmonary2534 }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonary2534 }}</td>
+
+
+                    <td>{{ table1.relapseMaleExtrapulmonary3544 }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonary3544 }}</td>
+
+
+                    <td>{{ table1.relapseMaleExtrapulmonary4554 }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonary4554 }}</td>
+
+
+                    <td>{{ table1.relapseMaleExtrapulmonary5564 }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonary5564 }}</td>
+
+                    <td>{{ table1.relapseMaleExtrapulmonary65 }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonary65 }}</td>
+
+                    <td>{{ table1.relapseMaleExtrapulmonary }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonary }}</td>
+                    <td>{{ table1.relapseExtrapulmonary }}</td>
+                </tr>
+                <tr bgcolor="yellow">
+                    <td>{{"mdrtb.tb07u.ofTheseHIV"|get_message:request.session.locale}}</td>
+                    <td>{{ table1.relapseMaleExtrapulmonaryHIV04 }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonaryHIV04 }}</td>
+
+                    <td>{{ table1.relapseMaleExtrapulmonaryHIV0514 }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonaryHIV0514 }}</td>
+
+                    <td>{{ table1.relapseMaleExtrapulmonaryHIV1517 }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonaryHIV1517 }}</td>
+
+
+                    <td>{{ table1.relapseMaleExtrapulmonaryHIV1819 }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonaryHIV1819 }}</td>
+
+
+                    <td>{{ table1.relapseMaleExtrapulmonaryHIV2024 }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonaryHIV2024 }}</td>
+
+
+                    <td>{{ table1.relapseMaleExtrapulmonaryHIV2534 }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonaryHIV2534 }}</td>
+
+
+                    <td>{{ table1.relapseMaleExtrapulmonaryHIV3544 }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonaryHIV3544 }}</td>
+
+
+                    <td>{{ table1.relapseMaleExtrapulmonaryHIV4554 }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonaryHIV4554 }}</td>
+
+
+                    <td>{{ table1.relapseMaleExtrapulmonaryHIV5564 }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonaryHIV5564 }}</td>
+
+                    <td>{{ table1.relapseMaleExtrapulmonaryHIV65 }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonaryHIV65 }}</td>
+
+                    <td>{{ table1.relapseMaleExtrapulmonaryHIV }}</td>
+                    <td>{{ table1.relapseFemaleExtrapulmonaryHIV }}</td>
+                    <td>{{ table1.relapseExtrapulmonaryHIV }}</td>
+
+                </tr>
+                <tr>
+                    <td colspan="2" align="left">{{"mdrtb.tb07u.total"|get_message:request.session.locale}}</td>
+                    <td>{{ table1.relapseMale04 }}</td>
+                    <td>{{ table1.relapseFemale04 }}</td>
+
+                    <td>{{ table1.relapseMale0514 }}</td>
+                    <td>{{ table1.relapseFemale0514 }}</td>
+
+                    <td>{{ table1.relapseMale1517 }}</td>
+                    <td>{{ table1.relapseFemale1517 }}</td>
+
+
+                    <td>{{ table1.relapseMale1819 }}</td>
+                    <td>{{ table1.relapseFemale1819 }}</td>
+
+
+                    <td>{{ table1.relapseMale2024 }}</td>
+                    <td>{{ table1.relapseFemale2024 }}</td>
+
+
+                    <td>{{ table1.relapseMale2534 }}</td>
+                    <td>{{ table1.relapseFemale2534 }}</td>
+
+
+                    <td>{{ table1.relapseMale3544 }}</td>
+                    <td>{{ table1.relapseFemale3544 }}</td>
+
+
+                    <td>{{ table1.relapseMale4554 }}</td>
+                    <td>{{ table1.relapseFemale4554 }}</td>
+
+
+                    <td>{{ table1.relapseMale5564 }}</td>
+                    <td>{{ table1.relapseFemale5564 }}</td>
+
+                    <td>{{ table1.relapseMale65 }}</td>
+                    <td>{{ table1.relapseFemale65 }}</td>
+
+                    <td>{{ table1.relapseMale }}</td>
+                    <td>{{ table1.relapseFemale }}</td>
+                    <td>{{ table1.relapseAll }}</td>
+                </tr>
+                <tr bgcolor="yellow">
+                    <td colspan="2">{{"mdrtb.tb07u.ofTheseHIV"|get_message:request.session.locale}}</td>
+
+                    <td>{{ table1.relapseMaleHIV04 }}</td>
+                    <td>{{ table1.relapseFemaleHIV04 }}</td>
+
+                    <td>{{ table1.relapseMaleHIV0514 }}</td>
+                    <td>{{ table1.relapseFemaleHIV0514 }}</td>
+
+                    <td>{{ table1.relapseMaleHIV1517 }}</td>
+                    <td>{{ table1.relapseFemaleHIV1517 }}</td>
+
+
+                    <td>{{ table1.relapseMaleHIV1819 }}</td>
+                    <td>{{ table1.relapseFemaleHIV1819 }}</td>
+
+
+                    <td>{{ table1.relapseMaleHIV2024 }}</td>
+                    <td>{{ table1.relapseFemaleHIV2024 }}</td>
+
+
+                    <td>{{ table1.relapseMaleHIV2534 }}</td>
+                    <td>{{ table1.relapseFemaleHIV2534 }}</td>
+
+
+                    <td>{{ table1.relapseMaleHIV3544 }}</td>
+                    <td>{{ table1.relapseFemaleHIV3544 }}</td>
+
+
+                    <td>{{ table1.relapseMaleHIV4554 }}</td>
+                    <td>{{ table1.relapseFemaleHIV4554 }}</td>
+
+
+                    <td>{{ table1.relapseMaleHIV5564 }}</td>
+                    <td>{{ table1.relapseFemaleHIV5564 }}</td>
+
+                    <td>{{ table1.relapseMaleHIV65 }}</td>
+                    <td>{{ table1.relapseFemaleHIV65 }}</td>
+
+                    <td>{{ table1.relapseMaleHIV }}</td>
+                    <td>{{ table1.relapseFemaleHIV }}</td>
+                    <td>{{ table1.relapseAllHIV }}</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td rowspan="6">
+                        {{"mdrtb.tb07u.totalNewRelapse"|get_message:request.session.locale}}
+                    </td>
+                    <td>{{"mdrtb.tb07u.pulmonaryBC"|get_message:request.session.locale}}</td>
+                    <td>{{table1.newMalePulmonaryBC04|sum:table1.relapseMalePulmonaryBC04 }}</td>
+                    <td>{{table1.newFemalePulmonaryBC04|sum:table1.relapseFemalePulmonaryBC04 }}</td>
+                    <td>{{table1.newMalePulmonaryBC0514|sum:table1.relapseMalePulmonaryBC0514 }}</td>
+                    <td>{{table1.newFemalePulmonaryBC0514|sum:table1.relapseFemalePulmonaryBC0514 }}</td>
+                    <td>{{table1.newMalePulmonaryBC1517|sum:table1.relapseMalePulmonaryBC1517 }}</td>
+                    <td>{{table1.newFemalePulmonaryBC1517|sum:table1.relapseFemalePulmonaryBC1517 }}</td>
+                    <td>{{table1.newMalePulmonaryBC1819|sum:table1.relapseMalePulmonaryBC1819 }}</td>
+                    <td>{{table1.newFemalePulmonaryBC1819|sum:table1.relapseFemalePulmonaryBC1819 }}</td>
+                    <td>{{table1.newMalePulmonaryBC2024|sum:table1.relapseMalePulmonaryBC2024 }}</td>
+                    <td>{{table1.newFemalePulmonaryBC2024|sum:table1.relapseFemalePulmonaryBC2024 }}</td>
+                    <td>{{table1.newMalePulmonaryBC2534|sum:table1.relapseMalePulmonaryBC2534 }}</td>
+                    <td>{{table1.newFemalePulmonaryBC2534|sum:table1.relapseFemalePulmonaryBC2534 }}</td>
+                    <td>{{table1.newMalePulmonaryBC3544|sum:table1.relapseMalePulmonaryBC3544 }}</td>
+                    <td>{{table1.newFemalePulmonaryBC3544|sum:table1.relapseFemalePulmonaryBC3544 }}</td>
+                    <td>{{table1.newMalePulmonaryBC4554|sum:table1.relapseMalePulmonaryBC4554 }}</td>
+                    <td>{{table1.newFemalePulmonaryBC4554|sum:table1.relapseFemalePulmonaryBC4554 }}</td>
+                    <td>{{table1.newMalePulmonaryBC5564|sum:table1.relapseMalePulmonaryBC5564 }}</td>
+                    <td>{{table1.newFemalePulmonaryBC5564|sum:table1.relapseFemalePulmonaryBC5564 }}</td>
+                    <td>{{table1.newMalePulmonaryBC65|sum:table1.relapseMalePulmonaryBC65 }}</td>
+                    <td>{{table1.newFemalePulmonaryBC65|sum:table1.relapseFemalePulmonaryBC65 }}</td>
+                    <td>{{table1.newMalePulmonaryBC|sum:table1.relapseMalePulmonaryBC }}</td>
+                    <td>{{table1.newFemalePulmonaryBC|sum:table1.relapseFemalePulmonaryBC }}</td>
+                    <td>{{table1.newPulmonaryBC|sum:table1.relapsePulmonaryBC }}</td>
+
+                </tr>
+                <tr bgcolor="yellow">
+                    <td>{{"mdrtb.tb07u.ofTheseHIV"|get_message:request.session.locale}}</td>
+                    <td>{{table1.newMalePulmonaryBCHIV04|sum:table1.relapseMalePulmonaryBCHIV04 }}</td>
+                    <td>{{table1.newFemalePulmonaryBCHIV04|sum:table1.relapseFemalePulmonaryBCHIV04 }}</td>
+                    <td>{{table1.newMalePulmonaryBCHIV0514|sum:table1.relapseMalePulmonaryBCHIV0514 }}</td>
+                    <td>{{table1.newFemalePulmonaryBCHIV0514|sum:table1.relapseFemalePulmonaryBCHIV0514 }}</td>
+                    <td>{{table1.newMalePulmonaryBCHIV1517|sum:table1.relapseMalePulmonaryBCHIV1517 }}</td>
+                    <td>{{table1.newFemalePulmonaryBCHIV1517|sum:table1.relapseFemalePulmonaryBCHIV1517 }}</td>
+                    <td>{{table1.newMalePulmonaryBCHIV1819|sum:table1.relapseMalePulmonaryBCHIV1819 }}</td>
+                    <td>{{table1.newFemalePulmonaryBCHIV1819|sum:table1.relapseFemalePulmonaryBCHIV1819 }}</td>
+                    <td>{{table1.newMalePulmonaryBCHIV2024|sum:table1.relapseMalePulmonaryBCHIV2024 }}</td>
+                    <td>{{table1.newFemalePulmonaryBCHIV2024|sum:table1.relapseFemalePulmonaryBCHIV2024 }}</td>
+                    <td>{{table1.newMalePulmonaryBCHIV2534|sum:table1.relapseMalePulmonaryBCHIV2534 }}</td>
+                    <td>{{table1.newFemalePulmonaryBCHIV2534|sum:table1.relapseFemalePulmonaryBCHIV2534 }}</td>
+                    <td>{{table1.newMalePulmonaryBCHIV3544|sum:table1.relapseMalePulmonaryBCHIV3544 }}</td>
+                    <td>{{table1.newFemalePulmonaryBCHIV3544|sum:table1.relapseFemalePulmonaryBCHIV3544 }}</td>
+                    <td>{{table1.newMalePulmonaryBCHIV4554|sum:table1.relapseMalePulmonaryBCHIV4554 }}</td>
+                    <td>{{table1.newFemalePulmonaryBCHIV4554|sum:table1.relapseFemalePulmonaryBCHIV4554 }}</td>
+                    <td>{{table1.newMalePulmonaryBCHIV5564|sum:table1.relapseMalePulmonaryBCHIV5564 }}</td>
+                    <td>{{table1.newFemalePulmonaryBCHIV5564|sum:table1.relapseFemalePulmonaryBCHIV5564 }}</td>
+                    <td>{{table1.newMalePulmonaryBCHIV65|sum:table1.relapseMalePulmonaryBCHIV65 }}</td>
+                    <td>{{table1.newFemalePulmonaryBCHIV65|sum:table1.relapseFemalePulmonaryBCHIV65 }}</td>
+                    <td>{{table1.newMalePulmonaryBCHIV|sum:table1.relapseMalePulmonaryBCHIV }}</td>
+                    <td>{{table1.newFemalePulmonaryBCHIV|sum:table1.relapseFemalePulmonaryBCHIV }}</td>
+                    <td>{{table1.newPulmonaryBCHIV|sum:table1.relapsePulmonaryBCHIV }}</td>
+
+                </tr>
+                <tr>
+                    <td>{{"mdrtb.tb07u.pulmonaryCD"|get_message:request.session.locale}} </td>
+                    <td>{{table1.newMalePulmonaryCD04|sum:table1.relapseMalePulmonaryCD04 }}</td>
+                    <td>{{table1.newFemalePulmonaryCD04|sum:table1.relapseFemalePulmonaryCD04 }}</td>
+                    <td>{{table1.newMalePulmonaryCD0514|sum:table1.relapseMalePulmonaryCD0514 }}</td>
+                    <td>{{table1.newFemalePulmonaryCD0514|sum:table1.relapseFemalePulmonaryCD0514 }}</td>
+                    <td>{{table1.newMalePulmonaryCD1517|sum:table1.relapseMalePulmonaryCD1517 }}</td>
+                    <td>{{table1.newFemalePulmonaryCD1517|sum:table1.relapseFemalePulmonaryCD1517 }}</td>
+                    <td>{{table1.newMalePulmonaryCD1819|sum:table1.relapseMalePulmonaryCD1819 }}</td>
+                    <td>{{table1.newFemalePulmonaryCD1819|sum:table1.relapseFemalePulmonaryCD1819 }}</td>
+                    <td>{{table1.newMalePulmonaryCD2024|sum:table1.relapseMalePulmonaryCD2024 }}</td>
+                    <td>{{table1.newFemalePulmonaryCD2024|sum:table1.relapseFemalePulmonaryCD2024 }}</td>
+                    <td>{{table1.newMalePulmonaryCD2534|sum:table1.relapseMalePulmonaryCD2534 }}</td>
+                    <td>{{table1.newFemalePulmonaryCD2534|sum:table1.relapseFemalePulmonaryCD2534 }}</td>
+                    <td>{{table1.newMalePulmonaryCD3544|sum:table1.relapseMalePulmonaryCD3544 }}</td>
+                    <td>{{table1.newFemalePulmonaryCD3544|sum:table1.relapseFemalePulmonaryCD3544 }}</td>
+                    <td>{{table1.newMalePulmonaryCD4554|sum:table1.relapseMalePulmonaryCD4554 }}</td>
+                    <td>{{table1.newFemalePulmonaryCD4554|sum:table1.relapseFemalePulmonaryCD4554 }}</td>
+                    <td>{{table1.newMalePulmonaryCD5564|sum:table1.relapseMalePulmonaryCD5564 }}</td>
+                    <td>{{table1.newFemalePulmonaryCD5564|sum:table1.relapseFemalePulmonaryCD5564 }}</td>
+                    <td>{{table1.newMalePulmonaryCD65|sum:table1.relapseMalePulmonaryCD65 }}</td>
+                    <td>{{table1.newFemalePulmonaryCD65|sum:table1.relapseFemalePulmonaryCD65 }}</td>
+                    <td>{{table1.newMalePulmonaryCD|sum:table1.relapseMalePulmonaryCD }}</td>
+                    <td>{{table1.newFemalePulmonaryCD|sum:table1.relapseFemalePulmonaryCD }}</td>
+                    <td>{{table1.newPulmonaryCD|sum:table1.relapsePulmonaryCD }}</td>
+
+                </tr>
+                <tr bgcolor="yellow">
+                    <td>{{"mdrtb.tb07u.ofTheseHIV"|get_message:request.session.locale}}</td>
+                    <td>{{table1.newMalePulmonaryCDHIV04|sum:table1.relapseMalePulmonaryCDHIV04 }}</td>
+                    <td>{{table1.newFemalePulmonaryCDHIV04|sum:table1.relapseFemalePulmonaryCDHIV04 }}</td>
+                    <td>{{table1.newMalePulmonaryCDHIV0514|sum:table1.relapseMalePulmonaryCDHIV0514 }}</td>
+                    <td>{{table1.newFemalePulmonaryCDHIV0514|sum:table1.relapseFemalePulmonaryCDHIV0514 }}</td>
+                    <td>{{table1.newMalePulmonaryCDHIV1517|sum:table1.relapseMalePulmonaryCDHIV1517 }}</td>
+                    <td>{{table1.newFemalePulmonaryCDHIV1517|sum:table1.relapseFemalePulmonaryCDHIV1517 }}</td>
+                    <td>{{table1.newMalePulmonaryCDHIV1819|sum:table1.relapseMalePulmonaryCDHIV1819 }}</td>
+                    <td>{{table1.newFemalePulmonaryCDHIV1819|sum:table1.relapseFemalePulmonaryCDHIV1819 }}</td>
+                    <td>{{table1.newMalePulmonaryCDHIV2024|sum:table1.relapseMalePulmonaryCDHIV2024 }}</td>
+                    <td>{{table1.newFemalePulmonaryCDHIV2024|sum:table1.relapseFemalePulmonaryCDHIV2024 }}</td>
+                    <td>{{table1.newMalePulmonaryCDHIV2534|sum:table1.relapseMalePulmonaryCDHIV2534 }}</td>
+                    <td>{{table1.newFemalePulmonaryCDHIV2534|sum:table1.relapseFemalePulmonaryCDHIV2534 }}</td>
+                    <td>{{table1.newMalePulmonaryCDHIV3544|sum:table1.relapseMalePulmonaryCDHIV3544 }}</td>
+                    <td>{{table1.newFemalePulmonaryCDHIV3544|sum:table1.relapseFemalePulmonaryCDHIV3544 }}</td>
+                    <td>{{table1.newMalePulmonaryCDHIV4554|sum:table1.relapseMalePulmonaryCDHIV4554 }}</td>
+                    <td>{{table1.newFemalePulmonaryCDHIV4554|sum:table1.relapseFemalePulmonaryCDHIV4554 }}</td>
+                    <td>{{table1.newMalePulmonaryCDHIV5564|sum:table1.relapseMalePulmonaryCDHIV5564 }}</td>
+                    <td>{{table1.newFemalePulmonaryCDHIV5564|sum:table1.relapseFemalePulmonaryCDHIV5564 }}</td>
+                    <td>{{table1.newMalePulmonaryCDHIV65|sum:table1.relapseMalePulmonaryCDHIV65 }}</td>
+                    <td>{{table1.newFemalePulmonaryCDHIV65|sum:table1.relapseFemalePulmonaryCDHIV65 }}</td>
+                    <td>{{table1.newMalePulmonaryCDHIV|sum:table1.relapseMalePulmonaryCDHIV }}</td>
+                    <td>{{table1.newFemalePulmonaryCDHIV|sum:table1.relapseFemalePulmonaryCDHIV }}</td>
+                    <td>{{table1.newPulmonaryCDHIV|sum:table1.relapsePulmonaryCDHIV }}
+                </tr>
+                <tr>
+                    <td>{{"mdrtb.tb07u.eptb"|get_message:request.session.locale}}</td>
+                    <td>{{table1.newMaleExtrapulmonary04|sum:table1.relapseMaleExtrapulmonary04 }}</td>
+                    <td>{{table1.newFemaleExtrapulmonary04|sum:table1.relapseFemaleExtrapulmonary04 }}</td>
+                    <td>{{table1.newMaleExtrapulmonary0514|sum:table1.relapseMaleExtrapulmonary0514 }}</td>
+                    <td>{{table1.newFemaleExtrapulmonary0514|sum:table1.relapseFemaleExtrapulmonary0514 }}</td>
+                    <td>{{table1.newMaleExtrapulmonary1517|sum:table1.relapseMaleExtrapulmonary1517 }}</td>
+                    <td>{{table1.newFemaleExtrapulmonary1517|sum:table1.relapseFemaleExtrapulmonary1517 }}</td>
+                    <td>{{table1.newMaleExtrapulmonary1819|sum:table1.relapseMaleExtrapulmonary1819 }}</td>
+                    <td>{{table1.newFemaleExtrapulmonary1819|sum:table1.relapseFemaleExtrapulmonary1819 }}</td>
+                    <td>{{table1.newMaleExtrapulmonary2024|sum:table1.relapseMaleExtrapulmonary2024 }}</td>
+                    <td>{{table1.newFemaleExtrapulmonary2024|sum:table1.relapseFemaleExtrapulmonary2024 }}</td>
+                    <td>{{table1.newMaleExtrapulmonary2534|sum:table1.relapseMaleExtrapulmonary2534 }}</td>
+                    <td>{{table1.newFemaleExtrapulmonary2534|sum:table1.relapseFemaleExtrapulmonary2534 }}</td>
+                    <td>{{table1.newMaleExtrapulmonary3544|sum:table1.relapseMaleExtrapulmonary3544 }}</td>
+                    <td>{{table1.newFemaleExtrapulmonary3544|sum:table1.relapseFemaleExtrapulmonary3544 }}</td>
+                    <td>{{table1.newMaleExtrapulmonary4554|sum:table1.relapseMaleExtrapulmonary4554 }}</td>
+                    <td>{{table1.newFemaleExtrapulmonary4554|sum:table1.relapseFemaleExtrapulmonary4554 }}</td>
+                    <td>{{table1.newMaleExtrapulmonary5564|sum:table1.relapseMaleExtrapulmonary5564 }}</td>
+                    <td>{{table1.newFemaleExtrapulmonary5564|sum:table1.relapseFemaleExtrapulmonary5564 }}</td>
+                    <td>{{table1.newMaleExtrapulmonary65|sum:table1.relapseMaleExtrapulmonary65 }}</td>
+                    <td>{{table1.newFemaleExtrapulmonary65|sum:table1.relapseFemaleExtrapulmonary65 }}</td>
+                    <td>{{table1.newMaleExtrapulmonary|sum:table1.relapseMaleExtrapulmonary }}</td>
+                    <td>{{table1.newFemaleExtrapulmonary|sum:table1.relapseFemaleExtrapulmonary }}</td>
+                    <td>{{table1.newExtrapulmonary|sum:table1.relapseExtrapulmonary }}</td>
+
+                </tr>
+                <tr bgcolor="yellow">
+                    <td>{{"mdrtb.tb07u.ofTheseHIV"|get_message:request.session.locale}}</td>
+                    <td>{{table1.newMaleExtrapulmonaryHIV04|sum:table1.relapseMaleExtrapulmonaryHIV04 }}</td>
+                    <td>{{table1.newFemaleExtrapulmonaryHIV04|sum:table1.relapseFemaleExtrapulmonaryHIV04 }}</td>
+                    <td>{{table1.newMaleExtrapulmonaryHIV0514|sum:table1.relapseMaleExtrapulmonaryHIV0514 }}</td>
+                    <td>{{table1.newFemaleExtrapulmonaryHIV0514|sum:table1.relapseFemaleExtrapulmonaryHIV0514 }}</td>
+                    <td>{{table1.newMaleExtrapulmonaryHIV1517|sum:table1.relapseMaleExtrapulmonaryHIV1517 }}</td>
+                    <td>{{table1.newFemaleExtrapulmonaryHIV1517|sum:table1.relapseFemaleExtrapulmonaryHIV1517 }}</td>
+                    <td>{{table1.newMaleExtrapulmonaryHIV1819|sum:table1.relapseMaleExtrapulmonaryHIV1819 }}</td>
+                    <td>{{table1.newFemaleExtrapulmonaryHIV1819|sum:table1.relapseFemaleExtrapulmonaryHIV1819 }}</td>
+                    <td>{{table1.newMaleExtrapulmonaryHIV2024|sum:table1.relapseMaleExtrapulmonaryHIV2024 }}</td>
+                    <td>{{table1.newFemaleExtrapulmonaryHIV2024|sum:table1.relapseFemaleExtrapulmonaryHIV2024 }}</td>
+                    <td>{{table1.newMaleExtrapulmonaryHIV2534|sum:table1.relapseMaleExtrapulmonaryHIV2534 }}</td>
+                    <td>{{table1.newFemaleExtrapulmonaryHIV2534|sum:table1.relapseFemaleExtrapulmonaryHIV2534 }}</td>
+                    <td>{{table1.newMaleExtrapulmonaryHIV3544|sum:table1.relapseMaleExtrapulmonaryHIV3544 }}</td>
+                    <td>{{table1.newFemaleExtrapulmonaryHIV3544|sum:table1.relapseFemaleExtrapulmonaryHIV3544 }}</td>
+                    <td>{{table1.newMaleExtrapulmonaryHIV4554|sum:table1.relapseMaleExtrapulmonaryHIV4554 }}</td>
+                    <td>{{table1.newFemaleExtrapulmonaryHIV4554|sum:table1.relapseFemaleExtrapulmonaryHIV4554 }}</td>
+                    <td>{{table1.newMaleExtrapulmonaryHIV5564|sum:table1.relapseMaleExtrapulmonaryHIV5564 }}</td>
+                    <td>{{table1.newFemaleExtrapulmonaryHIV5564|sum:table1.relapseFemaleExtrapulmonaryHIV5564 }}</td>
+                    <td>{{table1.newMaleExtrapulmonaryHIV65|sum:table1.relapseMaleExtrapulmonaryHIV65 }}</td>
+                    <td>{{table1.newFemaleExtrapulmonaryHIV65|sum:table1.relapseFemaleExtrapulmonaryHIV65 }}</td>
+                    <td>{{table1.newMaleExtrapulmonaryHIV|sum:table1.relapseMaleExtrapulmonaryHIV }}</td>
+                    <td>{{table1.newFemaleExtrapulmonaryHIV|sum:table1.relapseFemaleExtrapulmonaryHIV }}</td>
+                    <td>{{table1.newExtrapulmonaryHIV|sum:table1.relapseExtrapulmonaryHIV }}
+                </tr>
+                <tr>
+                    <td colspan="2" align="left">{{"mdrtb.tb07u.total"|get_message:request.session.locale}}</td>
+
+                    <td>{{table1.newMale04|sum:table1.relapseMale04 }}</td>
+                    <td>{{table1.newFemale04|sum:table1.relapseFemale04 }}</td>
+                    <td>{{table1.newMale0514|sum:table1.relapseMale0514 }}</td>
+                    <td>{{table1.newFemale0514|sum:table1.relapseFemale0514 }}</td>
+                    <td>{{table1.newMale1517|sum:table1.relapseMale1517 }}</td>
+                    <td>{{table1.newFemale1517|sum:table1.relapseFemale1517 }}</td>
+                    <td>{{table1.newMale1819|sum:table1.relapseMale1819 }}</td>
+                    <td>{{table1.newFemale1819|sum:table1.relapseFemale1819 }}</td>
+                    <td>{{table1.newMale2024|sum:table1.relapseMale2024 }}</td>
+                    <td>{{table1.newFemale2024|sum:table1.relapseFemale2024 }}</td>
+                    <td>{{table1.newMale2534|sum:table1.relapseMale2534 }}</td>
+                    <td>{{table1.newFemale2534|sum:table1.relapseFemale2534 }}</td>
+                    <td>{{table1.newMale3544|sum:table1.relapseMale3544 }}</td>
+                    <td>{{table1.newFemale3544|sum:table1.relapseFemale3544 }}</td>
+                    <td>{{table1.newMale4554|sum:table1.relapseMale4554 }}</td>
+                    <td>{{table1.newFemale4554|sum:table1.relapseFemale4554 }}</td>
+                    <td>{{table1.newMale5564|sum:table1.relapseMale5564 }}</td>
+                    <td>{{table1.newFemale5564|sum:table1.relapseFemale5564 }}</td>
+                    <td>{{table1.newMale65|sum:table1.relapseMale65 }}</td>
+                    <td>{{table1.newFemale65|sum:table1.relapseFemale65 }}</td>
+                    <td>{{table1.newMale|sum:table1.relapseMale }}</td>
+                    <td>{{table1.newFemale|sum:table1.relapseFemale }}</td>
+                    <td>{{table1.newAll|sum:table1.relapseAll }}</td>
+                </tr>
+                <tr bgcolor="yellow">
+                    <td colspan="2">{{"mdrtb.tb07u.ofTheseHIV"|get_message:request.session.locale}}</td>
+
+                    <td>{{table1.newMaleHIV04|sum:table1.relapseMaleHIV04 }}</td>
+                    <td>{{table1.newFemaleHIV04|sum:table1.relapseFemaleHIV04 }}</td>
+                    <td>{{table1.newMaleHIV0514|sum:table1.relapseMaleHIV0514 }}</td>
+                    <td>{{table1.newFemaleHIV0514|sum:table1.relapseFemaleHIV0514 }}</td>
+                    <td>{{table1.newMaleHIV1517|sum:table1.relapseMaleHIV1517 }}</td>
+                    <td>{{table1.newFemaleHIV1517|sum:table1.relapseFemaleHIV1517 }}</td>
+                    <td>{{table1.newMaleHIV1819|sum:table1.relapseMaleHIV1819 }}</td>
+                    <td>{{table1.newFemaleHIV1819|sum:table1.relapseFemaleHIV1819 }}</td>
+                    <td>{{table1.newMaleHIV2024|sum:table1.relapseMaleHIV2024 }}</td>
+                    <td>{{table1.newFemaleHIV2024|sum:table1.relapseFemaleHIV2024 }}</td>
+                    <td>{{table1.newMaleHIV2534|sum:table1.relapseMaleHIV2534 }}</td>
+                    <td>{{table1.newFemaleHIV2534|sum:table1.relapseFemaleHIV2534 }}</td>
+                    <td>{{table1.newMaleHIV3544|sum:table1.relapseMaleHIV3544 }}</td>
+                    <td>{{table1.newFemaleHIV3544|sum:table1.relapseFemaleHIV3544 }}</td>
+                    <td>{{table1.newMaleHIV4554|sum:table1.relapseMaleHIV4554 }}</td>
+                    <td>{{table1.newFemaleHIV4554|sum:table1.relapseFemaleHIV4554 }}</td>
+                    <td>{{table1.newMaleHIV5564|sum:table1.relapseMaleHIV5564 }}</td>
+                    <td>{{table1.newFemaleHIV5564|sum:table1.relapseFemaleHIV5564 }}</td>
+                    <td>{{table1.newMaleHIV65|sum:table1.relapseMaleHIV65 }}</td>
+                    <td>{{table1.newFemaleHIV65|sum:table1.relapseFemaleHIV65 }}</td>
+                    <td>{{table1.newMaleHIV|sum:table1.relapseMaleHIV }}</td>
+                    <td>{{table1.newFemaleHIV|sum:table1.relapseFemaleHIV }}</td>
+                    <td>{{table1.newAllHIV|sum:table1.relapseAllHIV }}</td>
+                </tr>
+
+
+            </tbody>
+        </table>
+        <p>{{"mdrtb.tb07u.table1.footnote"|get_message:request.session.locale}}</p>
+
+
+
+        <h5>{{"mdrtb.tb07u.table2.title"|get_message:request.session.locale}}</h5>
+        <table style="width: 900px;" border="1">
+            <tbody>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td style="text-align: center;" colspan="3">
+                        {{"mdrtb.tb07u.afterFailure"|get_message:request.session.locale}}</td>
+                    <td style="text-align: center;" colspan="3">
+                        {{"mdrtb.tb07u.afterDefault"|get_message:request.session.locale}}</td>
+                    <td style="text-align: center;" colspan="3">
+                        {{"mdrtb.tb07u.others"|get_message:request.session.locale}}
+                    </td>
+                    <td style="text-align: center;" colspan="3">
+                        {{"mdrtb.tb07u.total"|get_message:request.session.locale}}
+                    </td>
+                    <td colspan="3">
+                        <p style="text-align: center;">{{"mdrtb.tb07u.total"|get_message:request.session.locale}}</p>
+                        <p style="text-align: center;">({{"mdrtb.tb07u.t1t2"|get_message:request.session.locale}})</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td align="center">{{"mdrtb.tb03.gender.male"|get_message:request.session.locale}}</td>
+                    <td align="center">{{"mdrtb.tb03.gender.female"|get_message:request.session.locale}}</td>
+                    <td align="center">{{"mdrtb.tb07u.total"|get_message:request.session.locale}}</td>
+                    <td align="center">{{"mdrtb.tb03.gender.male"|get_message:request.session.locale}}</td>
+                    <td align="center">{{"mdrtb.tb03.gender.female"|get_message:request.session.locale}}</td>
+                    <td align="center">{{"mdrtb.tb07u.total"|get_message:request.session.locale}}</td>
+                    <td align="center">{{"mdrtb.tb03.gender.male"|get_message:request.session.locale}}</td>
+                    <td align="center">{{"mdrtb.tb03.gender.female"|get_message:request.session.locale}}</td>
+                    <td align="center">{{"mdrtb.tb07u.total"|get_message:request.session.locale}}</td>
+                    <td align="center">{{"mdrtb.tb03.gender.male"|get_message:request.session.locale}}</td>
+                    <td align="center">{{"mdrtb.tb03.gender.female"|get_message:request.session.locale}}</td>
+                    <td align="center">{{"mdrtb.tb07u.total"|get_message:request.session.locale}}</td>
+                    <td align="center">{{"mdrtb.tb03.gender.male"|get_message:request.session.locale}}</td>
+                    <td align="center">{{"mdrtb.tb03.gender.female"|get_message:request.session.locale}}</td>
+                    <td align="center">{{"mdrtb.tb07u.total"|get_message:request.session.locale}}</td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>{{"mdrtb.tb07u.pulmonaryBC"|get_message:request.session.locale}}</p>
+                    </td>
+                    <td>{{ table1.failureMalePulmonaryBC }}</td>
+                    <td>{{ table1.failureFemalePulmonaryBC }}</td>
+                    <td>{{ table1.failurePulmonaryBC }}</td>
+                    <td>{{ table1.defaultMalePulmonaryBC }}</td>
+                    <td>{{ table1.defaultFemalePulmonaryBC }}</td>
+                    <td>{{ table1.defaultPulmonaryBC }}</td>
+                    <td>{{ table1.otherMalePulmonaryBC }}</td>
+                    <td>{{ table1.otherFemalePulmonaryBC }}</td>
+                    <td>{{ table1.otherPulmonaryBC }}</td>
+                    <td>{{ table1.retreatmentMalePulmonaryBC }}</td>
+                    <td>{{ table1.retreatmentFemalePulmonaryBC }}</td>
+                    <td>{{ table1.retreatmentPulmonaryBC }}</td>
+                    <td>{{ table1.totalMalePulmonaryBC }}</td>
+                    <td>{{ table1.totalFemalePulmonaryBC }}</td>
+                    <td>{{ table1.totalPulmonaryBC }}</td>
+
+                </tr>
+                <tr bgcolor="yellow">
+                    <td>{{"mdrtb.tb07u.ofTheseHIV"|get_message:request.session.locale}}</td>
+                    <td>{{ table1.failureMalePulmonaryBCHIV }}</td>
+                    <td>{{ table1.failureFemalePulmonaryBCHIV }}</td>
+                    <td>{{ table1.failurePulmonaryBCHIV }}</td>
+                    <td>{{ table1.defaultMalePulmonaryBCHIV }}</td>
+                    <td>{{ table1.defaultFemalePulmonaryBCHIV }}</td>
+                    <td>{{ table1.defaultPulmonaryBCHIV }}</td>
+                    <td>{{ table1.otherMalePulmonaryBCHIV }}</td>
+                    <td>{{ table1.otherFemalePulmonaryBCHIV }}</td>
+                    <td>{{ table1.otherPulmonaryBCHIV }}</td>
+                    <td>{{ table1.retreatmentMalePulmonaryBCHIV }}</td>
+                    <td>{{ table1.retreatmentFemalePulmonaryBCHIV }}</td>
+                    <td>{{ table1.retreatmentPulmonaryBCHIV }}</td>
+                    <td>{{ table1.totalMalePulmonaryBCHIV }}</td>
+                    <td>{{ table1.totalFemalePulmonaryBCHIV }}</td>
+                    <td>{{ table1.totalPulmonaryBCHIV }}</td>
+                </tr>
+                <tr>
+                    <td>{{"mdrtb.tb07u.pulmonaryCD"|get_message:request.session.locale}} </td>
+                    <td>{{ table1.failureMalePulmonaryCD }}</td>
+                    <td>{{ table1.failureFemalePulmonaryCD }}</td>
+                    <td>{{ table1.failurePulmonaryCD }}</td>
+                    <td>{{ table1.defaultMalePulmonaryCD }}</td>
+                    <td>{{ table1.defaultFemalePulmonaryCD }}</td>
+                    <td>{{ table1.defaultPulmonaryCD }}</td>
+                    <td>{{ table1.otherMalePulmonaryCD }}</td>
+                    <td>{{ table1.otherFemalePulmonaryCD }}</td>
+                    <td>{{ table1.otherPulmonaryCD }}</td>
+                    <td>{{ table1.retreatmentMalePulmonaryCD }}</td>
+                    <td>{{ table1.retreatmentFemalePulmonaryCD }}</td>
+                    <td>{{ table1.retreatmentPulmonaryCD }}</td>
+                    <td>{{ table1.totalMalePulmonaryCD }}</td>
+                    <td>{{ table1.totalFemalePulmonaryCD }}</td>
+                    <td>{{ table1.totalPulmonaryCD }}</td>
+                </tr>
+                <tr bgcolor="yellow">
+                    <td>{{"mdrtb.tb07u.ofTheseHIV"|get_message:request.session.locale}}&nbsp;</td>
+                    <td>{{ table1.failureMalePulmonaryCDHIV }}</td>
+                    <td>{{ table1.failureFemalePulmonaryCDHIV }}</td>
+                    <td>{{ table1.failurePulmonaryCDHIV }}</td>
+                    <td>{{ table1.defaultMalePulmonaryCDHIV }}</td>
+                    <td>{{ table1.defaultFemalePulmonaryCDHIV }}</td>
+                    <td>{{ table1.defaultPulmonaryCDHIV }}</td>
+                    <td>{{ table1.otherMalePulmonaryCDHIV }}</td>
+                    <td>{{ table1.otherFemalePulmonaryCDHIV }}</td>
+                    <td>{{ table1.otherPulmonaryCDHIV }}</td>
+                    <td>{{ table1.retreatmentMalePulmonaryCDHIV }}</td>
+                    <td>{{ table1.retreatmentFemalePulmonaryCDHIV }}</td>
+                    <td>{{ table1.retreatmentPulmonaryCDHIV }}</td>
+                    <td>{{ table1.totalMalePulmonaryCDHIV }}</td>
+                    <td>{{ table1.totalFemalePulmonaryCDHIV }}</td>
+                    <td>{{ table1.totalPulmonaryCDHIV }}</td>
+                </tr>
+                <tr>
+                    <td>{{"mdrtb.tb07u.eptb"|get_message:request.session.locale}}</td>
+                    <td>{{ table1.failureMaleExtrapulmonary }}</td>
+                    <td>{{ table1.failureFemaleExtrapulmonary }}</td>
+                    <td>{{ table1.failureExtrapulmonary }}</td>
+                    <td>{{ table1.defaultMaleExtrapulmonary }}</td>
+                    <td>{{ table1.defaultFemaleExtrapulmonary }}</td>
+                    <td>{{ table1.defaultExtrapulmonary }}</td>
+                    <td>{{ table1.otherMaleExtrapulmonary }}</td>
+                    <td>{{ table1.otherFemaleExtrapulmonary }}</td>
+                    <td>{{ table1.otherExtrapulmonary }}</td>
+                    <td>{{ table1.retreatmentMaleExtrapulmonary }}</td>
+                    <td>{{ table1.retreatmentFemaleExtrapulmonary }}</td>
+                    <td>{{ table1.retreatmentExtrapulmonary }}</td>
+                    <td>{{ table1.totalMaleExtrapulmonary }}</td>
+                    <td>{{ table1.totalFemaleExtrapulmonary }}</td>
+                    <td>{{ table1.totalExtrapulmonary }}</td>
+                </tr>
+                <tr bgcolor="yellow">
+                    <td>{{"mdrtb.tb07u.ofTheseHIV"|get_message:request.session.locale}}</td>
+                    <td>{{ table1.failureMaleExtrapulmonaryHIV }}</td>
+                    <td>{{ table1.failureFemaleExtrapulmonaryHIV }}</td>
+                    <td>{{ table1.failureExtrapulmonaryHIV }}</td>
+                    <td>{{ table1.defaultMaleExtrapulmonaryHIV }}</td>
+                    <td>{{ table1.defaultFemaleExtrapulmonaryHIV }}</td>
+                    <td>{{ table1.defaultExtrapulmonaryHIV }}</td>
+                    <td>{{ table1.otherMaleExtrapulmonaryHIV }}</td>
+                    <td>{{ table1.otherFemaleExtrapulmonaryHIV }}</td>
+                    <td>{{ table1.otherExtrapulmonaryHIV }}</td>
+                    <td>{{ table1.retreatmentMaleExtrapulmonaryHIV }}</td>
+                    <td>{{ table1.retreatmentFemaleExtrapulmonaryHIV }}</td>
+                    <td>{{ table1.retreatmentExtrapulmonaryHIV }}</td>
+                    <td>{{ table1.totalMaleExtrapulmonaryHIV }}</td>
+                    <td>{{ table1.totalFemaleExtrapulmonaryHIV }}</td>
+                    <td>{{ table1.totalExtrapulmonaryHIV }}</td>
+                <tr>
+                    <td style="margin-left: 30px; text-align: center;">
+                        <strong>{{"mdrtb.tb07u.total"|get_message:request.session.locale}}</strong>
+                    </td>
+                    <td>{{ table1.failureMale }}</td>
+                    <td>{{ table1.failureFemale }}</td>
+                    <td>{{ table1.failureAll }}</td>
+                    <td>{{ table1.defaultMale }}</td>
+                    <td>{{ table1.defaultFemale }}</td>
+                    <td>{{ table1.defaultAll }}</td>
+                    <td>{{ table1.otherMale }}</td>
+                    <td>{{ table1.otherFemale }}</td>
+                    <td>{{ table1.otherAll }}</td>
+                    <td>{{ table1.retreatmentMale }}</td>
+                    <td>{{ table1.retreatmentFemale }}</td>
+                    <td>{{ table1.retreatmentAll }}</td>
+                    <td>{{ table1.totalMale }}</td>
+                    <td>{{ table1.totalFemale }}</td>
+                    <td>{{ table1.totalAll }}</td>
+                </tr>
+
+                <tr bgcolor="yellow">
+                    <td style="text-align: center;">
+                        <strong>{{"mdrtb.tb07u.ofTheseHIV"|get_message:request.session.locale}}</strong>
+                    </td>
+                    <td>{{ table1.failureMaleHIV }}</td>
+                    <td>{{ table1.failureFemaleHIV }}</td>
+                    <td>{{ table1.failureAllHIV }}</td>
+                    <td>{{ table1.defaultMaleHIV }}</td>
+                    <td>{{ table1.defaultFemaleHIV }}</td>
+                    <td>{{ table1.defaultAllHIV }}</td>
+                    <td>{{ table1.otherMaleHIV }}</td>
+                    <td>{{ table1.otherFemaleHIV }}</td>
+                    <td>{{ table1.otherAllHIV }}</td>
+                    <td>{{ table1.retreatmentMaleHIV }}</td>
+                    <td>{{ table1.retreatmentFemaleHIV }}</td>
+                    <td>{{ table1.retreatmentAllHIV }}</td>
+                    <td>{{ table1.totalMaleHIV }}</td>
+                    <td>{{ table1.totalFemaleHIV }}</td>
+                    <td>{{ table1.totalAllHIV }}</td>
+                </tr>
+
+
+
+
+            </tbody>
+        </table>
+
+        <br /><br />
+        <h5>{{"mdrtb.tb07u.table3.title"|get_message:request.session.locale}}</h5>
+        <table style="width: 900px;" border="1">
+            <tbody>
+                <tr>
+                    <td align="center">{{"mdrtb.tb07u.testedForHIV"|get_message:request.session.locale}}</td>
+                    <td align="center">{{"mdrtb.tb07u.confirmedHIV"|get_message:request.session.locale}}</td>
+                    <td align="center">{{"mdrtb.tb07u.artStarted"|get_message:request.session.locale}}</td>
+                    <td align="center">{{"mdrtb.tb07u.ptcStarted"|get_message:request.session.locale}}</td>
+                </tr>
+                <tr>
+                    <td align="center">{{table1.hivTested }}</td>
+                    <td align="center">{{table1.hivPositive }}</td>
+                    <td align="center">{{table1.artStarted }}</td>
+                    <td align="center">{{table1.pctStarted }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <button>
+        <a style="text-decoration: none; color: black;" href="javascript:history.go(-1)">
+            {{'mdrtb.back'|get_message:request.session.locale}}
+        </a>
+    </button>
+    <input type="button" onclick="tableToExcel('tb07', 'TB07')"
+        value="{{'mdrtb.exportToExcelBtn'|get_message:request.session.locale}}" />
+    <!-- <input type="button" id="tableToPdf" name="tableToPdf" value="{{"mdrtb.exportToPdfBtn"|get_message:request.session.locale}}" /> -->
+    {% if manage_report_closing %}
+    <input type="button" id="tableToSql" name="tableToSql"
+        value="{{'mdrtb.closeReportBtn'|get_message:request.session.locale}}" />
+    <input type="button" onclick="printForm()" value="{{'mdrtb.print'|get_message:request.session.locale}}" />
+    {% endif %}
+    <script>
+        console.log(JSON.parse("{{json|escapejs}}"));
+        console.log("{{ reportStatus }}");
+        if ("{{ reportStatus }}" === "true") {
+            document.getElementById("tableToSql").disabled = true;
+        } else {
+            document.getElementById("tableToSql").disabled = false;
+        }
+    </script>
+
+</div>
+
+{% endblock %}

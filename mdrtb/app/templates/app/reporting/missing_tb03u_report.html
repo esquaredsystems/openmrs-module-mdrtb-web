@@ -1,0 +1,124 @@
+{% extends 'app/reporting/report_base.html' %}
+
+{% block content %}
+
+
+
+
+<div>
+
+
+    <div id="dq">
+        <table class="resultsTable">
+            <tr>
+                <th class=normal colspan="4">{{"mdrtb.dq.missingtb03u"|get_message:request.session.locale}}</th>
+            </tr>
+            <tr>
+                <th colspan="2">{{"mdrtb.oblast"|get_message:request.session.locale}}</td>
+                    {% if location.parent is not None %}
+                    {% if location.grandparent is None %}
+                <td colspan="2">{{ location.location }}</td>
+                {% else %}
+                <td colspan="2"></td>
+                {% endif %}
+                {% else %}
+                <td colspan="2"></td>
+                {% endif %}
+            </tr>
+            <tr>
+                <th colspan="2">{{"mdrtb.district"|get_message:request.session.locale}}</td>
+                    {% if location.parent is not None %}
+                    {% if location.grandparent is None %}
+                <td colspan="2">{{ location.location }}</td>
+                {% else %}
+                <td colspan="2"></td>
+                {% endif %}
+                {% else %}
+                <td colspan="2"></td>
+                {% endif %}
+            </tr>
+            <tr>
+                <th colspan="2">{{"mdrtb.facility"|get_message:request.session.locale}}</td>
+                    {% if location.parent and location.grandparent %}
+                <td colspan="2">{{ location.location }}</td>
+                {% else %}
+                <td colspan="2"></td>
+                {% endif %}
+            </tr>
+            <tr>
+                <th colspan="2">{{"mdrtb.year"|get_message:request.session.locale}}</td>
+                <td colspan="2" align="right">{{ request.GET.year }}</td>
+            </tr>
+            <tr>
+                <th colspan="2">{{"mdrtb.quarter"|get_message:request.session.locale}}</td>
+                <td align="right" colspan="2">{{ request.GET.quarter }}</td>
+            </tr>
+            <tr>
+                <th colspan="2">{{"mdrtb.month"|get_message:request.session.locale}}</td>
+                <td align="right" colspan="2">{{ request.GET.month }}</td>
+            </tr>
+            <tr>
+                <th colspan="2">{{"mdrtb.dq.numberOfPatients"|get_message:request.session.locale}}</td>
+                <td align="right" colspan="2">{{ summary.totalCases }}</td>
+            </tr>
+            <tr>
+                <th colspan="2">{{"mdrtb.dq.numberWithErrors"|get_message:request.session.locale}}</td>
+                <td align="right" colspan="2">{{ summary.errorCount }}</td>
+            </tr>
+            <tr>
+                <th colspan="2">{{"mdrtb.dq.errorPercentage"|get_message:request.session.locale}}</td>
+                <td align="right" colspan="2">{{ summary.errorPercentage }}</td>
+            </tr>
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <th class=normal colspan="4">{{"mdrtb.dq.missingtb03u"|get_message:request.session.locale}}</th>
+            </tr>
+            <tr>
+                <td>{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
+                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
+            </tr>
+            {% for row in missingTB03u %}
+            <tr>
+
+                <td><a href="#" target="_blank">{{row.patient.personName.familyName}},{{row.patient.personName.givenName}}</a>
+                </td>
+                <td>{{ row.dateOfBirth }}</td>
+                <td align="center">{{ row.gender }}</td>
+            </tr>
+            {% endfor %}
+
+
+        </table>
+    </div>
+    <button>
+        <a style="text-decoration: none; color: black;" href="javascript:history.go(-1)">
+            {{'mdrtb.back'|get_message:request.session.locale}}
+        </a>
+    </button>
+    <input type="button" onclick="tableToExcel('tb03u', 'TB03u')"
+        value="{{'mdrtb.exportToExcelBtn'|get_message:request.session.locale}}" />
+    <!-- <input type="button" id="tableToPdf" name="tableToPdf" value="{{"mdrtb.exportToPdfBtn"|get_message:request.session.locale}}" /> -->
+    {% if manage_report_closing %}
+    <input type="button" id="tableToSql" name="tableToSql"
+        value="{{'mdrtb.closeReportBtn'|get_message:request.session.locale}}" />
+    <input type="button" onclick="printForm()" value="{{'mdrtb.print'|get_message:request.session.locale}}" />
+    {% endif %}
+    <script>
+        console.log("{{ reportStatus }}");
+        if ("{{ reportStatus }}" === "true") {
+            document.getElementById("tableToSql").disabled = true;
+        } else {
+            document.getElementById("tableToSql").disabled = false;
+        }
+    </script>
+
+
+</div>
+
+{% endblock %}
