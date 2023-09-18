@@ -2626,6 +2626,11 @@ def render_missing_tb03_report(req):
             context["location"] = mu.get_location(req, location)
             missing_tb03_summary = response["results"][0]
             missing_tb03_data = response["results"][0]["dqItems"]
+            for patient in missing_tb03_data:
+                if patient:
+                    patient_data = pu.get_patient(req, patient["patientUuid"])
+                    if patient_data:
+                        patient.update({"patient": patient_data})
             context["summary"] = missing_tb03_summary
             context["missingTB03"] = missing_tb03_data
 

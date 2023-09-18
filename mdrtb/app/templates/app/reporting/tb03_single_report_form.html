@@ -1,7 +1,7 @@
 {% extends 'app/base/base.html' %}
 
 {% block content %}
-<div class="m-12">
+<div class="mx-auto w-2/4">
     <form onsubmit="disableSubmit()" action="{% url 'tb03singleexport' %}" method="post"
         class="flex flex-col space-y-6">
         {% csrf_token %}

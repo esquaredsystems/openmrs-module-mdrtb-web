@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<div class="p-4 m-6 flex flex-col justify-center">
+<div class="p-4 m-6 flex flex-col w-2/4 justify-center">
   <h1 class="page-title">{{'mdrtb.patientLists'|get_message:request.session.locale}}</h1>
 
   <form onsubmit="disableSubmit()" method="post" action="{% url 'patientlist' %}" class=" flex flex-col space-y-6  p-4">
@@ -34,7 +34,7 @@
       </select>
     </div>
 
-    <div class="flex flex-col space-y-4">
+    <div class="p-4  flex flex-col justify-center space-y-4">
       <div class="flex items-center space-x-4">
         <input required type="radio" class="radio-input" name="listname" value="allenrolled">
         <label for="">{{'mdrtb.allCasesEnrolled'|get_message:request.session.locale}}</label>

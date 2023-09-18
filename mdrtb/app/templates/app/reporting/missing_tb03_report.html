@@ -4,7 +4,6 @@
 
 
 
-
 <div>
 
 
@@ -183,10 +182,10 @@
             </tr>
             {% for row in missingTB03 %}
             <tr>
-                <td colspan="2"><a href="#" target="_blank">{{ row.patient.personName.familyName }},
-                        {{row.patient.personName.givenName}}</a></td>
+                <td colspan="2"><a href="/patient/{{row.patientUuid}}/enrolledprograms"
+                        target="_blank">{{row.patient.name}}</a></td>
                 <td>{{ row.dateOfBirth }}</td>
-                <td align="center">{{ row.gender }}</td>
+                <td align="center">{{ row.patient.gender }}</td>
             </tr>
             {% endfor %}
 
