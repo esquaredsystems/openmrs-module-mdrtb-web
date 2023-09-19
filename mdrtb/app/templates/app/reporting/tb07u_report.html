@@ -879,7 +879,7 @@
         {% endfor %}
     </table>
 </div>
-<input type="button" onclick="tableToExcel('tb03', 'TB03')"
+<input type="button" onclick="tableToExcel('tb07u', 'TB07u')"
     value="{{'mdrtb.exportToExcelBtn'|get_message:request.session.locale}}" />
 <!-- <input type="button" id="tableToPdf" name="tableToPdf" value="{{'mdrtb.exportToPdfBtn'|get_message:request.session.locale}}" /> -->
 <!-- <openmrs:hasPrivilege privilege="Manage Report Closing">
@@ -906,7 +906,7 @@
         mywindow.document.write('<html><head><title>{{"mdrtb.tb03"|get_message:request.session.locale}}</title>');
         mywindow.document.write('</head><body >');
         // mywindow.document.write('<h1><spring:message code="mdrtb.pv.aeForm" text="AE"/></h1>');
-        mywindow.document.write(document.getElementById("tb03").innerHTML);
+        mywindow.document.write(document.getElementById("tb07u").innerHTML);
 
         mywindow.document.write('</body></html>');
 
@@ -930,7 +930,7 @@
         }
     })
     function savePdf(action, reportName, formPath) {
-        var tableData = (document.getElementById("tb03")).innerHTML.toString();
+        var tableData = (document.getElementById("tb07u")).innerHTML.toString();
         var oblast = "{{ oblast }}";
         var district = "{{ district }}";
         var facility = "{{ facility }}";
@@ -1038,7 +1038,7 @@
     $(document).ready(function () {
         $("#tableToSql").bind("click", function () {
             if (confirm('{{"mdrtb.closeReportMessage"|get_message:request.session.locale}}')) {
-                savePdf("closeReport.form", "TB-03", "tb03Results");
+                savePdf("closeReport.form", "tb07u", "tb07uResults");
             }
         });
         /* $("#tableToPdf").click(function(){

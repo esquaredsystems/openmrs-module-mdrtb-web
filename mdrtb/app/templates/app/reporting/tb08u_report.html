@@ -840,10 +840,10 @@
     function printForm() {
         var mywindow = window.open('', 'PRINT', 'height=400,width=600');
 
-        mywindow.document.write('<html><head><title>{{"mdrtb.tb03"|get_message:request.session.locale}}</title>');
+        mywindow.document.write('<html><head><title>{{"mdrtb.tb08u"|get_message:request.session.locale}}</title>');
         mywindow.document.write('</head><body >');
         // mywindow.document.write('<h1><spring:message code="mdrtb.pv.aeForm" text="AE"/></h1>');
-        mywindow.document.write(document.getElementById("tb03").innerHTML);
+        mywindow.document.write(document.getElementById("tb08u").innerHTML);
 
         mywindow.document.write('</body></html>');
 
@@ -865,7 +865,7 @@
             var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
             window.location.href = uri + base64(format(template, ctx))
         }
-    })
+    })()
     function savePdf(action, reportName, formPath) {
         var tableData = (document.getElementById("tb03")).innerHTML.toString();
         var oblast = "{{ oblast }}";

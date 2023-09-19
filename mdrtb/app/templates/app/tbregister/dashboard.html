@@ -308,11 +308,11 @@
                   <div>
                     <div class="py-4 grid grid-cols-2 gap-2">
                       <div class="w-full bg-white p-2">
-                        <h1 class="font-bold text-lg text-center">Unknown</h1>
-                        <div id="{{lab_result.uuid}}unknown"
-                          class="grid grid-cols-2 place-items-center justify-items-center  p-2">
-                          <div class="border p-2 border-gray-200 font-bold">Question</div>
-                          <div class="border p-2 border-gray-200 font-bold">Answer</div>
+                        <h1 class="font-bold text-lg text-center">Common</h1>
+                        <div id="{{lab_result.uuid}}common"
+                          class="grid grid-cols-2 place-items-center justify-items-center  p-2 w-full">
+                          <div class="border p-2 border-gray-200 font-bold w-full">Question</div>
+                          <div class="border p-2 border-gray-200 font-bold w-full">Answer</div>
 
 
                         </div>
@@ -321,8 +321,8 @@
                         <h1 class="font-bold text-lg text-center">XPERT</h1>
                         <div id="{{lab_result.uuid}}xpert"
                           class="grid grid-cols-2 place-items-center justify-items-center  p-2">
-                          <div class="border p-2 border-gray-200 font-bold">Question</div>
-                          <div class="border p-2 border-gray-200 font-bold">Answer</div>
+                          <div class="border p-2 border-gray-200 font-bold w-full">Question</div>
+                          <div class="border p-2 border-gray-200 font-bold w-full">Answer</div>
 
 
                         </div>
@@ -331,8 +331,8 @@
                         <h1 class="font-bold text-lg text-center">HAIN</h1>
                         <div id="{{lab_result.uuid}}hain"
                           class="grid grid-cols-2 place-items-center justify-items-center  p-2">
-                          <div class="border p-2 border-gray-200 font-bold">Question</div>
-                          <div class="border p-2 border-gray-200 font-bold">Answer</div>
+                          <div class="border p-2 border-gray-200 font-bold w-full">Question</div>
+                          <div class="border p-2 border-gray-200 font-bold w-full">Answer</div>
 
 
                         </div>
@@ -342,8 +342,8 @@
                         <h1 class="font-bold text-lg text-center">HAIN 2</h1>
                         <div id="{{lab_result.uuid}}hain2"
                           class="grid grid-cols-2 place-items-center justify-items-center p-2">
-                          <div class="border p-2 border-gray-200 font-bold">Question</div>
-                          <div class="border p-2 border-gray-200 font-bold">Answer</div>
+                          <div class="border p-2 border-gray-200 font-bold w-full">Question</div>
+                          <div class="border p-2 border-gray-200 font-bold w-full">Answer</div>
 
 
                         </div>
@@ -352,8 +352,8 @@
                         <h1 class="font-bold text-lg text-center">CULTURE</h1>
                         <div id="{{lab_result.uuid}}culture"
                           class="grid grid-cols-2 place-items-center justify-items-center  p-2">
-                          <div class="border p-2 border-gray-200 font-bold">Question</div>
-                          <div class="border p-2 border-gray-200 font-bold">Answer</div>
+                          <div class="border p-2 border-gray-200 font-bold w-full">Question</div>
+                          <div class="border p-2 border-gray-200 font-bold w-full">Answer</div>
 
 
                         </div>
@@ -361,9 +361,9 @@
                       <div class="w-full bg-white p-2">
                         <h1 class="font-bold text-lg text-center">SMEAR</h1>
                         <div id="{{lab_result.uuid}}smear"
-                          class="grid grid-cols-2 place-items-center justify-items-center  p-2">
-                          <div class="border p-2 border-gray-200 font-bold">Question</div>
-                          <div class="border p-2 border-gray-200 font-bold">Answer</div>
+                          class="grid grid-cols-2 place-items-center justify-items-center w-full  p-2">
+                          <div class="border p-2 w-full border-gray-200 font-bold">Question</div>
+                          <div class="border p-2 w-full border-gray-200 font-bold">Answer</div>
 
 
                         </div>
@@ -460,10 +460,10 @@
           if (attribute.valueReference) {
             for (answer of attribute.attributeType.answers) {
               if (answer.uuid === attribute.valueReference) {
-                $(`#${uuid}unknown`).append(
+                $(`#${uuid}common`).append(
                   `
-          <div class="border p-2 border-gray-200">${attribute.attributeType.name}</div>
-          <div class="border p-2 border-gray-200">${answer.display}</div>
+          <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+          <div class="border w-full p-2 border-gray-200">${answer.display}</div>
  
           `
                 )
@@ -476,8 +476,8 @@
         else {
           $(`#${uuid}unknown`).append(
             `
-          <div class="border p-2 border-gray-200">${attribute.attributeType.name}</div>
-          <div class="border p-2 border-gray-200">${attribute.valueReference ? attribute.valueReference : '-'}</div>
+          <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+          <div class="border w-full p-2 border-gray-200">${attribute.valueReference ? attribute.valueReference : '-'}</div>
  
           `
           )
@@ -490,8 +490,8 @@
               if (answer.uuid === attribute.valueReference) {
                 $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
                   `
-          <div class="border p-2 border-gray-200">${attribute.attributeType.name}</div>
-          <div class="border p-2 border-gray-200">${answer.display}</div>
+          <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+          <div class="border w-full p-2 border-gray-200">${answer.display}</div>
  
           `
                 )
@@ -504,8 +504,8 @@
         } else {
           $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
             `
-          <div class="border p-2 border-gray-200">${attribute.attributeType.name}</div>
-          <div class="border p-2 border-gray-200">${attribute.valueReference ? attribute.valueReference : '-'}</div>
+          <div class="border w-full p-2 border-gray-200 ">${attribute.attributeType.name}</div>
+          <div class="border w-full p-2 border-gray-200">${attribute.valueReference ? attribute.valueReference : '-'}</div>
 
           `
           )

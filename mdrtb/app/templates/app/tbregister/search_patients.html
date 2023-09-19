@@ -165,6 +165,7 @@
     <a class="cancel-button" href="{% url 'logout' %}">Logout</a>
   </h1>
   {% else %}
+  <strong>You must login to continue</strong>
   <a class="cancel-button" href="{% url 'logout' %}">Logout</a></h1>
   {% endif %}
 </div>

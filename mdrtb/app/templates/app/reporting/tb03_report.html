@@ -480,7 +480,7 @@
         function printForm() {
             var mywindow = window.open('', 'PRINT', 'height=400,width=600');
 
-            mywindow.document.write('<html><head><title>{{"mdrtb.tb03"|get_message:request.session.locale}}</title>');
+            mywindow.document.write('<html><head><title><spring:message code="mdrtb.tb03u" text="TB03y"/></title>');
             mywindow.document.write('</head><body >');
             // mywindow.document.write('<h1><spring:message code="mdrtb.pv.aeForm" text="AE"/></h1>');
             mywindow.document.write(document.getElementById("tb03").innerHTML);
@@ -505,7 +505,7 @@
                 var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
                 window.location.href = uri + base64(format(template, ctx))
             }
-        })
+        })()
         function savePdf(action, reportName, formPath) {
             var tableData = (document.getElementById("tb03")).innerHTML.toString();
             var oblast = "{{ oblast }}";

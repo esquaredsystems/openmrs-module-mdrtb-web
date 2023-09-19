@@ -135,6 +135,16 @@ urlpatterns = [
         "tb03singleresults", views.render_tb03_single_report, name="tb03singleResults"
     ),
     path(
+        "tb03usingleexport",
+        views.render_tb03u_single_report_form,
+        name="tb03usingleexport",
+    ),
+    path(
+        "tb03usingleresults",
+        views.render_tb03u_single_report,
+        name="tb03usingleResults",
+    ),
+    path(
         "missingtb03export",
         views.render_missing_tb03_report_form,
         name="missingtb03export",

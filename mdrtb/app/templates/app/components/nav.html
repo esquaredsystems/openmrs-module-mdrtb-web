@@ -110,7 +110,8 @@
             href="{% url 'tb03uexport' %}">{{'mdrtb.tb03uExport'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
-          <a class="tw-dropdown-item" href="#">{{'mdrtb.tb03uExportSingleLine'|get_message:request.session.locale}}</a>
+          <a class="tw-dropdown-item"
+            href="{% url 'tb03usingleexport' %}">{{'mdrtb.tb03uExportSingleLine'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item" href="#">{{'mdrtb.dq.title'|get_message:request.session.locale}}</a>
