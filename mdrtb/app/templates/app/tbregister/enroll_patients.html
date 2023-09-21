@@ -10,7 +10,7 @@
 {% if add_patients_privilege %}
 
 
-<form onsubmit="disableSubmit()" action="{% url 'enrollPatient' %}" method="post" class="enroll-form">
+<form onsubmit="disableSubmit()" action="{% url 'enrollPatient' %}" method="post" class="enroll-form w-1/2 mx-auto">
   {% csrf_token %}
   <div class="enrollform-sections-container">
     {% include 'app/components/breadcrumbs.html'%}
@@ -47,7 +47,8 @@
       </div>
       <div class="enrollform-section">
         <div class="input-container">
-          <label class="input-label w-full required" for="patientidentifiertype">Регистрационный номер Дотc</label>
+          <label class="input-label w-full required"
+            for="patientidentifiertype">{{'mdrtb.Identifier'|get_message:request.session.locale}}</label>
           <input hidden required class="input form-control" type="text" value="{{'DOTS_IDENTIFIER' | get_constant }}"
             name="patientidentifiertype" />
           <input required class="input form-control" type="text" name="patientidentifier" />
@@ -101,14 +102,6 @@
           <input type="text" class="input form-control" name="causeofdeath" />
         </div>
       </div>
-      <!-- <div class="input-container">
-        <label class="input-label md:w-16" for="deceased">Voided</label>
-        <input id="voided" type="checkbox" class="border-none shadow-sm cursor-pointer" name="voided" />
-      </div>
-      <div id="voided-container" class="input-container hidden">
-        <label class="text-[#9E9E9E] font-bold" for="Reason to void">Reason to Void</label>
-        <input type="text" class="input form-control" name="reasontovoid" />
-      </div> -->
     </div>
 
     <div class="flex-center">

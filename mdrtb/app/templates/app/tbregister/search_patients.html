@@ -31,8 +31,8 @@
     </div>
 
     {% if add_patients_privilege %}
-    <div class="patient-create-new-box">
-      <p>{{'PatientSearch.noneFound'|get_message_openMRS:request.session.locale}}? </p>
+    <div class="patient-create-new-box space-x-4">
+      <span>{{'PatientSearch.noneFound'|get_message_openMRS:request.session.locale}}?</span>
       <a href="{% url 'enrollPatient' %}"><button
           class="button-primary">{{'mdrtb.createNewPatient'|get_message:request.session.locale}}</button></a>
     </div>
@@ -84,7 +84,8 @@
                 `
       <div class="patient-notfound-box">
         <h3 class="text-xl">
-          Could not find any patient according to your search
+          Could not find any patient according to your search 
+          
           </h3>
     </div>
       `

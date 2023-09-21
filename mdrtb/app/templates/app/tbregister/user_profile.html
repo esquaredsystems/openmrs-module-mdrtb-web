@@ -8,7 +8,7 @@
 {%block content%}
 
 
-<div>
+<div class="w-1/2 mx-auto">
     {% if error %} {{error}} {% endif %}
     <form action="{% url 'profile' %}" method="post" class="flex-column-center">
         {% csrf_token %}

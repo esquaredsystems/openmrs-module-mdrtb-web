@@ -454,6 +454,7 @@
       return;
     }
     let attributes = stringToJson($(element).data('attributes'))
+    console.log(attributes)
     for (attribute of attributes) {
       if (attribute.attributeType.group === null) {
         if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.ConceptDatatype") {

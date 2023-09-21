@@ -696,9 +696,6 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
             context["program"] = program_info
 
             context["mdrEnrolled"] = pu.check_if_patient_enrolled_in_mdrtb(req, uuid)
-
-            return render(req, "app/tbregister/dashboard.html", context=context)
-
         else:
             messages.error(req, "Error fetching patient info")
             logger.error("Error fetching patient info", exc_info=True)
@@ -706,11 +703,10 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
             return redirect(req.session["redirect_url"])
 
     except Exception as e:
-        logger.error(e, exc_info=True)
         messages.error(req, str(e))
         logger.error(str(e), exc_info=True)
-
-        return redirect(req.session["redirect_url"])
+    finally:
+        return render(req, "app/tbregister/dashboard.html", context=context)
 
 
 def render_tb03_form(req, uuid):

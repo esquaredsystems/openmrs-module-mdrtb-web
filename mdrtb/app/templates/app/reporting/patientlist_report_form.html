@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<div class="p-4 m-6 flex flex-col w-2/4 justify-center">
+<div class="p-4 m-6 mx-auto w-1/2 flex flex-col justify-center">
   <h1 class="page-title">{{'mdrtb.patientLists'|get_message:request.session.locale}}</h1>
 
   <form onsubmit="disableSubmit()" method="post" action="{% url 'patientlist' %}" class=" flex flex-col space-y-6  p-4">
@@ -114,8 +114,12 @@
       </div>
 
     </div>
-    <button id="submitBtn" class="button-primary w-1/5">
-      {{'mdrtb.generate'|get_message:request.session.locale}}</button>
+    <div>
+      <button id="submitBtn" class="button-primary w-1/5">
+        {{'mdrtb.generate'|get_message:request.session.locale}}</button>
+      <a href="javascript:history.go(-1)" class="cancel-button">
+        {{'general.cancel'|get_message_openMRS:request.session.locale}} </a>
+    </div>
   </form>
 
 </div>
