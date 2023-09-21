@@ -166,7 +166,7 @@ def get_test_types_by_search(req, query):
     return labtests
 
 
-def get_attributes_of_labtest(req, uuid):
+def get_attributes_of_labtest(req, lab_test_type):
     """
 
     Retrieves the attributes of a lab test based on the provided UUID.
@@ -189,14 +189,23 @@ def get_attributes_of_labtest(req, uuid):
         Exception: If there is an error retrieving the attributes.
 
     """
-    attribute_types = cache.get("attribute_types")
+    attribute_types = cache.get(
+        f"{lab_test_type['name'].replace(' ','')}attribute_types"
+    )
     if not attribute_types:
         status, data = ru.get(
-            req, "commonlab/labtestattributetype", {"testTypeUuid": uuid, "v": "full"}
+            req,
+            "commonlab/labtestattributetype",
+            {"testTypeUuid": lab_test_type["uuid"], "v": "full"},
         )
         if status:
             attribute_types = sorted(data["results"], key=lambda x: x["sortWeight"])
-            cache.set("attribute_types", attribute_types, timeout=None)
+
+            cache.set(
+                f"{lab_test_type['name'].replace(' ','')}attribute_types",
+                attribute_types,
+                timeout=None,
+            )
 
         else:
             raise Exception(data["error"]["message"])
@@ -420,7 +429,7 @@ def get_custom_attribute_for_labresults(req, orderid):
             req, f"commonlab/labtestorder/{orderid}", {"v": "custom:(labTestType)"}
         )
 
-        attributes = get_attributes_of_labtest(req, response["labTestType"]["uuid"])
+        attributes = get_attributes_of_labtest(req, response["labTestType"])
 
         attrs = []
         for attribute in attributes:
@@ -429,19 +438,23 @@ def get_custom_attribute_for_labresults(req, orderid):
                     "datatypeClassname"
                 ].replace(".name", ""):
                     if datatype["inputType"] == "select":
-                        concept = mu.get_concept(req, attribute["datatypeConfig"])
-                        attrs.append(
-                            {
-                                "attributeType": {
-                                    "uuid": attribute["uuid"],
-                                    "name": attribute["name"],
-                                    "datatype": attribute["datatypeClassname"],
-                                    "inputType": datatype["inputType"],
-                                    "answers": concept["answers"],
-                                    "group": attribute["groupName"],
+                        try:
+                            concept = mu.get_concept(req, attribute["datatypeConfig"])
+                            attrs.append(
+                                {
+                                    "attributeType": {
+                                        "uuid": attribute["uuid"],
+                                        "name": attribute["name"],
+                                        "datatype": attribute["datatypeClassname"],
+                                        "inputType": datatype["inputType"],
+                                        "answers": concept["answers"],
+                                        "group": attribute["groupName"],
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        except Exception as e:
+                            continue
+
                     else:
                         attrs.append(
                             {

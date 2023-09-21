@@ -306,68 +306,18 @@
                 <div class="hidden" id="collapse{{forloop.counter}}" data-te-collapse-item
                   aria-labelledby="heading{{forloop.counter}}" data-te-parent="#accordion{{forloop.counter}}">
                   <div>
-                    <div class="py-4 grid grid-cols-2 gap-2">
+                    <div id="{{lab_result.uuid}}groups" class="py-4 w-full grid grid-cols-2 gap-2">
                       <div class="w-full bg-white p-2">
                         <h1 class="font-bold text-lg text-center">Common</h1>
                         <div id="{{lab_result.uuid}}common"
-                          class="grid grid-cols-2 place-items-center justify-items-center  p-2 w-full">
+                          class="grid grid-cols-2 place-items-center justify-items-center p-2 w-full">
                           <div class="border p-2 border-gray-200 font-bold w-full">Question</div>
                           <div class="border p-2 border-gray-200 font-bold w-full">Answer</div>
 
 
                         </div>
                       </div>
-                      <div class="w-full bg-white p-2">
-                        <h1 class="font-bold text-lg text-center">XPERT</h1>
-                        <div id="{{lab_result.uuid}}xpert"
-                          class="grid grid-cols-2 place-items-center justify-items-center  p-2">
-                          <div class="border p-2 border-gray-200 font-bold w-full">Question</div>
-                          <div class="border p-2 border-gray-200 font-bold w-full">Answer</div>
 
-
-                        </div>
-                      </div>
-                      <div class="w-full bg-white p-2">
-                        <h1 class="font-bold text-lg text-center">HAIN</h1>
-                        <div id="{{lab_result.uuid}}hain"
-                          class="grid grid-cols-2 place-items-center justify-items-center  p-2">
-                          <div class="border p-2 border-gray-200 font-bold w-full">Question</div>
-                          <div class="border p-2 border-gray-200 font-bold w-full">Answer</div>
-
-
-                        </div>
-
-                      </div>
-                      <div class="w-full bg-white p-2">
-                        <h1 class="font-bold text-lg text-center">HAIN 2</h1>
-                        <div id="{{lab_result.uuid}}hain2"
-                          class="grid grid-cols-2 place-items-center justify-items-center p-2">
-                          <div class="border p-2 border-gray-200 font-bold w-full">Question</div>
-                          <div class="border p-2 border-gray-200 font-bold w-full">Answer</div>
-
-
-                        </div>
-                      </div>
-                      <div class="w-full bg-white p-2">
-                        <h1 class="font-bold text-lg text-center">CULTURE</h1>
-                        <div id="{{lab_result.uuid}}culture"
-                          class="grid grid-cols-2 place-items-center justify-items-center  p-2">
-                          <div class="border p-2 border-gray-200 font-bold w-full">Question</div>
-                          <div class="border p-2 border-gray-200 font-bold w-full">Answer</div>
-
-
-                        </div>
-                      </div>
-                      <div class="w-full bg-white p-2">
-                        <h1 class="font-bold text-lg text-center">SMEAR</h1>
-                        <div id="{{lab_result.uuid}}smear"
-                          class="grid grid-cols-2 place-items-center justify-items-center w-full  p-2">
-                          <div class="border p-2 w-full border-gray-200 font-bold">Question</div>
-                          <div class="border p-2 w-full border-gray-200 font-bold">Answer</div>
-
-
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -441,7 +391,6 @@
 
 <script>
   let itemsAppended = {}
-
   const stringToJson = (string) => {
     return JSON.parse(
       string.replace(/'/g, '"')
@@ -454,7 +403,32 @@
       return;
     }
     let attributes = stringToJson($(element).data('attributes'))
-    console.log(attributes)
+    let groups = []
+    for (attribute of attributes) {
+      if (attribute.attributeType.group != null) {
+        groups.push(attribute.attributeType.group)
+
+      }
+    }
+    let duplicatesRemovedGroups = [...new Set(groups)];
+    if (duplicatesRemovedGroups.length === 0) {
+      $(`#${uuid}groups`).removeClass('grid-cols-2').addClass('grid-cols-1')
+    }
+    for (group of duplicatesRemovedGroups) {
+      $(`#${uuid}groups`).append(
+        `<div class="w-full bg-white p-2">
+                        <h1 class="font-bold text-lg text-center">${group}</h1>
+                        <div id="${uuid}${group.toLowerCase()}"
+                          class="grid grid-cols-2 place-items-center justify-items-center  p-2">
+                          <div class="border p-2 border-gray-200 font-bold w-full">Question</div>
+                          <div class="border p-2 border-gray-200 font-bold w-full">Answer</div>
+
+
+                        </div>
+                      </div>`
+      )
+
+    }
     for (attribute of attributes) {
       if (attribute.attributeType.group === null) {
         if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.ConceptDatatype") {
@@ -473,9 +447,16 @@
 
             }
           }
+        } else if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.BooleanDatatype") {
+          $(`#${uuid}common`).append(
+            `<div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+            <div class="border w-full p-2 border-gray-200">${attribute.valueReference === 'on' ? 'True' : 'False'}</div>`
+          )
         }
+
+
         else {
-          $(`#${uuid}unknown`).append(
+          $(`#${uuid}common`).append(
             `
           <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
           <div class="border w-full p-2 border-gray-200">${attribute.valueReference ? attribute.valueReference : '-'}</div>
