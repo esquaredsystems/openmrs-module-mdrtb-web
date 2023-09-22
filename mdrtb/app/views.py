@@ -3200,11 +3200,6 @@ def render_add_lab_test(req, uuid):
         encounters = pu.get_patient_encounters(req, uuid)
 
         labtests, testgroups = cu.get_test_groups_and_tests(req)
-        print("================================================")
-        print(labtests)
-        print("================================================")
-        print(testgroups)
-        print("================================================")
         if encounters:
             context["encounters"] = encounters["results"]
 
@@ -3566,9 +3561,6 @@ def render_add_test_results(req, orderid):
                             }
                         )
             try:
-                print("================================")
-                print(body)
-                print("================================")
                 status, response = ru.post(
                     req, f"commonlab/labtestorder/{orderid}", body
                 )
@@ -3576,7 +3568,7 @@ def render_add_test_results(req, orderid):
                     return redirect(req.session["redirect_url"])
             except Exception as e:
                 logger.error(e, exc_info=True)
-                messages.error(req, str(e))
+                # messages.error(req, str(e))
 
                 return redirect(req.session["redirect_url"])
 

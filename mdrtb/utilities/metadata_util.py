@@ -160,7 +160,7 @@ def get_location(req, uuid):
                 else None,
                 "grandparent": response["parentLocation"]["parentLocation"]["display"]
                 if response["parentLocation"] is not None
-                and "parentLocation" in response["parentLocation"]
+                and response["parentLocation"]["parentLocation"] is not None
                 else None,
             }
     except Exception as e:

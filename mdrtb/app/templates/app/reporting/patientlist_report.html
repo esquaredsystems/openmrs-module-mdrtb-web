@@ -5,7 +5,7 @@
 
 <div>
     <div style="font-size: 0.75rem;">
-        <a href="javascript:history.go(-1)">Back</a>
+
         <p class="text-xl"><b>Year:</b> {{year}}</p>
         <p class="text-xl"><b>Location:</b> {{location}}</p>
         {% if month %}
@@ -16,6 +16,9 @@
         <p><b>List:</b> {{listname}}</p>
     </div>
     <div>{{ string_data|safe }}</div>
+    <a class="no-underline" href="javascript:history.go(-1)"><button>
+            Back
+        </button></a>
 </div>
 
 {% endblock %}

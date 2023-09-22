@@ -152,7 +152,7 @@ LOGGING = {
         "file": {
             "level": "WARNING",
             "class": "logging.FileHandler",
-            "filename": "../mdrtb/logs/django.log",
+            "filename": "./mdrtb/logs/django.log",
             "formatter": "simple",
         },
         "console": {

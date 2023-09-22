@@ -79,11 +79,9 @@
 </script>
 <script>
     $(document).ready(function () {
-        $('#oblast').val("{{ oblastSelected }}");
-        $('#district').val("{{ districtSelected }}");
-        $('#year').val("{{ yearSelected }}");
-        $('#quarter').val("{{ quarterSelected }}");
-        $('#month').val("{{ monthSelected }}");
+        $('#region-select').prop('required', true);
+        $('#year').prop('required', true);
+
 
     });
 </script>

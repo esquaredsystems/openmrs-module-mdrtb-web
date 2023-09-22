@@ -444,7 +444,7 @@ def get_custom_attribute_for_labresults(req, orderid):
                                 {
                                     "attributeType": {
                                         "uuid": attribute["uuid"],
-                                        "name": attribute["name"],
+                                        "name": concept["display"],
                                         "datatype": attribute["datatypeClassname"],
                                         "inputType": datatype["inputType"],
                                         "answers": concept["answers"],
