@@ -41,7 +41,7 @@
             {% else %}
             <div class="input-container">
                 <label class="input-label w-1/6 required"
-                    for="">{{'mdrtb.patientidentifier'|get_message:request.session.locale}}</label>
+                    for="">{{'mdrtb.mdrtbIdentifier'|get_message:request.session.locale}}</label>
                 <input class="input form-control" type="text" name="identifier" id="identifier" required />
                 <input hidden type="text" name="identifierType" id="identifierType"
                     value="{{'MDR_IDENTIFIER' | get_constant }}">

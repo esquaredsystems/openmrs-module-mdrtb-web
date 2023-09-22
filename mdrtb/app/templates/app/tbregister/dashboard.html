@@ -98,7 +98,7 @@
         <span class="tb03-form-label underline">
           <a href="{% url 'edittransferout' patientuuid=uuid formid=transfer_out.uuid %}">
             {{transfer_out.encounterDatetime | iso_to_normal_date}}
-            {{'general.atlocation'|get_message_openMRS:request.session.locale}}
+            {{'mdrtb.at'|get_message:request.session.locale}}
             {{transfer_out.location.name}}
           </a>
         </span>
@@ -185,7 +185,7 @@
           {% url 'edittb03' uuid=uuid formid=tb03.uuid %}
           {% else %} # {% endif %}">
           {{tb03.encounterDatetime | iso_to_normal_date}}
-          {{'general.atlocation'|get_message_openMRS:request.session.locale}}
+          {{'mdrtb.at'|get_message:request.session.locale}}
           {{tb03.location.name}}</a>
       </div>
       {% endfor %}
@@ -195,7 +195,7 @@
           class="tb03-form-label underline"
           href="{% if edit_encounters_privilege %}{% url 'editform89' uuid=uuid formid=form89.uuid %}{% else %} # {% endif %}">
           {{form89.encounterDatetime | iso_to_normal_date}}
-          {{'general.atlocation'|get_message_openMRS:request.session.locale}}
+          {{'mdrtb.at'|get_message:request.session.locale}}
           {{form89.location.name}}</a>
       </div>
       {% endfor %}
@@ -208,7 +208,7 @@
           class="tb03-form-label underline"
           href="{% if edit_encounters_privilege %}{% url 'edittb03u' uuid=uuid formid=tb03u.uuid %}{% else %} # {% endif %}">
           {{tb03u.encounterDatetime | iso_to_normal_date}}
-          {{'general.atlocation'|get_message_openMRS:request.session.locale}}
+          {{'mdrtb.at'|get_message:request.session.locale}}
           {{tb03u.location.name}}</a>
       </div>
       {% endfor %}
@@ -218,7 +218,7 @@
           class="tb03-form-label underline"
           href="{% if edit_encounters_privilege %}{% url 'editdrugresistanse' patientid=uuid formid=drug_res.uuid %}{% else %} # {% endif %}">
           {{drug_res.encounterDatetime | iso_to_normal_date}}
-          {{'general.atlocation'|get_message_openMRS:request.session.locale}}
+          {{'mdrtb.at'|get_message:request.session.locale}}
           {{drug_res.location.name}}</a>
       </div>
       {% endfor %}
@@ -250,7 +250,7 @@
             <tr>
               <th
                 class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                {{'general.labTestType'|get_message:request.session.locale}}
+                {{'commonlab.labTestType'|get_message:request.session.locale}}
               </th>
               <th
                 class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
@@ -351,7 +351,7 @@
           class="tb03-form-label underline"
           href="{% if edit_encounters_privilege %}{% url 'editregimen' patientid=uuid formid=regimen.uuid %}{% else %} # {% endif %}">
           {{regimen.encounterDatetime | iso_to_normal_date}}
-          {{'general.atlocation'|get_message_openMRS:request.session.locale}}
+          {{'mdrtb.at'|get_message:request.session.locale}}
           {{regimen.location.name}}</a>
       </div>
       {% endfor %}
@@ -376,7 +376,7 @@
             class="tb03-form-label underline"
             href="{% if edit_encounters_privilege %}{% url 'editadverseevents' patientid=uuid formid=ae.uuid %}{% else %} # {% endif %}">
             {{ae.encounterDatetime | iso_to_normal_date}}
-            {{'general.atlocation'|get_message_openMRS:request.session.locale}}
+            {{'mdrtb.at'|get_message:request.session.locale}}
             {{ae.location.name}}</a>
         </div>
         {% endfor %}

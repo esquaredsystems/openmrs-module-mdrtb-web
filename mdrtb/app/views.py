@@ -3458,6 +3458,7 @@ def render_edit_test_sample(req, orderid, sampleid):
 
     if status:
         sample = response
+        print(sample)
 
         specimen_type = cu.get_commonlab_concepts_by_type(
             req, "commonlabtest.specimenTypeConceptUuid"
@@ -3556,17 +3557,18 @@ def render_add_test_results(req, orderid):
                                         "valueReference": value,
                                     }
                                 )
-                    body["attributes"].append(
-                        {
-                            "labTest": laborder["uuid"],
-                            "attributeType": key,
-                            "valueReference": value,
-                        }
-                    )
+                    else:
+                        body["attributes"].append(
+                            {
+                                "labTest": laborder["uuid"],
+                                "attributeType": key,
+                                "valueReference": value,
+                            }
+                        )
             try:
-                # print("================================")
-                # print(body)
-                # print("================================")
+                print("================================")
+                print(body)
+                print("================================")
                 status, response = ru.post(
                     req, f"commonlab/labtestorder/{orderid}", body
                 )

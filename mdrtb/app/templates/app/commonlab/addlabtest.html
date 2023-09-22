@@ -64,7 +64,7 @@
         </div>
         <div class="input-container">
             <label class="input-label" for="">
-                {{'general.testGroup'|get_message:request.session.locale}}
+                {{'commonlab.testGroup'|get_message:request.session.locale}}
 
             </label>
             <select name="testGroup" id="group-select" class="input form-control">
@@ -81,7 +81,7 @@
         </div>
         <div class="input-container">
             <label class="input-label" for="">
-                {{'general.testType'|get_message:request.session.locale}}
+                {{'commonlab.testType'|get_message:request.session.locale}}
 
             </label>
             {% if state == 'edit' %}
@@ -97,8 +97,7 @@
 
         </div>
         <div class="input-container">
-            <label class="input-label"
-                for="name">{{'general.careSetting'|get_message:request.session.locale}}</label>
+            <label class="input-label" for="name">{{'commonlab.careSetting'|get_message:request.session.locale}}</label>
             <div class="flex items-center justify-start space-x-4 w-full">
                 <div class="flex-center space-x-2">
                     <label class="" for="yes">{{care_setting.inpatient.name}}</label>
@@ -150,7 +149,7 @@
         </div>
         <div class="input-container">
             <label class="input-label" for="">
-                {{'general.instructions'|get_message:request.session.locale}}
+                {{'commonlab.instructions'|get_message:request.session.locale}}
 
             </label>
             {% if state == 'edit' %}

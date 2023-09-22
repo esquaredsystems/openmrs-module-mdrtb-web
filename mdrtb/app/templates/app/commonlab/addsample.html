@@ -47,7 +47,7 @@
         {% csrf_token %}
         <div class="input-container">
             <label class="input-label required">
-                {{'general.specimenType'|get_message:request.session.locale}}
+                {{'commonlab.specimenType'|get_message:request.session.locale}}
 
             </label>
             <select required name="specimentype" class="input form-control">
@@ -64,7 +64,7 @@
         </div>
         <div class="input-container">
             <label class="input-label required">
-                {{'general.specimenSite'|get_message:request.session.locale}}
+                {{'commonlab.specimenSite'|get_message:request.session.locale}}
 
             </label>
             <select required name="specimensite" id="group-select" class="input form-control">
@@ -99,8 +99,7 @@
 
             <select name="units" class="input form-control">
                 {% if state == 'edit' %}
-                <option selected value="{{sample.units}}">{{sample.units}}
-                </option>
+                <option selected value="{{sample.units}}">{{sample.units|get_conept_by_uuid}}</option>
                 {% else %}
                 <option selected value="">Select</option>
                 {% endif %}
