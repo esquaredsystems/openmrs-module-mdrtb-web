@@ -436,10 +436,6 @@
           if (attribute.valueReference) {
             for (answer of attribute.attributeType.answers) {
               if (answer.uuid === attribute.valueReference) {
-                concept = $.ajax({
-                  method: "GET",
-                  url: `/concept/${attribute.attributeType.datatypeconfig}`
-                })
                 $(`#${uuid}common`).append(
                   `
           <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
@@ -464,7 +460,7 @@
           $(`#${uuid}common`).append(
             `
           <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
-          <div class="border w-full p-2 border-gray-200">${attribute.valueReference ? attribute.valueReference : '-'}</div>
+          <div class="border w-full p-2 h-full border-gray-200">${attribute.valueReference ? attribute.valueReference : '-'}</div>
  
           `
           )

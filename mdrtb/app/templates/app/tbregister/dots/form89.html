@@ -127,7 +127,7 @@
               <option selected value="{{form.locationType.uuid}}">{{form.locationType.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.locationtype %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -143,7 +143,7 @@
               <option selected value="{{form.profession.uuid}}">{{form.profession.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
 
               {% for concept in concepts.profession %}
@@ -162,7 +162,7 @@
               <option selected value="{{form.populationCategory.uuid}}">{{form.populationCategory.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
 
               {% for concept in concepts.populationcategory %}
@@ -195,7 +195,7 @@
               <option selected value="{{form.placeOfDetection.uuid}}">{{form.placeOfDetection.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
 
               {% for concept in concepts.placeofdetection %}
@@ -228,7 +228,7 @@
               </option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
 
               {% for concept in concepts.circumstancesofdetection %}
@@ -273,7 +273,7 @@
               <option selected value="{{form.methodOfDetection.uuid}}">{{form.methodOfDetection.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
 
               {% for concept in concepts.methodofdetection %}
@@ -312,7 +312,7 @@
               <option selected value="{{form.pulSite.uuid}}">{{form.pulSite.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
 
               {% for concept in concepts.siteoftbdisease %}
@@ -787,7 +787,7 @@
               {% if state == 'edit' %}
               <option selected value="{{form.prescribedTreatment.uuid}}">{{form.prescribedTreatment.display}}</option>
               {% else %}
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
 
 
@@ -804,7 +804,7 @@
               {% if state == 'edit' %}
               <option selected value="{{form.placeOfCommission.uuid}}">{{form.placeOfCommission.display}}</option>
               {% else %}
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
 
 

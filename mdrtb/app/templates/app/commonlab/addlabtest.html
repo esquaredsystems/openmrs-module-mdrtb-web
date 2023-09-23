@@ -71,7 +71,7 @@
                 {% if state == 'edit' %}
                 <option selected value="{{laborder.labtesttype.testGroup}}">{{laborder.labtesttype.testGroup}}</option>
                 {% else %}
-                <option selected value="None">Select</option>
+                <option selected value="None">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
                 {% endif %}
 
                 {% for group in testgroups %}

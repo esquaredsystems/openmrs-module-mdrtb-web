@@ -267,7 +267,7 @@
           >${workFlow.concept.display}</label
         >
         <select class="input w-3/5 form-control" name=${workFlow.uuid} id=${workFlow.uuid}>
-          <option selected value="">Select</option></select>
+          <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option></select>
       </div>
                   `
           )

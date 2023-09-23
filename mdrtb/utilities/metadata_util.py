@@ -131,6 +131,25 @@ def get_concept(req, uuid, lang=None):
         raise Exception(str(e))
 
 
+def get_concept_by_search(req, query):
+    try:
+        status, response = ru.get(
+            req, "concept", {"lang": req.session["locale"], "v": "full", "q": query}
+        )
+        if status:
+            concepts = cache.get("concepts", [])
+            for concept in response["results"]:
+                for name in concept["names"]:
+                    if name["locale"] == "en" and name["name"] == query:
+                        concepts.append(concept)
+
+                        return concept
+            cache.set("concepts", concepts, timeout=None)
+
+    except Exception as e:
+        raise Exception(e)
+
+
 def get_location(req, uuid):
     """
     Retrieves location information from the server based on the given UUID.

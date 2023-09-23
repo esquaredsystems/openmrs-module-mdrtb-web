@@ -7,11 +7,11 @@
 
 
 {% block content %}
-<div class="m-4">
+<div class="mx-4">
     {% include 'app/components/breadcrumbs.html'%}
 </div>
 
-<div class="m-16">
+<div class="mx-auto w-1/2">
     {% if state == 'edit' %}
     <div id="form-info" class="flex-center space-x-4">
         <h1 class="text-[#2D9CDB] text-3xl font-bold">
@@ -54,7 +54,7 @@
                 {% if state == 'edit' %}
                 <option selected value="{{sample.specimenType.uuid}}">{{sample.specimenType.display}}</option>
                 {% else %}
-                <option selected value="">Select</option>
+                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
                 {% endif %}
                 {% for type in specimentype %}
                 <option value="{{ type.uuid }}">{{ type.name }}</option>
@@ -71,7 +71,7 @@
                 {% if state == 'edit' %}
                 <option selected value="{{sample.specimenSite.uuid}}">{{sample.specimenSite.display}}</option>
                 {% else %}
-                <option selected value="">Select</option>
+                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
                 {% endif %}
 
                 {% for site in specimensite %}
@@ -101,7 +101,7 @@
                 {% if state == 'edit' %}
                 <option selected value="{{sample.units}}">{{sample.units|get_conept_by_uuid}}</option>
                 {% else %}
-                <option selected value="">Select</option>
+                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
                 {% endif %}
 
                 {% for unit in units %}

@@ -18,6 +18,7 @@ def get_constant(name):
 def get_privileges(name):
     return Privileges[name].value
 
+
 @register.filter
 def get_conept_by_uuid(uuid):
     return Concepts(uuid).name

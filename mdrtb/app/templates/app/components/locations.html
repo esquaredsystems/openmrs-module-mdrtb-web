@@ -6,34 +6,34 @@
         <label class="input-label w-1/6"
             for="country">{{'Location.country'|get_message_openMRS:request.session.locale}}</label>
         <select class="input form-control" name="country" id="country-select">
-            <option selected value="Таджикистан">Таджикистан</option>
+            <option selected value="Таджикистан">{{'COUNTRY'|get_constant}}</option>
 
         </select>
     </div>
     <div class="input-container">
         <label class="input-label w-1/6" for="name">{{'mdrtb.region'|get_message:request.session.locale}}</label>
         <select class="input form-control" name="region" id="region-select">
-            <option value="">Select</option>
+            <option value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
         </select>
     </div>
     <div id="subregion-container" class="input-container hidden">
         <label id="subregion-label" class="input-label w-1/6" for="name">Sub region</label>
         <select disabled class="input form-control" name="subregion" id="subregion-select">
-            <option value="">Select</option>
+            <option value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
         </select>
     </div>
     <div class="input-container">
         <label id="district-label" class="input-label w-1/6"
             for="name">{{'mdrtb.district'|get_message:request.session.locale}}</label>
         <select disabled class="input form-control" name="district" id="district-select">
-            <option value="">Select</option>
+            <option value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
         </select>
     </div>
     <div class="input-container">
         <label id="facility-label" class="input-label w-1/6"
             for="name">{{'mdrtb.facility'|get_message:request.session.locale}}</label>
         <select disabled class="input form-control" name="facility" id="facility-select">
-            <option value="">Select</option>
+            <option value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
 
         </select>
     </div>

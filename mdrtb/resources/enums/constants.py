@@ -49,3 +49,5 @@ class Constants(enum.Enum):
     REJECTED = "REJECTED"
     COLLECTED = "COLLECTED"
     PROCESSED = "PROCESSED"
+
+    COUNTRY = "Точикистон (Tajikistan)"

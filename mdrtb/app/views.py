@@ -70,8 +70,11 @@ def check_privileges(req, privileges_required):
 
 
 def index(req):
+    context = {}
+    cache.clear()
     # This is a test function
-    return render(req, "app/tbregister/reportmockup.html", {"a": 1, "b": 2})
+
+    return render(req, "app/tbregister/reportmockup.html", context)
 
 
 def get_locations(req):

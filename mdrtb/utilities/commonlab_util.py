@@ -456,17 +456,21 @@ def get_custom_attribute_for_labresults(req, orderid):
                             continue
 
                     else:
-                        attrs.append(
-                            {
-                                "attributeType": {
-                                    "uuid": attribute["uuid"],
-                                    "name": attribute["name"],
-                                    "datatype": attribute["datatypeClassname"],
-                                    "inputType": datatype["inputType"],
-                                    "group": attribute["groupName"],
+                        try:
+                            concept = mu.get_concept_by_search(req, attribute["name"])
+                            attrs.append(
+                                {
+                                    "attributeType": {
+                                        "uuid": attribute["uuid"],
+                                        "name": concept["display"],
+                                        "datatype": attribute["datatypeClassname"],
+                                        "inputType": datatype["inputType"],
+                                        "group": attribute["groupName"],
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        except Exception as e:
+                            continue
 
         return attrs
 

@@ -126,7 +126,7 @@
               {% if state == 'edit' %}
               <option selected value="{{form.treatmentSiteIP.uuid}}">{{form.treatmentSiteIP.display}}</option>
               {% else %}
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.treatmentcenterforip %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -153,7 +153,7 @@
               {% if state == 'edit' %}
               <option selected value="{{form.treatmentSiteCP.uuid}}">{{form.treatmentSiteCP.display}}</option>
               {% else %}
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.treatmentcenterforcp %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -180,7 +180,7 @@
               {% if state == 'edit' %}
               <option selected value="{{form.patientCategory.uuid}}">{{form.patientCategory.display}}</option>
               {% else %}
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.tuberculosispatientcategory %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -207,7 +207,7 @@
               {% if state == 'edit' %}
               <option selected value="{{form.anatomicalSite.uuid}}">{{form.anatomicalSite.display}}</option>
               {% else %}
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.siteoftbdisease %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -234,7 +234,7 @@
               {% if state == 'edit' %}
               <option selected value="{{form.hivStatus.uuid}}">{{form.hivStatus.display}}</option>
               {% else %}
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.resultofhivtest %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -282,7 +282,7 @@
               {% if state == 'edit' %}
               <option selected value="{{form.resistanceType.uuid}}">{{form.resistanceType.display}}</option>
               {% else %}
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.resistancetype %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -296,7 +296,7 @@
               {% if state == 'edit' %}
               <option selected value="{{form.treatmentOutcome.uuid}}">{{form.treatmentOutcome.display}}</option>
               {% else %}
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.tuberculosistreatmentoutcome %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -322,7 +322,7 @@
               {% if state == 'edit' %}
               <option selected value="{{form.causeOfDeath.uuid}}">{{form.causeOfDeath.display}}</option>
               {% else %}
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.causeofdeath %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
