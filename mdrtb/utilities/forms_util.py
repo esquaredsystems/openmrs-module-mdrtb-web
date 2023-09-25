@@ -200,7 +200,7 @@ def create_update_tb03(req, patientuuid, data, formid=None):
         raise Exception(str(e))
 
 
-def get_encounters_by_patient_and_type(req, patientid, encounterType):
+def get_encounters_by_patient_and_type(req, patientid, encounterType, params=None):
     """
     Retrieves encounters for a specific patient and encounter type.
 
@@ -214,11 +214,14 @@ def get_encounters_by_patient_and_type(req, patientid, encounterType):
 
     """
     try:
+        params = (
+            "custom:(uuid,location,encounterDatetime)" if params is None else params
+        )
         status, response = ru.get(
             req,
             "encounter",
             {
-                "v": "custom:(uuid,location,encounterDatetime)",
+                "v": params,
                 "encounterType": encounterType,
                 "patient": patientid,
             },
@@ -1281,5 +1284,35 @@ def get_patient_site_of_TB(req, patientuuid):
                     site_of_tb["uuid"] = ob["value"]["uuid"]
                     site_of_tb["name"] = ob["value"]["display"]
         return site_of_tb
+    except Exception as e:
+        raise Exception(e)
+
+
+def get_ae_form_with_symptoms(req, patientuuid):
+    encounter_type = EncounterType.PV_REGIMEN.value
+    try:
+        ae_forms = get_encounters_by_patient_and_type(
+            req,
+            patientuuid,
+            EncounterType.ADVERSE_EVENT.value,
+            params="custom:(uuid,location,encounterDatetime,obs)",
+        )
+        if ae_forms:
+            ae_forms_with_symptoms = []
+            for ae_form in ae_forms:
+                for ob in ae_form["obs"]:
+                    if ob["concept"]["uuid"] == Concepts.ADVERSE_EVENT.value:
+                        symptom = ob["value"]["display"]
+                        ae_forms_with_symptoms.append(
+                            {
+                                "form": {
+                                    "uuid": ae_form["uuid"],
+                                    "encounterDatetime": ae_form["encounterDatetime"],
+                                    "location": ae_form["location"]["name"],
+                                },
+                                "symptom": symptom,
+                            }
+                        )
+            return ae_forms_with_symptoms
     except Exception as e:
         raise Exception(e)

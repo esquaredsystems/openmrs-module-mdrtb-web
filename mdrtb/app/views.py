@@ -71,7 +71,9 @@ def check_privileges(req, privileges_required):
 
 def index(req):
     context = {}
-    cache.clear()
+    ae = fu.get_ae_form_with_symptoms(req, "99fc82b0-1b83-482d-bebe-57ffe72a4307")
+    context['ae'] = ae
+
     # This is a test function
 
     return render(req, "app/tbregister/reportmockup.html", context)

@@ -372,12 +372,13 @@
       <div class="ml-4 grid grid-cols-2 gap-3">
         {% for ae in forms.aes %}
         <div class="space-x-3">
-          <span class="font-bold">{{'mdrtb.pv.aeForm'|get_message:request.session.locale}}: </span><a
-            class="tb03-form-label underline"
-            href="{% if edit_encounters_privilege %}{% url 'editadverseevents' patientid=uuid formid=ae.uuid %}{% else %} # {% endif %}">
-            {{ae.encounterDatetime | iso_to_normal_date}}
+          <span class="font-bold">
+            {{ae.symptom}}
+            {{'mdrtb.pv.aeForm'|get_message:request.session.locale}}: </span><a class="tb03-form-label underline"
+            href="{% if edit_encounters_privilege %}{% url 'editadverseevents' patientid=uuid formid=ae.form.uuid %}{% else %} # {% endif %}">
+            {{ae.form.encounterDatetime | iso_to_normal_date}}
             {{'mdrtb.at'|get_message:request.session.locale}}
-            {{ae.location.name}}</a>
+            {{ae.form.location}}</a>
         </div>
         {% endfor %}
       </div>
@@ -498,6 +499,7 @@
     }
     itemsAppended[uuid] = true;
   }
+  console.log(JSON.parse("{{forms_json | escapejs}}"))
 </script>
 
 {% endblock %}

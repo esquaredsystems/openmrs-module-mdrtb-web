@@ -73,24 +73,9 @@
                 <input class="input form-control" type="date" name="enrollmentdate" id="enrollmentdate" required />
                 {% endif %}
             </div>
-            <div class="input-container">
-                <label class="input-label w-1/6 "
-                    for="">{{'mdrtb.enrollment.completionDate'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                <button id="editCompletionDate" type="button">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-                    </svg>
-                </button>
-                <input class="input form-control" type="date" name="completiondate" id="completiondate"
-                    value="{{enrolled_program.dateCompleted | iso_to_normal_date}}" />
 
-                {% else %}
-                <input class="input form-control" type="date" name="completiondate" id="completiondate" />
-                {% endif %}
-            </div>
+
+
             {% if state == 'edit' %}
             <div class="flex-column-center space-y-2">
                 <div id="prefilledlocation" class="input-container">
@@ -111,17 +96,40 @@
                     <div hidden id="locations" class="flex-column-center space-y-4">
                         {% include 'app/components/locations.html' %}
                     </div>
+
                 </div>
 
             </div>
             {% else %}
             {% include 'app/components/locations.html' %}
             {% endif %}
-            <div id="states" class="flex-column-center space-y-4">
-                {% if state != 'edit' %}
-                <h3 id="initialStates" class="primary-heading text-xl">
-                    {{'Program.initialStates' | get_message_openMRS:request.session.locale}}</h3>
+
+            <div class="input-container">
+                <label class="input-label w-1/6 "
+                    for="">{{'mdrtb.enrollment.completionDate'|get_message:request.session.locale}}</label>
+                {% if state == 'edit' %}
+                <button id="editCompletionDate" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                    </svg>
+                </button>
+                <input class="input form-control" type="date" name="completiondate" id="completiondate"
+                    value="{{enrolled_program.dateCompleted | iso_to_normal_date}}" />
+
+                {% else %}
+                <input class="input form-control" type="date" name="completiondate" id="completiondate" />
                 {% endif %}
+            </div>
+
+
+            {% if state != 'edit' %}
+            <h3 id="initialStates" class="primary-heading text-xl">
+                {{'Program.initialStates' | get_message_openMRS:request.session.locale}}</h3>
+            {% endif %}
+            <div id="states" style="display: flex; flex-direction: column-reverse;">
+
             </div>
         </div>
 
@@ -257,7 +265,7 @@
             for (workFlow of program.allWorkflows) {
                 if (!workFlow.retired) {
                     $('#states').append(
-                        ` <div class="input-container ">
+                        ` <div class="input-container mt-3 ">
         <label class="font-bold normal-case text-sm text-[#9E9E9E] w-2/5 "
           >${workFlow.concept.display}</label
         >

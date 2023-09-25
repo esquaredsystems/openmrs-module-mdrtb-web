@@ -539,9 +539,7 @@ def get_patient_dashboard_info(
                 "tb03us": fu.get_encounters_by_patient_and_type(
                     req, patientuuid, EncounterType.TB03u_MDR.value
                 ),
-                "aes": fu.get_encounters_by_patient_and_type(
-                    req, patientuuid, EncounterType.ADVERSE_EVENT.value
-                ),
+                "aes": fu.get_ae_form_with_symptoms(req, patientuuid),
                 "regimens": fu.get_encounters_by_patient_and_type(
                     req, patientuuid, EncounterType.PV_REGIMEN.value
                 ),
