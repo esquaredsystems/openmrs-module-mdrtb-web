@@ -1289,7 +1289,6 @@ def get_patient_site_of_TB(req, patientuuid):
 
 
 def get_ae_form_with_symptoms(req, patientuuid):
-    encounter_type = EncounterType.PV_REGIMEN.value
     try:
         ae_forms = get_encounters_by_patient_and_type(
             req,

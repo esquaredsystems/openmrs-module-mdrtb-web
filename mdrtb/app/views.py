@@ -12,7 +12,7 @@ import utilities.common_utils as util
 import utilities.locations_util as lu
 
 import json
-
+import datetime
 import traceback
 import logging
 
@@ -71,8 +71,6 @@ def check_privileges(req, privileges_required):
 
 def index(req):
     context = {}
-    ae = fu.get_ae_form_with_symptoms(req, "99fc82b0-1b83-482d-bebe-57ffe72a4307")
-    context['ae'] = ae
 
     # This is a test function
 
@@ -673,6 +671,7 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
         (
             patient,
             program_info,
+            treatment_outcome,
             transfer_out,
             forms,
             lab_results,
@@ -699,6 +698,7 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
             context["patient"] = patient
 
             context["program"] = program_info
+            context["treatment_outcome"] = treatment_outcome
 
             context["mdrEnrolled"] = pu.check_if_patient_enrolled_in_mdrtb(req, uuid)
         else:
@@ -2536,6 +2536,7 @@ def render_tb07_report(req):
 
         if status:
             context["location"] = mu.get_location(req, location)
+            context["reporttime"] = datetime.datetime.today().strftime("%Y-%m-%d")
 
             context["table1"] = response["results"][0]
             context["json"] = json.dumps(response["results"][0])

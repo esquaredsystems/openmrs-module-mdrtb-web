@@ -3,6 +3,7 @@
 {% block content %}
 
 
+{{reporttime}}
 
 <div>
     <div id="tb07" style="font-size:smaller; width:980px;">
@@ -37,18 +38,45 @@
         <table width="100%" border="1">
             <tr>
                 <td>
-                    {{"mdrtb.tb07u.nameOfFacility"|get_message:request.session.locale}} <u>&nbsp; {{ fName }}
+
+                    {% if location.parent and location.grandparent %}
+                    {{"mdrtb.tb07u.nameOfFacility"|get_message:request.session.locale}} <u>&nbsp;
+                        {{ location.location }}
                         &nbsp;</u></br>
-                    {{"mdrtb.tb07u.regionCityDistrict"|get_message:request.session.locale}} <u> {{ oName }}/{{ dName }}
+                    {{"mdrtb.tb07u.regionCityDistrict"|get_message:request.session.locale}} <u>
+                        {{ location.parent }}/{{ location.grandparent }}
+                    </u>
+                    {% else %}
+                    _____
+                    {% endif %}
+                    {% if location.parent and location.grandparent is None %}
+
+                    {{"mdrtb.tb07u.nameOfFacility"|get_message:request.session.locale}} <u>&nbsp;
+                        _________
+                        &nbsp;</u></br>
+                    {{"mdrtb.tb07u.regionCityDistrict"|get_message:request.session.locale}} <u>
+                        {{ location.location }}/{{ location.parent }}
+                        {% elif location.parent is None and location.grandparent is None %}
+                        {{"mdrtb.tb07u.nameOfFacility"|get_message:request.session.locale}} <u>&nbsp;
+                            _________
+                            &nbsp;</u></br>
+                        {{"mdrtb.tb07u.regionCityDistrict"|get_message:request.session.locale}} <u>
+                            _____/{{ location.location }}
+                        </u>
+
+                        {% endif %}
                     </u></br>
                     {{"mdrtb.tb07u.tbCoordinatorName"|get_message:request.session.locale}} ___________________ </br>
                     {{"mdrtb.tb07u.signature"|get_message:request.session.locale}}_________________
                 </td>
 
                 <td>
-                    <spring:message code="mdrtb.tb07u.tbCasesDetectedDuringQuarterYear"
-                        arguments="{{ quarter }},{{ year }}" /></br>
+                    {{"mdrtb.tb07u.tbCasesDetectedDuringQuarterYear"|get_message:request.session.locale}}
+                    {{request.GET.quarter}} / {{request.GET.year}}
+
+                    </br>
                     {{"mdrtb.tb07u.dateOfReport"|get_message:request.session.locale}}
+                    {{reporttime}}
                 </td>
             </tr>
 
@@ -1307,6 +1335,10 @@
     </button>
     <input type="button" onclick="tableToExcel('tb07', 'TB07')"
         value="{{'mdrtb.exportToExcelBtn'|get_message:request.session.locale}}" />
+    <button onclick="printForm()">
+        {{'mdrtb.print'|get_message:request.session.locale}}
+
+    </button>
     <!-- <input type="button" id="tableToPdf" name="tableToPdf" value="{{"mdrtb.exportToPdfBtn"|get_message:request.session.locale}}" /> -->
     {% if manage_report_closing %}
     <input type="button" id="tableToSql" name="tableToSql"

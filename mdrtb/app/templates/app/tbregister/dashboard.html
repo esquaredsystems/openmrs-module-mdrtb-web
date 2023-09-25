@@ -8,7 +8,6 @@
 
 {%block content%}
 
-
 <div class="flex flex-col space-y-6 m-6 relative">
   <section hidden id="modal"
     class="flex flex-col justify-center transition-opacity ease-in-out duration-500 opacity-0 backdrop-blur-3xl inset-0 z-50 shadow-2xl  m-10  bg-white w-3/5 mx-auto p-8 absolute top-0 left-0 right-0 bottom-0 h-min">
@@ -56,6 +55,15 @@
           class="tb03-form-label">{{program.location.name}}</span>
       </div>
       {% for state in program.states %}
+      {% if not mdrtb %}
+      {% if state.uuid == "TB_TREATMENT_OUTCOME"|get_concept %}
+      {% if treatment_outcome %}
+      <div class="space-x-3">
+        <span class="font-bold">{{state.concept}}: </span>
+        <span class="tb03-form-label">{{treatment_outcome}}</span>
+      </div>
+      {% endif %}
+      {% else %}
       <div class="space-x-3">
         <span class="font-bold">{{state.concept}}: </span>
         {% if state.answer.concept %}
@@ -64,6 +72,28 @@
         <span class="tb03-form-label">None</span>
         {% endif %}
       </div>
+      {% endif %}
+      {% else %}
+      {% if state.uuid == "MDR_TB_TREATMENT_OUTCOME"|get_concept %}
+      {% if treatment_outcome %}
+      <div class="space-x-3">
+        <span class="font-bold">{{state.concept}}: </span>
+        <span class="tb03-form-label">{{treatment_outcome}}</span>
+      </div>
+      {% endif %}
+      {% else %}
+      <div class="space-x-3">
+        <span class="font-bold">{{state.concept}}: </span>
+        {% if state.answer.concept %}
+        <span class="tb03-form-label">{{state.answer.concept.name}}</span>
+        {% else %}
+        <span class="tb03-form-label">None</span>
+        {% endif %}
+      </div>
+      {% endif %}
+      {% endif %}
+
+
       {% endfor %}
 
       <div class="space-x-3">
@@ -499,7 +529,6 @@
     }
     itemsAppended[uuid] = true;
   }
-  console.log(JSON.parse("{{forms_json | escapejs}}"))
 </script>
 
 {% endblock %}

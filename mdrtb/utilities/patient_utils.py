@@ -514,6 +514,9 @@ def get_patient_dashboard_info(
         program = get_enrolled_programs_by_patient(
             req, patientuuid, enrollment_id=programuuid
         )
+        treatment_outcome = get_patient_treatment_outcome(
+            req, patientuuid, Concepts.TB_TREATMENT_OUTCOME.value
+        )
         transfer_out = fu.get_encounters_by_patient_and_type(
             req, patientuuid, EncounterType.TRANSFER_OUT.value
         )
@@ -535,6 +538,9 @@ def get_patient_dashboard_info(
 
                 lab_results = lab_results_response["results"]
         if is_mdrtb:
+            treatment_outcome = get_patient_treatment_outcome(
+                req, patientuuid, Concepts.MDR_TB_TREATMENT_OUTCOME.value
+            )
             forms = {
                 "tb03us": fu.get_encounters_by_patient_and_type(
                     req, patientuuid, EncounterType.TB03u_MDR.value
@@ -556,7 +562,7 @@ def get_patient_dashboard_info(
                     req, patientuuid, EncounterType.FROM_89.value
                 ),
             }
-        return (patient, program, transfer_out, forms, lab_results)
+        return (patient, program, treatment_outcome, transfer_out, forms, lab_results)
     except Exception as e:
         raise Exception(str(e))
 
@@ -605,3 +611,16 @@ def check_if_patient_enrolled_in_mdrtb(req, patient_uuid):
         return False
     except Exception as e:
         raise Exception(e)
+
+
+def get_patient_treatment_outcome(req, patientuuid, concept):
+    try:
+        status, response = ru.get(
+            req,
+            "obs",
+            {"patient": patientuuid, "concept": concept, "v": "custom:(value)"},
+        )
+        if status:
+            return response["results"][0]["value"]["display"]
+    except Exception as e:
+        return None
