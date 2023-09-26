@@ -62,7 +62,17 @@
         <span class="font-bold">{{state.concept}}: </span>
         <span class="tb03-form-label">{{treatment_outcome}}</span>
       </div>
+      {% else %}
+      <div class="space-x-3">
+        <span class="font-bold">{{state.concept}}: </span>
+        {% if state.answer.concept %}
+        <span class="tb03-form-label">{{state.answer.concept.name}}</span>
+        {% else %}
+        <span class="tb03-form-label">None</span>
+        {% endif %}
+      </div>
       {% endif %}
+
       {% else %}
       <div class="space-x-3">
         <span class="font-bold">{{state.concept}}: </span>
@@ -79,6 +89,15 @@
       <div class="space-x-3">
         <span class="font-bold">{{state.concept}}: </span>
         <span class="tb03-form-label">{{treatment_outcome}}</span>
+      </div>
+      {% else %}
+      <div class="space-x-3">
+        <span class="font-bold">{{state.concept}}: </span>
+        {% if state.answer.concept %}
+        <span class="tb03-form-label">{{state.answer.concept.name}}</span>
+        {% else %}
+        <span class="tb03-form-label">None</span>
+        {% endif %}
       </div>
       {% endif %}
       {% else %}

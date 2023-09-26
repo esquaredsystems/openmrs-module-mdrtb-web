@@ -676,7 +676,7 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
             forms,
             lab_results,
         ) = pu.get_patient_dashboard_info(
-            req, uuid, program, is_mdrtb=mdrtb is not None, get_lab_data=True
+            req, uuid, program, is_mdrtb=mdrtb is not None, get_lab_data=False
         )
 
         req.session["current_patient_program_flow"] = {

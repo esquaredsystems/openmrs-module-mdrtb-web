@@ -46,7 +46,7 @@ def get_locations(req, uuid=None):
 
 
 def get_location_by_uuid(req, uuid):
-    return get_locations(req, uuid)
+    return get_locations(req, uuid=uuid)
 
 
 def get_location_level(uuid, location_by_uuids):
