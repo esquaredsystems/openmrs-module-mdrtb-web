@@ -650,9 +650,7 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
     req.session["redirect_query_params"] = query_params
 
     program = req.GET["program"]
-    title = mu.get_global_msgs(
-        "Patient.dashboard.title", locale=req.session["locale"], source="OpenMRS"
-    )
+    title = mu.get_global_msgs("mdrtb.patientDashboard", locale=req.session["locale"])
 
     context = {"uuid": uuid, "title": title}
 
@@ -676,7 +674,7 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
             forms,
             lab_results,
         ) = pu.get_patient_dashboard_info(
-            req, uuid, program, is_mdrtb=mdrtb is not None, get_lab_data=False
+            req, uuid, program, is_mdrtb=mdrtb is not None, get_lab_data=True
         )
 
         req.session["current_patient_program_flow"] = {
@@ -2813,6 +2811,10 @@ def render_missing_tb03u_report(req):
         return redirect(req.session["redirect_url"])
 
 
+def render_closed_reports(req):
+    return render(req, "app/reporting/closed_reports.html")
+
+
 # CommonLab Views
 
 
@@ -3398,22 +3400,26 @@ def render_add_test_sample(req, orderid):
             logger.error("Error adding samples", exc_info=True)
 
             return redirect("managetestsamples", orderid=orderid)
+    try:
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
 
-    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+        mu.add_url_to_breadcrumb(req, context["title"])
 
-    mu.add_url_to_breadcrumb(req, context["title"])
+        context["specimentype"] = cu.get_commonlab_concepts_by_type(
+            req, "commonlabtest.specimenTypeConceptUuid"
+        )
 
-    context["specimentype"] = cu.get_commonlab_concepts_by_type(
-        req, "commonlabtest.specimenTypeConceptUuid"
-    )
+        context["specimensite"] = cu.get_commonlab_concepts_by_type(
+            req, "commonlabtest.specimenSiteConceptUuid"
+        )
 
-    context["specimensite"] = cu.get_commonlab_concepts_by_type(
-        req, "commonlabtest.specimenSiteConceptUuid"
-    )
+        context["units"] = cu.get_sample_units(req)
 
-    context["units"] = cu.get_sample_units(req)
-
-    return render(req, "app/commonlab/addsample.html", context=context)
+        return render(req, "app/commonlab/addsample.html", context=context)
+    except Exception as e:
+        messages.error(req, e)
+        logger.error(str(e), exc_info=True)
+        return redirect(req.session["redirect_url"])
 
 
 def render_edit_test_sample(req, orderid, sampleid):

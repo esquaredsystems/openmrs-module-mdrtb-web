@@ -178,6 +178,7 @@ urlpatterns = [
     path("tb08uresults", views.render_tb08u_report, name="tb08uresults"),
     path("tb07uexport", views.render_tb07u_report_form, name="tb07uexport"),
     path("tb07uresults", views.render_tb07u_report, name="tb07uresults"),
+    path("closedreports", views.render_closed_reports, name="closedreports"),
     # CommonLab Urls
     path(
         "commonlab/managetesttypes",
