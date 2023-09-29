@@ -221,6 +221,29 @@ def get_quarters():
     return ["1", "2", "3", "4"]
 
 
+def get_report_names(locale):
+    reports = [
+        "mdrtb.dotsreport07",
+        "mdrtb.dotsreport08",
+        "mdrtb.tb03Export",
+        "mdrtb.tb03ExportSingleLine",
+        "mdrtb.f89ExportSingleLine",
+        "mdrtb.dotsdq.title",
+        "mdrtb.dq.missingtb03",
+        "mdrtb.tb07u",
+        "mdrtb.tb08Fast",
+        "mdrtb.tb03uExport",
+        "mdrtb.tb03uExportSingleLine",
+        "mdrtb.dq.title",
+        "mdrtb.dq.missingtb03u",
+        "mdrtb.patientLists",
+    ]
+    messages = []
+    for report in reports:
+        messages.append(mu.get_global_msgs(report, locale=locale))
+    return messages
+
+
 def get_patient_list_options(code):
     """
     Retrieves a message code based on the given code parameter.
