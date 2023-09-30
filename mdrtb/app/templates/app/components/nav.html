@@ -42,10 +42,11 @@
         </svg>
       </button>
       <ul class="tw-dropdown-item-list" aria-labelledby="dropdownDotsReports" data-te-dropdown-menu-ref>
-        <!-- <li data-te-dropdown-item-ref>
+        <li data-te-dropdown-item-ref>
 
-          <a class="tw-dropdown-item" href="#">{{'mdrtb.viewClosedReports'|get_message:request.session.locale}}</a>
-        </li> -->
+          <a href="{% url 'closedreports' %}" class="tw-dropdown-item"
+            href="#">{{'mdrtb.viewClosedReports'|get_message:request.session.locale}}</a>
+        </li>
         <li data-te-dropdown-item-ref>
 
           <a class="tw-dropdown-item"
@@ -95,9 +96,10 @@
         </svg>
       </button>
       <ul class="tw-dropdown-item-list" aria-labelledby="dropdownMdrReports" data-te-dropdown-menu-ref>
-        <!-- <li data-te-dropdown-item-ref>
-          <a class="tw-dropdown-item" href="#">{{'mdrtb.viewClosedReports'|get_message:request.session.locale}}</a>
-        </li> -->
+        <li data-te-dropdown-item-ref>
+          <a href="{% url 'closedreports' %}" class="tw-dropdown-item"
+            href="#">{{'mdrtb.viewClosedReports'|get_message:request.session.locale}}</a>
+        </li>
         <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item"
             href="{% url 'tb07uexport' %}">{{'mdrtb.tb07u'|get_message:request.session.locale}}</a>

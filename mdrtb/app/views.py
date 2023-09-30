@@ -2815,31 +2815,39 @@ def render_closed_reports(req):
     if not check_if_session_alive(req):
         return redirect("login")
     context = {
+        "title": mu.get_global_msgs(
+            "mdrtb.viewClosedReports", locale=req.session["locale"]
+        ),
         "months": util.get_months(),
         "quarters": util.get_quarters(),
         "reports": util.get_report_names(req.session["locale"]),
     }
     if req.method == "POST":
-        report_data = []
-        report = {
-            "report": req.POST["report"],
-            "year": req.POST["year"],
-            "region": mu.get_location(req, uuid=req.POST["region"]),
-        }
-        if "quarter" in req.POST:
-            report["quarter"] = req.POST["quarter"]
-        elif "month" in req.POST:
-            report["month"] = req.POST["month"]
+        try:
+            params = {
+                "year": req.POST["year"],
+                "region": mu.get_location(req, uuid=req.POST["region"]),
+            }
+            if "report" in req.POST:
+                params["reportName"]: req.POST["report"]
+            if "quarter" in req.POST:
+                params["quarter"] = req.POST["quarter"]
+            elif "month" in req.POST:
+                params["month"] = req.POST["month"]
 
-        if "subregion" in req.POST and req.POST["subregion"]:
-            report["subregion"] = mu.get_location(req, uuid=req.POST["subregion"])
-        if "district" in req.POST and req.POST["district"]:
-            report["district"] = mu.get_location(req, uuid=req.POST["district"])
-        if "facility" in req.POST and req.POST["facility"]:
-            report["facility"] = mu.get_location(req, uuid=req.POST["facility"])
+            if "subregion" in req.POST and req.POST["subregion"]:
+                params["subregion"] = mu.get_location(req, uuid=req.POST["subregion"])
+            if "district" in req.POST and req.POST["district"]:
+                params["district"] = mu.get_location(req, uuid=req.POST["district"])
+            if "facility" in req.POST and req.POST["facility"]:
+                params["facility"] = mu.get_location(req, uuid=req.POST["facility"])
 
-        report_data.append(report)
-        context["report_data"] = report_data
+            status, response = ru.get(req, "mdrtb/reportdata", params)
+            if status:
+                context["report_data"] = response["results"]
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            messages.error(req, e)
 
     return render(req, "app/reporting/closed_reports.html", context)
 
