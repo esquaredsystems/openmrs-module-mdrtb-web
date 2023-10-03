@@ -1843,6 +1843,7 @@ def render_tb03_report_form(req):
         "quarters": util.get_quarters(),
     }
 
+    req.session["redirect_url"] = req.META.get("HTTP_REFERER")
     if req.method == "POST":
         month = req.POST.get("month")
 
@@ -1876,6 +1877,7 @@ def render_tb03_report(req):
     context = {"title": "TB03 Report"}
 
     try:
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER")
         month = req.GET.get("month")
 
         quarter = req.GET.get("quarter")
@@ -2822,11 +2824,17 @@ def render_closed_reports(req):
         "quarters": util.get_quarters(),
         "reports": util.get_report_names(req.session["locale"]),
     }
+
+    logged_in_user = req.session["logged_user"]["user"]["username"]
+    if logged_in_user == "admin":
+        context["unlock_privilege"] = True
+        context["delete_privilege"] = True
+
     if req.method == "POST":
         try:
             params = {
                 "year": req.POST["year"],
-                "region": mu.get_location(req, uuid=req.POST["region"]),
+                "region": req.POST["region"],
             }
             if "report" in req.POST:
                 params["reportName"]: req.POST["report"]
@@ -2836,20 +2844,68 @@ def render_closed_reports(req):
                 params["month"] = req.POST["month"]
 
             if "subregion" in req.POST and req.POST["subregion"]:
-                params["subregion"] = mu.get_location(req, uuid=req.POST["subregion"])
+                params["subregion"] = req.POST["subregion"]
             if "district" in req.POST and req.POST["district"]:
-                params["district"] = mu.get_location(req, uuid=req.POST["district"])
+                params["district"] = req.POST["district"]
             if "facility" in req.POST and req.POST["facility"]:
-                params["facility"] = mu.get_location(req, uuid=req.POST["facility"])
+                params["facility"] = req.POST["facility"]
 
             status, response = ru.get(req, "mdrtb/reportdata", params)
             if status:
+                for report in response["results"]:
+                    if report["location"]:
+                        report["location"] = mu.get_location(
+                            req, report["location"]["uuid"]
+                        )
+
                 context["report_data"] = response["results"]
+                context["jsondata"] = json.dumps(response["results"])
+
         except Exception as e:
             logger.error(e, exc_info=True)
             messages.error(req, e)
 
     return render(req, "app/reporting/closed_reports.html", context)
+
+
+def render_single_closed_report(req, uuid):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    context = {}
+    try:
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+        status, response = ru.get(req, f"mdrtb/reportdata/{uuid}", {})
+        if status:
+            context["title"] = response["reportName"]
+            context["table_data"] = util.string_to_html(response["tableData"])
+        return render(req, "app/reporting/single_closed_report.html", context)
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        messages.error(req, e)
+        return redirect(req.session["redirect_url"])
+
+
+def save_closed_report(req):
+    if req.method == "POST":
+        location = lu.get_location_by_uuid(req, req.POST["location"])
+        year = req.POST["year"]
+
+        report_data = {
+            "year": req.POST["year"],
+            "location": req.POST["location"],
+            "reportName": req.POST["reportName"],
+            "tableData": str(req.POST["tableData"]),
+        }
+        if "quarter" in req.POST and req.POST["quarter"] is not None:
+            report_data["quarter"] = req.POST["quarter"]
+        if "month" in req.POST and req.POST["month"] is not None:
+            report_data["month"] = req.POST["month"]
+
+        status, response = ru.post(req, "mdrtb/reportdata", data=report_data)
+        if status:
+            return redirect(req.session["redirect_url"])
+    else:
+        pass
 
 
 # CommonLab Views

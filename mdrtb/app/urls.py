@@ -179,6 +179,16 @@ urlpatterns = [
     path("tb07uexport", views.render_tb07u_report_form, name="tb07uexport"),
     path("tb07uresults", views.render_tb07u_report, name="tb07uresults"),
     path("closedreports", views.render_closed_reports, name="closedreports"),
+    path(
+        "viewclosedreport/<str:uuid>",
+        views.render_single_closed_report,
+        name="viewclosedreport",
+    ),
+    path(
+        "saveclosedreport",
+        views.save_closed_report,
+        name="saveclosedreport",
+    ),
     # CommonLab Urls
     path(
         "commonlab/managetesttypes",

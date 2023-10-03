@@ -5,9 +5,7 @@
 <div>
     <div>
         <div id="tb03">
-
-
-            <table class="resultsTable" border="1" cellspacing="0">
+            <table id="resultsTable" class="resultsTable" border="1" cellspacing="0">
                 <tr>
                     <th class="" rowspan="4">
                         <div><span>{{'mdrtb.tb03.registrationNumber'|get_message:request.session.locale}}</span>
@@ -447,8 +445,6 @@
                 {% endfor %}
 
             </table>
-
-            {% if locale == 'tj' %}</font>{% endif %}
         </div>
 
         <input type="button" onclick="tableToExcel('tb03', 'TB03')"
@@ -464,19 +460,47 @@
             </a>
         </button>
         <input type="button" onclick="printForm()" value="{{'mdrtb.print'|get_message:request.session.locale}}" />
-
-        <script>
-            console.log(JSON.parse("{{json|escapejs}}"));
-            if ("{{ reportStatus }}" === "true") {
-                document.getElementById("tableToSql").disabled = true;
-            } else {
-                document.getElementById("tableToSql").disabled = false;
-            }
-        </script>
+        <button onclick="saveHtml()">Save</button>
     </div>
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.1.js"></script>
     <script type="text/javascript">
+
+        function saveHtml() {
+            let htmlContent = document.getElementById("tb03").outerHTML;
+            htmlContent = htmlContent.replace(/\n/g, '');
+            console.log(htmlContent);
+            let year = "{{request.GET.year}}"
+            let location = "{{request.GET.location}}"
+            let quarter = "{{request.GET.quarter}}" ? "{{request.GET.quarter}}" : null;
+            let month = "{{request.GET.month}}" ? "{{request.GET.month}}" : null;
+
+            data = {
+                csrfmiddlewaretoken: "{{csrf_token}}",
+                reportName: "TB-03",
+                year,
+                location,
+                tableData: htmlContent
+            }
+
+            if (month != null) data.month = month
+            if (quarter != null) data.quarter = quarter
+
+
+            $.ajax({
+                method: "POST",
+                url: "/saveclosedreport",
+                data: data,
+                success: (data) => {
+                    console.log(data)
+                }
+            })
+
+
+        }
+
+
+
         function printForm() {
             var mywindow = window.open('', 'PRINT', 'height=400,width=600');
 

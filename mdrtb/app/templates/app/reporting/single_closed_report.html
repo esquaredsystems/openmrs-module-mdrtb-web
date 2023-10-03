@@ -1,0 +1,30 @@
+{% extends 'app/base/base.html' %}
+
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+
+{%block content%}
+<div id="table_data" class="m-4">
+    {{table_data|safe}}
+
+</div>
+<div class="m-4 flex items-center space-x-2">
+    <button class="button-primary" onclick="ExportToExcel('xlsx')">Export to Excel</button>
+    <button class=" border-4 p-2 border-black" onclick="print()">Print</button>
+    <button class="cancel-button"><a href="javascript:history.go(-1)">Back</a></button>
+</div>
+
+
+<script>
+    function ExportToExcel(type, fn, dl) {
+        var elt = document.getElementById('table_data');
+        var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
+        return dl ?
+            XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }) :
+            XLSX.writeFile(wb, fn || ('{{title}}.' + (type || 'xlsx')));
+    }
+</script>
+{% endblock %}

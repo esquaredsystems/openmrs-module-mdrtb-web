@@ -142,7 +142,11 @@ TAILWIND_APP_NAME = "theme"
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
-REST_API_BASE_URL = "http://46.20.206.173:38080/openmrs/ws/rest/v1/"
+
+
+# CHANGE THIS
+
+REST_API_BASE_URL = "http://http://46.20.206.173:38080/openmrs/ws/rest/v1/"
 
 mimetypes.add_type("text/css", ".css", True)
 mimetypes.add_type("text/html", ".html", True)
@@ -156,7 +160,7 @@ LOGGING = {
         "file": {
             "level": "WARNING",
             "class": "logging.FileHandler",
-            "filename": "../mdrtb/logs/django.log",
+            "filename": "./mdrtb/logs/django.log",
             "formatter": "simple",
         },
         "console": {
