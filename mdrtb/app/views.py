@@ -2887,22 +2887,50 @@ def render_single_closed_report(req, uuid):
 
 def save_closed_report(req):
     if req.method == "POST":
-        location = lu.get_location_by_uuid(req, req.POST["location"])
-        year = req.POST["year"]
+        try:
+            location = lu.get_single_location_hierarchy(
+                mu.get_location(req, uuid=req.POST["location"], representation="FULL")
+            )
+            year = req.POST["year"]
+            report_name = req.POST["reportName"]
 
-        report_data = {
-            "year": req.POST["year"],
-            "location": req.POST["location"],
-            "reportName": req.POST["reportName"],
-            "tableData": str(req.POST["tableData"]),
-        }
-        if "quarter" in req.POST and req.POST["quarter"] is not None:
-            report_data["quarter"] = req.POST["quarter"]
-        if "month" in req.POST and req.POST["month"] is not None:
-            report_data["month"] = req.POST["month"]
+            params = {
+                "year": year,
+                "reportName": report_name,
+                "region": location["region"]["uuid"],
+            }
 
-        status, response = ru.post(req, "mdrtb/reportdata", data=report_data)
-        if status:
+            if location["district"]:
+                params["district"] = location["district"]["uuid"]
+
+            if location["facility"]:
+                params["facility"] = location["district"]["uuid"]
+
+            exist_status, exist_report = ru.get(
+                req, "mdrtb/reportdata", parameters=params
+            )
+
+            if exist_status:
+                if len(exist_report["results"]) > 0:
+                    pass
+
+            report_data = {
+                "year": year,
+                "location": req.POST["location"],
+                "reportName": report_name,
+                "tableData": str(req.POST["tableData"]),
+            }
+            if "quarter" in req.POST and req.POST["quarter"] is not None:
+                report_data["quarter"] = req.POST["quarter"]
+            if "month" in req.POST and req.POST["month"] is not None:
+                report_data["month"] = req.POST["month"]
+
+            status, response = ru.post(req, "mdrtb/reportdata", data=report_data)
+            if status:
+                return redirect(req.session["redirect_url"])
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            messages.error(req, e)
             return redirect(req.session["redirect_url"])
     else:
         pass

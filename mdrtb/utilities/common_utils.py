@@ -200,18 +200,18 @@ def get_months():
 
     """
     return [
-        {"name": "January", "value": 1},
-        {"name": "February", "value": 2},
-        {"name": "March", "value": 3},
-        {"name": "April", "value": 4},
-        {"name": "May", "value": 5},
-        {"name": "June", "value": 6},
-        {"name": "July", "value": 7},
-        {"name": "August", "value": 8},
-        {"name": "September", "value": 9},
-        {"name": "October", "value": 10},
-        {"name": "November", "value": 11},
-        {"name": "December", "value": 12},
+        {"name": 1, "value": 1},
+        {"name": 2, "value": 2},
+        {"name": 3, "value": 3},
+        {"name": 4, "value": 4},
+        {"name": 5, "value": 5},
+        {"name": 6, "value": 6},
+        {"name": 7, "value": 7},
+        {"name": 8, "value": 8},
+        {"name": 9, "value": 9},
+        {"name": 10, "value": 10},
+        {"name": 11, "value": 11},
+        {"name": 12, "value": 12},
     ]
 
 

@@ -455,7 +455,7 @@
                     value="{{'mdrtb.closeReportBtn'|get_message:request.session.locale}}" />
             </openmrs:hasPrivilege> -->
         <button>
-            <a style="text-decoration: none; color: black;" href="javascript:history.go(-1)">
+            <a style="text-decoration: none; color: black;" href="{% url 'tb03export' %}">
                 {{'mdrtb.back'|get_message:request.session.locale}}
             </a>
         </button>
@@ -466,10 +466,11 @@
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.1.js"></script>
     <script type="text/javascript">
 
+
+
         function saveHtml() {
             let htmlContent = document.getElementById("tb03").outerHTML;
-            htmlContent = htmlContent.replace(/\n/g, '');
-            console.log(htmlContent);
+            htmlContent = htmlContent.replace(/\s{2,}/g, ' ');
             let year = "{{request.GET.year}}"
             let location = "{{request.GET.location}}"
             let quarter = "{{request.GET.quarter}}" ? "{{request.GET.quarter}}" : null;

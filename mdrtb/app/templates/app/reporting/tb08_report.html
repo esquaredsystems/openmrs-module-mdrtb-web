@@ -1518,7 +1518,7 @@
         value="{{'mdrtb.closeReportBtn'|get_message:request.session.locale}}" />
 
     <button>
-        <a style="text-decoration: none; color: black;" href="javascript:history.go(-1)">
+        <a style="text-decoration: none; color: black;" href="{% url 'tb08export' %}">
             {{'mdrtb.back'|get_message:request.session.locale}}
         </a>
     </button>

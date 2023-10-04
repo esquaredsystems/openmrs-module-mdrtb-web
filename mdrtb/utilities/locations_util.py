@@ -134,3 +134,48 @@ def create_location_hierarchy(req):
             )
     cache.set("locations", location_hierarchy, timeout=None)
     return location_hierarchy
+
+
+def get_single_location_hierarchy(location):
+    location_hierarchy = {}
+    level = None
+    for attribute in location["attributes"]:
+        if attribute["attributeType"]["uuid"] == Constants.LEVEL.value:
+            level = attribute["display"].split(":")[1].strip()
+            break
+
+    if level and level == "REGION":
+        location_hierarchy["region"] = {
+            "uuid": location["uuid"],
+            "name": location["name"],
+        }
+        location_hierarchy["district"] = None
+        location_hierarchy["facility"] = None
+
+    if level and level == "DISTRICT":
+        location_hierarchy["district"] = {
+            "uuid": location["uuid"],
+            "name": location["name"],
+        }
+        location_hierarchy["region"] = {
+            "uuid": location["parentLocation"]["uuid"],
+            "name": location["parentLocation"]["display"],
+        }
+        location_hierarchy["facility"] = None
+
+    if level and level == "FACILITY":
+        location_hierarchy["facility"] = {
+            "uuid": location["uuid"],
+            "name": location["name"],
+        }
+        location_hierarchy["district"] = {
+            "uuid": location["parentLocation"]["uuid"],
+            "name": location["parentLocation"]["display"],
+        }
+
+        location_hierarchy["region"] = {
+            "uuid": location["parentLocation"]["parentLocation"]["uuid"],
+            "name": location["parentLocation"]["parentLocation"]["display"],
+        }
+
+    return location_hierarchy

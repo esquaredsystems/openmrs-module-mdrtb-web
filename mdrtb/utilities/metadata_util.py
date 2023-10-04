@@ -150,7 +150,7 @@ def get_concept_by_search(req, query):
         raise Exception(e)
 
 
-def get_location(req, uuid):
+def get_location(req, uuid, representation=None):
     """
     Retrieves location information from the server based on the given UUID.
 
@@ -171,17 +171,23 @@ def get_location(req, uuid):
 
     try:
         status, response = ru.get(req, f"location/{uuid}", {"v": "full"})
+
         if status:
-            return {
-                "location": response["display"],
-                "parent": response["parentLocation"]["display"]
-                if response["parentLocation"] is not None
-                else None,
-                "grandparent": response["parentLocation"]["parentLocation"]["display"]
-                if response["parentLocation"] is not None
-                and response["parentLocation"]["parentLocation"] is not None
-                else None,
-            }
+            if representation == "FULL":
+                return response
+            else:
+                return {
+                    "location": response["display"],
+                    "parent": response["parentLocation"]["display"]
+                    if response["parentLocation"] is not None
+                    else None,
+                    "grandparent": response["parentLocation"]["parentLocation"][
+                        "display"
+                    ]
+                    if response["parentLocation"] is not None
+                    and response["parentLocation"]["parentLocation"] is not None
+                    else None,
+                }
     except Exception as e:
         raise Exception(str(e))
 

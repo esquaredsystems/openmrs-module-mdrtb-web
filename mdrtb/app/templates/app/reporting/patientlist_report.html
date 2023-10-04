@@ -16,7 +16,7 @@
         <p><b>List:</b> {{listname}}</p>
     </div>
     <div>{{ string_data|safe }}</div>
-    <a class="no-underline" href="javascript:history.go(-1)"><button>
+    <a class="no-underline" href="{% url 'patientlist' %}"><button>
             Back
         </button></a>
 </div>

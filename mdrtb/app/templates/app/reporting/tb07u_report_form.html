@@ -24,18 +24,29 @@
         <div class="input-container">
             <label class="input-label w-1/6"
                 for="quarter">{{"mdrtb.quarter"|get_message:request.session.locale}}</label>
-            <select required name="quarter" id="quarter" class="input form-control">
-                <option value="">Select</option>
+
+            <div class="flex items-center w-full space-x-4">
+                <div class="space-x-2 flex items-center">
+                    <label for="">Select</label>
+                    <input checked type="radio" name="quarter" id="quarter" class="radio-input" value="">
+                </div>
                 {% for quarter in quarters %}
-                <option value="{{quarter}}">{{quarter}}</option>
+                <div class="space-x-2 flex items-center">
+                    <label for="quarter">{{quarter}}</label>
+                    <input type="radio" name="quarter" id="quarter" class="radio-input" value="{{quarter}}">
+                </div>
                 {% endfor %}
-            </select>
+
+            </div>
+
+
+
         </div>
         <div class="flex-center space-x-4 mt-4">
             <button type="submit" id="submitBtn"
                 class="button-primary w-1/5">{{'general.submit'|get_message_openMRS:request.session.locale}}</button>
 
-            <a href="javascript:history.go(-1)" class="cancel-button">
+            <a href="/" class="cancel-button">
                 {{'general.cancel'|get_message_openMRS:request.session.locale}}
             </a>
         </div>
@@ -55,13 +66,13 @@
             $('#quarter').prop('required', true)
         }
     })
-    $('#quarter').change((e) => {
+    $("input[name='quarter']").change((e) => {
+
+
         if (e.target.value != '') {
             $('#month').prop('disabled', true)
-            $('#month').prop('required', false)
             $('#month').prop('title', 'Month cannot be selected with quarter')
         } else {
-            $('#month').prop('required', true)
             $('#month').prop('disabled', false)
             $('#month').prop('title', '')
         }

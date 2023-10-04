@@ -213,7 +213,7 @@
     <input type="button" onclick="tableToExcel('f89', 'Form89')"
         value="{{'mdrtb.exportToExcelBtn'|get_message:request.session.locale}}" />
 
-    <a href="javascript:history.go(-1)" type="button" id="back"
+    <a href="{% url 'form89export' %}" type="button" id="back"
         name="back">{{'mdrtb.back'|get_message:request.session.locale}}</a>
     <input type="button" onclick="printForm()" value="{{'mdrtb.print'|get_message:request.session.locale}}" />
     <script type="text/javascript">

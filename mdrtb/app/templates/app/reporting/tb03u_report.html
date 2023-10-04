@@ -469,7 +469,7 @@
         </table>
     </div>
     <button>
-        <a style="text-decoration: none; color: black;" href="javascript:history.go(-1)">
+        <a style="text-decoration: none; color: black;" href="{% url 'tb03uexport' %}">
             {{'mdrtb.back'|get_message:request.session.locale}}
         </a>
     </button>
