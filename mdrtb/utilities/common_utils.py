@@ -224,24 +224,26 @@ def get_quarters():
 
 def get_report_names(locale):
     reports = [
-        "mdrtb.dotsreport07",
-        "mdrtb.dotsreport08",
-        "mdrtb.tb03Export",
-        "mdrtb.tb03ExportSingleLine",
-        "mdrtb.f89ExportSingleLine",
-        "mdrtb.dotsdq.title",
-        "mdrtb.dq.missingtb03",
-        "mdrtb.tb07u",
-        "mdrtb.tb08Fast",
-        "mdrtb.tb03uExport",
-        "mdrtb.tb03uExportSingleLine",
-        "mdrtb.dq.title",
-        "mdrtb.dq.missingtb03u",
-        "mdrtb.patientLists",
+        {"code": "mdrtb.dotsreport07", "value": "TB-07"},
+        {"code": "mdrtb.dotsreport08", "value": "TB-08"},
+        {"code": "mdrtb.tb03Export", "value": "TB-03"},
+        {"code": "mdrtb.tb03ExportSingleLine", "value": "TB-03"},
+        {"code": "mdrtb.tb03ExportSingleLine", "value": "FORM-89"},
+        {"code": "mdrtb.dotsdq.title", "value": "DOTS Data Quality Report"},
+        {"code": "mdrtb.dq.missingtb03", "value": "MISSING TB-03"},
+        {"code": "mdrtb.tb07u", "value": "TB-07u"},
+        {"code": "mdrtb.tb08Fast", "value": "TB-08u"},
+        {"code": "mdrtb.tb03uExport", "value": "TB-03u"},
+        {"code": "mdrtb.tb03uExportSingleLine", "value": "TB-03u"},
+        {"code": "mdrtb.dq.title", "value": "DOTS Data Quality Report"},
+        {"code": "mdrtb.dq.missingtb03u", "value": "MISSING TB03u"},
+        {"code": "mdrtb.patientLists", "value": "Patient List"},
     ]
     messages = []
     for report in reports:
-        messages.append(mu.get_global_msgs(report, locale=locale))
+        message = mu.get_global_msgs(report["code"], locale=locale)
+        value = report["value"]
+        messages.append({"report_name": message, "value": value})
     return messages
 
 

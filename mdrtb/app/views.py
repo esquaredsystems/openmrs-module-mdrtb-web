@@ -2837,7 +2837,7 @@ def render_closed_reports(req):
                 "region": req.POST["region"],
             }
             if "report" in req.POST:
-                params["reportName"]: req.POST["report"]
+                params["name"] = req.POST["report"]
             if "quarter" in req.POST:
                 params["quarter"] = req.POST["quarter"]
             elif "month" in req.POST:
@@ -2888,6 +2888,7 @@ def render_single_closed_report(req, uuid):
 def save_closed_report(req):
     if req.method == "POST":
         try:
+            overwrite_report = False
             location = lu.get_single_location_hierarchy(
                 mu.get_location(req, uuid=req.POST["location"], representation="FULL")
             )
@@ -2906,28 +2907,66 @@ def save_closed_report(req):
             if location["facility"]:
                 params["facility"] = location["district"]["uuid"]
 
+            if "month" in req.POST and req.POST["month"]:
+                params["month"] = req.POST["month"]
+
+            if "quarter" in req.POST and req.POST["quarter"]:
+                params["quarter"] = req.POST["quarter"]
+
             exist_status, exist_report = ru.get(
                 req, "mdrtb/reportdata", parameters=params
             )
 
             if exist_status:
                 if len(exist_report["results"]) > 0:
-                    pass
+                    for report in exist_report["results"]:
+                        if report["reportStatus"] == "UNLOCKED":
+                            report_location = lu.get_single_location_hierarchy(
+                                mu.get_location(
+                                    req,
+                                    uuid=report["location"]["uuid"],
+                                    representation="FULL",
+                                )
+                            )
+                            if report_location["region"]["uuid"] == req.POST["region"]:
+                                if (
+                                    "district" in report_location
+                                    and report_location["district"]["uuid"]
+                                    == req.POST["district"]
+                                ):
+                                    if (
+                                        "facility" in report_location
+                                        and report_location["facility"]["uuid"]
+                                        == req.POST["facility"]
+                                    ):
+                                        overwrite_report = True
+                                        break
+                                else:
+                                    overwrite_report = True
+                                    break
+                        else:
+                            raise Exception(
+                                f"The {report['reportName']} with the following parameters already exists and is LOCKED"
+                            )
+                            break
+                else:
+                    overwrite_report = True
 
-            report_data = {
-                "year": year,
-                "location": req.POST["location"],
-                "reportName": report_name,
-                "tableData": str(req.POST["tableData"]),
-            }
-            if "quarter" in req.POST and req.POST["quarter"] is not None:
-                report_data["quarter"] = req.POST["quarter"]
-            if "month" in req.POST and req.POST["month"] is not None:
-                report_data["month"] = req.POST["month"]
+            if overwrite_report:
+                report_data = {
+                    "year": year,
+                    "location": req.POST["location"],
+                    "reportName": report_name,
+                    "tableData": str(req.POST["tableData"]),
+                }
+                if "quarter" in req.POST and req.POST["quarter"] is not None:
+                    report_data["quarter"] = req.POST["quarter"]
+                if "month" in req.POST and req.POST["month"] is not None:
+                    report_data["month"] = req.POST["month"]
 
-            status, response = ru.post(req, "mdrtb/reportdata", data=report_data)
-            if status:
-                return redirect(req.session["redirect_url"])
+                status, response = ru.post(req, "mdrtb/reportdata", data=report_data)
+                if status:
+                    return redirect(req.session["redirect_url"])
         except Exception as e:
             logger.error(e, exc_info=True)
             messages.error(req, e)
