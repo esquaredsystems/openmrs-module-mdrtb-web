@@ -56,11 +56,11 @@
 <script type="text/javascript">
     $('#month').change((e) => {
         if (e.target.value != '') {
-            $('#quarter').prop('disabled', true)
-            $('#quarter').prop('title', 'Quarter cannot be selected with month')
+            $("input[name='quarter']").prop('disabled', true)
+            $("input[name='quarter']").prop('title', 'Quarter cannot be selected with month')
         } else {
-            $('#quarter').prop('disabled', false)
-            $('#quarter').prop('title', '')
+            $("input[name='quarter']").prop('disabled', false)
+            $("input[name='quarter']").prop('title', '')
         }
     })
     $("input[name='quarter']").change((e) => {
@@ -91,15 +91,6 @@
 </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </script>
-<script>
-    $(document).ready(function () {
-        $('#oblast').val("{{ oblastSelected }}");
-        $('#district').val("{{ districtSelected }}");
-        $('#year').val("{{ yearSelected }}");
-        $('#quarter').val("{{ quarterSelected }}");
-        $('#month').val("{{ monthSelected }}");
 
-    });
-</script>
 
 {% endblock %}

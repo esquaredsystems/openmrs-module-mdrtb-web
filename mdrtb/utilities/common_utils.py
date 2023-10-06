@@ -228,6 +228,7 @@ def get_report_names(locale):
         {"code": "mdrtb.dotsreport08", "value": "TB-08"},
         {"code": "mdrtb.tb03Export", "value": "TB-03"},
         {"code": "mdrtb.tb03ExportSingleLine", "value": "TB-03"},
+        {"code": "mdrtb.form8.title", "value": "Form8"},
         {"code": "mdrtb.tb03ExportSingleLine", "value": "FORM-89"},
         {"code": "mdrtb.dotsdq.title", "value": "DOTS Data Quality Report"},
         {"code": "mdrtb.dq.missingtb03", "value": "MISSING TB-03"},
