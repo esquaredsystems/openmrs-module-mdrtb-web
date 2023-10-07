@@ -75,6 +75,15 @@ def get_global_msgs(message_code, locale=None, default=None, source=None):
         raise Exception("Please provide a valid message code")
 
 
+def get_all_concepts(req):
+    try:
+        status, response = ru.get(req, "concept", {"v": "full"})
+        if status:
+            cache.set("concepts", response["results"])
+    except Exception as e:
+        pass
+
+
 def get_concept_from_cache(uuid):
     """
     Retrieves a concept from the cache based on the provided UUID.

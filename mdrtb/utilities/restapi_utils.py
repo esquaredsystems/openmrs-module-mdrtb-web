@@ -7,6 +7,7 @@ It uses @handle_rest_exceptions decorator to handle any exceptions occured durin
 import requests
 import base64
 from utilities import metadata_util as mu
+from utilities import locations_util as lu
 from mdrtb.settings import REST_API_BASE_URL
 from django.contrib import messages
 from django.core.cache import cache
@@ -54,6 +55,8 @@ def initiate_session(req, username, password):
             req.session["locale"] = response.json()["user"]["userProperties"][
                 "defaultLocale"
             ]
+            mu.get_all_concepts(req)
+            lu.create_location_hierarchy(req)
             return True
         else:
             logger.warning("Invalid credentials")
