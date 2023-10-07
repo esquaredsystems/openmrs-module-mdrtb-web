@@ -58,16 +58,6 @@
 
 	$('#region-select').prop('required', true)
 
-	function resetForm() {
-		console.log($('#report_form')[0])
-		$('#report_form')[0].reset();
-	}
-
-	$(window).on('popstate', function (event) {
-		console.log("pop bro")
-		resetForm();
-	})
-
 	$('#month').change((e) => {
 		if (e.target.value != '') {
 			$("input[name='quarter']").prop('disabled', true)

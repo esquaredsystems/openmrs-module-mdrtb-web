@@ -48,11 +48,25 @@ def get_form_concepts(concept_ids, req):
                                         .replace("-", "")
                                     )
                                     concept_dict[key] = answers
-                        else:
-                            continue
+                        elif answer["name"]["conceptNameType"] == "SHORT":
+                            answers.append(
+                                {
+                                    "uuid": answer["uuid"],
+                                    "name": answer["name"]["name"],
+                                }
+                            )
+                            for name in response["names"]:
+                                if name["locale"] == "en":
+                                    key = (
+                                        name["name"]
+                                        .lower()
+                                        .replace(" ", "")
+                                        .replace("-", "")
+                                    )
+                                    concept_dict[key] = answers
 
         except Exception as e:
-            raise Exception(str(e))
+            continue
     return concept_dict
 
 

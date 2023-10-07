@@ -749,9 +749,6 @@ def render_tb03_form(req, uuid):
         ]
 
         concepts = fu.get_form_concepts(tb03_concepts, req)
-        print("================================")
-        print(concepts)
-        print("================================")
         title = mu.get_global_msgs("mdrtb.tb03", locale=req.session["locale"])
         context = {
             "concepts": concepts,
