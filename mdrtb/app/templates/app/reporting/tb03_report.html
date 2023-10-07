@@ -494,7 +494,11 @@
                 url: "/saveclosedreport",
                 data: data,
                 success: (data) => {
-                    console.log(data)
+                    if (data.success) {
+                        alert("Report saved successfully")
+                    } else {
+                        alert("Failed to save report")
+                    }
                 }
             })
 

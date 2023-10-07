@@ -1781,51 +1781,58 @@ def render_patient_list(req):
         "title": title,
     }
 
-    if req.method == "POST":
-        month = req.POST.get("month")
+    try:
+        if req.method == "POST":
+            month = req.POST.get("month")
 
-        quarter = req.POST.get("quarter")
+            quarter = req.POST.get("quarter")
 
-        keys_to_check = ["facility", "district", "region"]
+            keys_to_check = ["facility", "district", "region"]
 
-        location = None
+            location = None
 
-        for key in keys_to_check:
-            value = req.POST.get(key)
+            for key in keys_to_check:
+                value = req.POST.get(key)
 
-            if value and len(value) > 0:
-                location = value
+                if value and len(value) > 0:
+                    location = value
 
-                break
+                    break
 
-        year = req.POST.get("year")
+            year = req.POST.get("year")
 
-        listname = req.POST.get("listname")
+            listname = req.POST.get("listname")
 
-        params = {"year": year, "listname": listname, "location": location}
+            params = {"year": year, "listname": listname, "location": location}
 
-        if month:
-            params["month"] = month
+            if month:
+                params["month"] = month
 
-            context["month"] = month
+                context["month"] = month
 
-        elif quarter:
-            params["quarter"] = quarter
+            elif quarter:
+                params["quarter"] = quarter
 
-            context["quarter"] = quarter
+                context["quarter"] = quarter
 
-        status, response = ru.get(req, "mdrtb/patientlist", params)
+            status, response = ru.get(req, "mdrtb/patientlist", params)
 
-        if status:
-            context["year"] = year
+            if status:
+                context["year"] = year
 
-            context["listname"] = util.get_patient_list_options(listname)
+                context["listname"] = util.get_patient_list_options(listname)
 
-            context["location"] = lu.get_location_by_uuid(req, location)["name"]
+                context["location"] = lu.get_location_by_uuid(req, location)["name"]
 
-            context["string_data"] = response["results"][0]["stringData"]
+                context["string_data"] = response["results"][0]["stringData"]
 
-            return render(req, "app/reporting/patientlist_report.html", context=context)
+                return render(
+                    req, "app/reporting/patientlist_report.html", context=context
+                )
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        messages.error(req, e)
+        return redirect("/")
 
     return render(req, "app/reporting/patientlist_report_form.html", context=context)
 
@@ -2955,6 +2962,7 @@ def save_closed_report(req):
                     "location": req.POST["location"],
                     "reportName": report_name,
                     "tableData": str(req.POST["tableData"]),
+                    "reportStatus": "UNLOCKED",
                 }
                 if "quarter" in req.POST and req.POST["quarter"] is not None:
                     report_data["quarter"] = req.POST["quarter"]
@@ -2963,7 +2971,7 @@ def save_closed_report(req):
 
                 status, response = ru.post(req, "mdrtb/reportdata", data=report_data)
                 if status:
-                    return redirect(req.session["redirect_url"])
+                    return JsonResponse({"success": True})
         except Exception as e:
             logger.error(e, exc_info=True)
             messages.error(req, e)

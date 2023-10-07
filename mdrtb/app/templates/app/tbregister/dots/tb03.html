@@ -12,7 +12,7 @@
 
   <form onsubmit="disableSubmit()"
     action="{% if state == 'edit'  %}{% url 'edittb03' uuid=uuid formid=form.uuid %}{% else %}{% url 'tb03' uuid=uuid %}{% endif %}"
-    method="post" class="flex flex-col">
+    method="post" class="flex flex-col" accept-charset="utf-8">
     {% csrf_token %}
 
     <div class="m-16 flex flex-col justify-center space-y-4">

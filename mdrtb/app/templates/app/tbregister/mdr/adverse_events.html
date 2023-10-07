@@ -84,7 +84,7 @@
               {% if state == 'edit' %}
               <option selected value="{{form.advereEvent.uuid}}">{{form.advereEvent.display}}</option>
               {% else %}
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
 
               {% for concept in concepts.adverseevent %}
@@ -1010,7 +1010,7 @@
               <option selected value="{{form.typeOfEvent.uuid}}">{{form.typeOfEvent.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
 
               {% for concept in concepts.adverseeventtype %}
@@ -1027,7 +1027,7 @@
               <option selected value="{{form.typeOfSAE.uuid}}">{{form.typeOfSAE.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.saetype %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -1047,7 +1047,7 @@
                 {{form.typeOfSpecialEvent.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.specialinteresteventtype %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -1158,7 +1158,7 @@
               <option selected value="{{form.casualityDrug.uuid}}">{{form.casualityDrug.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>s
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>s
               {% endif %}
               {% for concept in concepts.causalitydrug1 %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -1175,7 +1175,7 @@
                 {{form.casualityAssessmentResult.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.causalityassessmentresult1 %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -1194,7 +1194,7 @@
                 {{form.casualityDrug2.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.causalitydrug2 %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -1211,7 +1211,7 @@
                 {{form.casualityAssessmentResult2.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.causalityassessmentresult2 %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -1229,7 +1229,7 @@
               <option selected value="{{form.casualityDrug3.uuid}}">{{form.casualityDrug3.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.causalitydrug3 %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -1246,7 +1246,7 @@
                 {{form.casualityAssessmentResult3.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.causalityassessmentresult3 %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -1264,7 +1264,7 @@
               <option selected value="{{form.actionTaken.uuid}}">{{form.actionTaken.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.adverseeventaction %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -1281,7 +1281,7 @@
               <option selected value="{{form.actionTaken2.uuid}}">{{form.actionTaken2.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.adverseeventaction2 %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -1299,7 +1299,7 @@
               <option selected value="{{form.actionTaken3.uuid}}">{{form.actionTaken3.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.adverseeventaction3 %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -1316,7 +1316,7 @@
               <option selected value="{{form.actionTaken4.uuid}}">{{form.actionTaken4.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.adverseeventaction4 %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -1334,7 +1334,7 @@
               <option selected value="{{form.actionTaken5.uuid}}">{{form.actionTaken5.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.adverseeventaction5 %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -1350,7 +1350,7 @@
               <option selected value="{{form.actionOutcome.uuid}}">{{form.actionOutcome.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.adverseeventoutcome %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -1381,7 +1381,7 @@
               <option selected value="{{form.meddraCode.uuid}}">{{form.meddraCode.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.meddracode %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -1399,7 +1399,7 @@
               <option selected value="{{form.drugRechallenge.uuid}}">{{form.drugRechallenge.display}}</option>
               {% else %}
 
-              <option selected value="">Select</option>
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.drugrechallenge %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>

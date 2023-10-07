@@ -103,11 +103,16 @@
 
   <script>
 
+    let isModalOpen = false;
+
     let orders = JSON.parse("{{json_orders | escapejs}}");
     function showModal(uuid) {
+      if (isModalOpen) {
+        return;
+      }
       for (order of orders) {
+
         if (order.uuid === uuid) {
-          console.log(order)
           let sample_accepted = order.sample_accepted;
           let samplesUrl = `{% url 'managetestsamples' orderid=122 %}`.replace('122', uuid)
           let resultsUrl = `{% url 'addtestresults' orderid=122 %}?patient={{patient}}`.replace('122', uuid)
@@ -164,7 +169,7 @@
           </span>
         </div>`: `<div class="flex-center space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
-            Test Result:
+            {{'mdrtb.addTestResults'|get_message:request.session.locale}}:
           </span>
           <span class="font-bold w-2/5">
             Atleast one sample needs to be accepted to enter Test Results
@@ -173,11 +178,11 @@
         
         <div class="flex-center space-x-4  w-full border-gray-500">
           <span class="font-bold w-2/5">
-            Result Date:
+            {{'commonlab.resultDate'|get_message:request.session.locale}}:
 
           </span>
           <span id="test-results" class="w-3/5">
-              {{result_date}}
+              ${order.auditInfo.dateChanged == null ? order.auditInfo.dateCreated.slice(0, 10) : order.auditInfo.dateChanged}
           </span>
         </div>
 
@@ -198,6 +203,8 @@
 
       $("#modal").addClass("opacity-100");
       $("#modal").removeClass("opacity-0");
+      isModalOpen = true;
+
 
     }
 
@@ -205,6 +212,8 @@
       $("#modal").removeClass("opacity-100");
       $("#modal").addClass("opacity-0");
       $("#modal").empty();
+      isModalOpen = false;
+
 
     }
   </script>
