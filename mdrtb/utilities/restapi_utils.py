@@ -114,7 +114,6 @@ def get(req, endpoint, parameters):
         get(request, "patients", {"name": "John Doe"})
 
     """
-
     response = requests.get(
         url=REST_API_BASE_URL + endpoint,
         headers=get_auth_headers(req),

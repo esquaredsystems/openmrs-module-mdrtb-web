@@ -4,6 +4,12 @@ from utilities import restapi_utils as ru
 from django.core.cache import cache
 from django.utils.safestring import SafeString as ss
 from urllib.parse import urlencode
+import logging
+import zlib
+import pickle
+
+
+logger = logging.getLogger("django")
 
 # os.environ['DJANGO_SETTINGS_MODULE'] = 'mdrtb.settings'
 # django.setup()
@@ -76,15 +82,23 @@ def get_global_msgs(message_code, locale=None, default=None, source=None):
 
 
 def get_all_concepts(req):
+    compressed_concepts = cache.get("concepts", [])
+    if compressed_concepts:
+        return pickle.loads(zlib.decompress(compressed_concepts))
     try:
-        status, response = ru.get(req, "concept", {"v": "full"})
+        logger.info(f"Fetching concepts in {req.session['locale']}")
+        status, response = ru.get(
+            req, "concept", {"v": "full", "lang": req.session["locale"]}
+        )
         if status:
-            cache.set("concepts", response["results"])
+            seralized_concepts = pickle.dumps(response["results"])
+            compressed_concepts = zlib.compress(seralized_concepts)
+            cache.set("concepts", compressed_concepts, timeout=None)
     except Exception as e:
         pass
 
 
-def get_concept_from_cache(uuid):
+def get_concept_from_cache(uuid=None, name=None):
     """
     Retrieves a concept from the cache based on the provided UUID.
 
@@ -100,7 +114,12 @@ def get_concept_from_cache(uuid):
         get_concept_from_cache("abc123")
     (True, {"uuid": "abc123", "name": "Concept Name", ...})
     """
-    concepts = cache.get("concepts", [])
+    concepts = pickle.loads(zlib.decompress(cache.get("concepts", [])))
+    if name:
+        for concept in concepts:
+            for concept_name in concept["names"]:
+                if concept_name["locale"] == "en" and concept_name["name"] == name:
+                    return bool(concept), concept
     concept = next((c for c in concepts if c["uuid"] == uuid), {})
     return bool(concept), concept
 
@@ -124,7 +143,7 @@ def get_concept(req, uuid, lang=None):
     {"uuid": "abc123", "name": "Concept Name", ...}
     """
 
-    found, concept = get_concept_from_cache(uuid)
+    found, concept = get_concept_from_cache(uuid=uuid)
     if found:
         return concept
     try:
@@ -142,18 +161,25 @@ def get_concept(req, uuid, lang=None):
 
 def get_concept_by_search(req, query):
     try:
+        found, concept = get_concept_from_cache(uuid=None, name=query)
+        if found:
+            return concept
         status, response = ru.get(
             req, "concept", {"lang": req.session["locale"], "v": "full", "q": query}
         )
         if status:
-            concepts = cache.get("concepts", [])
+            compressed_concepts = cache.get("concepts", [])
+            if compressed_concepts:
+                concepts = pickle.loads(zlib.decompress(compressed_concepts))
+            else:
+                concepts = compressed_concepts
             for concept in response["results"]:
                 for name in concept["names"]:
                     if name["locale"] == "en" and name["name"] == query:
                         concepts.append(concept)
-
+                        zlib.compress(pickle.dumps(concepts))
+                        cache.set("concepts", concepts, timeout=None)
                         return concept
-            cache.set("concepts", concepts, timeout=None)
 
     except Exception as e:
         raise Exception(e)

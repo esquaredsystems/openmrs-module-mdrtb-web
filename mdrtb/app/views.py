@@ -54,26 +54,9 @@ def check_privileges(req, privileges_required):
     return perms
 
 
-# def render_get_redirect_url_from_exception(exception):
-
-#     if exception.args[0] == mu.get_global_msgs(
-
-#         "auth.session.expired", source="OpenMRS"
-
-#     ):
-
-#         message, redirect_url = exception.args
-
-#         return True, message, redirect_url
-
-#     return False, None, None
-
-
 def index(req):
     context = {}
-
     # This is a test function
-
     return render(req, "app/tbregister/reportmockup.html", context)
 
 
@@ -109,6 +92,7 @@ def change_locale(req, locale):
     try:
         req.session["locale"] = locale
         cache.delete("concepts")
+        mu.get_all_concepts(req)
 
         logged_in_user_uuid = req.session["logged_user"]["user"]["uuid"]
         user_properties = req.session["logged_user"]["user"]["userProperties"]
