@@ -527,7 +527,7 @@ def get_patient_dashboard_info(
                 f"commonlab/labtestorder",
                 {
                     "patient": patientuuid,
-                    "limit": 3,
+                    "limit": 5,
                     "v": "custom:(uuid,labTestType,labReferenceNumber,order)",
                 },
             )
