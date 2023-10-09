@@ -2947,6 +2947,7 @@ def save_closed_report(req):
                     "reportName": report_name,
                     "tableData": str(req.POST["tableData"]),
                     "reportStatus": "UNLOCKED",
+                    "reportType": req.POST["reportType"]
                 }
                 if "quarter" in req.POST and req.POST["quarter"] is not None:
                     report_data["quarter"] = req.POST["quarter"]

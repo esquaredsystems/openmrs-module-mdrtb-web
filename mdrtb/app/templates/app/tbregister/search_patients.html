@@ -103,11 +103,17 @@
               )
               for (i = 0; i < data.results.length; i++) {
                 const path = `patient/${data.results[i].uuid}/enrolledprograms`
+                let identifierToShow = data.results[i].identifiers[0].identifier;
+                for (identifier of data.results[i].identifiers) {
+                  if (identifier.identifier === searchQuery) {
+                    identifierToShow = identifier.identifier
+                  }
+                }
                 $('#search-results').append(
                   `
         <a class="no-underline text-black" href="${path}">
           <div class="search-result-items hover:bg-gray-800 hover:text-white transition-colors duration-200">
-        <p class="">${data.results[i].identifiers[0].identifier}</p>
+        <p class="">${identifierToShow}</p>
         <p class="text-wrap col-span-2">${data.results[i].person.display}</p>
         <p>${data.results[i].person.age}</p>
         <p>${data.results[i].person.gender}</p>

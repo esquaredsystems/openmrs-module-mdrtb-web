@@ -33,7 +33,7 @@
                 {% for quarter in quarters %}
                 <div class="space-x-2 flex items-center">
                     <label for="quarter">{{quarter}}</label>
-                    <input required type="radio" name="quarter" id="quarter" class="radio-input" value="{{quarter}}">
+                    <input required type="radio" name="quarter" value="{{quarter}}" class="radio-input">
                 </div>
                 {% endfor %}
 
@@ -54,22 +54,21 @@
     </form>
 </div>
 <script type="text/javascript">
-    $('#region-select').prop('required', true);
+    $('#region-select').prop('required', true)
+
     $('#month').change((e) => {
         if (e.target.value != '') {
             $("input[name='quarter']").prop('disabled', true)
-            $("input[name='quarter']").prop('required', false)
             $("input[name='quarter']").prop('title', 'Quarter cannot be selected with month')
         } else {
             $("input[name='quarter']").prop('disabled', false)
             $("input[name='quarter']").prop('title', '')
-            $("input[name='quarter']").prop('required', true)
         }
     })
     $("input[name='quarter']").change((e) => {
-
-
+        console.log(e.target.value)
         if (e.target.value != '') {
+
             $('#month').prop('disabled', true)
             $('#month').prop('title', 'Month cannot be selected with quarter')
         } else {
@@ -93,15 +92,4 @@
 </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </script>
-<script>
-    $(document).ready(function () {
-        $('#oblast').val("{{ oblastSelected }}");
-        $('#district').val("{{ districtSelected }}");
-        $('#year').val("{{ yearSelected }}");
-        $("input[name='quarter']").val("{{ quarterSelected }}");
-        $('#month').val("{{ monthSelected }}");
-
-    });
-</script>
-
 {% endblock %}
