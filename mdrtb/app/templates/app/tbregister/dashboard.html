@@ -453,7 +453,6 @@
       return;
     }
     let attributes = stringToJson($(element).data('attributes'))
-    console.log(attributes)
     let groups = []
     for (attribute of attributes) {
       if (attribute.attributeType.group != null) {
@@ -507,13 +506,16 @@
 
 
         else {
-          $(`#${uuid}common`).append(
-            `
+          if (attribute.valueReference != null && attribute.valueReference.length > 0) {
+            $(`#${uuid}common`).append(
+              `
           <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
-          <div class="border w-full p-2 h-full border-gray-200">${attribute.valueReference ? attribute.valueReference : '-'}</div>
+          <div class="border w-full p-2 h-full border-gray-200">${attribute.valueReference}</div>
  
           `
-          )
+            )
+          }
+
         }
 
       } else {
@@ -535,19 +537,25 @@
           }
 
         } else {
-          $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
-            `
+          if (attribute.valueReference != null && attribute.valueReference.length > 0) {
+            $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
+              `
           <div class="border w-full p-2 border-gray-200 ">${attribute.attributeType.name}</div>
-          <div class="border w-full p-2 border-gray-200">${attribute.valueReference ? attribute.valueReference : '-'}</div>
+          <div class="border w-full p-2 border-gray-200">${attribute.valueReference}</div>
 
           `
-          )
+            )
+          }
+
         }
 
       }
     }
     itemsAppended[uuid] = true;
+    console.log($("#054190c4-65cf-11ee-852e-00155dcead05culture").children().length)
+
   }
+
 </script>
 
 {% endblock %}

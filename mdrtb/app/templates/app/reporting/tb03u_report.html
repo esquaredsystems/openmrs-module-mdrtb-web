@@ -475,14 +475,10 @@
     </button>
     <input type="button" onclick="tableToExcel('tb03u', 'TB03u')"
         value="{{'mdrtb.exportToExcelBtn'|get_message:request.session.locale}}" />
-    <!-- <input type="button" id="tableToPdf" name="tableToPdf" value="{{"mdrtb.exportToPdfBtn"|get_message:request.session.locale}}" /> -->
-    {% if manage_report_closing %}
-    <input type="button" id="tableToSql" name="tableToSql"
-        value="{{'mdrtb.closeReportBtn'|get_message:request.session.locale}}" />
     <input type="button" onclick="printForm()" value="{{'mdrtb.print'|get_message:request.session.locale}}" />
     <button onclick="saveHtml()">{{'mdrtb.save'|get_message:request.session.locale}}</button>
 
-    {% endif %}
+
     <script type="text/javascript">
         function saveHtml() {
             let htmlContent = document.getElementById("tb03u").outerHTML;

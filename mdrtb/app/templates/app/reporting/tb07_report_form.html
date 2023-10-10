@@ -4,7 +4,7 @@
 <div class="mx-auto w-2/4">
     <form onsubmit="disableSubmit()" action="{% url 'tb07export' %}" method="post" class="flex flex-col space-y-6">
         {% csrf_token %}
-        <h2 class="page-title">{{"mdrtb.tb07uParameters"|get_message:request.session.locale}}</h2>
+        <h2 class="page-title">{{"mdrtb.tb07Parameters"|get_message:request.session.locale}}</h2>
         <div>
             {% include 'app/components/locations.html' %}
         </div>

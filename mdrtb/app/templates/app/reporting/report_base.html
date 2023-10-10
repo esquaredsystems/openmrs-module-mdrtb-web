@@ -97,21 +97,15 @@
         border-right: 1px black solid;
         border-left: 1px black solid;
     }
+
+    td,
+    th {
+        padding: 1rem;
+    }
 </style>
 
 <body style="margin: 1rem;">
 
-    <script type="text/javascript"
-        src="http://46.20.206.173:18080/openmrs/moduleResources/mdrtb/tableExport/js/tableExport.js"></script>
-    <script type="text/javascript"
-        src="http://46.20.206.173:18080/openmrs/moduleResources/mdrtb/tableExport/js/jquery.base64.js"></script>
-    <script type="text/javascript"
-        src="http://46.20.206.173:18080/openmrs/moduleResources/mdrtb/tableExport/js/jspdf/libs/sprintf.js"></script>
-    <script type="text/javascript"
-        src="http://46.20.206.173:18080/openmrs/moduleResources/mdrtb/tableExport/js/jspdf/jspdf.js"></script>
-    <script type="text/javascript"
-        src="http://46.20.206.173:18080/openmrs/moduleResources/mdrtb/tableExport/js/jspdf/libs/base64.js">
-        </script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.1.js"></script>
     {% block content %}
     {% endblock %}

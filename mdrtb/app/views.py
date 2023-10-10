@@ -55,7 +55,13 @@ def check_privileges(req, privileges_required):
 
 
 def index(req):
-    context = {}
+    context = {"Test": None}
+
+    for key, value in context.items():
+        if value is None:
+            value = ""
+            context.update({key: value})
+
     # This is a test function
     return render(req, "app/tbregister/reportmockup.html", context)
 
@@ -1575,6 +1581,8 @@ def render_user_profile(req):
         try:
             user_properties = req.session["logged_user"]["user"]["userProperties"]
             req.session["locale"] = req.POST["locale"]
+            cache.delete("concepts")
+            mu.get_all_concepts(req)
             user_properties["defaultLocale"] = (
                 req.POST["locale"] if "locale" in req.POST else ""
             )
@@ -1885,7 +1893,13 @@ def render_tb03_report(req):
         status, response = ru.get(req, "mdrtb/tb03report", params)
 
         if status:
-            context["patientSet"] = response["results"]
+            context["patientSet"] = [
+                {
+                    key: value if value is not None else ""
+                    for key, value in record.items()
+                }
+                for record in response["results"]
+            ]
 
             return render(req, "app/reporting/tb03_report.html", context)
 
@@ -1962,7 +1976,13 @@ def render_tb03_single_report(req):
         status, response = ru.get(req, "mdrtb/tb03report", params)
 
         if status:
-            context["patientSet"] = response["results"]
+            context["patientSet"] = [
+                {
+                    key: value if value is not None else ""
+                    for key, value in record.items()
+                }
+                for record in response["results"]
+            ]
 
             return render(req, "app/reporting/tb03_single_report.html", context)
 
@@ -2039,7 +2059,13 @@ def render_tb03u_single_report(req):
         status, response = ru.get(req, "mdrtb/tb03ureport", params)
 
         if status:
-            context["patientSet"] = response["results"]
+            context["patientSet"] = [
+                {
+                    key: value if value is not None else ""
+                    for key, value in record.items()
+                }
+                for record in response["results"]
+            ]
 
             return render(req, "app/reporting/tb03u_single_report.html", context)
 
@@ -2114,7 +2140,13 @@ def render_tb03u_report(req):
         status, response = ru.get(req, "mdrtb/tb03ureport", params)
 
         if status:
-            context["patientSet"] = response["results"]
+            context["patientSet"] = [
+                {
+                    key: value if value is not None else ""
+                    for key, value in record.items()
+                }
+                for record in response["results"]
+            ]
 
             return render(req, "app/reporting/tb03u_report.html", context)
 
@@ -2947,7 +2979,7 @@ def save_closed_report(req):
                     "reportName": report_name,
                     "tableData": str(req.POST["tableData"]),
                     "reportStatus": "UNLOCKED",
-                    "reportType": req.POST["reportType"]
+                    "reportType": req.POST["reportType"],
                 }
                 if "quarter" in req.POST and req.POST["quarter"] is not None:
                     report_data["quarter"] = req.POST["quarter"]

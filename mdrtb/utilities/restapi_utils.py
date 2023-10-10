@@ -75,6 +75,7 @@ def clear_session(req):
     try:
         if req.path == "/logout":
             redirect_url = "/"
+            cache.clear()
         else:
             query_params = req.session.get("redirect_query_params", {})
             redirect_url = (
@@ -84,7 +85,7 @@ def clear_session(req):
                 if query_params
                 else req.session.get("redirect_url")
             )
-        cache.clear()
+
         req.session.flush()
         req.session.create()
         req.session["redirect_url"] = redirect_url
