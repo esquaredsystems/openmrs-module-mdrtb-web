@@ -56,11 +56,11 @@ def check_privileges(req, privileges_required):
 
 def index(req):
     context = {"Test": None}
-
-    for key, value in context.items():
-        if value is None:
-            value = ""
-            context.update({key: value})
+    concepts = cache.get("concepts")
+    if concepts:
+        print("CONCEPTS FOUND")
+    else:
+        print("CONCEPTS NOT FOUND")
 
     # This is a test function
     return render(req, "app/tbregister/reportmockup.html", context)

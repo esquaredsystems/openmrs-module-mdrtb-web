@@ -7,6 +7,7 @@ from urllib.parse import urlencode
 import logging
 import zlib
 import pickle
+from datetime import datetime
 
 
 logger = logging.getLogger("django")
@@ -88,8 +89,14 @@ def get_all_concepts(req):
     try:
         logger.info(f"Fetching concepts in {req.session['locale']}")
         status, response = ru.get(
-            req, "concept", {"v": "full", "lang": req.session["locale"]}
+            req,
+            "concept",
+            {
+                "v": "custom:(uuid,display,names,answers)",
+                "lang": req.session["locale"],
+            },
         )
+
         if status:
             seralized_concepts = pickle.dumps(response["results"])
             compressed_concepts = zlib.compress(seralized_concepts)
