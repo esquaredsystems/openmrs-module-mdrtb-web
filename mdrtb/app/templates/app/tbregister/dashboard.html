@@ -453,20 +453,27 @@
       return;
     }
     let attributes = stringToJson($(element).data('attributes'))
+    console.log(attributes)
     let groups = []
+    let groupHasAttributes = {}
     for (attribute of attributes) {
       if (attribute.attributeType.group != null) {
+        if (attribute.valueReference) {
+          groupHasAttributes[attribute.attributeType.group] = true
+        }
         groups.push(attribute.attributeType.group)
 
       }
     }
+    console.log(groupHasAttributes)
     let duplicatesRemovedGroups = [...new Set(groups)];
     if (duplicatesRemovedGroups.length === 0) {
       $(`#${uuid}groups`).removeClass('grid-cols-2').addClass('grid-cols-1')
     }
     for (group of duplicatesRemovedGroups) {
-      $(`#${uuid}groups`).append(
-        `<div class="w-full bg-white p-2">
+      if (groupHasAttributes[group]) {
+        $(`#${uuid}groups`).append(
+          `<div class="w-full bg-white p-2">
                         <h1 class="font-bold text-lg text-center">${group}</h1>
                         <div id="${uuid}${group.toLowerCase()}"
                           class="grid grid-cols-2 place-items-center justify-items-center  p-2">
@@ -476,7 +483,12 @@
 
                         </div>
                       </div>`
-      )
+        )
+      }
+
+
+
+
 
     }
     for (attribute of attributes) {
@@ -553,6 +565,22 @@
     }
     itemsAppended[uuid] = true;
 
+    if ($(`#${uuid}common`).children().length <= 2) {
+      console.log(`${uuid}common`)
+      $(`#${uuid}common`).parent().remove();
+    }
+    if ($(`#${uuid}groups`).children().length === 0) {
+      $(`#${uuid}groups`).append(
+        `
+        <div class="w-full bg-white p-2"><h1 class="font-bold text-lg text-center">No results found</h1></div>
+        `
+      )
+
+    }
+
+    if ($(`#${uuid}groups`).children().length === 1) {
+      $(`#${uuid}groups`).removeClass('grid-cols-2').addClass('grid-cols-1')
+    }
 
 
   }

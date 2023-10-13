@@ -1,7 +1,24 @@
 {% extends 'app/reporting/report_base.html' %}
 
 {% block content %}
+
+
 <div>
+    <style>
+        td {
+            width: fit-content;
+        }
+
+        th {
+            width: fit-content;
+        }
+
+        table {
+            width: fit-content;
+        }
+    </style>
+
+
     <div>
         <div id="tb03">
             {% if locale == 'tj' %}
@@ -15,54 +32,86 @@
             <table border="1" cellspacing="0">
                 <tr>
                     <th class="rotate" rowspan="4">
-                        <div><span>{{"mdrtb.tb03.registrationNumber"|get_message:request.session.locale}}</span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.registrationNumber"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
                     <th class="rotate" rowspan="4">
-                        <div><span>{{"mdrtb.tb03.dateOfRegistration"|get_message:request.session.locale}}</span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.dateOfRegistration"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
-                    <th rowspan="4">{{"mdrtb.tb03.fullName"|get_message:request.session.locale}}</th>
+                    <th rowspan="4">
+                        {{"mdrtb.tb03.fullName"|get_message:request.session.locale}}
+                    </th>
                     <th class="rotate" rowspan="4">
-                        <div><span>{{"mdrtb.tb03.gender"|get_message:request.session.locale}}</span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.gender"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
-                    <th class="normal" rowspan="4">{{"mdrtb.age"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="4">{{"mdrtb.tb03.dateOfBirth"|get_message:request.session.locale}}</th>
-                    <th rowspan="4">{{"mdrtb.oblast"|get_message:request.session.locale}}</th>
-                    <th rowspan="4">{{"mdrtb.district"|get_message:request.session.locale}}</th>
-                    <th rowspan="4">{{"mdrtb.facility"|get_message:request.session.locale}}</th>
-                    <th rowspan="4">{{"mdrtb.tb03.address"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="4">{{"mdrtb.tb03.treatmentSiteCP"|get_message:request.session.locale}}
+                    <th class="normal" rowspan="4">
+                        {{"mdrtb.age"|get_message:request.session.locale}}
                     </th>
-                    <th class="normal" rowspan="4">{{"mdrtb.tb03.treatmentSiteFP"|get_message:request.session.locale}}
+                    <th class="normal" rowspan="4">
+                        {{"mdrtb.tb03.dateOfBirth"|get_message:request.session.locale}}
                     </th>
-                    <th class="normal" rowspan="4">{{"mdrtb.tb03.treatmentRegimen"|get_message:request.session.locale}}
+                    <th rowspan="4">
+                        {{"mdrtb.oblast"|get_message:request.session.locale}}
+                    </th>
+                    <th rowspan="4">
+                        {{"mdrtb.district"|get_message:request.session.locale}}
+                    </th>
+                    <th rowspan="4">
+                        {{"mdrtb.facility"|get_message:request.session.locale}}
+                    </th>
+                    <th rowspan="4">
+                        {{"mdrtb.tb03.address"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="4">
+                        {{"mdrtb.tb03.treatmentSiteCP"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="4">
+                        {{"mdrtb.tb03.treatmentSiteFP"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="4">
+                        {{"mdrtb.tb03.treatmentRegimen"|get_message:request.session.locale}}
                     </th>
                     <th class="normal" rowspan="4">
                         {{"mdrtb.tb03.treatmentStartDate"|get_message:request.session.locale}}
                     </th>
                     <th class="rotate" rowspan="4">
-                        <div><span>{{"mdrtb.tb03.tbLocalization"|get_message:request.session.locale}}</span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.tbLocalization"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
                     <th class="reggroup" colspan="8">
                         {{"mdrtb.tb03.registrationGroup"|get_message:request.session.locale}}
                     </th>
                     <th class="rotate" rowspan="4">
-                        <div><span>{{"mdrtb.tb03.transferFrom"|get_message:request.session.locale}}</span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.transferFrom"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
-                    <th class="reggroup" colspan="4">{{"mdrtb.tb03.tbHivActivities"|get_message:request.session.locale}}
+                    <th class="reggroup" colspan="4">
+                        {{"mdrtb.tb03.tbHivActivities"|get_message:request.session.locale}}
                     </th>
                     <th class="reggroup" colspan="24">
                         {{"mdrtb.tb03.diagnosticMethod"|get_message:request.session.locale}}
                     </th>
                     <th class="normal" rowspan="4" rowspan="2">
-                        {{"mdrtb.tb03.dstSampleCollectionDate"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="4">{{"mdrtb.tb03.dstResultDate"|get_message:request.session.locale}}
+                        {{"mdrtb.tb03.dstSampleCollectionDate"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="4">
+                        {{"mdrtb.tb03.dstResultDate"|get_message:request.session.locale}}
                     </th>
                     <th class="reggroup" colspan="17" rowspan="1">
                         {{"mdrtb.tb03.dst"|get_message:request.session.locale}}
                     </th>
 
                     <th class="rotate" rowspan="4">
-                        <div><span>{{"mdrtb.tb03.drugResistance"|get_message:request.session.locale}}</span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.drugResistance"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
                     <th class="reggroup" colspan="12">
                         {{"mdrtb.tb03.smearMonitoring"|get_message:request.session.locale}}
@@ -71,60 +120,102 @@
                         {{"mdrtb.tb03.treatmentOutcome"|get_message:request.session.locale}}
                     </th>
                     <th class="rotate" rowspan="4">
-                        <div><span>{{"mdrtb.tb03.canceled"|get_message:request.session.locale}}</span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.canceled"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
                     <th class="rotate" rowspan="4">
-                        <div><span>{{"mdrtb.tb03.startedRegimen2"|get_message:request.session.locale}}</span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.startedRegimen2"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
                     <th class="rotate" rowspan="4">
-                        <div><span>{{"mdrtb.tb03.transferOut"|get_message:request.session.locale}}</span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.transferOut"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
                     <th class="rotate" rowspan="4">
-                        <div><span>{{"mdrtb.tb03.notes"|get_message:request.session.locale}}</span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.notes"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
                 </tr>
                 <tr>
                     <th class="subrotate" rowspan="3">
-                        <div><span>{{"mdrtb.tb03.new"|get_message:request.session.locale}}</span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.new"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
                     <th class="subrotate" rowspan="2">
-                        <div><span>{{"mdrtb.tb03.relapseAfter"|get_message:request.session.locale}}</span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.relapseAfter"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
                     <th class="subrotate" rowspan="2">
-                        <div><span>{{"mdrtb.tb03.relapseAfter"|get_message:request.session.locale}}</span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.relapseAfter"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
 
                     <th class="subrotate" rowspan="2">
-                        <div><span>{{"mdrtb.tb03.defaultAfter"|get_message:request.session.locale}}</span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.defaultAfter"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
                     <th class="subrotate" rowspan="2">
-                        <div><span>{{"mdrtb.tb03.defaultAfter"|get_message:request.session.locale}} </span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.defaultAfter"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
                     <th class="subrotate" rowspan="2">
-                        <div><span>{{"mdrtb.tb03.failureAfter"|get_message:request.session.locale}}</span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.failureAfter"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
                     <th class="subrotate" rowspan="2">
-                        <div><span>{{"mdrtb.tb03.failureAfter"|get_message:request.session.locale}}</span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.failureAfter"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
                     <th class="subrotate" rowspan="3">
-                        <div><span>{{"mdrtb.tb03.other"|get_message:request.session.locale}}</span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.other"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
                     <th class="subrotate" rowspan="3">
-                        <div><span>{{"mdrtb.tb03.hivTest"|get_message:request.session.locale}}</span></div>
-                    </th>
-                    <th class="subrotate" rowspan="3">{{"mdrtb.date"|get_message:request.session.locale}}</th>
-                    <th class="subrotate" rowspan="3">
-                        <div><span>{{"mdrtb.tb03.artTest"|get_message:request.session.locale}}<br /></span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.hivTest"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
                     <th class="subrotate" rowspan="3">
-                        <div><span>{{"mdrtb.tb03.cpTest"|get_message:request.session.locale}}<br /></span></div>
+                        {{"mdrtb.date"|get_message:request.session.locale}}
+                    </th>
+                    <th class="subrotate" rowspan="3">
+                        <div><span>
+                                {{"mdrtb.tb03.artTest"|get_message:request.session.locale}}<br />
+                            </span></div>
+                    </th>
+                    <th class="subrotate" rowspan="3">
+                        <div><span>
+                                {{"mdrtb.tb03.cpTest"|get_message:request.session.locale}}<br />
+                            </span></div>
                     </th>
 
-                    <th class="normal" colspan="4">{{"mdrtb.microscopy"|get_message:request.session.locale}}</th>
-                    <th class="normal" colspan="4">{{"mdrtb.genexpert"|get_message:request.session.locale}}</th>
-                    <th class="normal" colspan="6">{{"mdrtb.hain1"|get_message:request.session.locale}}</th>
-                    <th class="normal" colspan="6">{{"mdrtb.hain2"|get_message:request.session.locale}}</th>
-                    <th class="normal" colspan="4">{{"mdrtb.culture"|get_message:request.session.locale}}</th>
+                    <th class="normal" colspan="4">
+                        {{"mdrtb.tb03.microscopy"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" colspan="4">
+                        {{"mdrtb.tb03.genexpert"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" colspan="6">
+                        {{"mdrtb.hain1"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" colspan="6">
+                        {{"mdrtb.hain2"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" colspan="4">
+                        {{"mdrtb.culture"|get_message:request.session.locale}}
+                    </th>
                     <th class="dst" rowspan="3">
                         <div>R</div>
                     </th>
@@ -176,82 +267,166 @@
                     <th class="dst" rowspan="3">
                         <div>Dlm</div>
                     </th>
-                    <th class="normal" colspan="4">{{"mdrtb.tb03.m234"|get_message:request.session.locale}}<br
-                            style="mso-data-placement:same-cell;" />{{"mdrtb.tb03.month"|get_message:request.session.locale}}
+                    <th class="normal" colspan="4">
+                        {{"mdrtb.tb03.m234"|get_message:request.session.locale}}<br
+                            style="mso-data-placement:same-cell;" />
+                        {{"mdrtb.tb03.month"|get_message:request.session.locale}}
                     </th>
-                    <th class="normal" colspan="4">{{"mdrtb.tb03.five"|get_message:request.session.locale}}
-                        {{"mdrtb.tb03.month"|get_message:request.session.locale}}</th>
-                    <th class="normal" colspan="4">{{"mdrtb.tb03.m68"|get_message:request.session.locale}}
-                        {{"mdrtb.tb03.month"|get_message:request.session.locale}}</th>
-                    <th class="subrotate" rowspan="3">
-                        <div><span>{{"mdrtb.tb03.cured"|get_message:request.session.locale}}</span></div>
+                    <th class="normal" colspan="4">
+                        {{"mdrtb.tb03.five"|get_message:request.session.locale}}
+                        {{"mdrtb.tb03.month"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" colspan="4">
+                        {{"mdrtb.tb03.m68"|get_message:request.session.locale}}
+                        {{"mdrtb.tb03.month"|get_message:request.session.locale}}
                     </th>
                     <th class="subrotate" rowspan="3">
-                        <div><span>{{"mdrtb.tb03.txCompleted"|get_message:request.session.locale}}</span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.cured"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
                     <th class="subrotate" rowspan="3">
-                        <div><span>{{"mdrtb.tb03.failure"|get_message:request.session.locale}}</span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.txCompleted"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
-                    <th class="normal" colspan="2">{{"mdrtb.tb03.died"|get_message:request.session.locale}}</th>
                     <th class="subrotate" rowspan="3">
-                        <div><span>{{"mdrtb.tb03.ltfu"|get_message:request.session.locale}}</span></div>
+                        <div><span>
+                                {{"mdrtb.tb03.failure"|get_message:request.session.locale}}
+                            </span></div>
+                    </th>
+                    <th class="normal" colspan="2">
+                        {{"mdrtb.tb03.died"|get_message:request.session.locale}}
+                    </th>
+                    <th class="subrotate" rowspan="3">
+                        <div><span>
+                                {{"mdrtb.tb03.ltfu"|get_message:request.session.locale}}
+                            </span></div>
                     </th>
                 </tr>
                 <tr>
                     <!-- <th class="normal" rowspan="1">I</th>
-                <th class="normal" rowspan="1">II</th>
-                <th class="normal" rowspan="1">I</th>
-                <th class="normal" rowspan="1">II</th>
-                <th class="normal" rowspan="1">I</th>
-                <th class="normal" rowspan="1">II</th> -->
+                    <th class="normal" rowspan="1">II</th>
+                    <th class="normal" rowspan="1">I</th>
+                    <th class="normal" rowspan="1">II</th>
+                    <th class="normal" rowspan="1">I</th>
+                    <th class="normal" rowspan="1">II</th> -->
 
-                    <th class="normal" rowspan="2">{{"mdrtb.tb03.microscopyResult"|get_message:request.session.locale}}
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.tb03.microscopyResult"|get_message:request.session.locale}}
                     </th>
-                    <th class="normal" rowspan="2">{{"mdrtb.date"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.tb03.testNumber"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.lab"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.tb03.xpertResult"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.date"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.tb03.testNumber"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.lab"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.date"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.tb03.testNumber"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.tb03.hainCultureResult"|get_message:request.session.locale}}
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.date"|get_message:request.session.locale}}
                     </th>
-                    <th class="normal" rowspan="2">{{"mdrtb.tb03.hResult"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.tb03.rResult"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.lab"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.date"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.tb03.testNumber"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.tb03.hainCultureResult"|get_message:request.session.locale}}
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.tb03.testNumber"|get_message:request.session.locale}}
                     </th>
-                    <th class="normal" rowspan="2">{{"mdrtb.tb03.iResult"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.tb03.fResult"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.lab"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.tb03.hainCultureResult"|get_message:request.session.locale}}
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.lab"|get_message:request.session.locale}}
                     </th>
-                    <th class="normal" rowspan="2">{{"mdrtb.date"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.tb03.testNumber"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.lab"|get_message:request.session.locale}}</th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.tb03.xpertResult"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.date"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.tb03.testNumber"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.lab"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.date"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.tb03.testNumber"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.tb03.hainCultureResult"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.tb03.hResult"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.tb03.rResult"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.lab"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.date"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.tb03.testNumber"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.tb03.hainCultureResult"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.tb03.iResult"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.tb03.fResult"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.lab"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.tb03.hainCultureResult"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.date"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.tb03.testNumber"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.lab"|get_message:request.session.locale}}
+                    </th>
 
-                    <th class="normal" rowspan="2">{{"mdrtb.result"|get_message:request.session.locale}}</th>
-                    <th rowspan="2">{{"mdrtb.date"|get_message:request.session.locale}}</th>
-                    <th rowspan="2">{{"mdrtb.tb03.testNumber"|get_message:request.session.locale}}</th>
-                    <th rowspan="2">{{"mdrtb.lab"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.result"|get_message:request.session.locale}}</th>
-                    <th rowspan="2">{{"mdrtb.date"|get_message:request.session.locale}}</th>
-                    <th rowspan="2">{{"mdrtb.tb03.testNumber"|get_message:request.session.locale}}</th>
-                    <th rowspan="2">{{"mdrtb.lab"|get_message:request.session.locale}}</th>
-                    <th class="normal" rowspan="2">{{"mdrtb.result"|get_message:request.session.locale}}</th>
-                    <th rowspan="2">{{"mdrtb.date"|get_message:request.session.locale}}</th>
-                    <th rowspan="2">{{"mdrtb.tb03.testNumber"|get_message:request.session.locale}}</th>
-                    <th rowspan="2">{{"mdrtb.lab"|get_message:request.session.locale}}</th>
-                    <th class="subrotate" rowspan="2">
-                        <span>{{"mdrtb.tb03.ofTb"|get_message:request.session.locale}}</span>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.result"|get_message:request.session.locale}}
                     </th>
-                    <th class="subrotate" rowspan="2">
-                        <span>{{"mdrtb.tb03.ofOther"|get_message:request.session.locale}}</span>
+                    <th rowspan="2">
+                        {{"mdrtb.date"|get_message:request.session.locale}}
                     </th>
+                    <th rowspan="2">
+                        {{"mdrtb.tb03.testNumber"|get_message:request.session.locale}}
+                    </th>
+                    <th rowspan="2">
+                        {{"mdrtb.lab"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.result"|get_message:request.session.locale}}
+                    </th>
+                    <th rowspan="2">
+                        {{"mdrtb.date"|get_message:request.session.locale}}
+                    </th>
+                    <th rowspan="2">
+                        {{"mdrtb.tb03.testNumber"|get_message:request.session.locale}}
+                    </th>
+                    <th rowspan="2">
+                        {{"mdrtb.lab"|get_message:request.session.locale}}
+                    </th>
+                    <th class="normal" rowspan="2">
+                        {{"mdrtb.result"|get_message:request.session.locale}}
+                    </th>
+                    <th rowspan="2">
+                        {{"mdrtb.date"|get_message:request.session.locale}}
+                    </th>
+                    <th rowspan="2">
+                        {{"mdrtb.tb03.testNumber"|get_message:request.session.locale}}
+                    </th>
+                    <th rowspan="2">
+                        {{"mdrtb.lab"|get_message:request.session.locale}}
+                    </th>
+                    <th class="subrotate" rowspan="2"><span>
+                            {{"mdrtb.tb03.ofTb"|get_message:request.session.locale}}
+                        </span></th>
+                    <th class="subrotate" rowspan="2"><span>
+                            {{"mdrtb.tb03.ofOther"|get_message:request.session.locale}}
+                        </span></th>
                 </tr>
                 <tr>
                     <th class="normal" rowspan="1">I</th>
@@ -262,78 +437,78 @@
                     <th class="normal" rowspan="1">II</th>
 
                     <!--  <th class="normal">Date</th>
-                <th class="normal">Date</th>
-                <th class="normal">Date</th>
-                <th class="normal">Date</th>
-                <th class="normal">Date</th>
-                <th class="normal">Date</th>
-                <th class="normal">Date</th>
-                <th class="normal">Date</th>
-                <th class="normal">Date</th>
-                <th class="normal">Date</th>
-                <th class="normal">Date</th>
-                <th class="normal">Date</th>
-                <th class="normal">Date</th>
-                <th class="normal">Date</th>
-                -->
+                     <th class="normal">Date</th>
+                     <th class="normal">Date</th>
+                     <th class="normal">Date</th>
+                     <th class="normal">Date</th>
+                     <th class="normal">Date</th>
+                     <th class="normal">Date</th>
+                     <th class="normal">Date</th>
+                     <th class="normal">Date</th>
+                     <th class="normal">Date</th>
+                     <th class="normal">Date</th>
+                     <th class="normal">Date</th>
+                     <th class="normal">Date</th>
+                     <th class="normal">Date</th>
+                      -->
                 </tr>
 
 
                 {% for row in patientSet %}
-                <tr {% if forloop.counter|divisibleby:2 %} bgcolor="#D3D3D3" {% endif %}>
+                <tr {% if forloop.counter0|divisibleby:2 %}style="background-color: #D3D3D3;" {% endif %}>
                     <td>
                         <div><span>{{ row.identifier }}</span></div>
                     </td>
                     <td>{{ row.tb03RegistrationDate }}</td>
                     <td>{{ row.patient.personName.familyName }}, {{ row.patient.personName.givenName }}</td>
                     <td align="center">{{ row.gender }}</td>
-                    <td align="center">{{row.ageAtTB03Registration }}</td>
+                    <td align="center">{{ row.ageAtTB03Registration }}</td>
                     <td>{{ row.dateOfBirth }}</td>
                     <td>{{ row.patient.personAddress.stateProvince }}</td>
                     <td>{{ row.patient.personAddress.countyDistrict }}</td>
                     <td>{{ row.patient.personAddress.region }}</td>
                     <td>{{ row.patient.personAddress.address1 }}</td>
-                    <td>{{row.intensivePhaseFacility }}</td>
-                    <td>{{row.continuationPhaseFacility }}</td>
-                    <td>{{row.treatmentRegimen }}</td>
-                    <td>{{row.tb03TreatmentStartDate }}</td>
+                    <td>{{ row.intensivePhaseFacility }}</td>
+                    <td>{{ row.continuationPhaseFacility }}</td>
+                    <td>{{ row.treatmentRegimen }}</td>
+                    <td>{{ row.tb03TreatmentStartDate }}</td>
                     <td align="center">{{ row.siteOfDisease }}</td>
-                    {% for loop in '8'|get_range %}
+                    {% for loop in '9'|get_range %}
                     <td align="center">
                         {% if row.regGroup == loop %}&#10004;{% endif %}
                     </td>
                     {% endfor %}
-                    <td>{{row.hivTestResult }}</td>
-                    <td>{{row.hivTestDate }}</td>
-                    <td>{{row.artStartDate }}</td>
-                    <td>{{row.cpStartDate }}</td>
-                    <td align="center">{{row.diagnosticSmearResult }}</td>
-                    <td>{{row.diagnosticSmearDate }}</td>
-                    <td>{{row.diagnosticSmearTestNumber }}</td>
-                    <td>{{row.diagnosticSmearLab }}</td>
-                    <td align="center">{{row.xpertMTBResult }} {{row.xpertRIFResult }} </td>
-                    <td>{{row.xpertTestDate }}</td>
-                    <td>{{row.xpertTestNumber }}</td>
-                    <td>{{row.xpertLab }}</td>
-                    <td align="center">{{row.hainTestDate }} </td>
-                    <td>{{row.hainTestNumber }}</td>
-                    <td align="center">{{row.hainMTBResult }}</td>
-                    <td align="center">{{row.hainINHResult }}</td>
-                    <td align="center">{{row.hainRIFResult }}</td>
-                    <td>{{row.hainLab }}</td>
-                    <td align="center">{{row.hain2TestDate }} </td>
-                    <td>{{row.hain2TestNumber }}</td>
-                    <td align="center">{{row.hain2MTBResult }}</td>
-                    <td align="center">{{row.hain2InjResult }}</td>
-                    <td align="center">{{row.hain2FqResult }}</td>
-                    <td>{{row.hain2Lab }}</td>
-                    <td align="center">{{row.cultureResult }}</td>
-                    <td>{{row.cultureTestDate }}</td>
-                    <td>{{row.cultureTestNumber }}</td>
-                    <td>{{row.cultureLab }}</td>
-                    <td>{{ row.dstCollectionDate}}</td>
-                    <td>{{ row.dstResultDate}}</td>
-                    <td align="center">{{ row.dstR}}</td>
+                    <td>{{ row.hivTestResult }}</td>
+                    <td>{{ row.hivTestDate }}</td>
+                    <td>{{ row.artStartDate }}</td>
+                    <td>{{ row.cpStartDate }}</td>
+                    <td align="center">{{ row.diagnosticSmearResult }}</td>
+                    <td>{{ row.diagnosticSmearDate }}</td>
+                    <td>{{ row.diagnosticSmearTestNumber }}</td>
+                    <td>{{ row.diagnosticSmearLab }}</td>
+                    <td align="center">{{ row.xpertMTBResult }} {{ row.xpertRIFResult }}</td>
+                    <td>{{ row.xpertTestDate }}</td>
+                    <td>{{ row.xpertTestNumber }}</td>
+                    <td>{{ row.xpertLab }}</td>
+                    <td align="center">{{ row.hainTestDate }}</td>
+                    <td>{{ row.hainTestNumber }}</td>
+                    <td align="center">{{ row.hainMTBResult }}</td>
+                    <td align="center">{{ row.hainINHResult }}</td>
+                    <td align="center">{{ row.hainRIFResult }}</td>
+                    <td>{{ row.hainLab }}</td>
+                    <td align="center">{{ row.hain2TestDate }}</td>
+                    <td>{{ row.hain2TestNumber }}</td>
+                    <td align="center">{{ row.hain2MTBResult }}</td>
+                    <td align="center">{{ row.hain2InjResult }}</td>
+                    <td align="center">{{ row.hain2FqResult }}</td>
+                    <td>{{ row.hain2Lab }}</td>
+                    <td align="center">{{ row.cultureResult }}</td>
+                    <td>{{ row.cultureTestDate }}</td>
+                    <td>{{ row.cultureTestNumber }}</td>
+                    <td>{{ row.cultureLab }}</td>
+                    <td>{{ row.dstCollectionDate }}</td>
+                    <td>{{ row.dstResultDate }}</td>
+                    <td align="center">{{ row.dstR }}</td>
                     <td align="center">{{ row.dstH }}</td>
                     <td align="center">{{ row.dstE }}</td>
                     <td align="center">{{ row.dstS }}</td>
@@ -348,19 +523,15 @@
                     <td align="center">{{ row.dstPAS }}</td>
                     <td align="center">{{ row.dstLzd }}</td>
                     <td align="center">{{ row.dstCfz }}</td>
-                    <td align="center">{{ row.dstBdq}}</td>
+                    <td align="center">{{ row.dstBdq }}</td>
                     <td align="center">{{ row.dstDlm }}</td>
-
-                    <td>{{row.drugResistance }}</td>
-
+                    <td>{{ row.drugResistance }}</td>
                     {% if row.reg1New %}
-
-                    {% if row.month2SmearResult != null or row.month3SmearResult is not None %}
+                    {% if row.month2SmearResult or row.month3SmearResult %}
                     <td align="center">{{ row.month2SmearResult }} / {{ row.month3SmearResult }}</td>
                     <td align="center">{{ row.month2SmearDate }} / {{ row.month3SmearDate }}</td>
                     <td align="center">{{ row.month2TestNumber }} / {{ row.month3TestNumber }}</td>
                     <td align="center">{{ row.month2TestLab }} / {{ row.month3TestLab }}</td>
-                    {% endif %}
                     {% else %}
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
@@ -375,9 +546,8 @@
                     <td align="center">{{ row.month6SmearDate }}</td>
                     <td align="center">{{ row.month6TestNumber }}</td>
                     <td align="center">{{ row.month6TestLab }}</td>
-                    {% if row.reg1Rtx %}
-
-                    {% if row.month3SmearResult != null or row.month4SmearResult is not None %}
+                    {% elif row.reg1Rtx %}
+                    {% if row.month3SmearResult or row.month4SmearResult %}
                     <td align="center">{{ row.month3SmearResult }} / {{ row.month4SmearResult }}</td>
                     <td align="center">{{ row.month3SmearDate }} / {{ row.month4SmearDate }}</td>
                     <td align="center">{{ row.month3TestNumber }} / {{ row.month4TestNumber }}</td>
@@ -388,7 +558,6 @@
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     {% endif %}
-
                     <td align="center">{{ row.month5SmearResult }}</td>
                     <td align="center">{{ row.month5SmearDate }}</td>
                     <td align="center">{{ row.month5TestNumber }}</td>
@@ -411,18 +580,13 @@
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     {% endif %}
-
-
-                    {% for loop in '8'|get_range %}
+                    {% for i in '012345678' %}
                     <td align="center">
-                        {% if row.tb03TreatmentOutcome == loop %}{{ row.tb03TreatmentOutcomeDate }}{% endif %}
+                        {% if row.tb03TreatmentOutcome == i %}{{ row.tb03TreatmentOutcomeDate }}{% endif %}
                     </td>
                     {% endfor %}
-                    <td>{{row.notes }}</td>
+                    <td>{{ row.notes }}</td>
                 </tr>
-
-
-
                 {% endfor %}
             </table>
 

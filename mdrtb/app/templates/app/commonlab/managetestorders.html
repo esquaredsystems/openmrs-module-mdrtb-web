@@ -8,13 +8,10 @@
 <div class="m-4">
   {% include 'app/components/breadcrumbs.html'%}
 </div>
-
 <div id="modal-parent" class="relative">
-  <section id="modal"
-    class="flex flex-col justify-center space-y-8 h-min transition-opacity ease-in-out duration-500 opacity-0 backdrop-blur-3xl inset-0 z-50 shadow-2xl m-10 bg-white w-3/5 mx-auto p-8 fixed top-0 left-0 right-0 bottom-0 my-auto">
-  </section>
+
   <section>
-    <div class="container mx-auto px-4 sm:px-8">
+    <div style="width: 90%;" class="mx-auto px-4 sm:px-8">
       <div class="py-8">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-4">
@@ -29,8 +26,8 @@
 
         </div>
         <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
-          <div class="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
-            <table class="min-w-full leading-normal">
+          <div class="inline-block w-full shadow-md rounded-lg overflow-hidden">
+            <table class="w-full leading-normal">
               <thead>
                 <tr>
                   <th
@@ -41,6 +38,19 @@
                     class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     {{'ConceptProposal.encounter'|get_message_openMRS:request.session.locale}}
                   </th>
+                  <th
+                    class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    {{'Encounter.datetime'|get_message_openMRS:request.session.locale}}
+                  </th>
+                  <th
+                    class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    {{'commonlabtest.labtestsample.manage'|get_message:request.session.locale}}
+                  </th>
+                  <th
+                    class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    {{'commonlab.resultDate'|get_message:request.session.locale}}
+                  </th>
+
                   <th
                     class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     {{'commonlabtest.order.labReferenceNo'|get_message:request.session.locale}}
@@ -68,26 +78,89 @@
                     <p class="text-gray-900 whitespace-no-wrap">{{order.order.encounter.display|get_encounter_name}}</p>
                   </td>
                   <td class="px-5 pt-3 border-b border-gray-200 bg-white text-sm">
+                    <p class="text-gray-900 whitespace-no-wrap">{{order.order.encounter.display|get_encounter_date}}</p>
+                  </td>
+                  <td class="px-5 pt-3 border-b border-gray-200 bg-white text-sm">
+                    {% if order.labTestType.requiresSpecimen %}
+                    <a href="{% url 'managetestsamples' orderid=order.uuid %}">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+                      </svg>
+
+                    </a>`
+                    {% else %}
+                    <p>Specimen Not Required</p>
+                    {% endif %}
+                  </td>
+
+                  <td class="px-5 pt-3 border-b border-gray-200 bg-white text-sm">
+                    <p class="text-gray-900 whitespace-no-wrap">
+                      {% if order.auditInfo.dateChanged is not None %}
+                      {{order.auditInfo.dateChanged|iso_to_normal_date}}
+                      {% else %}
+                      {{order.auditInfo.dateCreated|iso_to_normal_date}}
+                      {% endif %}
+                    </p>
+                  </td>
+
+                  <td class="px-5 pt-3 border-b border-gray-200 bg-white text-sm">
                     <p class="text-gray-900 whitespace-no-wrap">
                       {{order.labReferenceNumber}}
                     </p>
                   </td>
-                  <td class="px-5 pt-3 border-b w-1/5 border-gray-200 bg-white text-sm">
-                    <div class="flex space-x-4">
-                      <svg id="detail-icon" onclick="showModal('{{order.uuid}}')" xmlns="http://www.w3.org/2000/svg"
-                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                        class="w-5 h-5 hover:text-blue-500 cursor-pointer">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      <a href="{% url 'editlabtest' orderid=order.uuid patientid=patient %}">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                          stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+                  <td id="accordion{{forloop.counter}}" class="border-b w-1/5 border-gray-200 bg-white text-sm">
+                    <div class="flex space-x-4 px-5">
+                      <div onclick="showResults(this,'{{order.uuid}}')" id="heading{{forloop.counter}}"
+                        data-te-collapse-init data-te-target="#collapse{{forloop.counter}}" aria-expanded="false"
+                        aria-controls="collapse{{forloop.counter}}">
+                        <svg id="detail-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                          stroke-width="1.5" stroke="currentColor" class="w-5 h-5 hover:text-blue-500 cursor-pointer">
                           <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                            d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
-                      </a>
+
+                      </div>
+                      <div>
+                        <a href="{% url 'editlabtest' orderid=order.uuid patientid=patient %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                          </svg>
+                        </a>
+                      </div>
+
+                    </div>
+                  </td>
+                </tr>
+                <tr class="bg-[#9e9e9e28]">
+                  <td colspan="7" class="px-4 text-black w-full">
+                    <div class="hidden" id="collapse{{forloop.counter}}" data-te-collapse-item
+                      aria-labelledby="heading{{forloop.counter}}" data-te-parent="#accordion{{forloop.counter}}">
+                      <div class="flex items-center space-x-2 mt-4">
+                        <h2 class="font-bold text-lg">Tests Results</h2>
+                        <a class="cancel-button text-sm"
+                          href="{% url 'addtestresults' orderid=order.uuid %}?patient={{patient}}">Add/Edit Test
+                          Results</a>
+                      </div>
+                      <div>
+                        <div id="{{order.uuid}}groups" class="py-4 w-full grid grid-cols-1 gap-2">
+                          <div class="w-full bg-white p-2">
+                            <h1 class="font-bold text-lg text-center">Common</h1>
+                            <div id="{{order.uuid}}common"
+                              class="grid grid-cols-2 place-items-center justify-items-center p-2 w-full">
+                              <div class="border p-2 border-gray-200 font-bold w-full">Question</div>
+                              <div class="border p-2 border-gray-200 font-bold w-full">Answer</div>
+
+
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -102,120 +175,156 @@
   </section>
 
   <script>
-
-    let isModalOpen = false;
-
     let orders = JSON.parse("{{json_orders | escapejs}}");
-    function showModal(uuid) {
-      if (isModalOpen) {
+    console.log(orders)
+    let itemsAppended = {}
+
+    function getAttributes(orderId) {
+      for (order of orders) {
+        if (order.uuid === orderId) {
+          return order.attributes;
+        }
+      }
+    }
+
+    const showResults = (element, uuid) => {
+      console.log(uuid)
+      if (itemsAppended[uuid]) {
         return;
       }
-      for (order of orders) {
-
-        if (order.uuid === uuid) {
-          let sample_accepted = order.sample_accepted;
-          let samplesUrl = `{% url 'managetestsamples' orderid=122 %}`.replace('122', uuid)
-          let resultsUrl = `{% url 'addtestresults' orderid=122 %}?patient={{patient}}`.replace('122', uuid)
-          $("#modal").append(
-            `
-            <div class="flex items-center justify-between">
-      <h3 id="modal-testType" class="text-3xl">${order.labTestType.name}</h3>
-      <svg id="close-modal" onclick="closeModal()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-        stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white bg-red-700 cursor-pointer">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </div>
-    <div id="order-details" class="flex flex-col p-3">
-      <div class="flex-column-center space-y-4 flex-none h-min w-full bg-gray-200 p-4 rounded-md shadow-md">
-       
-        <div class="flex-center space-x-4  w-full border-gray-500">
-          <span class="font-bold w-2/5">
-            {{'Encounter.datetime'|get_message_openMRS:request.session.locale}}:
-          </span>
-          <span class="w-3/5">
-            ${order.order.encounter.display.slice(order.order.encounter.display.length - 10)}
-          </span>
-        </div>
-        
-        <div class=" flex-center space-x-4  w-full border-gray-500">
-          <span class="font-bold w-2/5">
-            {{'commonlabtest.labtestsample.manage'|get_message:request.session.locale}}:
-
-          </span>
-          <span class="w-3/5">
-            ${order.labTestType.requiresSpecimen ? `<a href=${samplesUrl}>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
-              </svg>
-
-            </a>` : `Sample not required`}
-          </span>
-        </div>
-        ${sample_accepted ? `<div class="flex-center space-x-4  w-full border-gray-500">
-          <span class="font-bold w-2/5">
-            Test Result:
-          </span>
-          <span class="w-3/5">
-            <a style="background-color:blue;" href=${resultsUrl}>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75" />
-              </svg>
-
-            </a>
-          </span>
-        </div>`: `<div class="flex-center space-x-4  w-full border-gray-500">
-          <span class="font-bold w-2/5">
-            {{'mdrtb.addTestResults'|get_message:request.session.locale}}:
-          </span>
-          <span class="font-bold w-2/5">
-            Atleast one sample needs to be accepted to enter Test Results
-          </span>
-          </div>`}
-        
-        <div class="flex-center space-x-4  w-full border-gray-500">
-          <span class="font-bold w-2/5">
-            {{'commonlab.resultDate'|get_message:request.session.locale}}:
-
-          </span>
-          <span id="test-results" class="w-3/5">
-              ${order.auditInfo.dateChanged == null ? order.auditInfo.dateCreated.slice(0, 10) : order.auditInfo.dateChanged}
-          </span>
-        </div>
-
-
-
-      </div>
-
-    </div>
-
-
-
-
-            `
-          );
+      let attributes = getAttributes(uuid)
+      console.log(attributes)
+      let groups = []
+      let groupHasAttributes = {}
+      for (attribute of attributes) {
+        if (attribute.attributeType.group != null) {
+          if (attribute.valueReference) {
+            groupHasAttributes[attribute.attributeType.group] = true
+          }
+          groups.push(attribute.attributeType.group)
 
         }
       }
+      console.log(groupHasAttributes)
+      let duplicatesRemovedGroups = [...new Set(groups)];
+      if (duplicatesRemovedGroups.length === 0) {
+        $(`#${uuid}groups`).removeClass('grid-cols-2').addClass('grid-cols-1')
+      }
+      for (group of duplicatesRemovedGroups) {
+        if (groupHasAttributes[group]) {
+          $(`#${uuid}groups`).append(
+            `<div class="w-full bg-white p-2">
+                        <h1 class="font-bold text-lg text-center">${group}</h1>
+                        <div id="${uuid}${group.toLowerCase()}"
+                          class="grid grid-cols-2 place-items-center justify-items-center  p-2">
+                          <div class="border p-2 border-gray-200 font-bold w-full">Question</div>
+                          <div class="border p-2 border-gray-200 font-bold w-full">Answer</div>
 
-      $("#modal").addClass("opacity-100");
-      $("#modal").removeClass("opacity-0");
-      isModalOpen = true;
+
+                        </div>
+                      </div>`
+          )
+        }
+
+
+
+
+
+      }
+      for (attribute of attributes) {
+        if (attribute.attributeType.group === null) {
+          if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.ConceptDatatype") {
+            if (attribute.valueReference) {
+              for (answer of attribute.attributeType.answers) {
+                if (answer.uuid === attribute.valueReference) {
+                  $(`#${uuid}common`).append(
+                    `
+          <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+          <div class="border w-full p-2 border-gray-200">${answer.display}</div>
+ 
+          `
+                  )
+                  break;
+                }
+
+              }
+            }
+          } else if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.BooleanDatatype") {
+            $(`#${uuid}common`).append(
+              `<div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+            <div class="border w-full p-2 border-gray-200">${attribute.valueReference === 'on' ? 'True' : 'False'}</div>`
+            )
+          }
+
+
+          else {
+            if (attribute.valueReference != null && attribute.valueReference.length > 0) {
+              $(`#${uuid}common`).append(
+                `
+          <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+          <div class="border w-full p-2 h-full border-gray-200">${attribute.valueReference}</div>
+ 
+          `
+              )
+            }
+
+          }
+
+
+        } else {
+          if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.ConceptDatatype") {
+            if (attribute.valueReference) {
+              for (answer of attribute.attributeType.answers) {
+                if (answer.uuid === attribute.valueReference) {
+                  $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
+                    `
+          <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+          <div class="border w-full p-2 border-gray-200">${answer.display}</div>
+ 
+          `
+                  )
+                  break;
+                }
+
+              }
+            }
+
+          } else {
+            if (attribute.valueReference != null && attribute.valueReference.length > 0) {
+              $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
+                `
+          <div class="border w-full p-2 border-gray-200 ">${attribute.attributeType.name}</div>
+          <div class="border w-full p-2 border-gray-200">${attribute.valueReference}</div>
+
+          `
+              )
+            }
+
+          }
+        }
+      }
+      itemsAppended[uuid] = true;
+
+      if ($(`#${uuid}common`).children().length <= 2) {
+        console.log(`${uuid}common`)
+        $(`#${uuid}common`).parent().remove();
+      }
+      if ($(`#${uuid}groups`).children().length === 0) {
+        $(`#${uuid}groups`).append(
+          `
+        <div class="w-full bg-white p-2"><h1 class="font-bold text-lg text-center">No results found</h1></div>
+        `
+        )
+
+      }
+
+      if ($(`#${uuid}groups`).children().length === 1) {
+        $(`#${uuid}groups`).removeClass('grid-cols-2').addClass('grid-cols-1')
+      }
 
 
     }
 
-    function closeModal() {
-      $("#modal").removeClass("opacity-100");
-      $("#modal").addClass("opacity-0");
-      $("#modal").empty();
-      isModalOpen = false;
-
-
-    }
   </script>
 </div>
 {% endblock %}

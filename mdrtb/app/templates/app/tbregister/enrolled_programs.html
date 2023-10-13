@@ -44,6 +44,11 @@
               {{'Program.header'|get_message_openMRS:request.session.locale}}
 
             </h2>
+            <a target="_blank" href="{% url 'managetestorders' uuid=uuid %}" class="cancel-button">
+              {{'general.view'|get_message_openMRS:request.session.locale}}
+              {{'mdrtb.all'|get_message:request.session.locale}}
+              {{'Order.header'|get_message_openMRS:request.session.locale}}
+            </a>
 
 
           </div>

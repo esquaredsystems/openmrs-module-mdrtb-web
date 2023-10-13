@@ -406,7 +406,7 @@ def get_custom_lab_order(full_order):
     }
 
 
-def get_custom_attribute_for_labresults(req, orderid):
+def get_custom_attribute_for_labresults(req, orderid, attributes_to_get=None):
     """
     Retrieves custom attributes for lab results and returns them along with the lab test type UUID.
 
@@ -425,6 +425,9 @@ def get_custom_attribute_for_labresults(req, orderid):
     datatypes = get_attributes_data_types()
 
     try:
+        if len(attributes_to_get) <= 0:
+            return []
+
         status, response = ru.get(
             req, f"commonlab/labtestorder/{orderid}", {"v": "custom:(labTestType)"}
         )
@@ -433,44 +436,51 @@ def get_custom_attribute_for_labresults(req, orderid):
 
         attrs = []
         for attribute in attributes:
-            for datatype in datatypes:
-                if datatype["value"].replace(".name", "") == attribute[
-                    "datatypeClassname"
-                ].replace(".name", ""):
-                    if datatype["inputType"] == "select":
-                        try:
-                            concept = mu.get_concept(req, attribute["datatypeConfig"])
-                            attrs.append(
-                                {
-                                    "attributeType": {
-                                        "uuid": attribute["uuid"],
-                                        "name": concept["display"],
-                                        "datatype": attribute["datatypeClassname"],
-                                        "inputType": datatype["inputType"],
-                                        "answers": concept["answers"],
-                                        "group": attribute["groupName"],
+            if attribute["uuid"] in attributes_to_get:
+                for datatype in datatypes:
+                    if datatype["value"].replace(".name", "") == attribute[
+                        "datatypeClassname"
+                    ].replace(".name", ""):
+                        if datatype["inputType"] == "select":
+                            try:
+                                concept = mu.get_concept(
+                                    req, attribute["datatypeConfig"]
+                                )
+                                attrs.append(
+                                    {
+                                        "attributeType": {
+                                            "uuid": attribute["uuid"],
+                                            "name": concept["display"],
+                                            "datatype": attribute["datatypeClassname"],
+                                            "inputType": datatype["inputType"],
+                                            "answers": concept["answers"],
+                                            "group": attribute["groupName"],
+                                        }
                                     }
-                                }
-                            )
-                        except Exception as e:
-                            continue
+                                )
+                            except Exception as e:
+                                continue
 
-                    else:
-                        try:
-                            concept = mu.get_concept_by_search(req, attribute["name"])
-                            attrs.append(
-                                {
-                                    "attributeType": {
-                                        "uuid": attribute["uuid"],
-                                        "name": concept["display"],
-                                        "datatype": attribute["datatypeClassname"],
-                                        "inputType": datatype["inputType"],
-                                        "group": attribute["groupName"],
+                        else:
+                            try:
+                                concept = mu.get_concept_by_search(
+                                    req, attribute["name"]
+                                )
+                                attrs.append(
+                                    {
+                                        "attributeType": {
+                                            "uuid": attribute["uuid"],
+                                            "name": concept["display"],
+                                            "datatype": attribute["datatypeClassname"],
+                                            "inputType": datatype["inputType"],
+                                            "group": attribute["groupName"],
+                                        }
                                     }
-                                }
-                            )
-                        except Exception as e:
-                            continue
+                                )
+                            except Exception as e:
+                                continue
+            else:
+                continue
 
         return attrs
 
@@ -500,14 +510,23 @@ def get_result_date_if_exists(req, orderid):
 
 
 def get_labtest_attributes(req, orderid):
-    attribute_types = get_custom_attribute_for_labresults(req, orderid)
+    attributes_with_values = []
     status, response = ru.get(req, f"commonlab/labtestorder/{orderid}", {})
+    attribute_types = get_custom_attribute_for_labresults(
+        req,
+        orderid,
+        attributes_to_get=[
+            attribute["attributeType"]["uuid"] for attribute in response["attributes"]
+        ],
+    )
     for attribute in response["attributes"]:
         for attribute_type in attribute_types:
             if (
                 attribute["attributeType"]["uuid"]
                 == attribute_type["attributeType"]["uuid"]
+                and attribute["valueReference"] is not None
             ):
                 attribute_type["uuid"] = attribute["uuid"]
                 attribute_type["valueReference"] = attribute["valueReference"]
-    return attribute_types
+                attributes_with_values.append(attribute_type)
+    return attributes_with_values

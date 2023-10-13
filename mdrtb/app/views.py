@@ -3316,11 +3316,16 @@ def render_managetestorders(req, uuid):
             f"commonlab/labtestorder",
             {
                 "patient": uuid,
+                # "limit": 10,
                 "v": "custom:(uuid,labTestType,labReferenceNumber,order,auditInfo,labTestSamples)",
             },
         )
 
         if status:
+            for lab_result in response["results"]:
+                attributes = cu.get_labtest_attributes(req, lab_result["uuid"])
+                lab_result.update({"attributes": attributes})
+
             orders = response["results"]
             for order in orders:
                 sample_accepted = check_if_sample_exists(req, order["uuid"])
