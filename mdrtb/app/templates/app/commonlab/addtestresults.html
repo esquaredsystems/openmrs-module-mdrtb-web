@@ -37,9 +37,8 @@
   </form>
 </div>
 <script>
-
-
   let attributes = JSON.parse("{{attributes | escapejs}}");
+  console.log(attributes)
   let state = "{{state}}"
   if (state === 'edit') {
     $('#results-form').append(`<input hidden type="text" name="state" value="update" />`)
@@ -65,7 +64,7 @@
           $("#attributes-container").append(
             ` <div class="input-container">
             <label class="input-label">${attribute.attributeType.uuid}</label>
-            <input value=${attribute.attributeType.valueReference} class="" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} />
+            <input value=${attribute.valueReference ? attribute.valueReference : ""} class="" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} />
             </div>
           `
           );
@@ -73,7 +72,8 @@
           $("#attributes-container").append(
             ` <div class="input-container">
             <label class="input-label">${attribute.attributeType.name}</label>
-            <textarea  class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid}>${attribute.valueReference.trim()}</textarea>
+            <textarea  class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid}>
+              ${attribute.valueReference ? attribute.valueReference.trim() : ""}</textarea>
             </div>
           `
           );
@@ -138,13 +138,24 @@
         }
 
         else {
-          $("#attributes-container").append(
-            ` <div class="input-container">
+          if (attribute.valueReference) {
+            $("#attributes-container").append(
+              ` <div class="input-container">
             <label class="input-label">${attribute.attributeType.name}</label>
-            <input class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} value=${attribute.valueReference} /input>
+            <input class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} 
+            value=${attribute.valueReference}/>
             </div>
           `
-          );
+            );
+          } else {
+            $("#attributes-container").append(
+              ` <div class="input-container">
+            <label class="input-label">${attribute.attributeType.name}</label>
+            <input class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid}/>
+            </div>
+          `)
+          }
+
         }
       } else {
         groups.push(attribute.attributeType.group);

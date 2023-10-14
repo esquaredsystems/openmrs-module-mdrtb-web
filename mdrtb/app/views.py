@@ -146,7 +146,9 @@ def render_login(req):
 
         return redirect(redirect_page if redirect_page else "searchPatientsView")
 
-    context = {"title": "Login"}
+    context = {"title": mu.get_global_msgs(
+            "auth.login", locale="ru", source="OpenMRS"
+        )}
 
     if req.method == "POST":
         username = req.POST.get("username")
@@ -171,7 +173,9 @@ def render_login(req):
             return redirect("login")
 
     else:
-        context["title"] = "Login"
+        context["title"] = mu.get_global_msgs(
+            "auth.login", locale="ru", source="OpenMRS"
+        )
 
         return render(req, "app/tbregister/login.html", context=context)
 
@@ -1373,7 +1377,7 @@ def render_edit_regimen_form(req, patientid, formid):
         ]
 
         form = fu.get_regimen_by_uuid(req, formid)
-        title = title = (
+        title = (
             mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
             + " "
             + mu.get_global_msgs("mdrtb.pv.regimenForm", locale=req.session["locale"])
@@ -3751,6 +3755,15 @@ def render_add_test_results(req, orderid):
                                         "valueReference": value,
                                     }
                                 )
+                            else:
+                                body["attributes"].append(
+                                    {
+                                        "labTest": laborder["uuid"],
+                                        "attributeType": key,
+                                        "valueReference": value,
+                                    }
+                                )
+
                     else:
                         body["attributes"].append(
                             {
@@ -3789,7 +3802,7 @@ def render_add_test_results(req, orderid):
         )
         if status and len(response["attributes"]) > 0:
             context["state"] = "edit"
-            attributes = cu.get_labtest_attributes(req, orderid)
+            attributes = cu.get_labtest_attributes(req, orderid, representation="FULL")
             if attributes:
                 context["attributes"] = json.dumps(attributes)
                 context["auditInfo"] = response["auditInfo"]
