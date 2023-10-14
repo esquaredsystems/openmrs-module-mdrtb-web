@@ -1,8 +1,6 @@
 from pathlib import Path
 from datetime import datetime, date
 from dateutil.parser import parse
-from bs4 import BeautifulSoup
-from utilities import metadata_util as mu
 
 
 def get_project_root() -> Path:
@@ -320,8 +318,3 @@ def get_patient_list_options(code):
     for option in options:
         if option["rest_code"] == code:
             return mu.get_global_msgs(option["message_code"])
-
-
-def string_to_html(html_string):
-    html_doc = BeautifulSoup(html_string, "html.parser")
-    return str(html_doc)

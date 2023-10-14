@@ -146,9 +146,7 @@ def render_login(req):
 
         return redirect(redirect_page if redirect_page else "searchPatientsView")
 
-    context = {"title": mu.get_global_msgs(
-            "auth.login", locale="ru", source="OpenMRS"
-        )}
+    context = {"title": mu.get_global_msgs("auth.login", locale="ru", source="OpenMRS")}
 
     if req.method == "POST":
         username = req.POST.get("username")
@@ -3320,7 +3318,6 @@ def render_managetestorders(req, uuid):
             f"commonlab/labtestorder",
             {
                 "patient": uuid,
-                # "limit": 10,
                 "v": "custom:(uuid,labTestType,labReferenceNumber,order,auditInfo,labTestSamples)",
             },
         )
