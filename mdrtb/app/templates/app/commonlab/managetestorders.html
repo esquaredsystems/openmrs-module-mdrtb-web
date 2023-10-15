@@ -142,9 +142,15 @@
                       aria-labelledby="heading{{forloop.counter}}" data-te-parent="#accordion{{forloop.counter}}">
                       <div class="flex items-center space-x-2 mt-4">
                         <h2 class="font-bold text-lg">Tests Results</h2>
+                        {% if order.sample_accepted %}
                         <a class="cancel-button text-sm"
                           href="{% url 'addtestresults' orderid=order.uuid %}?patient={{patient}}">Add/Edit Test
                           Results</a>
+                        {% else %}
+                        <div class="text-sm">
+                          Atleast one sample needs to be accepted to enter test results.
+                        </div>
+                        {% endif %}
                       </div>
                       <div>
                         <div id="{{order.uuid}}groups" class="py-4 w-full grid grid-cols-1 gap-2">
