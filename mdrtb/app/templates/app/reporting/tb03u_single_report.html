@@ -364,7 +364,7 @@
                     <td rowspan="1">{{ row.reg2Number }}</td>
 
                     <td align="center" rowspan="1">{{ row.siteOfDisease }}</td>
-                    {% for loop in '8'|get_range %}
+                    {% for loop in '9'|get_range %}
                     <td align="center" rowspan="1">
                         {% if row.regGroup == loop %}&#10004;{% endif %}
                     </td>
@@ -512,7 +512,7 @@
                     <td rowspan="1">{{row.month36CultureResultDate }}</td>
 
 
-                    {% for loop in '6'|get_range %}
+                    {% for loop in '7'|get_range %}
                     <td align="center" rowspan="1">
                         {% if row.tb03uTreatmentOutcome == loop %}{{row.tb03uTreatmentOutcomeDate }}{% endif %}
                     </td>
