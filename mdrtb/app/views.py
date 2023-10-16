@@ -56,7 +56,8 @@ def check_privileges(req, privileges_required):
 
 def index(req):
     context = {"Test": None}
-    concepts = cache.get("concepts")
+    concepts = cache.get("COMMONTESTattribute_types")
+    context["concepts"] = json.dumps(concepts)
     if concepts:
         print("CONCEPTS FOUND")
     else:

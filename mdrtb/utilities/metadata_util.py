@@ -92,7 +92,7 @@ def get_all_concepts(req):
             req,
             "concept",
             {
-                "v": "custom:(uuid,display,names,answers)",
+                "v": "custom:(uuid,display,name:(display,uuid,locale,conceptNameType),names:(display,name,uuid,locale,conceptNameType),answers:(uuid,display,name:(display,uuid,locale,conceptNameType),names:(display,uuid,locale,conceptNameType)))",
                 "lang": req.session["locale"],
             },
         )

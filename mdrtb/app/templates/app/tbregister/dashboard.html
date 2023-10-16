@@ -442,6 +442,10 @@
 <script>
   let itemsAppended = {}
   const stringToJson = (string) => {
+    if (string.length === 0) {
+      return [];
+    }
+    console.log(string.length);
     return JSON.parse(
       string.replace(/'/g, '"')
         .replace(/None/g, 'null')
@@ -566,7 +570,6 @@
     itemsAppended[uuid] = true;
 
     if ($(`#${uuid}common`).children().length <= 2) {
-      console.log(`${uuid}common`)
       $(`#${uuid}common`).parent().remove();
     }
     if ($(`#${uuid}groups`).children().length === 0) {
@@ -580,6 +583,8 @@
 
     if ($(`#${uuid}groups`).children().length === 1) {
       $(`#${uuid}groups`).removeClass('grid-cols-2').addClass('grid-cols-1')
+    } else {
+      $(`#${uuid}groups`).removeClass('grid-cols-1').addClass('grid-cols-2')
     }
 
 
