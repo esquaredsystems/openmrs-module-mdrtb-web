@@ -122,22 +122,12 @@ urlpatterns = [
         name="edittb03u",
     ),
     path("tb03u/<str:formid>", views.render_delete_tb03u_form, name="deletetb03u"),
-    path("patientlist", views.render_patient_list, name="patientlist"),
     # Reporting Urls
-    path("tb03export", views.render_tb03_report_form, name="tb03export"),
+    path("reportform/<str:target>", views.render_report_form, name="reportform"),
+    path("patientlist", views.render_patient_list, name="patientlist"),
     path("tb03results", views.render_tb03_report, name="tb03Results"),
     path(
-        "tb03singleexport",
-        views.render_tb03_single_report_form,
-        name="tb03singleexport",
-    ),
-    path(
         "tb03singleresults", views.render_tb03_single_report, name="tb03singleResults"
-    ),
-    path(
-        "tb03usingleexport",
-        views.render_tb03u_single_report_form,
-        name="tb03usingleexport",
     ),
     path(
         "tb03usingleresults",
@@ -145,38 +135,21 @@ urlpatterns = [
         name="tb03usingleResults",
     ),
     path(
-        "missingtb03export",
-        views.render_missing_tb03_report_form,
-        name="missingtb03export",
-    ),
-    path(
         "missingtb03results",
         views.render_missing_tb03_report,
         name="missingtb03results",
-    ),
-    path(
-        "missingtb03uexport",
-        views.render_missing_tb03u_report_form,
-        name="missingtb03uexport",
     ),
     path(
         "missingtb03uresults",
         views.render_missing_tb03u_report,
         name="missingtb03uresults",
     ),
-    path("form8export", views.render_form8_report_form, name="form8export"),
     path("form8results", views.render_form8_report, name="form8Results"),
-    path("tb07export", views.render_tb07_report_form, name="tb07export"),
     path("tb07results", views.render_tb07_report, name="tb07results"),
-    path("tb03uexport", views.render_tb03u_report_form, name="tb03uexport"),
     path("tb03uresults", views.render_tb03u_report, name="tb03uResults"),
-    path("form89export", views.render_form89_report_form, name="form89export"),
     path("form89results", views.render_form89_report, name="form89results"),
-    path("tb08export", views.render_tb08_report_form, name="tb08export"),
     path("tb08results", views.render_tb08_report, name="tb08results"),
-    path("tb08uexport", views.render_tb08u_report_form, name="tb08uexport"),
     path("tb08uresults", views.render_tb08u_report, name="tb08uresults"),
-    path("tb07uexport", views.render_tb07u_report_form, name="tb07uexport"),
     path("tb07uresults", views.render_tb07u_report, name="tb07uresults"),
     path("closedreports", views.render_closed_reports, name="closedreports"),
     path(
@@ -184,11 +157,35 @@ urlpatterns = [
         views.render_single_closed_report,
         name="viewclosedreport",
     ),
-    path(
-        "saveclosedreport",
-        views.save_closed_report,
-        name="saveclosedreport",
-    ),
+    path("saveclosedreport", views.save_closed_report, name="saveclosedreport"),
+    # path("form8export", views.render_form8_report_form, name="form8export"),
+    # path("tb03export", views.render_tb03_report_form, name="tb03export"),
+    # path(
+    #     "tb03singleexport",
+    #     views.render_tb03_single_report_form,
+    #     name="tb03singleexport",
+    # ),
+    # path(
+    #     "tb03usingleexport",
+    #     views.render_tb03u_single_report_form,
+    #     name="tb03usingleexport",
+    # ),
+    # path(
+    #     "missingtb03export",
+    #     views.render_missing_tb03_report_form,
+    #     name="missingtb03export",
+    # ),
+    # path(
+    #     "missingtb03uexport",
+    #     views.render_missing_tb03u_report_form,
+    #     name="missingtb03uexport",
+    # ),
+    # path("tb07export", views.render_tb07_report_form, name="tb07export"),
+    # path("tb03uexport", views.render_tb03u_report_form, name="tb03uexport"),
+    # path("tb07uexport", views.render_tb07u_report_form, name="tb07uexport"),
+    # path("form89export", views.render_form89_report_form, name="form89export"),
+    # path("tb08export", views.render_tb08_report_form, name="tb08export"),
+    # path("tb08uexport", views.render_tb08u_report_form, name="tb08uexport"),
     # CommonLab Urls
     path(
         "commonlab/managetesttypes",

@@ -298,12 +298,10 @@
                         <div><span>{{ row.identifier }}</span></div>
                     </td>
                     <td rowspan="2">{{ row.tb03RegistrationDate }}</td>
-                    <td rowspan="2">{{ row.patient.personName.familyName }}, {{ row.patient.personName.givenName }}
-                    </td>
+                    <td rowspan="2">{{ row.patientName }}</td>
                     <td rowspan="2" align="center">{{ row.gender }}</td>
                     <td align="center">{{row.ageAtTB03Registration }}</td>
-                    <td rowspan="2">{{ row.patient.personAddress.stateProvince }},<br />
-                        {{row.patient.personAddress.countyDistrict }},{{ row.patient.personAddress.address1 }}</td>
+                    <td rowspan="2">{{ row.residentialAddress }},<br /></td>
                     <td>{{row.intensivePhaseFacility }}</td>
                     <td>{{row.treatmentRegimen }}</td>
                     <td align="center" rowspan="2">{{ row.siteOfDisease }}</td>
@@ -458,7 +456,7 @@
                     value="{{'mdrtb.closeReportBtn'|get_message:request.session.locale}}" />
             </openmrs:hasPrivilege> -->
         <button>
-            <a style="text-decoration: none; color: black;" href="{% url 'tb03export' %}">
+            <a style="text-decoration: none; color: black;" href="/">
                 {{'mdrtb.back'|get_message:request.session.locale}}
             </a>
         </button>

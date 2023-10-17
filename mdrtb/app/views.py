@@ -1766,6 +1766,47 @@ def render_delete_transferout_form(req, formid):
 # Reporting Views
 
 
+def render_report_form(req, target):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    title = util.get_report_name(target, req.session["locale"])
+    context = {
+        "title": title,
+        "months": util.get_months(),
+        "quarters": util.get_quarters(),
+        "target":target
+    }
+
+    req.session["redirect_url"] = req.META.get("HTTP_REFERER")
+    if req.method == "POST":
+        month = req.POST.get("month")
+
+        quarter = req.POST.get("quarter")
+
+        keys_to_check = ["facility", "district", "region"]
+
+        location = None
+
+        for key in keys_to_check:
+            value = req.POST.get(key)
+
+            if value and len(value) > 0:
+                location = value
+
+                break
+
+        year = req.POST.get("year")
+
+        if month:
+            url = f"/{target}?year={year}&month={month}&location={location}"
+
+        elif quarter:
+            url = f"/{target}?year={year}&quarter={quarter}&location={location}"
+        return redirect(url)
+
+    return render(req, "app/reporting/report_form_base.html", context)
+
+
 def render_patient_list(req):
     if not check_if_session_alive(req):
         return redirect("login")
@@ -1832,7 +1873,7 @@ def render_patient_list(req):
     return render(req, "app/reporting/patientlist_report_form.html", context=context)
 
 
-def render_tb03_report_form(req):
+# def render_tb03_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.tb03Parameters", locale=req.session["locale"])
@@ -1915,7 +1956,7 @@ def render_tb03_report(req):
         return redirect("searchPatientsView")
 
 
-def render_tb03_single_report_form(req):
+# def render_tb03_single_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.tb03Parameters", locale=req.session["locale"])
@@ -1998,7 +2039,7 @@ def render_tb03_single_report(req):
         return redirect("searchPatientsView")
 
 
-def render_tb03u_single_report_form(req):
+# def render_tb03u_single_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.tb03uParameters", locale=req.session["locale"])
@@ -2081,7 +2122,7 @@ def render_tb03u_single_report(req):
         return redirect("searchPatientsView")
 
 
-def render_tb03u_report_form(req):
+# def render_tb03u_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.tb03uParameters", locale=req.session["locale"])
@@ -2162,7 +2203,7 @@ def render_tb03u_report(req):
         return redirect("searchPatientsView")
 
 
-def render_form89_report_form(req):
+# def render_form89_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.form89Parameters", locale=req.session["locale"])
@@ -2224,7 +2265,13 @@ def render_form89_report(req):
         status, response = ru.get(req, "mdrtb/form89report", params)
 
         if status:
-            context["patientSet"] = response["results"]
+            context["patientSet"] = [
+                {
+                    key: value if value is not None else ""
+                    for key, value in record.items()
+                }
+                for record in response["results"]
+            ]
 
             return render(req, "app/reporting/form89_report.html", context)
 
@@ -2237,7 +2284,7 @@ def render_form89_report(req):
         return redirect("searchPatientsView")
 
 
-def render_tb08_report_form(req):
+# def render_tb08_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.tb08Parameters", locale=req.session["locale"])
@@ -2306,7 +2353,13 @@ def render_tb08_report(req):
         if status:
             context["location"] = mu.get_location(req, location)
 
-            context["patientSet"] = response["results"]
+            context["patientSet"] = [
+                {
+                    key: value if value is not None else ""
+                    for key, value in record.items()
+                }
+                for record in response["results"]
+            ]
 
             return render(req, "app/reporting/tb08_report.html", context)
 
@@ -2319,7 +2372,7 @@ def render_tb08_report(req):
         return redirect(req.session["redirect_url"])
 
 
-def render_tb08u_report_form(req):
+# def render_tb08u_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.tb08uParameters", locale=req.session["locale"])
@@ -2388,7 +2441,13 @@ def render_tb08u_report(req):
         if status:
             context["location"] = mu.get_location(req, location)
 
-            context["patientSet"] = response["results"]
+            context["patientSet"] = [
+                {
+                    key: value if value is not None else ""
+                    for key, value in record.items()
+                }
+                for record in response["results"]
+            ]
 
             return render(req, "app/reporting/tb08u_report.html", context)
 
@@ -2401,7 +2460,7 @@ def render_tb08u_report(req):
         return redirect(req.session["redirect_url"])
 
 
-def render_tb07u_report_form(req):
+# def render_tb07u_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.tb07uParameters", locale=req.session["locale"])
@@ -2474,7 +2533,13 @@ def render_tb07u_report(req):
         if status:
             context["location"] = mu.get_location(req, location)
 
-            context["patientSet"] = response["results"]
+            context["patientSet"] = [
+                {
+                    key: value if value is not None else ""
+                    for key, value in record.items()
+                }
+                for record in response["results"]
+            ]
 
             return render(req, "app/reporting/tb07u_report.html", context)
 
@@ -2487,7 +2552,7 @@ def render_tb07u_report(req):
         return redirect(req.session["redirect_url"])
 
 
-def render_tb07_report_form(req):
+# def render_tb07_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.tb07uParameters", locale=req.session["locale"])
@@ -2574,7 +2639,7 @@ def render_tb07_report(req):
         return redirect(req.session["redirect_url"])
 
 
-def render_form8_report_form(req):
+# def render_form8_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.form8Parameters", locale=req.session["locale"])
@@ -2656,7 +2721,7 @@ def render_form8_report(req):
         return redirect(req.session["redirect_url"])
 
 
-def render_missing_tb03_report_form(req):
+# def render_missing_tb03_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.dq.missingtb03", locale=req.session["locale"])
@@ -2747,7 +2812,7 @@ def render_missing_tb03_report(req):
         return redirect(req.session["redirect_url"])
 
 
-def render_missing_tb03u_report_form(req):
+# def render_missing_tb03u_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.dq.missingtb03u", locale=req.session["locale"])

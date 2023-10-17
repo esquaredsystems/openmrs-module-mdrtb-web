@@ -2,8 +2,13 @@
 
 {% block content %}
 
+<style>
+    
+</style>
 
-<div>
+<div style="margin-top: 3rem;">
+
+
     <div>
         <div id="tb03u">
             <table class="resultsTable">
@@ -35,7 +40,7 @@
                     <th class="rotate" rowspan="3">
                         <div><span>{{"mdrtb.tb03.address"|get_message:request.session.locale}}</span></div>
                     </th>
-                    <th class="rotate" rowspan="3">
+                    <th class="" rowspan="3">
                         <div><span>{{"mdrtb.tb03.addressRegII"|get_message:request.session.locale}}</span></div>
                     </th>
                     <th class="rotate" rowspan="3">
@@ -351,16 +356,14 @@
                     <td rowspan="1">{{ row.dotsYear }}</td>
                     <td rowspan="1">{{ row.identifierDOTS }}</td>
 
-                    <td rowspan="1">{{ row.patient.personName.familyName }}, {{ row.patient.personName.givenName }}</td>
+                    <td rowspan="1">{{ row.patientName }}</td>
 
 
 
                     <td rowspan="1" align="center">{{ row.gender }}</td>
                     <td align="center" rowspan="1">{{row.ageAtTB03uRegistration }}</td>
                     <td rowspan="1">{{ row.dateOfBirth }}</td>
-                    <td rowspan="1">{{ row.patient.personAddress.stateProvince }},{{
-                        row.patient.personAddress.countyDistrict
-                        }},{{ row.patient.personAddress.address1 }}</td>
+                    <td rowspan="1">{{ row.resedentialAddress }}</td>
                     <td rowspan="1">{{ row.reg2Number }}</td>
 
                     <td align="center" rowspan="1">{{ row.siteOfDisease }}</td>
@@ -692,7 +695,7 @@
                         value="{{'mdrtb.closeReportBtn'|get_message:request.session.locale}}" />
                 </openmrs:hasPrivilege> -->
         <button>
-            <a style="text-decoration: none; color: black;" href="{% url 'tb03usingleexport' %}">
+            <a style="text-decoration: none; color: black;" href="/">
                 {{'mdrtb.back'|get_message:request.session.locale}}
             </a>
         </button>

@@ -77,11 +77,11 @@
         <br /><br />
         <h4 align="center">{{"mdrtb.form8.main.sub"|get_message:request.session.locale}}</h4>
         <h4 align="center">
-            <spring:message code="mdrtb.form8.main.forTheYear" arguments="{{''}}" />
+            {{"mdrtb.form8.main.forTheYear"|get_message:request.session.locale}}
         </h4>
 
 
-        <h5 align="center">{{"mdrtb.form8.form8data.simpleForm8Table1Data.title"|get_message:request.session.locale}}
+        <h5 align="center">{{"mdrtb.form8.table1.title"|get_message:request.session.locale}}
         </h5>
 
         <table border="1" cellpadding="1" cellspacing="1" style="width: 100%;">
@@ -1138,7 +1138,7 @@
                 <td rowspan="2">{{"mdrtb.form8.transferMtb"|get_message:request.session.locale}}</td>
                 <td rowspan="2">{{"mdrtb.form8.ceasedMtb"|get_message:request.session.locale}}</td>
                 <td rowspan="2">{{"mdrtb.form8.outOfArea"|get_message:request.session.locale}}</td>
-                <td rowspan="2">{{"mdrtb.form8.diedTb"|get_message:request.session.locale}}</td>
+                <td rowspan="2">{{"mdrtb.form8.diedTB"|get_message:request.session.locale}}</td>
                 <td rowspan="2">{{"mdrtb.form8.atEnd"|get_message:request.session.locale}}</td>
 
             </tr>
@@ -1302,7 +1302,7 @@
         </table>
         <br /><br />
         <center>
-            <h5>{{"mdrtb.form8.form8data.simpleTB08Data.title"|get_message:request.session.locale}}</h5>
+            <h5>{{"mdrtb.form8.table6.title"|get_message:request.session.locale}}</h5>
         </center>
         <table border="1" cellpadding="1" cellspacing="1" style="width: 100%;">
             <tbody>
@@ -2279,8 +2279,7 @@
                     <td>
                         {{form8data.simpleTB08Data.relapseExtrapulmonaryCanceled }}</td>
                     <td>
-                        {{form8data.simpleTB08Data.relapseExtrapulmonaryDetected|sub:form8data.simpleTB08Data.relapseExtrapulmonaryEligible|sum:form8data.simpleTB08Data.relapseExtrapulmonarySLD|sum:form8data.simpleTB08Data.relapseExtrapulmonaryCanceled
-                        }}</td>
+                        {{form8data.simpleTB08Data.relapseExtrapulmonaryDetected|sub:form8data.simpleTB08Data.relapseExtrapulmonaryEligible|sum:form8data.simpleTB08Data.relapseExtrapulmonarySLD|sum:form8data.simpleTB08Data.relapseExtrapulmonaryCanceled}}</td>
                 </tr>
                 <tr>
                     <td>
@@ -2997,8 +2996,7 @@
                     <td>
                         {{form8data.simpleTB08Data.otherPulmonaryCDCanceled }}</td>
                     <td>
-                        {{form8data.simpleTB08Data.otherPulmonaryCDDetected|sub:form8data.simpleTB08Data.otherPulmonaryCDEligible|sum:form8data.simpleTB08Data.otherPulmonaryCDSLD|sum:form8data.simpleTB08Data.otherPulmonaryCDCanceled
-                        }}</td>
+                        {{form8data.simpleTB08Data.otherPulmonaryCDDetected|sub:form8data.simpleTB08Data.otherPulmonaryCDEligible|sum:form8data.simpleTB08Data.otherPulmonaryCDSLD|sum:form8data.simpleTB08Data.otherPulmonaryCDCanceled}}</td>
 
                 </tr>
                 <tr>
@@ -3030,8 +3028,7 @@
                     <td>
                         {{form8data.simpleTB08Data.otherExtrapulmonaryCanceled }}</td>
                     <td>
-                        {{form8data.simpleTB08Data.otherExtrapulmonaryDetected|sub:form8data.simpleTB08Data.otherExtrapulmonaryEligible|sum:form8data.simpleTB08Data.otherExtrapulmonarySLD|sum:form8data.simpleTB08Data.otherExtrapulmonaryCanceled
-                        }}</td>
+                        {{form8data.simpleTB08Data.otherExtrapulmonaryDetected|sub:form8data.simpleTB08Data.otherExtrapulmonaryEligible|sum:form8data.simpleTB08Data.otherExtrapulmonarySLD|sum:form8data.simpleTB08Data.otherExtrapulmonaryCanceled}}</td>
                 </tr>
                 <tr>
                     <td>
@@ -3040,52 +3037,31 @@
                         <b>{{"mdrtb.tb08u.total"|get_message:request.session.locale}}</b>
                     </td>
                     <td>
-                        {{
-                        form8data.simpleTB08Data.otherPulmonaryBCDetected|sum:form8data.simpleTB08Data.otherPulmonaryCDDetected|sum:form8data.simpleTB08Data.otherExtrapulmonaryDetected
-                        }}</td>
+                        {{form8data.simpleTB08Data.otherPulmonaryBCDetected|sum:form8data.simpleTB08Data.otherPulmonaryCDDetected|sum:form8data.simpleTB08Data.otherExtrapulmonaryDetected}}</td>
                     <td>
-                        {{
-                        form8data.simpleTB08Data.otherPulmonaryBCEligible|sum:form8data.simpleTB08Data.otherPulmonaryCDEligible|sum:form8data.simpleTB08Data.otherExtrapulmonaryEligible
-                        }}</td>
+                        {{form8data.simpleTB08Data.otherPulmonaryBCEligible|sum:form8data.simpleTB08Data.otherPulmonaryCDEligible|sum:form8data.simpleTB08Data.otherExtrapulmonaryEligible}}</td>
                     <td>
-                        {{
-                        form8data.simpleTB08Data.otherPulmonaryBCCured|sum:form8data.simpleTB08Data.otherPulmonaryCDCured|sum:form8data.simpleTB08Data.otherExtrapulmonaryCured}}
+                        {{form8data.simpleTB08Data.otherPulmonaryBCCured|sum:form8data.simpleTB08Data.otherPulmonaryCDCured|sum:form8data.simpleTB08Data.otherExtrapulmonaryCured}}
                     </td>
                     </td>
                     <td>
-                        {{
-                        form8data.simpleTB08Data.otherPulmonaryBCCompleted|sum:form8data.simpleTB08Data.otherPulmonaryCDCompleted|sum:form8data.simpleTB08Data.otherExtrapulmonaryCompleted
-                        }}</td>
+                        {{form8data.simpleTB08Data.otherPulmonaryBCCompleted|sum:form8data.simpleTB08Data.otherPulmonaryCDCompleted|sum:form8data.simpleTB08Data.otherExtrapulmonaryCompleted}}</td>
                     <td>
-                        {{
-                        form8data.simpleTB08Data.otherPulmonaryBCDiedTB|sum:form8data.simpleTB08Data.otherPulmonaryCDDiedTB|sum:form8data.simpleTB08Data.otherExtrapulmonaryDiedTB
-                        }}</td>
+                        {{form8data.simpleTB08Data.otherPulmonaryBCDiedTB|sum:form8data.simpleTB08Data.otherPulmonaryCDDiedTB|sum:form8data.simpleTB08Data.otherExtrapulmonaryDiedTB}}</td>
                     <td>
-                        {{
-                        form8data.simpleTB08Data.otherPulmonaryBCDiedNotTB|sum:form8data.simpleTB08Data.otherPulmonaryCDDiedNotTB|sum:form8data.simpleTB08Data.otherExtrapulmonaryDiedNotTB
-                        }}</td>
+                        {{form8data.simpleTB08Data.otherPulmonaryBCDiedNotTB|sum:form8data.simpleTB08Data.otherPulmonaryCDDiedNotTB|sum:form8data.simpleTB08Data.otherExtrapulmonaryDiedNotTB}}</td>
                     <td>
-                        {{
-                        form8data.simpleTB08Data.otherPulmonaryBCFailed|sum:form8data.simpleTB08Data.otherPulmonaryCDFailed|sum:form8data.simpleTB08Data.otherExtrapulmonaryFailed
-                        }}</td>
+                        {{form8data.simpleTB08Data.otherPulmonaryBCFailed|sum:form8data.simpleTB08Data.otherPulmonaryCDFailed|sum:form8data.simpleTB08Data.otherExtrapulmonaryFailed}}</td>
                     <td>
-                        {{
-                        form8data.simpleTB08Data.otherPulmonaryBCDefaulted|sum:form8data.simpleTB08Data.otherPulmonaryCDDefaulted|sum:form8data.simpleTB08Data.otherExtrapulmonaryDefaulted
-                        }}</td>
+                        {{form8data.simpleTB08Data.otherPulmonaryBCDefaulted|sum:form8data.simpleTB08Data.otherPulmonaryCDDefaulted|sum:form8data.simpleTB08Data.otherExtrapulmonaryDefaulted}}</td>
                     <td>
-                        {{
-                        form8data.simpleTB08Data.otherPulmonaryBCEligible|sum:form8data.simpleTB08Data.otherPulmonaryCDEligible|sum:form8data.simpleTB08Data.otherExtrapulmonaryEligible
-                        }}</td>
+                        {{form8data.simpleTB08Data.otherPulmonaryBCEligible|sum:form8data.simpleTB08Data.otherPulmonaryCDEligible|sum:form8data.simpleTB08Data.otherExtrapulmonaryEligible}}</td>
 
                     <td>
-                        {{
-                        form8data.simpleTB08Data.otherPulmonaryBCSLD|sum:form8data.simpleTB08Data.otherPulmonaryCDSLD|sum:form8data.simpleTB08Data.otherExtrapulmonarySLD
-                        }}
+                        {{form8data.simpleTB08Data.otherPulmonaryBCSLD|sum:form8data.simpleTB08Data.otherPulmonaryCDSLD|sum:form8data.simpleTB08Data.otherExtrapulmonarySLD}}
                     </td>
                     <td>
-                        {{
-                        form8data.simpleTB08Data.otherPulmonaryBCCanceled|sum:form8data.simpleTB08Data.otherPulmonaryCDCanceled|sum:form8data.simpleTB08Data.otherExtrapulmonaryCanceled
-                        }}</td>
+                        {{form8data.simpleTB08Data.otherPulmonaryBCCanceled|sum:form8data.simpleTB08Data.otherPulmonaryCDCanceled|sum:form8data.simpleTB08Data.otherExtrapulmonaryCanceled}}</td>
                     <td>
                         {{form8data.simpleTB08Data.otherPulmonaryBCDetected|sum:form8data.simpleTB08Data.otherPulmonaryCDDetected|sum:form8data.simpleTB08Data.otherExtrapulmonaryDetected|sub:form8data.simpleTB08Data.otherPulmonaryBCEligible|sum:form8data.simpleTB08Data.otherPulmonaryCDEligible|sum:form8data.simpleTB08Data.otherExtrapulmonaryEligible|sum:form8data.simpleTB08Data.otherPulmonaryBCSLD|sum:form8data.simpleTB08Data.otherPulmonaryCDSLD|sum:form8data.simpleTB08Data.otherExtrapulmonarySLD|sum:form8data.simpleTB08Data.otherPulmonaryBCCanceled|sum:form8data.simpleTB08Data.otherPulmonaryCDCanceled|sum:form8data.simpleTB08Data.otherExtrapulmonaryCanceled}}
                     </td>
@@ -3128,44 +3104,33 @@
                     <td>
                         {{"mdrtb.tb08u.pulmonaryBC"|get_message:request.session.locale}} </td>
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryBCDetected|sum:form8data.simpleTB08Data.defaultPulmonaryBCDetected|sum:form8data.simpleTB08Data.otherPulmonaryBCDetected
-                        }}</td>
+                        {{form8data.simpleTB08Data.failurePulmonaryBCDetected|sum:form8data.simpleTB08Data.defaultPulmonaryBCDetected|sum:form8data.simpleTB08Data.otherPulmonaryBCDetected}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryBCEligible|sum:form8data.simpleTB08Data.defaultPulmonaryBCEligible|sum:form8data.simpleTB08Data.otherPulmonaryBCEligible
-                        }}</td>
+                        {{form8data.simpleTB08Data.failurePulmonaryBCEligible|sum:form8data.simpleTB08Data.defaultPulmonaryBCEligible|sum:form8data.simpleTB08Data.otherPulmonaryBCEligible}}</td>
                     <td>
                         {{form8data.simpleTB08Data.failurePulmonaryBCCured|sum:form8data.simpleTB08Data.defaultPulmonaryBCCured|sum:form8data.simpleTB08Data.otherPulmonaryBCCured}}
                     </td>
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryBCCompleted|sum:form8data.simpleTB08Data.defaultPulmonaryBCCompleted|sum:form8data.simpleTB08Data.otherPulmonaryBCCompleted
-                        }}</td>
+                        {{form8data.simpleTB08Data.failurePulmonaryBCCompleted|sum:form8data.simpleTB08Data.defaultPulmonaryBCCompleted|sum:form8data.simpleTB08Data.otherPulmonaryBCCompleted}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryBCDiedTB|sum:form8data.simpleTB08Data.defaultPulmonaryBCDiedTB|sum:form8data.simpleTB08Data.otherPulmonaryBCDiedTB
-                        }}</td>
+                        {{form8data.simpleTB08Data.failurePulmonaryBCDiedTB|sum:form8data.simpleTB08Data.defaultPulmonaryBCDiedTB|sum:form8data.simpleTB08Data.otherPulmonaryBCDiedTB}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryBCDiedNotTB|sum:form8data.simpleTB08Data.defaultPulmonaryBCDiedNotTB|sum:form8data.simpleTB08Data.otherPulmonaryBCDiedNotTB
-                        }}</td>
+                        {{form8data.simpleTB08Data.failurePulmonaryBCDiedNotTB|sum:form8data.simpleTB08Data.defaultPulmonaryBCDiedNotTB|sum:form8data.simpleTB08Data.otherPulmonaryBCDiedNotTB}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryBCFailed|sum:form8data.simpleTB08Data.defaultPulmonaryBCFailed|sum:form8data.simpleTB08Data.otherPulmonaryBCFailed
-                        }}</td>
+                        {{form8data.simpleTB08Data.failurePulmonaryBCFailed|sum:form8data.simpleTB08Data.defaultPulmonaryBCFailed|sum:form8data.simpleTB08Data.otherPulmonaryBCFailed}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryBCDefaulted|sum:form8data.simpleTB08Data.defaultPulmonaryBCDefaulted|sum:form8data.simpleTB08Data.otherPulmonaryBCDefaulted
-                        }}</td>
+                        {{form8data.simpleTB08Data.failurePulmonaryBCDefaulted|sum:form8data.simpleTB08Data.defaultPulmonaryBCDefaulted|sum:form8data.simpleTB08Data.otherPulmonaryBCDefaulted}}</td>
 
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryBCEligible|sum:form8data.simpleTB08Data.defaultPulmonaryBCEligible|sum:form8data.simpleTB08Data.otherPulmonaryBCEligible
-                        }}</td>
+                        {{form8data.simpleTB08Data.failurePulmonaryBCEligible|sum:form8data.simpleTB08Data.defaultPulmonaryBCEligible|sum:form8data.simpleTB08Data.otherPulmonaryBCEligible}}</td>
 
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryBCSLD|sum:form8data.simpleTB08Data.defaultPulmonaryBCSLD|sum:form8data.simpleTB08Data.otherPulmonaryBCSLD
-                        }}
+                        {{form8data.simpleTB08Data.failurePulmonaryBCSLD|sum:form8data.simpleTB08Data.defaultPulmonaryBCSLD|sum:form8data.simpleTB08Data.otherPulmonaryBCSLD}}
                     </td>
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryBCCanceled|sum:form8data.simpleTB08Data.defaultPulmonaryBCCanceled|sum:form8data.simpleTB08Data.otherPulmonaryBCCanceled
-                        }}</td>
+                        {{form8data.simpleTB08Data.failurePulmonaryBCCanceled|sum:form8data.simpleTB08Data.defaultPulmonaryBCCanceled|sum:form8data.simpleTB08Data.otherPulmonaryBCCanceled}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryBCDetected|sum:form8data.simpleTB08Data.defaultPulmonaryBCDetected|sum:form8data.simpleTB08Data.otherPulmonaryBCDetected|sub:form8data.simpleTB08Data.failurePulmonaryBCEligible|sum:form8data.simpleTB08Data.defaultPulmonaryBCEligible|sum:form8data.simpleTB08Data.otherPulmonaryBCEligible|sum:form8data.simpleTB08Data.failurePulmonaryBCSLD|sum:form8data.simpleTB08Data.defaultPulmonaryBCSLD|sum:form8data.simpleTB08Data.otherPulmonaryBCSLD|sum:form8data.simpleTB08Data.failurePulmonaryBCCanceled|sum:form8data.simpleTB08Data.defaultPulmonaryBCCanceled|sum:form8data.simpleTB08Data.otherPulmonaryBCCanceled
-                        }}</td>
+                        {{form8data.simpleTB08Data.failurePulmonaryBCDetected|sum:form8data.simpleTB08Data.defaultPulmonaryBCDetected|sum:form8data.simpleTB08Data.otherPulmonaryBCDetected|sub:form8data.simpleTB08Data.failurePulmonaryBCEligible|sum:form8data.simpleTB08Data.defaultPulmonaryBCEligible|sum:form8data.simpleTB08Data.otherPulmonaryBCEligible|sum:form8data.simpleTB08Data.failurePulmonaryBCSLD|sum:form8data.simpleTB08Data.defaultPulmonaryBCSLD|sum:form8data.simpleTB08Data.otherPulmonaryBCSLD|sum:form8data.simpleTB08Data.failurePulmonaryBCCanceled|sum:form8data.simpleTB08Data.defaultPulmonaryBCCanceled|sum:form8data.simpleTB08Data.otherPulmonaryBCCanceled}}</td>
 
                 </tr>
                 <tr>
@@ -3174,43 +3139,30 @@
                     <td>
                         {{"mdrtb.tb08u.pulmonaryCD"|get_message:request.session.locale}} </td>
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryCDDetected|sum:form8data.simpleTB08Data.defaultPulmonaryCDDetected|sum:form8data.simpleTB08Data.otherPulmonaryCDDetected
-                        }}</td>
+                        {{form8data.simpleTB08Data.failurePulmonaryCDDetected|sum:form8data.simpleTB08Data.defaultPulmonaryCDDetected|sum:form8data.simpleTB08Data.otherPulmonaryCDDetected}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryCDEligible|sum:form8data.simpleTB08Data.defaultPulmonaryCDEligible|sum:form8data.simpleTB08Data.otherPulmonaryCDEligible
-                        }}</td>
+                        {{form8data.simpleTB08Data.failurePulmonaryCDEligible|sum:form8data.simpleTB08Data.defaultPulmonaryCDEligible|sum:form8data.simpleTB08Data.otherPulmonaryCDEligible}}</td>
                     <td>
                         {{form8data.simpleTB08Data.failurePulmonaryCDCured|sum:form8data.simpleTB08Data.defaultPulmonaryCDCured|sum:form8data.simpleTB08Data.otherPulmonaryCDCured}}
                     </td>
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryCDCompleted|sum:form8data.simpleTB08Data.defaultPulmonaryCDCompleted|sum:form8data.simpleTB08Data.otherPulmonaryCDCompleted
-                        }}</td>
+                        {{form8data.simpleTB08Data.failurePulmonaryCDCompleted|sum:form8data.simpleTB08Data.defaultPulmonaryCDCompleted|sum:form8data.simpleTB08Data.otherPulmonaryCDCompleted}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryCDDiedTB|sum:form8data.simpleTB08Data.defaultPulmonaryCDDiedTB|sum:form8data.simpleTB08Data.otherPulmonaryCDDiedTB
-                        }}</td>
+                        {{form8data.simpleTB08Data.failurePulmonaryCDDiedTB|sum:form8data.simpleTB08Data.defaultPulmonaryCDDiedTB|sum:form8data.simpleTB08Data.otherPulmonaryCDDiedTB}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryCDDiedNotTB|sum:form8data.simpleTB08Data.defaultPulmonaryCDDiedNotTB|sum:form8data.simpleTB08Data.otherPulmonaryCDDiedNotTB
-                        }}</td>
+                        {{form8data.simpleTB08Data.failurePulmonaryCDDiedNotTB|sum:form8data.simpleTB08Data.defaultPulmonaryCDDiedNotTB|sum:form8data.simpleTB08Data.otherPulmonaryCDDiedNotTB}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryCDFailed|sum:form8data.simpleTB08Data.defaultPulmonaryCDFailed|sum:form8data.simpleTB08Data.otherPulmonaryCDFailed
-                        }}</td>
+                        {{form8data.simpleTB08Data.failurePulmonaryCDFailed|sum:form8data.simpleTB08Data.defaultPulmonaryCDFailed|sum:form8data.simpleTB08Data.otherPulmonaryCDFailed}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryCDDefaulted|sum:form8data.simpleTB08Data.defaultPulmonaryCDDefaulted|sum:form8data.simpleTB08Data.otherPulmonaryCDDefaulted
-                        }}</td>
+                        {{form8data.simpleTB08Data.failurePulmonaryCDDefaulted|sum:form8data.simpleTB08Data.defaultPulmonaryCDDefaulted|sum:form8data.simpleTB08Data.otherPulmonaryCDDefaulted}}</td>
 
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryCDEligible|sum:form8data.simpleTB08Data.defaultPulmonaryCDEligible|sum:form8data.simpleTB08Data.otherPulmonaryCDEligible
-                        }}</td>
+                        {{form8data.simpleTB08Data.failurePulmonaryCDEligible|sum:form8data.simpleTB08Data.defaultPulmonaryCDEligible|sum:form8data.simpleTB08Data.otherPulmonaryCDEligible}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryCDSLD|sum:form8data.simpleTB08Data.defaultPulmonaryCDSLD|sum:form8data.simpleTB08Data.otherPulmonaryCDSLD
-                        }}
+                        {{form8data.simpleTB08Data.failurePulmonaryCDSLD|sum:form8data.simpleTB08Data.defaultPulmonaryCDSLD|sum:form8data.simpleTB08Data.otherPulmonaryCDSLD}}
                     </td>
-                    <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryCDCanceled|sum:form8data.simpleTB08Data.defaultPulmonaryCDCanceled|sum:form8data.simpleTB08Data.otherPulmonaryCDCanceled
-                        }}</td>
-                    <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryCDDetected|sum:form8data.simpleTB08Data.defaultPulmonaryCDDetected|sum:form8data.simpleTB08Data.otherPulmonaryCDDetected|sub:form8data.simpleTB08Data.failurePulmonaryCDEligible|sum:form8data.simpleTB08Data.defaultPulmonaryCDEligible|sum:form8data.simpleTB08Data.otherPulmonaryCDEligible|sum:form8data.simpleTB08Data.failurePulmonaryCDSLD|sum:form8data.simpleTB08Data.defaultPulmonaryCDSLD|sum:form8data.simpleTB08Data.otherPulmonaryCDSLD|sum:form8data.simpleTB08Data.failurePulmonaryCDCanceled|sum:form8data.simpleTB08Data.defaultPulmonaryCDCanceled|sum:form8data.simpleTB08Data.otherPulmonaryCDCanceled
-                        }}</td>
+                    <td>{{form8data.simpleTB08Data.failurePulmonaryCDCanceled|sum:form8data.simpleTB08Data.defaultPulmonaryCDCanceled|sum:form8data.simpleTB08Data.otherPulmonaryCDCanceled}}</td>
+                    <td>{{form8data.simpleTB08Data.failurePulmonaryCDDetected|sum:form8data.simpleTB08Data.defaultPulmonaryCDDetected|sum:form8data.simpleTB08Data.otherPulmonaryCDDetected|sub:form8data.simpleTB08Data.failurePulmonaryCDEligible|sum:form8data.simpleTB08Data.defaultPulmonaryCDEligible|sum:form8data.simpleTB08Data.otherPulmonaryCDEligible|sum:form8data.simpleTB08Data.failurePulmonaryCDSLD|sum:form8data.simpleTB08Data.defaultPulmonaryCDSLD|sum:form8data.simpleTB08Data.otherPulmonaryCDSLD|sum:form8data.simpleTB08Data.failurePulmonaryCDCanceled|sum:form8data.simpleTB08Data.defaultPulmonaryCDCanceled|sum:form8data.simpleTB08Data.otherPulmonaryCDCanceled}}</td>
 
                 </tr>
                 <tr>
@@ -3219,43 +3171,31 @@
                     <td>
                         {{"mdrtb.tb08.eptb"|get_message:request.session.locale}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failureExtrapulmonaryDetected|sum:form8data.simpleTB08Data.defaultExtrapulmonaryDetected|sum:form8data.simpleTB08Data.otherExtrapulmonaryDetected
-                        }}</td>
+                        {{form8data.simpleTB08Data.failureExtrapulmonaryDetected|sum:form8data.simpleTB08Data.defaultExtrapulmonaryDetected|sum:form8data.simpleTB08Data.otherExtrapulmonaryDetected}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failureExtrapulmonaryEligible|sum:form8data.simpleTB08Data.defaultExtrapulmonaryEligible|sum:form8data.simpleTB08Data.otherExtrapulmonaryEligible
-                        }}</td>
+                        {{form8data.simpleTB08Data.failureExtrapulmonaryEligible|sum:form8data.simpleTB08Data.defaultExtrapulmonaryEligible|sum:form8data.simpleTB08Data.otherExtrapulmonaryEligible}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failureExtrapulmonaryCured|sum:form8data.simpleTB08Data.defaultExtrapulmonaryCured|sum:form8data.simpleTB08Data.otherExtrapulmonaryCured
-                        }}</td>
+                        {{form8data.simpleTB08Data.failureExtrapulmonaryCured|sum:form8data.simpleTB08Data.defaultExtrapulmonaryCured|sum:form8data.simpleTB08Data.otherExtrapulmonaryCured}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failureExtrapulmonaryCompleted|sum:form8data.simpleTB08Data.defaultExtrapulmonaryCompleted|sum:form8data.simpleTB08Data.otherExtrapulmonaryCompleted
-                        }}</td>
+                        {{form8data.simpleTB08Data.failureExtrapulmonaryCompleted|sum:form8data.simpleTB08Data.defaultExtrapulmonaryCompleted|sum:form8data.simpleTB08Data.otherExtrapulmonaryCompleted}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failureExtrapulmonaryDiedTB|sum:form8data.simpleTB08Data.defaultExtrapulmonaryDiedTB|sum:form8data.simpleTB08Data.otherExtrapulmonaryDiedTB
-                        }}</td>
+                        {{form8data.simpleTB08Data.failureExtrapulmonaryDiedTB|sum:form8data.simpleTB08Data.defaultExtrapulmonaryDiedTB|sum:form8data.simpleTB08Data.otherExtrapulmonaryDiedTB}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failureExtrapulmonaryDiedNotTB|sum:form8data.simpleTB08Data.defaultExtrapulmonaryDiedNotTB|sum:form8data.simpleTB08Data.otherExtrapulmonaryDiedNotTB
-                        }}</td>
+                        {{form8data.simpleTB08Data.failureExtrapulmonaryDiedNotTB|sum:form8data.simpleTB08Data.defaultExtrapulmonaryDiedNotTB|sum:form8data.simpleTB08Data.otherExtrapulmonaryDiedNotTB}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failureExtrapulmonaryFailed|sum:form8data.simpleTB08Data.defaultExtrapulmonaryFailed|sum:form8data.simpleTB08Data.otherExtrapulmonaryFailed
-                        }}</td>
+                        {{form8data.simpleTB08Data.failureExtrapulmonaryFailed|sum:form8data.simpleTB08Data.defaultExtrapulmonaryFailed|sum:form8data.simpleTB08Data.otherExtrapulmonaryFailed}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failureExtrapulmonaryDefaulted|sum:form8data.simpleTB08Data.defaultExtrapulmonaryDefaulted|sum:form8data.simpleTB08Data.otherExtrapulmonaryDefaulted
-                        }}</td>
+                        {{form8data.simpleTB08Data.failureExtrapulmonaryDefaulted|sum:form8data.simpleTB08Data.defaultExtrapulmonaryDefaulted|sum:form8data.simpleTB08Data.otherExtrapulmonaryDefaulted}}</td>
 
                     <td>
-                        {{form8data.simpleTB08Data.failureExtrapulmonaryEligible|sum:form8data.simpleTB08Data.defaultExtrapulmonaryEligible|sum:form8data.simpleTB08Data.otherExtrapulmonaryEligible
-                        }}</td>
+                        {{form8data.simpleTB08Data.failureExtrapulmonaryEligible|sum:form8data.simpleTB08Data.defaultExtrapulmonaryEligible|sum:form8data.simpleTB08Data.otherExtrapulmonaryEligible}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failureExtrapulmonarySLD|sum:form8data.simpleTB08Data.defaultExtrapulmonarySLD|sum:form8data.simpleTB08Data.otherExtrapulmonarySLD
-                        }}</td>
+                        {{form8data.simpleTB08Data.failureExtrapulmonarySLD|sum:form8data.simpleTB08Data.defaultExtrapulmonarySLD|sum:form8data.simpleTB08Data.otherExtrapulmonarySLD}}</td>
 
                     <td>
-                        {{form8data.simpleTB08Data.failureExtrapulmonaryCanceled|sum:form8data.simpleTB08Data.defaultExtrapulmonaryCanceled|sum:form8data.simpleTB08Data.otherExtrapulmonaryCanceled
-                        }}</td>
+                        {{form8data.simpleTB08Data.failureExtrapulmonaryCanceled|sum:form8data.simpleTB08Data.defaultExtrapulmonaryCanceled|sum:form8data.simpleTB08Data.otherExtrapulmonaryCanceled}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failurePulmonaryCDDetected|sum:form8data.simpleTB08Data.defaultPulmonaryCDDetected|sum:form8data.simpleTB08Data.otherPulmonaryCDDetected|sub:form8data.simpleTB08Data.failurePulmonaryCDEligible|sum:form8data.simpleTB08Data.defaultPulmonaryCDEligible|sum:form8data.simpleTB08Data.otherPulmonaryCDEligible|sum:form8data.simpleTB08Data.failurePulmonaryCDSLD|sum:form8data.simpleTB08Data.defaultPulmonaryCDSLD|sum:form8data.simpleTB08Data.otherPulmonaryCDSLD|sum:form8data.simpleTB08Data.failurePulmonaryCDCanceled|sum:form8data.simpleTB08Data.defaultPulmonaryCDCanceled|sum:form8data.simpleTB08Data.otherPulmonaryCDCanceled
-                        }}</td>
+                        {{form8data.simpleTB08Data.failurePulmonaryCDDetected|sum:form8data.simpleTB08Data.defaultPulmonaryCDDetected|sum:form8data.simpleTB08Data.otherPulmonaryCDDetected|sub:form8data.simpleTB08Data.failurePulmonaryCDEligible|sum:form8data.simpleTB08Data.defaultPulmonaryCDEligible|sum:form8data.simpleTB08Data.otherPulmonaryCDEligible|sum:form8data.simpleTB08Data.failurePulmonaryCDSLD|sum:form8data.simpleTB08Data.defaultPulmonaryCDSLD|sum:form8data.simpleTB08Data.otherPulmonaryCDSLD|sum:form8data.simpleTB08Data.failurePulmonaryCDCanceled|sum:form8data.simpleTB08Data.defaultPulmonaryCDCanceled|sum:form8data.simpleTB08Data.otherPulmonaryCDCanceled}}</td>
 
                 </tr>
                 <tr>
@@ -3265,49 +3205,37 @@
                         {{"mdrtb.tb08.retreatmentTotalBreakdown"|get_message:request.session.locale}}</td>
 
                     <td>
-                        {{form8data.simpleTB08Data.failureAllDetected|sum:form8data.simpleTB08Data.defaultAllDetected|sum:form8data.simpleTB08Data.otherAllDetected
-                        }}
+                        {{form8data.simpleTB08Data.failureAllDetected|sum:form8data.simpleTB08Data.defaultAllDetected|sum:form8data.simpleTB08Data.otherAllDetected}}
                     </td>
                     <td>
-                        {{form8data.simpleTB08Data.failureAllEligible|sum:form8data.simpleTB08Data.defaultAllEligible|sum:form8data.simpleTB08Data.otherAllEligible
-                        }}
+                        {{form8data.simpleTB08Data.failureAllEligible|sum:form8data.simpleTB08Data.defaultAllEligible|sum:form8data.simpleTB08Data.otherAllEligible}}
                     </td>
                     <td>
-                        {{form8data.simpleTB08Data.failureAllCured|sum:form8data.simpleTB08Data.defaultAllCured|sum:form8data.simpleTB08Data.otherAllCured
-                        }}</td>
+                        {{form8data.simpleTB08Data.failureAllCured|sum:form8data.simpleTB08Data.defaultAllCured|sum:form8data.simpleTB08Data.otherAllCured}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failureAllCompleted|sum:form8data.simpleTB08Data.defaultAllCompleted|sum:form8data.simpleTB08Data.otherAllCompleted
-                        }}
+                        {{form8data.simpleTB08Data.failureAllCompleted|sum:form8data.simpleTB08Data.defaultAllCompleted|sum:form8data.simpleTB08Data.otherAllCompleted}}
                     </td>
                     <td>
-                        {{form8data.simpleTB08Data.failureAllDiedTB|sum:form8data.simpleTB08Data.defaultAllDiedTB|sum:form8data.simpleTB08Data.otherAllDiedTB
-                        }}</td>
+                        {{form8data.simpleTB08Data.failureAllDiedTB|sum:form8data.simpleTB08Data.defaultAllDiedTB|sum:form8data.simpleTB08Data.otherAllDiedTB}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failureAllDiedNotTB|sum:form8data.simpleTB08Data.defaultAllDiedNotTB|sum:form8data.simpleTB08Data.otherAllDiedNotTB
-                        }}
+                        {{form8data.simpleTB08Data.failureAllDiedNotTB|sum:form8data.simpleTB08Data.defaultAllDiedNotTB|sum:form8data.simpleTB08Data.otherAllDiedNotTB}}
                     </td>
                     <td>
-                        {{form8data.simpleTB08Data.failureAllFailed|sum:form8data.simpleTB08Data.defaultAllFailed|sum:form8data.simpleTB08Data.otherAllFailed
-                        }}</td>
+                        {{form8data.simpleTB08Data.failureAllFailed|sum:form8data.simpleTB08Data.defaultAllFailed|sum:form8data.simpleTB08Data.otherAllFailed}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failureAllDefaulted|sum:form8data.simpleTB08Data.defaultAllDefaulted|sum:form8data.simpleTB08Data.otherAllDefaulted
-                        }}
+                        {{form8data.simpleTB08Data.failureAllDefaulted|sum:form8data.simpleTB08Data.defaultAllDefaulted|sum:form8data.simpleTB08Data.otherAllDefaulted}}
                     </td>
                     <td>
-                        {{form8data.simpleTB08Data.failureAllEligible|sum:form8data.simpleTB08Data.defaultAllEligible|sum:form8data.simpleTB08Data.otherAllEligible
-                        }}
+                        {{form8data.simpleTB08Data.failureAllEligible|sum:form8data.simpleTB08Data.defaultAllEligible|sum:form8data.simpleTB08Data.otherAllEligible}}
                     </td>
                     <td>
-                        {{form8data.simpleTB08Data.failureAllSLD|sum:form8data.simpleTB08Data.defaultAllSLD|sum:form8data.simpleTB08Data.otherAllSLD
-                        }}</td>
+                        {{form8data.simpleTB08Data.failureAllSLD|sum:form8data.simpleTB08Data.defaultAllSLD|sum:form8data.simpleTB08Data.otherAllSLD}}</td>
                     <td>
-                        {{form8data.simpleTB08Data.failureAllCanceled|sum:form8data.simpleTB08Data.defaultAllCanceled|sum:form8data.simpleTB08Data.otherAllCanceled
-                        }}
+                        {{form8data.simpleTB08Data.failureAllCanceled|sum:form8data.simpleTB08Data.defaultAllCanceled|sum:form8data.simpleTB08Data.otherAllCanceled}}
                     </td>
 
                     <td>
-                        {{form8data.simpleTB08Data.failureAllDetected|sum:form8data.simpleTB08Data.defaultAllDetected|sum:form8data.simpleTB08Data.otherAllDetected|sub:form8data.simpleTB08Data.failureAllEligible|sum:form8data.simpleTB08Data.defaultAllEligible|sum:form8data.simpleTB08Data.otherAllEligible|sum:form8data.simpleTB08Data.failureAllSLD|sum:form8data.simpleTB08Data.defaultAllSLD|sum:form8data.simpleTB08Data.otherAllSLD|sum:form8data.simpleTB08Data.failureAllCanceled|sum:form8data.simpleTB08Data.defaultAllCanceled|sum:form8data.simpleTB08Data.otherAllCanceled
-                        }}
+                        {{form8data.simpleTB08Data.failureAllDetected|sum:form8data.simpleTB08Data.defaultAllDetected|sum:form8data.simpleTB08Data.otherAllDetected|sub:form8data.simpleTB08Data.failureAllEligible|sum:form8data.simpleTB08Data.defaultAllEligible|sum:form8data.simpleTB08Data.otherAllEligible|sum:form8data.simpleTB08Data.failureAllSLD|sum:form8data.simpleTB08Data.defaultAllSLD|sum:form8data.simpleTB08Data.otherAllSLD|sum:form8data.simpleTB08Data.failureAllCanceled|sum:form8data.simpleTB08Data.defaultAllCanceled|sum:form8data.simpleTB08Data.otherAllCanceled}}
                     </td>
 
                 </tr>
@@ -3318,7 +3246,7 @@
     </div>
 
     <button>
-        <a style="text-decoration: none; color: black;" href="{% url 'form8export' %}">
+        <a style="text-decoration: none; color: black;" href="/">
             {{'mdrtb.back'|get_message:request.session.locale}}
         </a>
     </button>

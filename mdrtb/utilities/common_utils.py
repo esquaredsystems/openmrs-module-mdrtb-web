@@ -1,7 +1,8 @@
 from pathlib import Path
 from datetime import datetime, date
 from dateutil.parser import parse
-
+import utilities.metadata_util as mu
+from bs4 import BeautifulSoup
 
 def get_project_root() -> Path:
     """
@@ -318,3 +319,31 @@ def get_patient_list_options(code):
     for option in options:
         if option["rest_code"] == code:
             return mu.get_global_msgs(option["message_code"])
+
+
+def get_report_name(key, locale):
+    report_map = {
+        "tb03results": mu.get_global_msgs("mdrtb.tb03Parameters", locale=locale),
+        "tb03singleresults": mu.get_global_msgs("mdrtb.tb03Parameters", locale=locale),
+        "missingtb03results": mu.get_global_msgs("mdrtb.dq.missingtb03", locale=locale),
+        "tb07results": mu.get_global_msgs("mdrtb.tb07Parameters", locale=locale),
+        "tb08results": mu.get_global_msgs("mdrtb.tb08Parameters", locale=locale),
+        "form89results": mu.get_global_msgs("mdrtb.form89Parameters", locale=locale),
+        "tb03uresults": mu.get_global_msgs("mdrtb.tb03uParameters", locale=locale),
+        "tb03usingleresults": mu.get_global_msgs(
+            "mdrtb.tb03uParameters", locale=locale
+        ),
+        "tb07uresults": mu.get_global_msgs("mdrtb.tb07uParameters", locale=locale),
+        "tb08uresults": mu.get_global_msgs("mdrtb.tb08uParameters", locale=locale),
+        "missingtb03uresults": mu.get_global_msgs(
+            "mdrtb.dq.missingtb03u", locale=locale
+        ),
+        "form8results": mu.get_global_msgs("mdrtb.form8Parameters", locale=locale),
+    }
+
+    return report_map[key]
+
+
+def string_to_html(html_string):
+    html_doc = BeautifulSoup(html_string, "html.parser")
+    return str(html_doc)

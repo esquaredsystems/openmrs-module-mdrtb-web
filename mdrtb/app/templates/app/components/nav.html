@@ -50,25 +50,25 @@
         <li data-te-dropdown-item-ref>
 
           <a class="tw-dropdown-item"
-            href="{% url 'tb07export' %}">{{'mdrtb.dotsreport07'|get_message:request.session.locale}}</a>
+            href="{% url 'reportform' target='tb07results' %}">{{'mdrtb.dotsreport07'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
 
           <a class="tw-dropdown-item"
-            href="{% url 'tb08export' %}">{{'mdrtb.dotsreport08'|get_message:request.session.locale}}</a>
+            href="{% url 'reportform' target='tb08results' %}">{{'mdrtb.dotsreport08'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
 
           <a class="tw-dropdown-item"
-            href="{% url 'tb03export' %}">{{'mdrtb.tb03Export'|get_message:request.session.locale}}</a>
+            href="{% url 'reportform' target='tb03results' %}">{{'mdrtb.tb03Export'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
 
           <a class="tw-dropdown-item"
-            href="{% url 'tb03singleexport' %}">{{'mdrtb.tb03ExportSingleLine'|get_message:request.session.locale}}</a>
+            href="{% url 'reportform' target='tb03singleresults' %}">{{'mdrtb.tb03ExportSingleLine'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
-          <a class="tw-dropdown-item" href="{% url 'form89export' %}">
+          <a class="tw-dropdown-item" href="{% url 'reportform' target='form89results' %}">
             {{'mdrtb.f89ExportSingleLine'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
@@ -78,7 +78,7 @@
         <li data-te-dropdown-item-ref>
 
           <a class="tw-dropdown-item"
-            href="{% url 'missingtb03export' %}">{{'mdrtb.dq.missingtb03'|get_message:request.session.locale}}</a>
+            href="{% url 'reportform' target='missingtb03results' %}">{{'mdrtb.dq.missingtb03'|get_message:request.session.locale}}</a>
         </li>
       </ul>
     </div>
@@ -102,19 +102,19 @@
         </li>
         <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item"
-            href="{% url 'tb07uexport' %}">{{'mdrtb.tb07u'|get_message:request.session.locale}}</a>
+            href="{% url 'reportform' target='tb07uresults' %}">{{'mdrtb.tb07u'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item"
-            href="{% url 'tb08uexport' %}">{{'mdrtb.tb08Fast'|get_message:request.session.locale}}</a>
+            href="{% url 'reportform' target='tb08uresults' %}">{{'mdrtb.tb08Fast'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item"
-            href="{% url 'tb03uexport' %}">{{'mdrtb.tb03uExport'|get_message:request.session.locale}}</a>
+            href="{% url 'reportform' target='tb03uresults' %}">{{'mdrtb.tb03uExport'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item"
-            href="{% url 'tb03usingleexport' %}">{{'mdrtb.tb03uExportSingleLine'|get_message:request.session.locale}}</a>
+            href="{% url 'reportform' target='tb03usingleresults' %}">{{'mdrtb.tb03uExportSingleLine'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item" href="#">{{'mdrtb.dq.title'|get_message:request.session.locale}}</a>
@@ -124,7 +124,7 @@
         </li>
         <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item"
-            href="{% url 'missingtb03uexport' %}">{{'mdrtb.dq.missingtb03u'|get_message:request.session.locale}}</a>
+            href="{% url 'reportform' target='missingtb03uresults' %}">{{'mdrtb.dq.missingtb03u'|get_message:request.session.locale}}</a>
         </li>
       </ul>
     </div>
@@ -144,7 +144,7 @@
       <ul class="tw-dropdown-item-list" aria-labelledby="dropdownOtherReports" data-te-dropdown-menu-ref>
         <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item"
-            href="{% url 'form8export' %}">{{'mdrtb.form8.title'|get_message:request.session.locale}}</a>
+            href="{% url 'reportform' target='form8results' %}">{{'mdrtb.form8.title'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item" href="#">{{'mdrtb.pv.qtrReportTitle'|get_message:request.session.locale}}</a>

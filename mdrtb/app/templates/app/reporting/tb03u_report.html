@@ -298,14 +298,11 @@
                 </td>
                 <td rowspan="2">{{ row.tb03uRegistrationDate }}</td>
                 <td rowspan="1">{{ row.dotsYear }}</td>
-                <td rowspan="1">{{ row.patient.personName.familyName }}</td>
+                <td rowspan="1">{{ row.patientName }}</td>
                 <td rowspan="2" text-align="center">{{ row.gender }}</td>
                 <td text-align="center" rowspan="1">{{row.ageAtTB03uRegistration }}</td>
                 <td rowspan="2">
-                    {{ row.patient.personAddress.stateProvince }},
-                    <br />
-                    {{row.patient.personAddress.countyDistrict }},
-                    {{ row.patient.personAddress.address1 }}
+                    {{ row.residentialAddress }},
                 </td>
                 <td rowspan="2">{{ row.reg2Number }}</td>
 
@@ -469,7 +466,7 @@
         </table>
     </div>
     <button>
-        <a style="text-decoration: none; color: black;" href="{% url 'tb03uexport' %}">
+        <a style="text-decoration: none; color: black;" href="/">
             {{'mdrtb.back'|get_message:request.session.locale}}
         </a>
     </button>
