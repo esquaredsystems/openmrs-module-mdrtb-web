@@ -37,8 +37,6 @@ def check_if_session_alive(req):
     session_id = req.session.get("session_id")
 
     if not session_id:
-        logger.warning("Session expired")
-
         return False
 
     return True
@@ -1774,7 +1772,7 @@ def render_report_form(req, target):
         "title": title,
         "months": util.get_months(),
         "quarters": util.get_quarters(),
-        "target":target
+        "target": target,
     }
 
     req.session["redirect_url"] = req.META.get("HTTP_REFERER")
@@ -1872,8 +1870,7 @@ def render_patient_list(req):
 
     return render(req, "app/reporting/patientlist_report_form.html", context=context)
 
-
-# def render_tb03_report_form(req):
+    # def render_tb03_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.tb03Parameters", locale=req.session["locale"])
@@ -1955,8 +1952,7 @@ def render_tb03_report(req):
 
         return redirect("searchPatientsView")
 
-
-# def render_tb03_single_report_form(req):
+    # def render_tb03_single_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.tb03Parameters", locale=req.session["locale"])
@@ -2038,8 +2034,7 @@ def render_tb03_single_report(req):
 
         return redirect("searchPatientsView")
 
-
-# def render_tb03u_single_report_form(req):
+    # def render_tb03u_single_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.tb03uParameters", locale=req.session["locale"])
@@ -2121,8 +2116,7 @@ def render_tb03u_single_report(req):
 
         return redirect("searchPatientsView")
 
-
-# def render_tb03u_report_form(req):
+    # def render_tb03u_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.tb03uParameters", locale=req.session["locale"])
@@ -2202,8 +2196,7 @@ def render_tb03u_report(req):
 
         return redirect("searchPatientsView")
 
-
-# def render_form89_report_form(req):
+    # def render_form89_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.form89Parameters", locale=req.session["locale"])
@@ -2283,8 +2276,7 @@ def render_form89_report(req):
 
         return redirect("searchPatientsView")
 
-
-# def render_tb08_report_form(req):
+    # def render_tb08_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.tb08Parameters", locale=req.session["locale"])
@@ -2371,8 +2363,7 @@ def render_tb08_report(req):
 
         return redirect(req.session["redirect_url"])
 
-
-# def render_tb08u_report_form(req):
+    # def render_tb08u_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.tb08uParameters", locale=req.session["locale"])
@@ -2459,8 +2450,7 @@ def render_tb08u_report(req):
 
         return redirect(req.session["redirect_url"])
 
-
-# def render_tb07u_report_form(req):
+    # def render_tb07u_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.tb07uParameters", locale=req.session["locale"])
@@ -2551,8 +2541,7 @@ def render_tb07u_report(req):
 
         return redirect(req.session["redirect_url"])
 
-
-# def render_tb07_report_form(req):
+    # def render_tb07_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.tb07uParameters", locale=req.session["locale"])
@@ -2638,8 +2627,7 @@ def render_tb07_report(req):
 
         return redirect(req.session["redirect_url"])
 
-
-# def render_form8_report_form(req):
+    # def render_form8_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.form8Parameters", locale=req.session["locale"])
@@ -2720,8 +2708,7 @@ def render_form8_report(req):
 
         return redirect(req.session["redirect_url"])
 
-
-# def render_missing_tb03_report_form(req):
+    # def render_missing_tb03_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.dq.missingtb03", locale=req.session["locale"])
@@ -2811,8 +2798,7 @@ def render_missing_tb03_report(req):
 
         return redirect(req.session["redirect_url"])
 
-
-# def render_missing_tb03u_report_form(req):
+    # def render_missing_tb03u_report_form(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.dq.missingtb03u", locale=req.session["locale"])
@@ -3072,7 +3058,11 @@ def render_manage_test_types(req):
     if not check_if_session_alive(req):
         return redirect("login")
 
-    context = {"title": "Manage Test Types"}
+    context = {
+        "title": mu.get_global_msgs(
+            "commonlabtest.labtesttype.manage", locale=req.session["locale"]
+        )
+    }
 
     if req.method == "POST":
         try:
@@ -3145,7 +3135,11 @@ def render_add_test_type(req):
     if not check_if_session_alive(req):
         return redirect("login")
 
-    context = {"title": "Add Test Type"}
+    context = {
+        "title": mu.get_global_msgs(
+            "commonlabtest.labtesttype.add", locale=req.session["locale"]
+        )
+    }
 
     if req.method == "POST":
         body = {
@@ -3180,7 +3174,11 @@ def render_edit_test_type(req, uuid):
     if not check_if_session_alive(req):
         return redirect("login")
 
-    context = {"title": "Edit Test Type"}
+    context = {
+        "title": mu.get_global_msgs(
+            "commonlabtest.labtesttype.edit", locale=req.session["locale"]
+        )
+    }
 
     status, response = ru.get(
         req, f"commonlab/labtesttype/{uuid}", {"v": "full", "lang": "en"}
@@ -3278,7 +3276,9 @@ def render_addattributes(req, uuid):
         "labTestUuid": uuid,
         "prefferedHandlers": cu.get_preffered_handler(),
         "dataTypes": cu.get_attributes_data_types(),
-        "title": "Add attributes",
+        "title": mu.get_global_msgs(
+            "commonlabtest.labtestattributetype.add", locale=req.session["locale"]
+        ),
     }
 
     if req.method == "POST":
@@ -3314,7 +3314,13 @@ def render_editAttribute(req, testid, attrid):
     if not check_if_session_alive(req):
         return redirect("login")
 
-    context = {"state": "edit", "testid": testid, "title": "Edit Attribute"}
+    context = {
+        "state": "edit",
+        "testid": testid,
+        "title": mu.get_global_msgs(
+            "commonlabtest.labtestattributetype.edit", locale=req.session["locale"]
+        ),
+    }
 
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
 
@@ -3373,7 +3379,12 @@ def render_managetestorders(req, uuid):
         return redirect("login")
 
     try:
-        context = {"title": "Manage Lab Test Orders", "patient": uuid}
+        context = {
+            "title": mu.get_global_msgs(
+                "commonlabtest.labtest.manage", locale=req.session["locale"]
+            ),
+            "patient": uuid,
+        }
 
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
 
@@ -3414,7 +3425,12 @@ def render_add_lab_test(req, uuid):
     if not check_if_session_alive(req):
         return redirect("login")
 
-    context = {"title": "Add Lab Test", "patient": uuid}
+    context = {
+        "title": mu.get_global_msgs(
+            "commonlabtest.labtest.add", locale=req.session["locale"]
+        ),
+        "patient": uuid,
+    }
 
     if req.method == "POST":
         try:
@@ -3494,7 +3510,9 @@ def render_edit_lab_test(req, patientid, orderid):
         return redirect("login")
 
     context = {
-        "title": "Edit Lab Test",
+        "title": mu.get_global_msgs(
+            "commonlabtest.order.edit", locale=req.session["locale"]
+        ),
         "state": "edit",
         "orderid": orderid,
         "patientid": patientid,
@@ -3609,7 +3627,12 @@ def render_managetestsamples(req, orderid):
     if not check_if_session_alive(req):
         return redirect("login")
 
-    context = {"title": "Manage Test Samples", "orderid": orderid}
+    context = {
+        "title": mu.get_global_msgs(
+            "commonlabtest.labtestsample.manage", locale=req.session["locale"]
+        ),
+        "orderid": orderid,
+    }
 
     status, response = ru.get(
         req, f"commonlab/labtestorder/{orderid}", {"v": "custom:(labTestSamples)"}
@@ -3629,7 +3652,11 @@ def render_add_test_sample(req, orderid):
     if not check_if_session_alive(req):
         return redirect("login")
 
-    context = {"title": "Add Sample", "orderid": orderid}
+    context = {
+        "title": mu.get_global_msgs("mdrtb.add", locale=req.session["locale"])
+        + mu.get_global_msgs("mdrtb.sample", locale=req.session["locale"]),
+        "orderid": orderid,
+    }
 
     if req.method == "POST":
         body = {
@@ -3681,7 +3708,8 @@ def render_edit_test_sample(req, orderid, sampleid):
         return redirect("login")
 
     context = {
-        "title": "Edit Sample",
+        "title": mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+        + mu.get_global_msgs("mdrtb.sample", locale=req.session["locale"]),
         "orderid": orderid,
         "sampleid": sampleid,
         "state": "edit",
@@ -3719,7 +3747,6 @@ def render_edit_test_sample(req, orderid, sampleid):
 
     if status:
         sample = response
-        print(sample)
 
         specimen_type = cu.get_commonlab_concepts_by_type(
             req, "commonlabtest.specimenTypeConceptUuid"
@@ -3787,7 +3814,12 @@ def render_add_test_results(req, orderid):
     if not check_if_session_alive(req):
         return redirect("login")
 
-    context = {"title": "Add Test Results", "orderid": orderid}
+    context = {
+        "title": mu.get_global_msgs(
+            "mdrtb.addTestResults", locale=req.session["locale"]
+        ),
+        "orderid": orderid,
+    }
 
     if req.method == "POST":
         state = req.POST["state"] if "state" in req.POST else None

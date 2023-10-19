@@ -11,14 +11,6 @@ def get_datenow(placeholder):
 
 
 @register.filter
-def iso_to_normal_date(date):
-    if date:
-        return str(parser.isoparse(date)).split(" ")[0]
-    else:
-        return None
-
-
-@register.filter
 def get_encounter_name(name):
     return name[: len(name) - 10]
 

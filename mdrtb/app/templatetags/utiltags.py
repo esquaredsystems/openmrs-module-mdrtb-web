@@ -14,7 +14,11 @@ def get_datenow(placeholder):
 @register.filter
 def iso_to_normal_date(date):
     if date:
-        return str(parser.isoparse(date)).split(" ")[0]
+        normal_date = str(parser.isoparse(date)).split(" ")[0]
+        splitted = normal_date.split("-")
+        splitted.reverse()
+        normal_date = ".".join(splitted)
+        return normal_date
     else:
         return None
 

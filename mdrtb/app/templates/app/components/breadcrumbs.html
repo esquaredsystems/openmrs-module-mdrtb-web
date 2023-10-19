@@ -3,7 +3,8 @@
 <nav class="bg-grey-light w-full rounded-md mb-4">
     <ol class="list-reset flex">
         <li>
-            <a href="/" class="text-[#2D9CDB] font-md font-bold">Home</a>
+            <a href="/"
+                class="text-[#2D9CDB] font-md font-bold">{{'Navigation.home'|get_message_openMRS:request.session.locale}}</a>
         </li>
         {% for url in request.session.breadcrumbs %}
         <li>
