@@ -17,12 +17,6 @@
       </button>
       <ul class="tw-dropdown-item-list" aria-labelledby="dropdownGeneral" data-te-dropdown-menu-ref>
         <li data-te-dropdown-item-ref>
-          <span onclick="alert('Merge patients using Admin settings in OpenMRS')"
-            class=" tw-dropdown-item cursor-pointer w-fit" href="#">
-            {{'mdrtb.mergePatients'|get_message:request.session.locale}}
-          </span>
-        </li>
-        <li data-te-dropdown-item-ref>
           <a class="tw-dropdown-item"
             href="{% url 'patientlist' %}">{{'mdrtb.patientLists'|get_message:request.session.locale}}</a>
         </li>
