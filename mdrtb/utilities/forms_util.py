@@ -27,44 +27,18 @@ def get_form_concepts(concept_ids, req):
             response = mu.get_concept(req, concept)
             if response:
                 answers = []
-                if response["answers"]:
-                    for answer in response["answers"]:
-                        if (
-                            answer["name"]
-                            and answer["name"]["conceptNameType"] == "FULLY_SPECIFIED"
-                        ):
-                            answers.append(
-                                {
-                                    "uuid": answer["uuid"],
-                                    "name": answer["name"]["name"],
-                                }
-                            )
-                            for name in response["names"]:
-                                if name["locale"] == "en":
-                                    key = (
-                                        name["name"]
-                                        .lower()
-                                        .replace(" ", "")
-                                        .replace("-", "")
-                                    )
-                                    concept_dict[key] = answers
-                        elif answer["name"]["conceptNameType"] == "SHORT":
-                            answers.append(
-                                {
-                                    "uuid": answer["uuid"],
-                                    "name": answer["name"]["name"],
-                                }
-                            )
-                            for name in response["names"]:
-                                if name["locale"] == "en":
-                                    key = (
-                                        name["name"]
-                                        .lower()
-                                        .replace(" ", "")
-                                        .replace("-", "")
-                                    )
-                                    concept_dict[key] = answers
+                for answer in response["answers"]:
+                    answers.append(
+                        {
+                            "uuid": answer["uuid"],
+                            "name": answer["display"],
+                        }
+                    )
 
+                for name in response["names"]:
+                    if name["locale"] == "en":
+                        key = name["name"].lower().replace(" ", "").replace("-", "")
+                        concept_dict[key] = answers
         except Exception as e:
             continue
     return concept_dict

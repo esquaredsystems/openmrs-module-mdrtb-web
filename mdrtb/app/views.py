@@ -210,7 +210,7 @@ def render_search_patients_view(req):
     context = {"title": title}
 
     privileges_required = [
-        Privileges.VIEW_PATIENTS,
+        Privileges.GET_PATIENTS,
         Privileges.ADD_PATIENTS,
     ]
 
@@ -1651,10 +1651,11 @@ def render_user_profile(req):
             "value": default_locale,
         }
         if "defaultLocation" in user_properties:
-            context["default_location"] = mu.get_location(
-                req,
-                user_properties["defaultLocation"],
-            )
+            if len(user_properties["defaultLocation"]) > 0:
+                context["default_location"] = mu.get_location(
+                    req,
+                    user_properties["defaultLocation"],
+                )
 
         mu.add_url_to_breadcrumb(req, context["title"])
 
@@ -1794,7 +1795,7 @@ def render_report_form(req, target):
                 break
 
         year = req.POST.get("year")
-
+        url = f"/{target}?year={year}&location={location}"
         if month:
             url = f"/{target}?year={year}&month={month}&location={location}"
 
@@ -1915,9 +1916,9 @@ def render_tb03_report(req):
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER")
-        month = req.GET.get("month")
+        month = req.GET.get("month", None)
 
-        quarter = req.GET.get("quarter")
+        quarter = req.GET.get("quarter", None)
 
         location = req.GET.get("location")
 
@@ -1941,7 +1942,6 @@ def render_tb03_report(req):
                 }
                 for record in response["results"]
             ]
-
             return render(req, "app/reporting/tb03_report.html", context)
 
         return redirect("searchPatientsView")
@@ -2925,7 +2925,7 @@ def render_closed_reports(req):
                 params["facility"] = req.POST["facility"]
 
             status, response = ru.get(req, "mdrtb/reportdata", params)
-            if status:
+            if status and len(response["results"]) > 0:
                 for report in response["results"]:
                     if report["location"]:
                         report["location"] = mu.get_location(
@@ -2934,6 +2934,8 @@ def render_closed_reports(req):
 
                 context["report_data"] = response["results"]
                 context["jsondata"] = json.dumps(response["results"])
+            else:
+                messages.info(req, "No saved reports found.")
 
         except Exception as e:
             logger.error(e, exc_info=True)
@@ -2971,7 +2973,7 @@ def save_closed_report(req):
 
             params = {
                 "year": year,
-                "reportName": report_name,
+                "name": report_name,
                 "region": location["region"]["uuid"],
             }
 
@@ -2990,34 +2992,40 @@ def save_closed_report(req):
             exist_status, exist_report = ru.get(
                 req, "mdrtb/reportdata", parameters=params
             )
-
+            report_to_overwrite = None
             if exist_status:
                 if len(exist_report["results"]) > 0:
                     for report in exist_report["results"]:
                         if report["reportStatus"] == "UNLOCKED":
-                            report_location = lu.get_single_location_hierarchy(
-                                mu.get_location(
-                                    req,
-                                    uuid=report["location"]["uuid"],
-                                    representation="FULL",
+                            if report["reportName"] == report_name:
+                                report_location = lu.get_single_location_hierarchy(
+                                    mu.get_location(
+                                        req,
+                                        uuid=report["location"]["uuid"],
+                                        representation="FULL",
+                                    )
                                 )
-                            )
-                            if report_location["region"]["uuid"] == req.POST["region"]:
                                 if (
-                                    "district" in report_location
-                                    and report_location["district"]["uuid"]
-                                    == req.POST["district"]
+                                    report_location["region"]["uuid"]
+                                    == location["region"]["uuid"]
                                 ):
                                     if (
-                                        "facility" in report_location
-                                        and report_location["facility"]["uuid"]
-                                        == req.POST["facility"]
+                                        report_location["district"] is not None
+                                        and report_location["district"]["uuid"]
+                                        == location["district"]["uuid"]
                                     ):
-                                        overwrite_report = True
-                                        break
-                                else:
-                                    overwrite_report = True
-                                    break
+                                        if report_location["facility"] is not None:
+                                            if (
+                                                report_location["facility"]["uuid"]
+                                                == location["facility"]["uuid"]
+                                            ):
+                                                overwrite_report = True
+                                                report_to_overwrite = report["uuid"]
+                                                break
+                                        else:
+                                            overwrite_report = True
+                                            report_to_overwrite = report["uuid"]
+                                            break
                         else:
                             raise Exception(
                                 f"The {report['reportName']} with the following parameters already exists and is LOCKED"
@@ -3039,14 +3047,22 @@ def save_closed_report(req):
                     report_data["quarter"] = req.POST["quarter"]
                 if "month" in req.POST and req.POST["month"] is not None:
                     report_data["month"] = req.POST["month"]
+                if report_to_overwrite is not None:
+                    report_data["uuid"] = report_to_overwrite
 
                 status, response = ru.post(req, "mdrtb/reportdata", data=report_data)
                 if status:
                     return JsonResponse({"success": True})
+                else:
+                    raise Exception("Failed to save report")
+            else:
+                raise Exception(
+                    f"The {report['reportName']} with the following parameters already exists and is LOCKED"
+                )
         except Exception as e:
             logger.error(e, exc_info=True)
             messages.error(req, e)
-            return redirect(req.session["redirect_url"])
+            return redirect("/")
     else:
         pass
 

@@ -144,7 +144,7 @@
         </div>
         <div class="input-container">
             <label class="input-label w-1/6" for="month">{{"mdrtb.month"|get_message:request.session.locale}}</label>
-            <select required name="month" id="month" class="input form-control">
+            <select name="month" id="month" class="input form-control">
                 <option value="">Select</option>
                 {% for month in months %}
                 <option value="{{month.value}}">{{month.name}}</option>
@@ -197,11 +197,11 @@
         if (e.target.value != '') {
             $('#quarter').prop('disabled', true)
             $('#quarter').prop('title', 'Quarter cannot be selected with month')
-            $('#quarter').prop('required', false)
+
         } else {
             $('#quarter').prop('disabled', false)
             $('#quarter').prop('title', '')
-            $('#quarter').prop('required', true)
+
         }
     })
     $("input[name='quarter']").change((e) => {

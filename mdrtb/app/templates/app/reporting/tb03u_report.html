@@ -317,23 +317,23 @@
                 <td rowspan="2">{{ row.treatmentLocation }}</td>
 
                 <td>{{ row.dstCollectionDate}}</td>
-                <td rowspan="2" text-align="center">{{ row.dstR}}</td>
-                <td rowspan="2" text-align="center">{{ row.dstH }}</td>
-                <td rowspan="2" text-align="center">{{ row.dstE }}</td>
-                <td rowspan="2" text-align="center">{{ row.dstS }}</td>
-                <td rowspan="2" text-align="center">{{ row.dstZ }}</td>
-                <td rowspan="2" text-align="center">{{ row.dstKm }}</td>
-                <td rowspan="2" text-align="center">{{ row.dstAm }}</td>
-                <td rowspan="2" text-align="center">{{ row.dstCm }}</td>
-                <td rowspan="2" text-align="center">{{ row.dstOfx }}</td>
-                <td rowspan="2" text-align="center">{{ row.dstMfx }}</td>
-                <td rowspan="2" text-align="center">{{ row.dstPto }}</td>
-                <td rowspan="2" text-align="center">{{ row.dstCs }}</td>
-                <td rowspan="2" text-align="center">{{ row.dstPAS }}</td>
-                <td rowspan="2" text-align="center">{{ row.dstLzd }}</td>
-                <td rowspan="2" text-align="center">{{ row.dstCfz }}</td>
-                <td rowspan="2" text-align="center">{{ row.dstBdq}}</td>
-                <td rowspan="2" text-align="center">{{ row.dstDlm }}</td>
+                <td rowspan="2" align="center">{{ 'R RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td rowspan="2" align="center">{{ 'H RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td rowspan="2" align="center">{{ 'E RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td rowspan="2" align="center">{{ 'S RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td rowspan="2" align="center">{{ 'Z RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td rowspan="2" align="center">{{ 'KM RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td rowspan="2" align="center">{{ 'AM RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td rowspan="2" align="center">{{ 'CM RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td rowspan="2" align="center">{{ 'OFX RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td rowspan="2" align="center">{{ 'MFX RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td rowspan="2" align="center">{{ 'PTO RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td rowspan="2" align="center">{{ 'CS RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td rowspan="2" align="center">{{ 'PAS RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td rowspan="2" align="center">{{ 'LZD RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td rowspan="2" align="center">{{ 'CFZ RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td rowspan="2" align="center">{{ 'BDQ RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td rowspan="2" align="center">{{ 'DLM RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
                 <td colspan="3" text-align="center">{{row.xpertMTBResult }} {{row.xpertRIFResult }} </td>
                 <td text-align="center">{{row.hainTestDate }} </td>
                 <td colspan="3" text-align="center">{{row.hainMTBResult }}</td>

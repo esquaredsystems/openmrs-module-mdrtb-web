@@ -11,6 +11,8 @@ import logging
 import utilities.metadata_util as mu
 import utilities.common_utils as utils
 from resources.enums.mdrtbConcepts import Concepts
+import zlib
+import pickle
 
 logger = logging.getLogger("django")
 
@@ -189,10 +191,13 @@ def get_attributes_of_labtest(req, lab_test_type):
         Exception: If there is an error retrieving the attributes.
 
     """
-    attribute_types = cache.get(
+    commpressed_attribute_types = cache.get(
         f"{lab_test_type['name'].replace(' ','')}attribute_types"
     )
-    if not attribute_types:
+    if commpressed_attribute_types:
+        attribute_types = pickle.loads(zlib.decompress(commpressed_attribute_types))
+        return attribute_types
+    if not commpressed_attribute_types:
         status, data = ru.get(
             req,
             "commonlab/labtestattributetype",
@@ -203,7 +208,7 @@ def get_attributes_of_labtest(req, lab_test_type):
 
             cache.set(
                 f"{lab_test_type['name'].replace(' ','')}attribute_types",
-                attribute_types,
+                zlib.compress(pickle.dumps(attribute_types)),
                 timeout=None,
             )
 
