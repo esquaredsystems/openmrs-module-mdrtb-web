@@ -3,6 +3,7 @@ module.exports = {
   content: [
     // Path to all apps templates
     "../**/templates/**/**/*.{html,js}",
+    "../../app/templates/app/**/*.html",
     // Path to templates of app
     "../app/templates/app/**/*.html",
     "./node_modules/tw-elements/dist/js/**/*.js",

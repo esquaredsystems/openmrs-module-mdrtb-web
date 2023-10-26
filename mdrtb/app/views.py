@@ -53,16 +53,9 @@ def check_privileges(req, privileges_required):
 
 
 def index(req):
-    context = {"Test": None}
-    concepts = cache.get("COMMONTESTattribute_types")
-    context["concepts"] = json.dumps(concepts)
-    if concepts:
-        print("CONCEPTS FOUND")
-    else:
-        print("CONCEPTS NOT FOUND")
-
     # This is a test function
-    return render(req, "app/tbregister/reportmockup.html", context)
+    print(cache.delete("COMMONTESTattribute_types"))
+    return render(req, "app/tbregister/reportmockup.html")
 
 
 def get_locations(req):
@@ -251,9 +244,6 @@ def render_enroll_patient(req):
         except Exception as e:
             messages.error(req, str(e))
             logger.error(str(e), exc_info=True)
-
-            return redirect("searchPatientsView")
-
     try:
         title = mu.get_global_msgs(
             "mdrtb.enrollNewPatient", locale=req.session["locale"]
@@ -3909,19 +3899,35 @@ def render_add_test_results(req, orderid):
         status, response = ru.get(
             req,
             f"commonlab/labtestorder/{orderid}",
-            {"v": "custom:(attributes,auditInfo)"},
+            {"v": "custom:(attributes,auditInfo,labReferenceNumber,labTestSamples)"},
         )
-        if status and len(response["attributes"]) > 0:
-            context["state"] = "edit"
-            attributes = cu.get_labtest_attributes(req, orderid, representation="FULL")
-            if attributes:
-                context["attributes"] = json.dumps(attributes)
-                context["auditInfo"] = response["auditInfo"]
 
-        else:
-            attributes = cu.get_custom_attribute_for_labresults(req, orderid)
-            context["attributes"] = json.dumps(attributes)
+        if status:
+            context["audit_info_json"] = json.dumps(response["auditInfo"])
             context["auditInfo"] = response["auditInfo"]
+            context["lab_reference"] = response["labReferenceNumber"]
+            for sample in response["labTestSamples"]:
+                if (
+                    sample["status"] == Constants.ACCEPTED.value
+                    or sample["status"] == Constants.PROCESSED.value
+                ):
+                    source = {
+                        "uuid": sample["specimenSite"]["uuid"],
+                        "name": sample["specimenSite"]["display"],
+                    }
+                    context["source"] = json.dumps(source)
+                    break
+            if len(response["attributes"]) > 0:
+                context["state"] = "edit"
+                attributes = cu.get_labtest_attributes(
+                    req, orderid, representation="FULL"
+                )
+                if attributes:
+                    context["attributes"] = json.dumps(attributes)
+
+            else:
+                attributes = cu.get_custom_attribute_for_labresults(req, orderid)
+                context["attributes"] = json.dumps(attributes)
 
     except Exception as e:
         messages.error(req, e)

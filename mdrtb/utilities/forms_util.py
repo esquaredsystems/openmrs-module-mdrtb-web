@@ -28,12 +28,15 @@ def get_form_concepts(concept_ids, req):
             if response:
                 answers = []
                 for answer in response["answers"]:
-                    answers.append(
-                        {
-                            "uuid": answer["uuid"],
-                            "name": answer["display"],
-                        }
-                    )
+                    for name in answer["names"]:
+                        if (
+                            name["conceptNameType"] == "FULLY_SPECIFIED"
+                            and name["locale"] == req.session["locale"]
+                        ):
+                            answers.append(
+                                {"uuid": answer["uuid"], "name": name["display"]}
+                            )
+                            break
 
                 for name in response["names"]:
                     if name["locale"] == "en":

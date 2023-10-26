@@ -23,20 +23,22 @@
     action="{% url 'addtestresults' orderid=orderid %}?patient={{request.GET.patient}}" method="post">
     {% csrf_token %}
     <div class="flex-column-center space-y-2" id="attributes-container">
-      <div class="input-container">
-        <label class="input-label">Attachment</label>
-        <input type="file"
-          class="ml-4 w-full text-sm rounded-md leading-6 file:bg-gray-200 file:text-black file:font-semi-bold file:border-none file:px-4 file:py-1 file:mr-6 file:border-gray-200 border border-gray-300 cursor-pointer" />
-      </div>
+
     </div>
 
     <div id="results_accordions" class='flex flex-column-center space-y-2'>
 
     </div>
-
+    <div class="input-container">
+      <label class="input-label">Attachment</label>
+      <input type="file"
+        class="ml-4 w-full text-sm rounded-md leading-6 file:bg-gray-200 file:text-black file:font-semi-bold file:border-none file:px-4 file:py-1 file:mr-6 file:border-gray-200 border border-gray-300 cursor-pointer" />
+    </div>
   </form>
 </div>
 <script>
+  let specimen_source = JSON.parse("{{source|escapejs}}");
+  let auditInfo = JSON.parse("{{audit_info_json|escapejs}}")
   let attributes = JSON.parse("{{attributes | escapejs}}");
   console.log(attributes)
   let state = "{{state}}"
@@ -62,8 +64,8 @@
       if (attribute.attributeType.group === null) {
         if (attribute.attributeType.inputType === "checkbox") {
           $("#attributes-container").append(
-            ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.uuid}</label>
+            `<div class="input-container">
+            <label class="input-label" style="width:49%;">${attribute.attributeType.name}</label>
             <input value=${attribute.valueReference ? attribute.valueReference : ""} class="" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} />
             </div>
           `
@@ -185,7 +187,16 @@
           `
           );
         } else if (attribute.attributeType.inputType === 'select') {
-          if (attribute.attributeType.answers.length <= 2) {
+          if (attribute.attributeType.uuid === "{{'SPECIMEN_SOURCE' | get_constant }}") {
+            $("#attributes-container").append(
+              ` <div class="input-container">
+            <label class="input-label">${attribute.attributeType.name}</label>
+            <select id=${attribute.attributeType.uuid} name=${attribute.attributeType.uuid} class="input bg-gray-300 pointer-events-none">
+              <option value=${specimen_source.uuid} selected>${specimen_source.name}</option>
+            </select>
+          `
+            )
+          } else if (attribute.attributeType.answers.length <= 2) {
             $("#attributes-container").append(
               ` <div class="input-container">
             <label class="input-label">${attribute.attributeType.name}</label>
@@ -200,7 +211,12 @@
             </div>
           `
             )
-            for (answer of attribute.attributeType.answers) {
+            let answers = attribute.attributeType.answers
+            answers.sort(function (a, b) {
+              return a.display.localeCompare(b.display);
+            });
+
+            for (answer of answers) {
               $(`#${attribute.attributeType.uuid}`).append(
                 `<div class="flex-center space-x-2 w-full">
                 <label>${answer.display}</label>
@@ -221,7 +237,11 @@
             </div>
           `
             );
-            for (answer of attribute.attributeType.answers) {
+            let answers = attribute.attributeType.answers
+            answers.sort(function (a, b) {
+              return a.display.localeCompare(b.display);
+            });
+            for (answer of answers) {
               $(`#${attribute.attributeType.uuid}`).append(
                 `<option value=${answer.uuid}>
                   ${answer.display}  
@@ -232,13 +252,36 @@
         }
 
         else {
-          $("#attributes-container").append(
-            ` <div class="input-container">
+          if (attribute.attributeType.uuid === "{{'COMMONLAB_LAB_REFERENCE_ATTRIBUTE_TYPE' | get_constant }}") {
+            $(`#attributes-container`).append(
+              ` <div class="input-container">
             <label class="input-label">${attribute.attributeType.name}</label>
-            <input class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} /input>
+            <input class="input bg-gray-300 pointer-events-none" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} 
+            value={{lab_reference}} /input >
             </div>
           `
-          );
+            );
+          } else if (attribute.attributeType.uuid === "{{'DATE_OF_REQUEST_FOR_LABORATORY_INVESTIGATION'|get_constant}}") {
+            $(`#attributes-container`).append(
+              ` <div class="input-container">
+            <label class="input-label">${attribute.attributeType.name}</label>
+            <input class="input bg-gray-300 pointer-events-none" type=text name=${attribute.attributeType.uuid} 
+            value=${auditInfo.dateCreated.slice(0, 10).split("-").reverse().join(".")} /input >
+            </div>
+          `
+            );
+          }
+
+          else {
+
+            $("#attributes-container").append(
+              ` <div class="input-container">
+              <label class="input-label">${attribute.attributeType.name}</label>
+              <input class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} /input>
+              </div>
+            `
+            );
+          }
         }
       } else {
         groups.push(attribute.attributeType.group);
@@ -330,7 +373,11 @@
             </div>
           `
             )
-            for (answer of attribute.attributeType.answers) {
+            let answers = attribute.attributeType.answers
+            answers.sort(function (a, b) {
+              return a.display.localeCompare(b.display);
+            });
+            for (answer of answers) {
               $(`#${attribute.attributeType.uuid}`).append(
                 `<div class="flex-center space-x-2 w-full">
                 <label>${answer.display}</label>
@@ -352,7 +399,11 @@
             </div>
           `
             );
-            for (answer of attribute.attributeType.answers) {
+            let answers = attribute.attributeType.answers
+            answers.sort(function (a, b) {
+              return a.display.localeCompare(b.display);
+            });
+            for (answer of answers) {
               if (answer.uuid === attribute.valueReference) {
 
                 $(`#${attribute.attributeType.uuid}`).append(
@@ -374,6 +425,7 @@
         }
 
         else {
+
           $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
             ` <div class="input-container">
             <label class="input-label">${attribute.attributeType.name}</label>
@@ -381,6 +433,8 @@
             </div>
           `
           );
+
+
         }
       }
     }
@@ -419,7 +473,11 @@
             </div>
           `
             )
-            for (answer of attribute.attributeType.answers) {
+            let answers = attribute.attributeType.answers
+            answers.sort(function (a, b) {
+              return a.display.localeCompare(b.display);
+            });
+            for (answer of answers) {
               $(`#${attribute.attributeType.uuid}`).append(
                 `<div class="flex-center space-x-2 w-full">
                 <label>${answer.display}</label>
@@ -440,7 +498,11 @@
             </div>
           `
             );
-            for (answer of attribute.attributeType.answers) {
+            let answers = attribute.attributeType.answers
+            answers.sort(function (a, b) {
+              return a.display.localeCompare(b.display);
+            });
+            for (answer of answers) {
               $(`#${attribute.attributeType.uuid}`).append(
                 `<option value=${answer.uuid}>
                   ${answer.display}  
@@ -452,13 +514,16 @@
         }
 
         else {
+
+
           $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
             ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <input class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} /input>
-            </div>
-          `
+              <label class="input-label">${attribute.attributeType.name}</label>
+              <input class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} /input>
+              </div>
+            `
           );
+
         }
       }
     }

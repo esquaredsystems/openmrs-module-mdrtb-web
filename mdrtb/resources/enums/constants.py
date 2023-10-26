@@ -51,3 +51,14 @@ class Constants(enum.Enum):
     PROCESSED = "PROCESSED"
 
     COUNTRY = "Точикистон (Tajikistan)"
+
+    # CLM
+    COMMONLAB_LAB_REFERENCE_ATTRIBUTE_TYPE = "475932eb-51a0-0c66-006f-6823f161c7f2"
+    SPECIMEN_SOURCE = "5baeba18-9bf1-95ad-9a51-f56f59403436"
+    DATE_OF_REQUEST_FOR_LABORATORY_INVESTIGATION = (
+        "ce49756b-929b-3920-f1a1-3fd205440576"
+    )
+
+    # Concept name types
+    FULLY_SPECIFIED = "FULLY_SPECIFIED"
+    SHORT = "SHORT"

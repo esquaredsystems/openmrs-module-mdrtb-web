@@ -5,6 +5,17 @@
 {% block content %}
 
 
+<style>
+  .responsive_table {
+    width: 100%;
+  }
+
+  @media screen and (min-width: 840px) {
+    .responsive_table {
+      width: 80%;
+    }
+  }
+</style>
 
 <div class="m-4">
   {% include 'app/components/breadcrumbs.html'%}
@@ -12,7 +23,7 @@
 
 <div>
 
-  <section class="mx-auto" style="width: 80%;">
+  <section class="mx-auto responsive_table">
     <div class="m-5 md:m-2">
       <div class="py-8">
         <div class="flex items-center justify-between">
@@ -36,11 +47,6 @@
                     class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
                     {{'commonlabtest.specimenType'|get_message:request.session.locale}}
                   </th>
-                  <th
-                    class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
-                    {{'commonlabtest.specimenSite'|get_message:request.session.locale}}
-                  </th>
-
                   <th
                     class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
                     {{'commonlabtest.labtestsample.collectionDate'|get_message:request.session.locale}}
@@ -76,9 +82,6 @@
                       {{sample.specimenType.display}}
                     </p>
                   </td>
-                  <td class="px-5 pt-3 border-b border-gray-200 w-min text-sm">
-                    <p class="text-gray-900 whitespace-no-wrap">{{sample.specimenSite.display}}</p>
-                  </td>
                   <td class=" px-5 pt-3 border-b border-gray-200 w-min text-sm">
                     <p class="text-gray-900 whitespace-no-wrap">
                       {{sample.collectionDate |iso_to_normal_date}}
@@ -90,7 +93,7 @@
                       {{sample.status}}
                     </p>
                   </td>
-                  <td class="px-5 pt-3 border-b w-min border-gray-200 bg-white text-sm">
+                  <td class="px-5  py-3 border-b w-min border-gray-200 bg-white text-sm">
                     <div class="flex space-x-4">
 
                       <a href="{% url 'edittestsample' orderid=orderid sampleid=sample.uuid %}">
@@ -103,7 +106,7 @@
                     </div>
                   </td>
                   {% if sample.status == 'COLLECTED' %}
-                  <td class="px-5 pt-3 border-b w-min border-gray-200  text-sm">
+                  <td class="py-3 px-3">
                     <form method="post" action="{% url 'changesamplestatus' orderid=orderid sampleid=sample.uuid %}"
                       class="flex-center justify-center space-x-2">
                       {% csrf_token %}

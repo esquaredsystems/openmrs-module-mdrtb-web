@@ -118,7 +118,8 @@
             {% if state == 'edit' %}
             <input class="input form-control" type="text" name="specimenid" value="{{sample.sampleIdentifier}}">
             {% else %}
-            <input class="input form-control" type="text" name="specimenid" value="{{'placeholder' | get_datenow}}">
+            <input class="input form-control" type="text" name="specimenid"
+                value="{{'placeholder' | get_specimem_identifier}}">
             {% endif %}
 
 

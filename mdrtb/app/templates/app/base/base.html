@@ -23,7 +23,18 @@
 
 
 </head>
+
 <style>
+	.responsive {
+		width: 100%;
+	}
+
+	@media screen and (min-width: 840px) {
+		.responsive {
+			width: 50%;
+		}
+	}
+
 	.required:after {
 		content: " *";
 		color: red;

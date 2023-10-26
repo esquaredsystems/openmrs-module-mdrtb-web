@@ -158,16 +158,24 @@ def post(req, endpoint, data):
     response = requests.post(
         url=REST_API_BASE_URL + endpoint, headers=get_auth_headers(req), json=data
     )
+    data = response.json()
     logger.info(f"'Making POST call to /{endpoint}'")
     if response.ok:
         logger.info(f"POST Request successful, status: {response.status_code}")
-        return True, response.json()
+        return True, data
     logger.info(f"'POST Request failed to /{endpoint}, status: {response.status_code}'")
-    if "error" in response.json():
-        logger.error(response.json(), exc_info=True)
-        raise Exception(
-            response.json()["error"]["message"].replace("[", "").replace("]", "")
+    if "error" in data:
+        logger.error(data, exc_info=True)
+        short_error_message = data["error"]["message"]
+        detailed_message = None
+        if "globalErrors" in data["error"]:
+            detailed_message = data["error"]["globalErrors"][0]["message"]
+        error_message = (
+            short_error_message + ": " + detailed_message
+            if detailed_message
+            else short_error_message
         )
+        raise Exception(error_message)
     response.raise_for_status()
 
 

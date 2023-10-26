@@ -11,6 +11,7 @@ import logging
 import utilities.metadata_util as mu
 import utilities.common_utils as utils
 from resources.enums.mdrtbConcepts import Concepts
+from resources.enums.constants import Constants
 import zlib
 import pickle
 
@@ -191,30 +192,17 @@ def get_attributes_of_labtest(req, lab_test_type):
         Exception: If there is an error retrieving the attributes.
 
     """
-    commpressed_attribute_types = cache.get(
-        f"{lab_test_type['name'].replace(' ','')}attribute_types"
+
+    status, data = ru.get(
+        req,
+        "commonlab/labtestattributetype",
+        {"testTypeUuid": lab_test_type["uuid"], "v": "full"},
     )
-    if commpressed_attribute_types:
-        attribute_types = pickle.loads(zlib.decompress(commpressed_attribute_types))
+    if status:
+        attribute_types = sorted(data["results"], key=lambda x: x["sortWeight"])
         return attribute_types
-    if not commpressed_attribute_types:
-        status, data = ru.get(
-            req,
-            "commonlab/labtestattributetype",
-            {"testTypeUuid": lab_test_type["uuid"], "v": "full"},
-        )
-        if status:
-            attribute_types = sorted(data["results"], key=lambda x: x["sortWeight"])
-
-            cache.set(
-                f"{lab_test_type['name'].replace(' ','')}attribute_types",
-                zlib.compress(pickle.dumps(attribute_types)),
-                timeout=None,
-            )
-
-        else:
-            raise Exception(data["error"]["message"])
-    return attribute_types
+    else:
+        raise Exception(data["error"]["message"])
 
 
 def add_edit_test_type(req, data, url):
@@ -436,6 +424,11 @@ def get_custom_attribute_for_labresults(req, orderid, attributes_to_get=None):
         status, response = ru.get(
             req, f"commonlab/labtestorder/{orderid}", {"v": "custom:(labTestType)"}
         )
+        lab_test_type = response["labTestType"]["name"].replace(" ", "")
+        compressed_attribute_types = cache.get(f"{lab_test_type}attribute_types")
+        if compressed_attribute_types:
+            attributes = pickle.loads(zlib.decompress(compressed_attribute_types))
+            return attributes
 
         attributes = get_attributes_of_labtest(req, response["labTestType"])
 
@@ -501,11 +494,24 @@ def get_custom_attribute_for_labresults(req, orderid, attributes_to_get=None):
                                 concept = mu.get_concept(
                                     req, attribute["datatypeConfig"]
                                 )
+                                concept_full_name = concept["display"]
+                                if (
+                                    concept["name"]["conceptNameType"]
+                                    != Constants.FULLY_SPECIFIED.value
+                                ):
+                                    for name in concept["names"]:
+                                        if (
+                                            name["conceptNameType"]
+                                            == Constants.FULLY_SPECIFIED.value
+                                            and name["locale"] == req.session["locale"]
+                                        ):
+                                            concept_full_name = name["name"]
+                                            break
                                 attrs.append(
                                     {
                                         "attributeType": {
                                             "uuid": attribute["uuid"],
-                                            "name": concept["display"],
+                                            "name": concept_full_name,
                                             "datatype": attribute["datatypeClassname"],
                                             "inputType": datatype["inputType"],
                                             "answers": concept["answers"],
@@ -521,11 +527,24 @@ def get_custom_attribute_for_labresults(req, orderid, attributes_to_get=None):
                                 concept = mu.get_concept_by_search(
                                     req, attribute["name"]
                                 )
+                                concept_full_name = concept["display"]
+                                if (
+                                    concept["name"]["conceptNameType"]
+                                    != Constants.FULLY_SPECIFIED.value
+                                ):
+                                    for name in concept["names"]:
+                                        if (
+                                            name["conceptNameType"]
+                                            == Constants.FULLY_SPECIFIED.value
+                                            and name["locale"] == req.session["locale"]
+                                        ):
+                                            concept_full_name = name["name"]
+                                            break
                                 attrs.append(
                                     {
                                         "attributeType": {
                                             "uuid": attribute["uuid"],
-                                            "name": concept["display"],
+                                            "name": concept_full_name,
                                             "datatype": attribute["datatypeClassname"],
                                             "inputType": datatype["inputType"],
                                             "group": attribute["groupName"],
@@ -534,6 +553,12 @@ def get_custom_attribute_for_labresults(req, orderid, attributes_to_get=None):
                                 )
                             except Exception as e:
                                 continue
+        if attributes_to_get is None:
+            cache.set(
+                f"{lab_test_type}attribute_types",
+                zlib.compress(pickle.dumps(attrs)),
+                timeout=None,
+            )
 
         return attrs
 

@@ -7,10 +7,12 @@
 
 {%block content%}
 
+
+
+
 {% if add_patients_privilege %}
-
-
-<form onsubmit="disableSubmit()" action="{% url 'enrollPatient' %}" method="post" class="enroll-form w-1/2 mx-auto">
+<form onsubmit="disableSubmit()" action="{% url 'enrollPatient' %}" method="post"
+  class="enroll-form mx-auto responsive">
   {% csrf_token %}
   <div class="enrollform-sections-container">
     {% include 'app/components/breadcrumbs.html'%}

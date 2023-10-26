@@ -7,8 +7,24 @@ from utilities import metadata_util as mu
 
 @register.filter
 def get_datenow(placeholder):
-    labref = str(datetime.now())
-    return labref[:23]
+    date_time_now = str(datetime.now())
+    return date_time_now
+
+
+@register.filter
+def get_specimem_identifier(placeholder):
+    date_time_now = str(datetime.now())
+    date_time_short = date_time_now[:23]
+    labref = "".join(filter(str.isalnum, date_time_short))
+    return labref[2 : len(labref)]
+
+
+@register.filter
+def get_lab_reference_num(placeholder):
+    date_time_now = str(datetime.now())
+    date_time_short = date_time_now[:23]
+    labref = "".join(filter(str.isalnum, date_time_short))
+    return labref[2 : len(labref) - 2]
 
 
 @register.filter

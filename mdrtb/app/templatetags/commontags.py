@@ -5,12 +5,6 @@ import json
 
 
 @register.filter
-def get_datenow(placeholder):
-    labref = str(datetime.now())
-    return labref[:23]
-
-
-@register.filter
 def get_encounter_name(name):
     return name[: len(name) - 10]
 

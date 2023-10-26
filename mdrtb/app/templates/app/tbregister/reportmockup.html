@@ -4,11 +4,22 @@
 {% endblock %}
 {% block content %}
 
+<style>
+    .responsive {
+        background-color: red;
+    }
 
-<div>
-    {% for loop in '7'|get_range %}
-    {{loop}}
-    {% endfor %}
+    @media screen and (min-width: 480px) {
+        .responsive {
+            background-color: lightgreen;
+        }
+    }
+</style>
+
+
+<div class="m-12 responsive">
+    HELLO
+</div>
 </div>
 
 
