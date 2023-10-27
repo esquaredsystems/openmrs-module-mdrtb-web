@@ -58,6 +58,9 @@ class Constants(enum.Enum):
     DATE_OF_REQUEST_FOR_LABORATORY_INVESTIGATION = (
         "ce49756b-929b-3920-f1a1-3fd205440576"
     )
+    COMMON_TEST = "4e81d04f-bdc0-11ed-9c1c-00155d694c4d"
+    DST_LJ = "55e9c046-bdc0-11ed-9c1c-00155d694c4d"
+    DST_MGIT = "53c20f1b-bdc0-11ed-9c1c-00155d694c4d"
 
     # Concept name types
     FULLY_SPECIFIED = "FULLY_SPECIFIED"

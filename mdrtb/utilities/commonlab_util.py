@@ -169,42 +169,6 @@ def get_test_types_by_search(req, query):
     return labtests
 
 
-def get_attributes_of_labtest(req, lab_test_type):
-    """
-
-    Retrieves the attributes of a lab test based on the provided UUID.
-
-
-    Parameters:
-
-        req: The request object.
-
-        uuid (str): The UUID of the lab test.
-
-
-    Returns:
-
-        list: A list of dictionaries representing the attributes of the lab test. Each dictionary contains detailed information about an attribute.
-
-
-    Raises:
-
-        Exception: If there is an error retrieving the attributes.
-
-    """
-
-    status, data = ru.get(
-        req,
-        "commonlab/labtestattributetype",
-        {"testTypeUuid": lab_test_type["uuid"], "v": "full"},
-    )
-    if status:
-        attribute_types = sorted(data["results"], key=lambda x: x["sortWeight"])
-        return attribute_types
-    else:
-        raise Exception(data["error"]["message"])
-
-
 def add_edit_test_type(req, data, url):
     """
 
@@ -399,7 +363,44 @@ def get_custom_lab_order(full_order):
     }
 
 
-def get_custom_attribute_for_labresults(req, orderid, attributes_to_get=None):
+def get_attributes_of_labtest(req, lab_test_type):
+    """
+    Retrieves the attributes of a lab test based on the provided UUID.
+    Parameters:
+        req: The request object.
+        uuid (str): The UUID of the lab test.
+    Returns:
+        list: A list of dictionaries representing the attributes of the lab test. Each dictionary contains detailed information about an attribute.
+    Raises:
+        Exception: If there is an error retrieving the attributes.
+    """
+    compressed_attribute_types = cache.get(
+        f"{lab_test_type['name'].replace(' ','')}_attribute_types"
+    )
+    if compressed_attribute_types:
+        return pickle.loads(zlib.decompress(compressed_attribute_types))
+
+    status, data = ru.get(
+        req,
+        "commonlab/labtestattributetype",
+        {"testTypeUuid": lab_test_type["uuid"], "v": "full"},
+    )
+    if status:
+        attribute_types = sorted(data["results"], key=lambda x: x["sortWeight"])
+        compressed_attribute_types = zlib.compress(pickle.dumps(attribute_types))
+        cache.set(
+            f"{lab_test_type['name'].replace(' ','')}_attribute_types",
+            compressed_attribute_types,
+            timeout=None,
+        )
+        return attribute_types
+    else:
+        raise Exception(data["error"]["message"])
+
+
+def get_custom_attribute_for_labresults(
+    req, orderid, attributes_to_get=None, lab_test_type=None
+):
     """
     Retrieves custom attributes for lab results and returns them along with the lab test type UUID.
 
@@ -415,24 +416,32 @@ def get_custom_attribute_for_labresults(req, orderid, attributes_to_get=None):
 
     """
 
-    datatypes = get_attributes_data_types()
-
     try:
         if attributes_to_get and len(attributes_to_get) <= 0:
             return []
 
-        status, response = ru.get(
-            req, f"commonlab/labtestorder/{orderid}", {"v": "custom:(labTestType)"}
+        if lab_test_type is None:
+            status, response = ru.get(
+                req, f"commonlab/labtestorder/{orderid}", {"v": "custom:(labTestType)"}
+            )
+            lab_test_type = response["labTestType"]
+            lab_test_type_name = response["labTestType"]["name"].replace(" ", "")
+        else:
+            lab_test_type_name = lab_test_type["name"].replace(" ", "")
+
+        custom_attributes_object = cache.get(
+            f"{lab_test_type_name}_custom_attribute_types"
         )
-        lab_test_type = response["labTestType"]["name"].replace(" ", "")
-        compressed_attribute_types = cache.get(f"{lab_test_type}attribute_types")
+        if custom_attributes_object:
+            return pickle.loads(zlib.decompress(custom_attributes_object))
+        compressed_attribute_types = cache.get(f"{lab_test_type_name}_attribute_types")
         if compressed_attribute_types:
             attributes = pickle.loads(zlib.decompress(compressed_attribute_types))
-            return attributes
-
-        attributes = get_attributes_of_labtest(req, response["labTestType"])
+        else:
+            attributes = get_attributes_of_labtest(req, lab_test_type)
 
         attrs = []
+        datatypes = get_attributes_data_types()
         for attribute in attributes:
             if attributes_to_get:
                 if attribute["uuid"] in attributes_to_get:
@@ -555,7 +564,7 @@ def get_custom_attribute_for_labresults(req, orderid, attributes_to_get=None):
                                 continue
         if attributes_to_get is None:
             cache.set(
-                f"{lab_test_type}attribute_types",
+                f"{lab_test_type_name}_custom_attribute_types",
                 zlib.compress(pickle.dumps(attrs)),
                 timeout=None,
             )
@@ -588,10 +597,17 @@ def get_result_date_if_exists(req, orderid):
 
 
 def get_labtest_attributes(req, orderid, representation=None):
-    status, response = ru.get(req, f"commonlab/labtestorder/{orderid}", {})
+    status, response = ru.get(
+        req,
+        f"commonlab/labtestorder/{orderid}",
+        {"v": "custom:(attributes,labTestType)"},
+    )
     if representation == "FULL":
         attribute_types = get_custom_attribute_for_labresults(
-            req, orderid, attributes_to_get=None
+            req,
+            orderid,
+            attributes_to_get=None,
+            lab_test_type=response["labTestType"],
         )
         for attribute_type in attribute_types:
             for attribute in response["attributes"]:
@@ -612,6 +628,7 @@ def get_labtest_attributes(req, orderid, representation=None):
                 attribute["attributeType"]["uuid"]
                 for attribute in response["attributes"]
             ],
+            lab_test_type=response["labTestType"],
         )
         for attribute in response["attributes"]:
             for attribute_type in attribute_types:

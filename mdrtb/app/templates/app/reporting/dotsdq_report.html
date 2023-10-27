@@ -1,0 +1,564 @@
+{% extends 'app/reporting/report_base.html' %}
+
+{% block content %}
+
+
+<div>
+    <div id="dq">
+        <table class="resultsTable">
+            <tr>
+                <th class=normal colspan="4">{{"mdrtb.dq.title"|get_message:request.session.locale}}</th>
+            </tr>
+            <tr>
+                <th colspan="2">{{"mdrtb.oblast"|get_message:request.session.locale}}</td>
+                <td colspan="2">{{ oName }}</td>
+            </tr>
+            <tr>
+                <th colspan="2">{{"mdrtb.district"|get_message:request.session.locale}}</td>
+                <td colspan="2">{{ dName }}</td>
+            </tr>
+            <tr>
+                <th colspan="2">{{"mdrtb.facility"|get_message:request.session.locale}}</td>
+                <td colspan="2">{{ fName }}</td>
+            </tr>
+            <tr>
+                <th colspan="2">{{"mdrtb.year"|get_message:request.session.locale}}</td>
+                <td colspan="2" align="right">{{ year }}</td>
+            </tr>
+            <tr>
+                <th colspan="2">{{"mdrtb.quarter"|get_message:request.session.locale}}</td>
+                <td align="right" colspan="2">{{ quarter }}</td>
+            </tr>
+            <tr>
+                <th colspan="2">{{"mdrtb.month"|get_message:request.session.locale}}</td>
+                <td align="right" colspan="2">{{ month }}</td>
+            </tr>
+            <tr>
+                <th colspan="2">{{"mdrtb.dq.numberOfPatients"|get_message:request.session.locale}}</td>
+                <td align="right" colspan="2">{{ num }}</td>
+            </tr>
+            <tr>
+                <th colspan="2">{{"mdrtb.dq.numberWithErrors"|get_message:request.session.locale}}</td>
+                <td align="right" colspan="2">{{ errorCount }}</td>
+            </tr>
+            <tr>
+                <th colspan="2">{{"mdrtb.dq.errorPercentage"|get_message:request.session.locale}}</td>
+                <td align="right" colspan="2">{{ errorPercentage }}</td>
+            </tr>
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+
+
+            <tr>
+                <th class=normal colspan="4">{{"mdrtb.dq.duplicateForm89"|get_message:request.session.locale}}</th>
+            </tr>
+            <tr>
+                <td>{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
+                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
+                <td align="center">{{"mdrtb.dq.links"|get_message:request.session.locale}}</td>
+            </tr>
+            {% for row in results.duplicateForm89 %}
+            <tr>
+
+                <td><a href="#" target="_blank">{{row.patientName}}</a></td>
+                <td>{{ row.dateOfBirth }}</td>
+                <td align="center">{{ row.gender }}</td>
+                <td>
+                    {% for link in row.form89Links %}
+                    <a href="#" target="_blank">{{"mdrtb.form89"|get_message:request.session.locale}} </a>&nbsp;
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+
+            <tr>
+                <th class=normal colspan="4">{{"mdrtb.dq.duplicateTB03"|get_message:request.session.locale}}</th>
+            </tr>
+            <tr>
+                <td>{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
+                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
+                <td align="center">{{"mdrtb.dq.links"|get_message:request.session.locale}}</td>
+            </tr>
+            {% for row in results.duplicateTB03 %}
+            <tr>
+
+                <td><a href="#" target="_blank">{{row.patientName}}</a></td>
+                <td>{{ row.dateOfBirth }}</td>
+                <td align="center">{{ row.gender }}</td>
+                <td>
+                    {% for link in row.tb03Links %}
+                    <a href="{{ pageContext.request.contextPath }}{{ link }}"
+                        target="_blank">{{"mdrtb.tb03"|get_message:request.session.locale}} </a>&nbsp;
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+
+            <tr>
+                <th class=normal colspan="4">{{"mdrtb.dq.missingForm89"|get_message:request.session.locale}}</th>
+            </tr>
+            <tr>
+                <td colspan="2">{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
+                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
+            </tr>
+            {% for row in results.missingForm89 %}
+            <tr>
+
+                <td colspan="2"><a href="#" target="_blank">{{row.patientName}}</td>
+                <td align="center">{{ row.gender }}</td>
+            </tr>
+            {% endfor %}
+
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <th class=normal colspan="4">{{"mdrtb.dq.invalidForm89"|get_message:request.session.locale}}</th>
+            </tr>
+            <tr>
+                <td colspan="2">{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
+                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
+            </tr>
+            {% for row in results.invalidForm89 %}
+            <tr>
+
+                <td colspan="2"><a href="#" target="_blank">{{row.patientName}}</a></td>
+                <td>{{ row.dateOfBirth }}</td>
+                <td align="center">{{ row.gender }}</td>
+            </tr>
+
+            {% endfor %}
+
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <th class=normal colspan="4">{{"mdrtb.dq.missingAge"|get_message:request.session.locale}}</th>
+            </tr>
+            <tr>
+                <td colspan="2">{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
+                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
+            </tr>
+            {% for row in results.missingAge %}
+            <tr>
+
+                <td colspan="2"><a href="#" target="_blank">{{row.patientName}}</a></td>
+                <td>{{ row.dateOfBirth }}</td>
+                <td align="center">{{ row.gender }}</td>
+            </tr>
+
+            {% endfor %}
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <th class=normal colspan="4">{{"mdrtb.dq.missingPatientGroup"|get_message:request.session.locale}}</th>
+            </tr>
+            <tr>
+                <td colspan="2">{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
+                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
+            </tr>
+            {% for row in results.missingPatientGroup %}
+            <tr>
+
+                <td colspan="2"><a href="#" target="_blank">{{row.patientName}}</a></td>
+                <td>{{ row.dateOfBirth }}</td>
+                <td align="center">{{ row.gender }}</td>
+            </tr>
+
+            {% endfor %}
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <th class=normal colspan="4">{{"mdrtb.dq.missingDiagnosticTests"|get_message:request.session.locale}}
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2">{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
+                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
+            </tr>
+            {% for row in results.missingDiagnosticTests %}
+            <tr>
+
+                <td colspan="2"><a
+                        href="{{ pageContext.request.contextPath }}/module/mdrtb/program/enrollment.form?patientId={{ row.patient.id }}"
+                        target="_blank">{{row.patientName}}</a>
+                </td>
+                <td>{{ row.dateOfBirth }}</td>
+                <td align="center">{{ row.gender }}</td>
+            </tr>
+
+            {% endfor %}
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <th class=normal colspan="4">{{"mdrtb.dq.notStartedTreatment"|get_message:request.session.locale}}</th>
+            </tr>
+            <tr>
+                <td colspan="2">{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
+                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
+            </tr>
+            {% for row in results.notStartedTreatment %}
+            <tr>
+
+                <td colspan="2"><a href="#" target="_blank">{{row.patientName}}</a></td>
+                <td>{{ row.dateOfBirth }}</td>
+                <td align="center">{{ row.gender }}</td>
+            </tr>
+
+            {% endfor %}
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <th class=normal colspan="4">{{"mdrtb.dq.missingOutcomes"|get_message:request.session.locale}}</th>
+            </tr>
+            <tr>
+                <td colspan="2">{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
+                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
+            </tr>
+            {% for row in results.missingOutcomes %}
+            <tr>
+
+                <td colspan="2"><a href="#" target="_blank">{{row.patientName}}</a></td>
+                <td>{{ row.dateOfBirth }}</td>
+                <td align="center">{{ row.gender }}</td>
+            </tr>
+
+            {% endfor %}
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <th class=normal colspan="4">{{"mdrtb.dq.noDOTSId"|get_message:request.session.locale}}</th>
+            </tr>
+            <tr>
+                <td colspan="2">{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
+                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
+            </tr>
+            {% for row in results.noDOTSId %}
+            <tr>
+
+                <td colspan="2"><a href="#" target="_blank">{{row.patientName}}</a></td>
+                <td>{{ row.dateOfBirth }}</td>
+                <td align="center">{{ row.gender }}</td>
+            </tr>
+
+            {% endfor %}
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <th class=normal colspan="4">{{"mdrtb.dq.noSite"|get_message:request.session.locale}}</th>
+            </tr>
+            <tr>
+                <td colspan="2">{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
+                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
+            </tr>
+            {% for row in results.noSite %}
+            <tr>
+
+                <td colspan="2"><a href="#" target="_blank">{{row.patientName}}</a></td>
+                <td>{{ row.dateOfBirth }}</td>
+                <td align="center">{{ row.gender }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+
+
+            <tr>
+                <th class=normal colspan="4">{{"mdrtb.dq.noTransferIn"|get_message:request.session.locale}}</th>
+            </tr>
+            <tr>
+                <td>{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.location"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
+                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
+            </tr>
+            {% for row in results.noTransferIn %}
+            <tr>
+
+                <td><a href="#" target="_blank">{{row.patientName}}</a></td>
+                <td>{{ row.locName }}</td>
+                <td>{{ row.dateOfBirth }}</td>
+                <td align="center">{{ row.gender }}</td>
+            </tr>
+            {% endfor %}
+
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+
+
+            <tr>
+                <th class=normal colspan="4">{{"mdrtb.dq.noTransferOut"|get_message:request.session.locale}}</th>
+            </tr>
+            <tr>
+                <td>{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.location"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
+                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
+            </tr>
+            {% for row in results.noTransferOut %}
+            <tr>
+
+                <td><a href="#" target="_blank">{{row.patientName}}</a></td>
+                <td>{{ row.locName }}</td>
+                <td>{{ row.dateOfBirth }}</td>
+                <td align="center">{{ row.gender }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+    <input type="button" onclick="tableToExcel('f89', 'Form89')"
+        value="{{'mdrtb.exportToExcelBtn'|get_message:request.session.locale}}" />
+
+    <a href="/" type="button" id="back" name="back">{{'mdrtb.back'|get_message:request.session.locale}}</a>
+    <input type="button" onclick="printForm()" value="{{'mdrtb.print'|get_message:request.session.locale}}" />
+    <button onclick="saveHtml()">{{'mdrtb.save'|get_message:request.session.locale}}</button>
+    <script type="text/javascript">
+        function saveHtml() {
+            let htmlContent = document.getElementById("f89").outerHTML;
+            htmlContent = htmlContent.replace(/\s{2,}/g, ' ');
+            let year = "{{request.GET.year}}"
+            let location = "{{request.GET.location}}"
+            let quarter = "{{request.GET.quarter}}" ? "{{request.GET.quarter}}" : null;
+            let month = "{{request.GET.month}}" ? "{{request.GET.month}}" : null;
+
+            data = {
+                csrfmiddlewaretoken: "{{csrf_token}}",
+                reportName: "Form-89",
+                year,
+                location,
+                reportType: "DOTSTB",
+                tableData: htmlContent
+            }
+
+            if (month != null) data.month = month
+            if (quarter != null) data.quarter = quarter
+
+
+            $.ajax({
+                method: "POST",
+                url: "/saveclosedreport",
+                data: data,
+                success: (data) => {
+                    console.log(data)
+                }
+            })
+
+
+        }
+        function printForm() {
+            var mywindow = window.open('', 'PRINT', 'height=400,width=600');
+
+            mywindow.document.write('<html><head><title>{{"mdrtb.form89"|get_message:request.session.locale}}</title>');
+            mywindow.document.write('</head><body >');
+            // mywindow.document.write('<h1>{{"mdrtb.pv.aeForm"|get_message:request.session.locale}}</h1>');
+            mywindow.document.write(document.getElementById("f89").innerHTML);
+
+            mywindow.document.write('</body></html>');
+
+            mywindow.document.close(); // necessary for IE >= 10
+            mywindow.focus(); // necessary for IE >= 10*/
+
+            mywindow.print();
+            mywindow.close();
+
+            return true;
+        }
+        var tableToExcel = (function () {
+            var uri = 'data:application/vnd.ms-excel;base64,'
+                , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>TB03</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>'
+                , base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) }
+                , format = function (s, c) { return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; }) }
+            return function (table, name) {
+                if (!table.nodeType) table = document.getElementById(table)
+                var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
+                window.location.href = uri + base64(format(template, ctx))
+            }
+        })()
+        function savePdf(action, reportName, formPath) {
+            var tableData = (document.getElementById("f89")).innerHTML.toString();
+            var oblast = "{{ oblast }}";
+            var district = "{{ district }}";
+            var facility = "{{ facility }}";
+            var year = "{{ year }}";
+            if (!"{{quarter}}") {
+                var quarter = "\"" + "{{quarter}}" + "\"";
+            } else {
+                var quarter = "";
+            }
+            if (!"{{month}}") {
+                var month = "\"" + "{{month}}" + "\"";
+            } else {
+                var month = "";
+            }
+            var reportDate = "{{ reportDate }}";
+
+            var form = document.createElement("FORM");
+
+            form.setAttribute("id", "closeReportForm");
+            form.setAttribute("name", "closeReportForm");
+            form.setAttribute("method", "post");
+            form.setAttribute("action", action);
+
+            document.body.appendChild(form);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "oblast");
+            input.setAttribute("name", "oblast");
+            input.setAttribute("value", oblast);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "district");
+            input.setAttribute("name", "district");
+            input.setAttribute("value", district);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "facility");
+            input.setAttribute("name", "facility");
+            input.setAttribute("value", facility);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "year");
+            input.setAttribute("name", "year");
+            input.setAttribute("value", year);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "quarter");
+            input.setAttribute("name", "quarter");
+            input.setAttribute("value", quarter);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "month");
+            input.setAttribute("name", "month");
+            input.setAttribute("value", month);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "reportDate");
+            input.setAttribute("name", "reportDate");
+            input.setAttribute("value", reportDate);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "table");
+            input.setAttribute("name", "table");
+            input.setAttribute("value", tableData);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "formPath");
+            input.setAttribute("name", "formPath");
+            input.setAttribute("value", formPath);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "reportName");
+            input.setAttribute("name", "reportName");
+            input.setAttribute("value", reportName);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "reportType");
+            input.setAttribute("name", "reportType");
+            input.setAttribute("value", "DOTSTB");
+            form.appendChild(input);
+
+            form.submit();
+        }
+        $(document).ready(function () {
+            $("#tableToSql").bind("click", function () {
+                if (confirm('{{"mdrtb.closeReportMessage"|get_message:request.session.locale}}')) {
+                    savePdf("closeReport.form", "form89", "form89results");
+                }
+            });
+            /* $("#tableToPdf").click(function(){
+                savePdf("exportReport.form", "TB 03", "tb03Results");
+            }); */
+        });
+    </script>
+</div>
+
+{% endblock %}

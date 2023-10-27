@@ -151,6 +151,7 @@ urlpatterns = [
     path("tb08results", views.render_tb08_report, name="tb08results"),
     path("tb08uresults", views.render_tb08u_report, name="tb08uresults"),
     path("tb07uresults", views.render_tb07u_report, name="tb07uresults"),
+    path("dotsdqresults", views.render_dotsdq_report, name="dotsdqresults"),
     path("closedreports", views.render_closed_reports, name="closedreports"),
     path(
         "viewclosedreport/<str:uuid>",

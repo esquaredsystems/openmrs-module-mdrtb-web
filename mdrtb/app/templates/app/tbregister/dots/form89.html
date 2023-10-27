@@ -397,7 +397,7 @@
             <div class="input-container">
               <label
                 class="tb03-form-label w-full">{{'mdrtb.form89.diabetes'|get_message:request.session.locale}}</label>
-              <div class="flex-center space-x-4">
+              <div class="flex-center space-x-4 w-full">
                 <div class="flex-center space-x-2">
                   <label>{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                   {% if state == 'edit' %}
@@ -425,7 +425,7 @@
                     value="{{constants.NO}}" />
                   {% endif %}
                   {% else %}
-                  <input checked name="{{'DIABETES' | get_concept }}" type="radio" class="radio-input"
+                  <input name="{{'DIABETES' | get_concept }}" type="radio" class="radio-input"
                     value="{{constants.NO}}" />
                   {% endif %}
 
@@ -434,7 +434,7 @@
             </div>
             <div class="input-container">
               <label class="tb03-form-label  w-full">{{'mdrtb.form89.cnsdl'|get_message:request.session.locale}}</label>
-              <div class="flex-center space-x-4">
+              <div class="flex-center space-x-4 w-full">
                 <div class="flex-center space-x-2">
                   <label>{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                   {% if state == 'edit' %}
@@ -459,8 +459,7 @@
                   <input name="{{'CNSDL' | get_concept }}" type="radio" class="radio-input" value="{{constants.NO}}" />
                   {% endif %}
                   {% else %}
-                  <input checked name="{{'CNSDL' | get_concept }}" type="radio" class="radio-input"
-                    value="{{constants.NO}}" />
+                  <input name="{{'CNSDL' | get_concept }}" type="radio" class="radio-input" value="{{constants.NO}}" />
                   {% endif %}
 
                 </div>
@@ -471,7 +470,7 @@
             <div class="input-container">
               <label
                 class="tb03-form-label w-full">{{'mdrtb.form89.htHeartDisease'|get_message:request.session.locale}}</label>
-              <div class="flex-center space-x-4">
+              <div class="flex-center space-x-4 w-full">
                 <div class="flex-center space-x-2">
                   <label>{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                   {% if state == 'edit' %}
@@ -499,8 +498,8 @@
                     value="{{constants.NO}}" />
                   {% endif %}
                   {% else %}
-                  <input checked name="{{'HYPERTENSION_OR_HEART_DISEASE' | get_concept }}" type="radio"
-                    class="radio-input" value="{{constants.NO}}" />
+                  <input name="{{'HYPERTENSION_OR_HEART_DISEASE' | get_concept }}" type="radio" class="radio-input"
+                    value="{{constants.NO}}" />
                   {% endif %}
 
                 </div>
@@ -508,7 +507,7 @@
             </div>
             <div class="input-container ">
               <label class="tb03-form-label  w-full">{{'mdrtb.form89.ulcer'|get_message:request.session.locale}}</label>
-              <div class="flex-center space-x-4">
+              <div class="flex-center space-x-4 w-full">
                 <div class="flex-center space-x-2">
                   <label>{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                   {% if state == 'edit' %}
@@ -533,8 +532,7 @@
                   <input name="{{'ULCER' | get_concept }}" type="radio" class="radio-input" value="{{constants.NO}}" />
                   {% endif %}
                   {% else %}
-                  <input checked name="{{'ULCER' | get_concept }}" type="radio" class="radio-input"
-                    value="{{constants.NO}}" />
+                  <input name="{{'ULCER' | get_concept }}" type="radio" class="radio-input" value="{{constants.NO}}" />
                   {% endif %}
 
                 </div>
@@ -545,7 +543,7 @@
             <div class="input-container">
               <label
                 class="tb03-form-label w-full">{{'mdrtb.form89.mentalDisorder'|get_message:request.session.locale}}</label>
-              <div class="flex-center space-x-4">
+              <div class="flex-center space-x-4 w-full">
                 <div class="flex-center space-x-2">
                   <label>{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                   {% if state == 'edit' %}
@@ -574,7 +572,7 @@
                     value="{{constants.NO}}" />
                   {% endif %}
                   {% else %}
-                  <input checked name="{{'MENTAL_DISORDER' | get_concept }}" type="radio" class="radio-input"
+                  <input name="{{'MENTAL_DISORDER' | get_concept }}" type="radio" class="radio-input"
                     value="{{constants.NO}}" />
                   {% endif %}
 
@@ -584,7 +582,7 @@
             </div>
             <div class="input-container">
               <label class="tb03-form-label w-full">{{'mdrtb.form89.cancer'|get_message:request.session.locale}}</label>
-              <div class="flex-center space-x-4">
+              <div class="flex-center space-x-4 w-full">
                 <div class="flex-center space-x-2">
                   <label>{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                   {% if state == 'edit' %}
@@ -612,8 +610,7 @@
                   <input name="{{'CANCER' | get_concept }}" type="radio" class="radio-input" value="{{constants.NO}}" />
                   {% endif %}
                   {% else %}
-                  <input checked name="{{'CANCER' | get_concept }}" type="radio" class="radio-input"
-                    value="{{constants.NO}}" />
+                  <input name="{{'CANCER' | get_concept }}" type="radio" class="radio-input" value="{{constants.NO}}" />
                   {% endif %}
 
 
@@ -625,7 +622,7 @@
             <div class="input-container">
               <label
                 class="tb03-form-label w-full">{{'mdrtb.form89.hepatitis'|get_message:request.session.locale}}</label>
-              <div class="flex-center space-x-4">
+              <div class="flex-center space-x-4 w-full">
                 <div class="flex-center space-x-2">
                   <label>{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                   {% if state == 'edit' %}
@@ -654,7 +651,7 @@
                     value="{{constants.NO}}" />
                   {% endif %}
                   {% else %}
-                  <input checked name="{{'COMORBID_HEPATITIS' | get_concept }}" type="radio" class="radio-input"
+                  <input name="{{'COMORBID_HEPATITIS' | get_concept }}" type="radio" class="radio-input"
                     value="{{constants.NO}}" />
                   {% endif %}
 
@@ -664,7 +661,7 @@
             <div class="input-container">
               <label
                 class="tb03-form-label  w-full">{{'mdrtb.form89.kidneyDisease'|get_message:request.session.locale}}</label>
-              <div class="flex-center space-x-4">
+              <div class="flex-center space-x-4 w-full">
                 <div class="flex-center space-x-2">
                   <label>{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                   {% if state == 'edit' %}
@@ -692,7 +689,7 @@
                     value="{{constants.NO}}" />
                   {% endif %}
                   {% else %}
-                  <input checked name="{{'KIDNEY_DISEASE' | get_concept }}" type="radio" class="radio-input"
+                  <input name="{{'KIDNEY_DISEASE' | get_concept }}" type="radio" class="radio-input"
                     value="{{constants.NO}}" />
                   {% endif %}
 
@@ -703,7 +700,7 @@
           <div class="flex-center justify-end space-x-6">
             <div class="input-container">
               <label class="tb03-form-label w-full">{{'mdrtb.form89.ibc20'|get_message:request.session.locale}}</label>
-              <div class="flex-center space-x-4">
+              <div class="flex-center space-x-4 w-full">
                 <div class="flex-center space-x-2">
                   <label>{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                   {% if state == 'edit' %}

@@ -76,7 +76,6 @@ def get_locations(req):
         except Exception as e:
             logger.error(str(e), exc_info=True)
             messages.error(req, e)
-            logger.error(str(e), exc_info=True)
 
             raise Exception(str(e))
 
@@ -263,17 +262,16 @@ def render_enroll_patient(req):
 
         mu.add_url_to_breadcrumb(req, context["title"])
 
+    except Exception as e:
+        messages.error(req, e)
+        logger.error(str(e), exc_info=True)
+
+    finally:
         return render(
             req,
             "app/tbregister/enroll_patients.html",
             context=context,
         )
-
-    except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
-
-        return redirect("searchPatientsView")
 
 
 def render_enrolled_programs(req, uuid):
@@ -316,13 +314,14 @@ def render_enrolled_programs(req, uuid):
         if programs:
             context["programs"] = programs
 
-        return render(req, "app/tbregister/enrolled_programs.html", context=context)
-
     except Exception as e:
         messages.error(req, str(e))
         logger.error(str(e), exc_info=True)
 
-        return redirect(req.session["redirect_url"])
+    finally:
+        return render(req, "app/tbregister/enrolled_programs.html", context=context)
+
+        # return redirect(req.session["redirect_url"])
 
 
 def render_enroll_in_dots_program(req, uuid):
@@ -361,7 +360,7 @@ def render_enroll_in_dots_program(req, uuid):
             messages.error(req, e)
             logger.error(str(e), exc_info=True)
 
-            return redirect("enrolledprograms", uuid=uuid)
+            return redirect("dotsprogramenroll", uuid=uuid)
 
     try:
         context.update(check_privileges(req, privileges_required))
@@ -391,7 +390,8 @@ def render_enroll_in_dots_program(req, uuid):
         messages.error(req, str(e))
         logger.error(str(e), exc_info=True)
 
-        return redirect("/")
+    finally:
+        return render(req, "app/tbregister/dots/enroll_in_dots.html", context=context)
 
 
 def render_enroll_patient_in_mdrtb(req, uuid):
@@ -422,10 +422,11 @@ def render_enroll_patient_in_mdrtb(req, uuid):
             return redirect("tb03u", uuid=uuid)
 
         except Exception as e:
-            logger.error(e, exc_info=True)
             messages.error(req, e)
             logger.error(str(e), exc_info=True)
-            return redirect(req.session.get("redirect_url"))
+            return render(
+                req, "app/tbregister/mdr/enroll_in_mdrtb.html", context=context
+            )
 
     try:
         context.update(check_privileges(req, privileges_required))
@@ -439,9 +440,6 @@ def render_enroll_patient_in_mdrtb(req, uuid):
 
         if program:
             context["jsonprogram"] = json.dumps(program)
-            return render(
-                req, "app/tbregister/mdr/enroll_in_mdrtb.html", context=context
-            )
 
         else:
             messages.error(req, "Error fetching programs. Please try again later")
@@ -454,7 +452,8 @@ def render_enroll_patient_in_mdrtb(req, uuid):
     except Exception as e:
         messages.error(req, str(e))
         logger.error(str(e), exc_info=True)
-        return redirect(req.session.get("redirect_url"))
+    finally:
+        return render(req, "app/tbregister/mdr/enroll_in_mdrtb.html", context=context)
 
 
 def render_edit_dots_program(req, uuid, programid):
@@ -463,6 +462,7 @@ def render_edit_dots_program(req, uuid, programid):
         Privileges.EDIT_DOTS_MDR_DATA,
     ]
 
+    context = {"title": title, "uuid": uuid, "state": "edit"}
     if not check_if_session_alive(req):
         return redirect("login")
 
@@ -490,16 +490,17 @@ def render_edit_dots_program(req, uuid, programid):
 
                 req.session["current_patient_program"] = response["uuid"]
 
+                return redirect("enrolledprograms", uuid=uuid)
+
         except Exception as e:
             messages.error(req, str(e))
             logger.error(str(e), exc_info=True)
-
-        finally:
-            return redirect("enrolledprograms", uuid=uuid)
+            return render(
+                req, "app/tbregister/dots/enroll_in_dots.html", context=context
+            )
 
     try:
         title = mu.get_global_msgs("mdrtb.editProgram", locale=req.session["locale"])
-        context = {"title": title, "uuid": uuid, "state": "edit"}
 
         context.update(check_privileges(req, privileges_required))
 
@@ -522,6 +523,7 @@ def render_edit_dots_program(req, uuid, programid):
 
 
 def render_edit_mdrtb_program(req, uuid, programid):
+    context = {"title": title, "uuid": uuid, "state": "edit"}
     privileges_required = [
         Privileges.EDIT_PATIENT_PROGRAMS,
         Privileges.EDIT_DOTS_MDR_DATA,
@@ -554,16 +556,17 @@ def render_edit_mdrtb_program(req, uuid, programid):
 
                 req.session["current_patient_program"] = response["uuid"]
 
+                return redirect("enrolledprograms", uuid=uuid)
+
         except Exception as e:
             messages.error(req, str(e))
             logger.error(str(e), exc_info=True)
-
-        finally:
-            return redirect("enrolledprograms", uuid=uuid)
+            return render(
+                req, "app/tbregister/mdr/enroll_in_mdrtb.html", context=context
+            )
 
     try:
         title = mu.get_global_msgs("mdrtb.editProgram", locale=req.session["locale"])
-        context = {"title": title, "uuid": uuid, "state": "edit"}
 
         context.update(check_privileges(req, privileges_required))
 
@@ -582,29 +585,6 @@ def render_edit_mdrtb_program(req, uuid, programid):
         messages.error(req, str(e))
 
         return redirect("editmdrtbprogram", uuid=uuid, programid=programid)
-
-
-# def render_delete_program(req, uuid, programid):
-
-#     if programid:
-
-#         try:
-
-#             status, _ = ru.delete(req, f"programenrollment/{programid}")
-
-#             if status:
-
-#                 messages.warning(req, "Program deleted successfully")
-
-#         except Exception as e:
-
-#             messages.error(req, str(e))
-
-#             return redirect("enrolledprograms", uuid=uuid)
-
-#         finally:
-
-#             return redirect("enrolledprograms", uuid=uuid)
 
 
 def render_patient_dashboard(req, uuid, mdrtb=None):
@@ -699,25 +679,35 @@ def render_tb03_form(req, uuid):
 
     if req.method == "POST":
         try:
+            raise Exception("Testing")
             response = fu.create_update_tb03(req, uuid, req.POST)
 
             if response:
                 messages.success(req, "Form created successfully")
 
+                redirect_to = "/tbdashboard/patient/{}?program={}".format(
+                    uuid,
+                    req.session["current_patient_program_flow"]["current_program"][
+                        "uuid"
+                    ],
+                )
+
+                return redirect(redirect_to)
+
         except Exception as e:
             messages.error(req, str(e))
             logger.error(str(e), exc_info=True)
-
-        finally:
-            redirect_to = "/tbdashboard/patient/{}?program={}".format(
-                uuid,
-                req.session["current_patient_program_flow"]["current_program"]["uuid"],
-            )
-
-            return redirect(redirect_to)
+            return redirect("tb03", uuid=uuid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+        context = {
+            "concepts": concepts,
+            "title": title,
+            "uuid": uuid,
+            "current_patient_program_flow": req.session["current_patient_program_flow"],
+            "identifiers": pu.get_patient_identifiers(req, uuid),
+        }
         tb03_concepts = [
             Concepts.TREATMENT_CENTER_FOR_IP.value,
             Concepts.TREATMENT_CENTER_FOR_CP.value,
@@ -731,13 +721,6 @@ def render_tb03_form(req, uuid):
 
         concepts = fu.get_form_concepts(tb03_concepts, req)
         title = mu.get_global_msgs("mdrtb.tb03", locale=req.session["locale"])
-        context = {
-            "concepts": concepts,
-            "title": title,
-            "uuid": uuid,
-            "current_patient_program_flow": req.session["current_patient_program_flow"],
-            "identifiers": pu.get_patient_identifiers(req, uuid),
-        }
 
         mu.add_url_to_breadcrumb(req, context["title"])
 
@@ -2870,6 +2853,47 @@ def render_missing_tb03u_report(req):
 
         return redirect("searchPatientsView")
 
+    except Exception as e:
+        messages.error(req, e)
+        logger.error(str(e), exc_info=True)
+
+        return redirect(req.session["redirect_url"])
+
+
+def render_dotsdq_report(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
+
+    try:
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER")
+
+        context = {"title": "Dots Data Quality Report"}
+
+        month = req.GET.get("month")
+
+        quarter = req.GET.get("quarter")
+
+        location = req.GET.get("location")
+
+        year = req.GET.get("year")
+
+        params = {"year": year, "location": location, "type": "dots"}
+
+        if month:
+            params["month"] = month
+
+        elif quarter:
+            params["quarter"] = quarter
+
+        status, response = ru.get(req, "mdrtb/dataquality", params)
+
+        if status:
+            context["location"] = mu.get_location(req, location)
+            context["results"] = response["results"][0]
+
+            return render(req, "app/reporting/dotsdq_report.html", context)
+
+        return redirect("searchPatientsView")
     except Exception as e:
         messages.error(req, e)
         logger.error(str(e), exc_info=True)

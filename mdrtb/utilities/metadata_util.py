@@ -1,6 +1,8 @@
 import re
 from utilities import common_utils as u
 from utilities import restapi_utils as ru
+from utilities import commonlab_util as clu
+from resources.enums.constants import Constants
 from django.core.cache import cache
 from django.utils.safestring import SafeString as ss
 from urllib.parse import urlencode
@@ -374,3 +376,23 @@ def add_url_to_breadcrumb(req, name, query_params=None):
         req.session["breadcrumbs"] = breadcrumbs
     except Exception as e:
         raise Exception(e)
+
+
+# def get_all_attribute_types(req):
+#     common_test_attribute_types = zlib.compress(
+#         pickle.dumps(
+#             clu.get_attributes_of_labtest(req, {"uuid": Constants.COMMON_TEST.value})
+#         )
+#     )
+#     dst_lj_attribute_types = zlib.compress(
+#         pickle.dumps(clu.get_all_attribute_types(req, {"uuid": Constants.DST_LJ.value}))
+#     )
+#     dst_mgit_attribute_types = zlib.compress(
+#         pickle.dumps(
+#             clu.get_all_attribute_types(req, {"uuid": Constants.DST_MGIT.value})
+#         )
+#     )
+
+#     cache.set("COMMONTEST_attribute_types", common_test_attribute_types, timeout=None)
+#     cache.set("DST_LJ_attribute_types", common_test_attribute_types, timeout=None)
+#     cache.set("DST_MGIT_attribute_types", common_test_attribute_types, timeout=None)

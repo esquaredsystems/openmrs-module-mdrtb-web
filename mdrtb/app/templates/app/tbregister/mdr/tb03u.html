@@ -104,39 +104,51 @@
           </div>
         </div>
       </div>
-      <div class="p-4 flex flex-col justify-center space-y-4">
-        <div class="flex items-center justify-between space-x-6">
+      <div class="p-4 grid grid-cols-2 gap-4">
+        <div class="space-y-4">
           <div class="input-container">
             <label class="tb03-form-label w-full" for="dateOfResistance">
               {{'mdrtb.tb03u.dateOfResistanceTypeDuringTreatment'|get_message:request.session.locale}}</label>
             <input class="input form-control" type="date" disabled
               value="{{current_patient_program_flow.current_program.dateEnrolled | iso_to_normal_date}}">
           </div>
-          <div class="input-container">
-            <label class="tb03-form-label w-full"
-              for="region">{{'mdrtb.region'|get_message:request.session.locale}}</label>
-            <select id="region-select" class="input form-control" name="region">
-              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
-            </select>
+          <div id="locations-container" class="flex flex-col space-y-4">
+            <div class="input-container">
+              <label class="input-label w-full"
+                for="country">{{'Location.country'|get_message_openMRS:request.session.locale}}</label>
+              <select class="input form-control" name="country" id="country-select">
+                <option selected value="Таджикистан">{{'COUNTRY'|get_constant}}</option>
+
+              </select>
+            </div>
+            <div class="input-container">
+              <label class="input-label w-full" for="name">{{'mdrtb.region'|get_message:request.session.locale}}</label>
+              <select required class="input form-control" name="region" id="region-select">
+                <option value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+              </select>
+            </div>
+            <div id="subregion-container" class="input-container hidden">
+              <label id="subregion-label" class="input-label w-full" for="name">Sub region</label>
+              <select disabled class="input form-control" name="subregion" id="subregion-select">
+                <option value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+              </select>
+            </div>
+            <div class="input-container">
+              <label id="district-label" class="input-label w-full"
+                for="name">{{'mdrtb.district'|get_message:request.session.locale}}</label>
+              <select disabled class="input form-control" name="district" id="district-select">
+                <option value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+              </select>
+            </div>
+            <div class="input-container">
+              <label id="facility-label" class="input-label w-full"
+                for="name">{{'mdrtb.facility'|get_message:request.session.locale}}</label>
+              <select disabled class="input form-control" name="facility" id="facility-select">
+                <option value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+
+              </select>
+            </div>
           </div>
-        </div>
-        <div class="flex items-center justify-between space-x-6">
-          <div class="input-container">
-            <label class="tb03-form-label w-full"
-              for="name">{{'mdrtb.district'|get_message:request.session.locale}}</label>
-            <select disabled id="district-select" class="input form-control" name="district">
-              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
-            </select>
-          </div>
-          <div class="input-container">
-            <label class="tb03-form-label w-full"
-              for="name">{{'mdrtb.facility'|get_message:request.session.locale}}</label>
-            <select disabled id="facility-select" class="input form-control" name="facility">
-              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
-            </select>
-          </div>
-        </div>
-        <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="sldRegisterNumber">{{'mdrtb.tb03.sldRegisterNumber'|get_message:request.session.locale}}</label>
@@ -161,8 +173,6 @@
               {% endfor %}
             </select>
           </div>
-        </div>
-        <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label  w-full"
               for="name">{{'mdrtb.tb03.mdrStatus'|get_message:request.session.locale}}</label>
@@ -187,8 +197,6 @@
             <input name="{{'DATE_OF_MDR_CONFIRMATION' | get_concept }}" type="date" class="input form-control" />
             {% endif %}
           </div>
-        </div>
-        <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="patientCategory">{{'mdrtb.tb03.patientCategory'|get_message:request.session.locale}}</label>
@@ -213,8 +221,30 @@
             <input name="{{'MDR_TREATMENT_START_DATE' | get_concept }}" type="date" class="input form-control" />
             {% endif %}
           </div>
+          <div class="input-container">
+            <label class="tb03-form-label  w-full"
+              for="name">{{'mdrtb.tb03.relapseMonth'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input name="{{'RELAPSE_MONTH' | get_concept }}" type="number" pattern="[1-12]{12}"
+              title="Enter month number" class="input form-control" value="{{form.relapseMonth}}" />
+            {% else %}
+            <input name="{{'RELAPSE_MONTH' | get_concept }}" type="number" pattern="[1-12]{12}"
+              title="Enter month number" class="input form-control" />
+            {% endif %}
+
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label  w-full"
+              for="name">{{'mdrtb.tb03.otherCauseOfDeath'|get_message:request.session.locale}}</label>
+            {% if state == 'edit' %}
+            <input value="{{form.otherCauseOfDeath}}" name="{{'OTHER_CAUSE_OF_DEATH' | get_concept }}" type="text"
+              class="input form-control" />
+            {% else %}
+            <input name="{{'OTHER_CAUSE_OF_DEATH' | get_concept }}" type="text" class="input form-control" />
+            {% endif %}
+          </div>
         </div>
-        <div class="flex items-center justify-between space-x-6">
+        <div class="space-y-4">
           <div class="input-container">
             <label class="tb03-form-label  w-full"
               for="name">{{'mdrtb.tb03.txLocation'|get_message:request.session.locale}}</label>
@@ -240,8 +270,6 @@
             {% endif %}
 
           </div>
-        </div>
-        <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label  w-full"
               for="resistancetype">{{'mdrtb.tb03.resistanceType'|get_message:request.session.locale}}</label>
@@ -270,10 +298,6 @@
               {% endfor %}
             </select>
           </div>
-        </div>
-        <div class="flex items-center justify-between space-x-6">
-
-
           <div class="input-container">
             <label class="tb03-form-label  w-full"
               for="name">{{'mdrtb.hivStatus'|get_message:request.session.locale}}</label>
@@ -298,8 +322,6 @@
             <input name="{{'DATE_OF_HIV_TEST' | get_concept }}" type="date" class="input form-control">
             {% endif %}
           </div>
-        </div>
-        <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label  w-full"
               for="name">{{'mdrtb.tb03.artStartDate'|get_message:request.session.locale}}</label>
@@ -320,9 +342,6 @@
             <input name="{{'DATE_OF_PCT_TREATMENT_START' | get_concept }}" type="date" class="input form-control" />
             {% endif %}
           </div>
-        </div>
-        <div class="flex items-center justify-between space-x-6">
-
           <div class="input-container">
             <label class="tb03-form-label  w-full"
               for="name">{{'mdrtb.tb03.treatmentOutcome'|get_message:request.session.locale}}</label>
@@ -348,55 +367,44 @@
             {% endif %}
 
           </div>
-
-        </div>
-        <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
-            <label class="tb03-form-label  w-full"
+            <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.relapsed'|get_message:request.session.locale}}</label>
-            <div class="flex-center space-x-4">
+            <div class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.relapsed.uuid == constants.YES %}
-                <input checked name="{{'PATIENT_RELAPSED' | get_concept }}" type="radio" value="{{constants.YES}}" />
+                <input checked name="{{'PATIENT_RELAPSED' | get_concept }}" class="radio-input" type="radio"
+                  value="{{constants.YES}}" />
                 {% else %}
-                <input name="{{'PATIENT_RELAPSED' | get_concept }}" type="radio" value="{{constants.YES}}" />
+                <input name="{{'PATIENT_RELAPSED' | get_concept }}" class="radio-input" type="radio"
+                  value="{{constants.YES}}" />
                 {% endif %}
                 {% else %}
-                <input name="{{'PATIENT_RELAPSED' | get_concept }}" type="radio" value="{{constants.YES}}" />
+                <input name="{{'PATIENT_RELAPSED' | get_concept }}" class="radio-input" type="radio"
+                  value="{{constants.YES}}" />
                 {% endif %}
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
                 {% if state == 'edit' %}
                 {% if form.relapsed.uuid == constants.NO %}
-                <input checked name="{{'PATIENT_RELAPSED' | get_concept }}" type="radio" value="{{constants.NO}}" />
+                <input checked name="{{'PATIENT_RELAPSED' | get_concept }}" class="radio-input" type="radio"
+                  value="{{constants.NO}}" />
                 {% else %}
-                <input name="{{'PATIENT_RELAPSED' | get_concept }}" type="radio" value="{{constants.NO}}" />
+                <input name="{{'PATIENT_RELAPSED' | get_concept }}" class="radio-input" type="radio"
+                  value="{{constants.NO}}" />
                 {% endif %}
                 {% else %}
-                <input name="{{'PATIENT_RELAPSED' | get_concept }}" type="radio" value="{{constants.NO}}" />
+                <input name="{{'PATIENT_RELAPSED' | get_concept }}" class="radio-input" type="radio"
+                  value="{{constants.NO}}" />
                 {% endif %}
               </div>
             </div>
-          </div>
-          <div class="input-container">
-            <label class="tb03-form-label  w-full"
-              for="name">{{'mdrtb.tb03.relapseMonth'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
-            <input name="{{'RELAPSE_MONTH' | get_concept }}" type="number" pattern="[1-12]{12}"
-              title="Enter month number" class="input form-control" value="{{form.relapseMonth}}" />
-            {% else %}
-            <input name="{{'RELAPSE_MONTH' | get_concept }}" type="number" pattern="[1-12]{12}"
-              title="Enter month number" class="input form-control" />
-            {% endif %}
+
 
           </div>
-        </div>
-        <div class="flex items-center justify-between space-x-6">
-
-
           <div class="input-container">
             <label class="tb03-form-label  w-full"
               for="name">{{'mdrtb.causeOfDeath'|get_message:request.session.locale}}</label>
@@ -414,20 +422,6 @@
 
           </div>
           <div class="input-container">
-            <label class="tb03-form-label  w-full"
-              for="name">{{'mdrtb.tb03.otherCauseOfDeath'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
-            <input value="{{form.otherCauseOfDeath}}" name="{{'OTHER_CAUSE_OF_DEATH' | get_concept }}" type="text"
-              class="input form-control" />
-            {% else %}
-            <input name="{{'OTHER_CAUSE_OF_DEATH' | get_concept }}" type="text" class="input form-control" />
-            {% endif %}
-          </div>
-
-
-        </div>
-        <div class="flex items-center justify-between space-x-6">
-          <div class="input-container">
             <label style="width: 35%;" class="tb03-form-label  w-full"
               for="name">{{'mdrtb.tb03.afterOutcomeDeathDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
@@ -440,25 +434,25 @@
             {% endif %}
 
           </div>
-
-
-
-        </div>
-        <div class="flex items-center justify-between space-x-6">
-          <div class="input-container">
-            <label style="width: 8rem;" class="tb03-form-label "
-              for="name">{{'mdrtb.tb03.clinicalNotes'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
-            <textarea name="{{'CLINICIAN_NOTES' | get_concept }}" class="input form-control" cols="10"
-              rows="5">{{form.clinicalNotes}}</textarea>
-            {% else %}
-            <textarea name="{{'CLINICIAN_NOTES' | get_concept }}" class="input form-control" cols="10"
-              rows="5"></textarea>
-            {% endif %}
-
-          </div>
         </div>
       </div>
+      <div style="padding-left: 1rem;" class="flex items-center  justify-between space-x-6">
+        <div class="input-container">
+          <label style="width: 8rem;" class="tb03-form-label "
+            for="name">{{'mdrtb.tb03.clinicalNotes'|get_message:request.session.locale}}</label>
+          {% if state == 'edit' %}
+          <textarea name="{{'CLINICIAN_NOTES' | get_concept }}" class="input form-control" cols="10"
+            rows="5">{{form.clinicalNotes}}</textarea>
+          {% else %}
+          <textarea name="{{'CLINICIAN_NOTES' | get_concept }}" class="input form-control" cols="10"
+            rows="5"></textarea>
+          {% endif %}
+
+        </div>
+      </div>
+
+
+
       <div class="p-4 flex items-center">
         <button type="submit" id="submitBtn" class="button-primary w-1/5">
           {{'general.save'|get_message_openMRS:request.session.locale}}
@@ -469,8 +463,6 @@
 
         </a>
       </div>
-    </div>
-
   </form>
 </div>
 

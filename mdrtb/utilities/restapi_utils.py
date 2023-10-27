@@ -57,6 +57,7 @@ def initiate_session(req, username, password):
             ]
             mu.get_all_concepts(req)
             lu.create_location_hierarchy(req)
+            # mu.get_all_attribute_types(req)
             return True
         else:
             logger.warning("Invalid credentials")
