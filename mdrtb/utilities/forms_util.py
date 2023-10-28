@@ -362,8 +362,16 @@ def create_update_tb03u(req, patientuuid, data, formid=None):
                 ],
             },
         }
+        keys_to_ignore = [
+            "csrfmiddlewaretoken",
+            "country",
+            "region",
+            "district",
+            "facility",
+        ]
+
         for key, value in data.items():
-            if key == "csrfmiddlewaretoken":
+            if key in keys_to_ignore:
                 continue
             if value:
                 tb03u["encounter"]["obs"].append(
@@ -377,9 +385,6 @@ def create_update_tb03u(req, patientuuid, data, formid=None):
                     }
                 )
     try:
-        print("============")
-        print(tb03u)
-        print("============")
         # This returns the newly created TB03 form
         url = f"mdrtb/tb03u/{formid}" if formid else "mdrtb/tb03u"
 

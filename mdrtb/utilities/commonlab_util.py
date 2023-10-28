@@ -641,3 +641,23 @@ def get_labtest_attributes(req, orderid, representation=None):
                     attribute_type["valueReference"] = attribute["valueReference"]
                     attributes_with_values.append(attribute_type)
         return attributes_with_values
+
+
+def get_lab_test_orders_for_dashboard(req, patientuuid):
+    lab_results = None
+    lab_results_status, lab_results_response = ru.get(
+        req,
+        f"commonlab/labtestorder",
+        {
+            "patient": patientuuid,
+            "limit": 5,
+            "v": "custom:(uuid,labTestType,labReferenceNumber,order)",
+        },
+    )
+    if lab_results_status:
+        for lab_result in lab_results_response["results"]:
+            attributes = get_labtest_attributes(req, lab_result["uuid"])
+            lab_result.update({"attributes": attributes})
+
+        lab_results = lab_results_response["results"]
+    return lab_results

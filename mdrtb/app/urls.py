@@ -152,6 +152,7 @@ urlpatterns = [
     path("tb08uresults", views.render_tb08u_report, name="tb08uresults"),
     path("tb07uresults", views.render_tb07u_report, name="tb07uresults"),
     path("dotsdqresults", views.render_dotsdq_report, name="dotsdqresults"),
+    path("mdrdqresults", views.render_mdrdq_report, name="mdrdqresults"),
     path("closedreports", views.render_closed_reports, name="closedreports"),
     path(
         "viewclosedreport/<str:uuid>",
@@ -159,34 +160,6 @@ urlpatterns = [
         name="viewclosedreport",
     ),
     path("saveclosedreport", views.save_closed_report, name="saveclosedreport"),
-    # path("form8export", views.render_form8_report_form, name="form8export"),
-    # path("tb03export", views.render_tb03_report_form, name="tb03export"),
-    # path(
-    #     "tb03singleexport",
-    #     views.render_tb03_single_report_form,
-    #     name="tb03singleexport",
-    # ),
-    # path(
-    #     "tb03usingleexport",
-    #     views.render_tb03u_single_report_form,
-    #     name="tb03usingleexport",
-    # ),
-    # path(
-    #     "missingtb03export",
-    #     views.render_missing_tb03_report_form,
-    #     name="missingtb03export",
-    # ),
-    # path(
-    #     "missingtb03uexport",
-    #     views.render_missing_tb03u_report_form,
-    #     name="missingtb03uexport",
-    # ),
-    # path("tb07export", views.render_tb07_report_form, name="tb07export"),
-    # path("tb03uexport", views.render_tb03u_report_form, name="tb03uexport"),
-    # path("tb07uexport", views.render_tb07u_report_form, name="tb07uexport"),
-    # path("form89export", views.render_form89_report_form, name="form89export"),
-    # path("tb08export", views.render_tb08_report_form, name="tb08export"),
-    # path("tb08uexport", views.render_tb08u_report_form, name="tb08uexport"),
     # CommonLab Urls
     path(
         "commonlab/managetesttypes",

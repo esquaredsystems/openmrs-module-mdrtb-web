@@ -145,8 +145,10 @@
                           <h1 class="font-bold text-lg text-center">Common</h1>
                           <div id="{{order.uuid}}common"
                             class="grid grid-cols-2 place-items-center justify-items-center p-2 w-full">
-                            <div class="border p-2 border-gray-200 font-bold w-full">Question</div>
-                            <div class="border p-2 border-gray-200 font-bold w-full">Answer</div>
+                            <div class="border p-2 border-gray-200 font-bold w-full">
+                              {{'ConceptProposal.obs'|get_message_openMRS:request.session.locale}}</div>
+                            <div class="border p-2 border-gray-200 font-bold w-full">
+                              {{'general.value'|get_message_openMRS:request.session.locale}}</div>
 
 
                           </div>
@@ -209,8 +211,8 @@
                         <h1 class="font-bold text-lg text-center">${group}</h1>
                         <div id="${uuid}${group.toLowerCase()}"
                           class="grid grid-cols-2 place-items-center justify-items-center  p-2">
-                          <div class="border p-2 border-gray-200 font-bold w-full">Question</div>
-                          <div class="border p-2 border-gray-200 font-bold w-full">Answer</div>
+                          <div class="border p-2 border-gray-200 font-bold w-full">{{'ConceptProposal.obs'|get_message_openMRS:request.session.locale}}</div>
+                          <div class="border p-2 border-gray-200 font-bold w-full">{{'general.value'|get_message_openMRS:request.session.locale}}</div>
 
 
                         </div>
@@ -300,6 +302,18 @@
       if ($(`#${uuid}common`).children().length <= 2) {
         $(`#${uuid}common`).parent().remove();
       }
+
+      $(`#${uuid}groups`).children().each((index, child) => {
+        if ($(child).children(1).children(1).length <= 2) {
+          $(child).parent().html(
+            `
+        <div class="w-full bg-white p-2"><h1 class="font-bold text-lg text-center">No results found</h1></div>
+        `
+          );
+        }
+      });
+
+
       if ($(`#${uuid}groups`).children().length === 0) {
         $(`#${uuid}groups`).append(
           `

@@ -522,21 +522,7 @@ def get_patient_dashboard_info(
         )
         lab_results = None
         if get_lab_data:
-            lab_results_status, lab_results_response = ru.get(
-                req,
-                f"commonlab/labtestorder",
-                {
-                    "patient": patientuuid,
-                    "limit": 5,
-                    "v": "custom:(uuid,labTestType,labReferenceNumber,order)",
-                },
-            )
-            if lab_results_status:
-                for lab_result in lab_results_response["results"]:
-                    attributes = cu.get_labtest_attributes(req, lab_result["uuid"])
-                    lab_result.update({"attributes": attributes})
-
-                lab_results = lab_results_response["results"]
+            lab_results = cu.get_lab_test_orders_for_dashboard(req, patientuuid)
         if is_mdrtb:
             treatment_outcome = get_patient_treatment_outcome(
                 req, patientuuid, Concepts.MDR_TB_TREATMENT_OUTCOME.value

@@ -1,6 +1,9 @@
 {% extends 'app/base/base.html' %} {% block title %} {{title}}
 {%endblock %} {% block content %}
 
+
+
+
 <div class="mx-auto w-3/4">
   <h1 class="primary-heading p-4">
     {{'commonlabtest.result.add'|get_message:request.session.locale}}
@@ -38,9 +41,12 @@
 </div>
 <script>
   let specimen_source = JSON.parse("{{source|escapejs}}");
+  let specimen_collection_date = "{{collection_date}}";
   let auditInfo = JSON.parse("{{audit_info_json|escapejs}}")
   let attributes = JSON.parse("{{attributes | escapejs}}");
+  let disabled_form_field = "rgb(209 213 219 / 1)"
   console.log(attributes)
+
   let state = "{{state}}"
   if (state === 'edit') {
     $('#results-form').append(`<input hidden type="text" name="state" value="update" />`)
@@ -191,7 +197,7 @@
             $("#attributes-container").append(
               ` <div class="input-container">
             <label class="input-label">${attribute.attributeType.name}</label>
-            <select id=${attribute.attributeType.uuid} name=${attribute.attributeType.uuid} class="input bg-gray-300 pointer-events-none">
+            <select style="background-color:${disabled_form_field};" id=${attribute.attributeType.uuid} name=${attribute.attributeType.uuid} class="input pointer-events-none">
               <option value=${specimen_source.uuid} selected>${specimen_source.name}</option>
             </select>
           `
@@ -252,20 +258,29 @@
         }
 
         else {
-          if (attribute.attributeType.uuid === "{{'COMMONLAB_LAB_REFERENCE_ATTRIBUTE_TYPE' | get_constant }}") {
+          if (attribute.attributeType.name === "SPUTUM COLLECTION DATE") {
             $(`#attributes-container`).append(
               ` <div class="input-container">
             <label class="input-label">${attribute.attributeType.name}</label>
-            <input class="input bg-gray-300 pointer-events-none" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} 
+            <input style="background-color:${disabled_form_field};" class="input pointer-events-none" type=text name=${attribute.attributeType.uuid} 
+            value=${specimen_collection_date.slice(0, 10).split("-").reverse().join(".")} /input >
+            </div>
+          `
+            );
+          } else if (attribute.attributeType.name === "LABORATORY INVESTIGATION NUMBER") {
+            $(`#attributes-container`).append(
+              ` <div class="input-container">
+            <label class="input-label">${attribute.attributeType.name}</label>
+            <input style="background-color:${disabled_form_field};" class="input pointer-events-none" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} 
             value={{lab_reference}} /input >
             </div>
           `
             );
-          } else if (attribute.attributeType.uuid === "{{'DATE_OF_REQUEST_FOR_LABORATORY_INVESTIGATION'|get_constant}}") {
+          } else if (attribute.attributeType.name === "DATE OF REQUEST FOR LABORATORY INVESTIGATION") {
             $(`#attributes-container`).append(
               ` <div class="input-container">
             <label class="input-label">${attribute.attributeType.name}</label>
-            <input class="input bg-gray-300 pointer-events-none" type=text name=${attribute.attributeType.uuid} 
+            <input style="background-color:${disabled_form_field};" class="input pointer-events-none" type=text name=${attribute.attributeType.uuid} 
             value=${auditInfo.dateCreated.slice(0, 10).split("-").reverse().join(".")} /input >
             </div>
           `

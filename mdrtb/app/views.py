@@ -314,6 +314,11 @@ def render_enrolled_programs(req, uuid):
         if programs:
             context["programs"] = programs
 
+        lab_results = cu.get_lab_test_orders_for_dashboard(req, uuid)
+        if lab_results:
+            context["lab_results"] = lab_results
+            context["lab_json"] = json.dumps(lab_results)
+
     except Exception as e:
         messages.error(req, str(e))
         logger.error(str(e), exc_info=True)
@@ -730,7 +735,7 @@ def render_tb03_form(req, uuid):
         logger.error(e, exc_info=True)
         messages.error(req, str(e))
 
-        return redirect(req.session["redirect_url"])
+        return redirect("tb03", uuid=uuid)
 
 
 def render_edit_tb03_form(req, uuid, formid):
@@ -746,13 +751,12 @@ def render_edit_tb03_form(req, uuid, formid):
 
             if response:
                 messages.success(req, "Form updated successfully")
+                return redirect(req.session["redirect_url"])
 
         except Exception as e:
             messages.error(req, str(e))
             logger.error(str(e), exc_info=True)
-
-        finally:
-            return redirect(req.session["redirect_url"])
+            return redirect("edittb03", uuid=uuid, formid=formid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
@@ -803,7 +807,7 @@ def render_edit_tb03_form(req, uuid, formid):
         messages.error(req, str(e))
         logger.error(str(e), exc_info=True)
 
-        return redirect(req.session["redirect_url"])
+        return redirect("edittb03", uuid=uuid, formid=formid)
 
 
 def render_delete_tb03_form(req, formid):
@@ -834,18 +838,19 @@ def render_tb03u_form(req, uuid):
 
             if response:
                 messages.success(req, "Form created successfully")
+                redirect_to = "/mdrtb/dashboard/patient/{}?program={}".format(
+                    uuid,
+                    req.session["current_patient_program_flow"]["current_program"][
+                        "uuid"
+                    ],
+                )
+
+                return redirect(redirect_to)
 
         except Exception as e:
             messages.error(req, str(e))
             logger.error(str(e), exc_info=True)
-
-        finally:
-            redirect_to = "/mdrtb/dashboard/patient/{}?program={}".format(
-                uuid,
-                req.session["current_patient_program_flow"]["current_program"]["uuid"],
-            )
-
-            return redirect(redirect_to)
+            return redirect("tb03u", uuid=uuid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
@@ -886,7 +891,7 @@ def render_tb03u_form(req, uuid):
         messages.error(req, str(e))
         logger.error(str(e), exc_info=True)
 
-        return redirect(req.session["redirect_url"])
+        return redirect("tb03u", uuid=uuid)
 
 
 def render_edit_tb03u_form(req, uuid, formid):
@@ -898,13 +903,12 @@ def render_edit_tb03u_form(req, uuid, formid):
     if req.method == "POST":
         try:
             response = fu.create_update_tb03u(req, uuid, req.POST, formid=formid)
+            return redirect(req.session["redirect_url"])
 
         except Exception as e:
             logger.error(str(e), exc_info=True)
             messages.error(req, str(e))
-
-        finally:
-            return redirect(req.session["redirect_url"], permanent=True)
+            return redirect("edittb03u", uuid=uuid, formid=formid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
@@ -960,7 +964,7 @@ def render_edit_tb03u_form(req, uuid, formid):
         messages.error(req, str(e))
         logger.error(str(e), exc_info=True)
 
-        return redirect(req.session["redirect_url"])
+        return redirect("edittb03u", uuid=uuid, formid=formid)
 
 
 def render_delete_tb03u_form(req, formid):
@@ -978,12 +982,6 @@ def render_delete_tb03u_form(req, formid):
             return redirect(req.session["redirect_url"], permanent=True)
 
 
-def render_manage_adverse_events(req, patientid):
-    context = {"title": "Manage Adverse Events", "patient_id": patientid}
-
-    return render(req, "app/tbregister/mdr/manage_ae.html", context=context)
-
-
 def render_adverse_events_form(req, patientid):
     if not check_if_session_alive(req):
         return redirect("login")
@@ -994,13 +992,12 @@ def render_adverse_events_form(req, patientid):
 
             if response:
                 messages.success(req, "From created successfully")
+                return redirect(req.session["redirect_url"], permanent=True)
 
         except Exception as e:
             messages.error(req, str(e))
             logger.error(str(e), exc_info=True)
-
-        finally:
-            return redirect(req.session["redirect_url"], permanent=True)
+            return redirect("adverseevents", uuid=patientid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
@@ -1050,7 +1047,7 @@ def render_adverse_events_form(req, patientid):
         logger.error(e, exc_info=True)
         messages.error(req, str(e))
 
-        return redirect(req.session["redirect_url"])
+        return redirect("adverseevents", uuid=patientid)
 
 
 def render_edit_adverse_events_form(req, patientid, formid):
@@ -1067,13 +1064,12 @@ def render_edit_adverse_events_form(req, patientid, formid):
 
             if response:
                 messages.success(req, "Form updated successfully")
+                return redirect(req.session["redirect_url"], permanent=True)
 
         except Exception as e:
             messages.error(req, str(e))
             logger.error(str(e), exc_info=True)
-
-        finally:
-            return redirect(req.session["redirect_url"], permanent=True)
+            return redirect("editadverseevents", uuid=patientid, formid=formid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
@@ -1136,7 +1132,7 @@ def render_edit_adverse_events_form(req, patientid, formid):
         messages.error(req, str(e))
         logger.error(str(e), exc_info=True)
 
-        return redirect(req.session["redirect_url"])
+        return redirect("editadverseevents", uuid=patientid, formid=formid)
 
 
 def render_delete_adverse_events_form(req, formid):
@@ -1164,13 +1160,12 @@ def render_drug_resistence_form(req, patientid):
 
             if response:
                 messages.success(req, "Form created successfully")
+                return redirect(req.session["redirect_url"], permanent=True)
 
         except Exception as e:
             messages.error(req, str(e))
             logger.error(str(e), exc_info=True)
-
-        finally:
-            return redirect(req.session["redirect_url"], permanent=True)
+            return redirect("drugresistanse", uuid=patientid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
@@ -1190,7 +1185,7 @@ def render_drug_resistence_form(req, patientid):
     except Exception as e:
         messages.error(req, str(e))
         logger.error(str(e), exc_info=True)
-        return redirect(req.session.get("redirect_url"))
+        return redirect("drugresistanse", uuid=patientid)
 
 
 def render_edit_drug_resistence_form(req, patientid, formid):
@@ -1207,13 +1202,12 @@ def render_edit_drug_resistence_form(req, patientid, formid):
 
             if response:
                 messages.success(req, "Form updated successfully")
+                return redirect(req.session["redirect_url"], permanent=True)
 
         except Exception as e:
             messages.error(req, str(e))
             logger.error(str(e), exc_info=True)
-
-        finally:
-            return redirect(req.session["redirect_url"], permanent=True)
+            return redirect("editdrugresistanse", uuid=patientid, formid=formid)
 
     try:
         title = (
@@ -1246,7 +1240,7 @@ def render_edit_drug_resistence_form(req, patientid, formid):
 
     except Exception as e:
         messages.error(req, str(e))
-        return redirect(req.session.get("redirect_url"))
+        return redirect("editdrugresistanse", uuid=patientid, formid=formid)
 
 
 def render_delete_drug_resistence_form(req, formid):
@@ -1264,12 +1258,6 @@ def render_delete_drug_resistence_form(req, formid):
         return redirect(req.session.get("redirect_url"), permanent=True)
 
 
-def render_manage_regimens(req):
-    context = {"title": "Manage Regimens"}
-
-    return render(req, "app/tbregister/mdr/manage_regimens.html", context=context)
-
-
 def render_regimen_form(req, patientid):
     if not check_if_session_alive(req):
         return redirect("login")
@@ -1280,13 +1268,12 @@ def render_regimen_form(req, patientid):
 
             if response:
                 messages.success(req, "Form created successfully")
+                return redirect(req.session["redirect_url"])
 
         except Exception as e:
             messages.error(req, str(e))
             logger.error(str(e), exc_info=True)
-
-        finally:
-            return redirect(req.session["redirect_url"])
+            return redirect("regimen", uuid=patientid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
@@ -1310,8 +1297,8 @@ def render_regimen_form(req, patientid):
 
     except Exception as e:
         messages.error(req, str(e))
-
-        return redirect(req.session["redirect_url"])
+        logger.error(e, exc_info=True)
+        return redirect("regimen", uuid=patientid)
 
 
 def render_edit_regimen_form(req, patientid, formid):
@@ -1328,13 +1315,12 @@ def render_edit_regimen_form(req, patientid, formid):
 
             if response:
                 messages.success(req, "Form updated successfully")
+                return redirect(req.session["redirect_url"])
 
         except Exception as e:
             messages.error(req, str(e))
             logger.error(str(e), exc_info=True)
-
-        finally:
-            return redirect(req.session["redirect_url"])
+            return redirect("editregimen", uuid=patientid, formid=formid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
@@ -1403,13 +1389,12 @@ def render_form_89(req, uuid):
 
             if response:
                 messages.success(req, "Form created successfully")
+                return redirect(req.session["redirect_url"], permanent=True)
 
         except Exception as e:
             messages.error(req, str(e))
             logger.error(str(e), exc_info=True)
-
-        finally:
-            return redirect(req.session["redirect_url"], permanent=True)
+            return redirect("form89", uuid=uuid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
@@ -1454,7 +1439,7 @@ def render_form_89(req, uuid):
         messages.error(req, str(e))
         logger.error(str(e), exc_info=True)
 
-        return redirect(req.session["redirect_url"])
+        return redirect("form89", uuid=uuid)
 
 
 def render_edit_form_89(req, uuid, formid):
@@ -1469,12 +1454,12 @@ def render_edit_form_89(req, uuid, formid):
 
             if response:
                 messages.success(req, "Form updated successfully")
+                return redirect(req.session["redirect_url"])
 
         except Exception as e:
-            messages.error(req, str(e)),
-
-        finally:
-            return redirect(req.session["redirect_url"])
+            messages.error(req, str(e))
+            logger.error(e, exc_info=True)
+            return redirect("editform89", uuid=uuid, formid=formid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
@@ -1528,7 +1513,7 @@ def render_edit_form_89(req, uuid, formid):
         messages.error(req, str(e))
         logger.error(str(e), exc_info=True)
 
-        return redirect(req.session["redirect_url"])
+        return redirect("editform89", uuid=uuid, formid=formid)
 
 
 def render_delete_form_89(req, formid):
@@ -1651,13 +1636,12 @@ def render_transferout_form(req, patientuuid):
 
             if response:
                 messages.success(req, "Form created successfully")
+                return redirect(req.session["redirect_url"])
 
         except Exception as e:
             messages.error(req, e)
             logger.error(str(e), exc_info=True)
-
-        finally:
-            return redirect(req.session["redirect_url"])
+            return redirect("transferout", uuid=uuid)
 
     else:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
@@ -1683,13 +1667,12 @@ def render_edit_transferout_form(req, patientuuid, formid):
 
             if response:
                 messages.success(req, "Form updated successfully")
+                return redirect(req.session["redirect_url"])
 
         except Exception as e:
             messages.error(req, e)
             logger.error(str(e), exc_info=True)
-
-        finally:
-            return redirect(req.session["redirect_url"])
+            return redirect("edittransferout", uuid=patientuuid, formid=formid)
 
     try:
         form = fu.get_transfer_out_by_uuid(req, formid)
@@ -1717,7 +1700,8 @@ def render_edit_transferout_form(req, patientuuid, formid):
 
     except Exception as e:
         messages.error(req, e)
-        return redirect(req.session.get("redirect_url"))
+        logger.error(e, exc_info=True)
+        return redirect("edittransferout", uuid=patientuuid, formid=formid)
 
 
 def render_delete_transferout_form(req, formid):
@@ -2888,10 +2872,55 @@ def render_dotsdq_report(req):
         status, response = ru.get(req, "mdrtb/dataquality", params)
 
         if status:
-            context["location"] = mu.get_location(req, location)
+            context["location"] = lu.get_single_location_hierarchy(
+                mu.get_location(req, uuid=location, representation="FULL")
+            )
             context["results"] = response["results"][0]
 
             return render(req, "app/reporting/dotsdq_report.html", context)
+
+        return redirect("searchPatientsView")
+    except Exception as e:
+        messages.error(req, e)
+        logger.error(str(e), exc_info=True)
+
+        return redirect(req.session["redirect_url"])
+
+
+def render_mdrdq_report(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
+
+    try:
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER")
+
+        context = {"title": "MDRTB Data Quality Report"}
+
+        month = req.GET.get("month")
+
+        quarter = req.GET.get("quarter")
+
+        location = req.GET.get("location")
+
+        year = req.GET.get("year")
+
+        params = {"year": year, "location": location, "type": "mdrtb"}
+
+        if month:
+            params["month"] = month
+
+        elif quarter:
+            params["quarter"] = quarter
+
+        status, response = ru.get(req, "mdrtb/dataquality", params)
+
+        if status:
+            context["location"] = lu.get_single_location_hierarchy(
+                mu.get_location(req, uuid=location, representation="FULL")
+            )
+            context["results"] = response["results"][0]
+
+            return render(req, "app/reporting/mdrdq_report.html", context)
 
         return redirect("searchPatientsView")
     except Exception as e:
@@ -3498,7 +3527,7 @@ def render_add_lab_test(req, uuid):
             messages.error(req, e)
             logger.error(str(e), exc_info=True)
 
-            return redirect(req.session["redirect_url"])
+            return redirect("addlabtest", uuid=uuid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
@@ -3532,7 +3561,7 @@ def render_add_lab_test(req, uuid):
         messages.error(req, e)
         logger.error(str(e), exc_info=True)
 
-        return redirect(req.session["redirect_url"])
+        return redirect("addlabtest", uuid=uuid)
 
 
 def render_edit_lab_test(req, patientid, orderid):
@@ -3576,10 +3605,12 @@ def render_edit_lab_test(req, patientid, orderid):
                 messages.error(req, "Error creating test order")
                 logger.error("Error creating test order", exc_info=True)
 
-                return redirect("managetestorders", uuid=patientid)
+                return render(req, "app/commonlab/addlabtest.html", context=context)
 
     except Exception as e:
-        return redirect("managetestorders", uuid=patientid)
+        messages.error(req, e)
+        logger.error(e, exc_info=True)
+        return redirect("editlabtest", uuid=patientid, orderid=orderid)
 
     try:
         status, response = ru.get(
@@ -3638,7 +3669,7 @@ def render_edit_lab_test(req, patientid, orderid):
         messages.error(req, e)
         logger.error(str(e), exc_info=True)
 
-        return redirect(req.session["redirect_url"])
+        return redirect("editlabtest", uuid=patientid, orderid=orderid)
 
 
 def render_delete_lab_test(req, patientid, orderid):
@@ -3710,7 +3741,7 @@ def render_add_test_sample(req, orderid):
             messages.error(req, "Error adding samples")
             logger.error("Error adding samples", exc_info=True)
 
-            return redirect("managetestsamples", orderid=orderid)
+            return redirect("addtestsample", orderid=orderid)
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
 
@@ -3730,7 +3761,7 @@ def render_add_test_sample(req, orderid):
     except Exception as e:
         messages.error(req, e)
         logger.error(str(e), exc_info=True)
-        return redirect(req.session["redirect_url"])
+        return redirect("addtestsample", orderid=orderid)
 
 
 def render_edit_test_sample(req, orderid, sampleid):
@@ -3767,42 +3798,51 @@ def render_edit_test_sample(req, orderid, sampleid):
             messages.error(req, "Error adding samples")
             logger.error("Error adding samples", exc_info=True)
 
-            return redirect("managetestsamples", orderid=orderid)
+            return redirect("edittestsample", orderid=orderid, sampleid=sampleid)
 
-    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+    try:
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
 
-    mu.add_url_to_breadcrumb(req, context["title"])
+        mu.add_url_to_breadcrumb(req, context["title"])
 
-    status, response = ru.get(req, f"commonlab/labtestsample/{sampleid}", {"v": "full"})
-
-    if status:
-        sample = response
-
-        specimen_type = cu.get_commonlab_concepts_by_type(
-            req, "commonlabtest.specimenTypeConceptUuid"
+        status, response = ru.get(
+            req, f"commonlab/labtestsample/{sampleid}", {"v": "full"}
         )
 
-        specimen_site = cu.get_commonlab_concepts_by_type(
-            req, "commonlabtest.specimenSiteConceptUuid"
-        )
+        if status:
+            sample = response
 
-        context["specimentype"] = util.remove_obj_from_objarr(
-            specimen_type, sample["specimenType"]["uuid"], "uuid"
-        )
+            specimen_type = cu.get_commonlab_concepts_by_type(
+                req, "commonlabtest.specimenTypeConceptUuid"
+            )
 
-        context["specimensite"] = util.remove_obj_from_objarr(
-            specimen_site, sample["specimenSite"]["uuid"], "uuid"
-        )
+            specimen_site = cu.get_commonlab_concepts_by_type(
+                req, "commonlabtest.specimenSiteConceptUuid"
+            )
 
-        units = cu.get_sample_units(req)
+            context["specimentype"] = util.remove_obj_from_objarr(
+                specimen_type, sample["specimenType"]["uuid"], "uuid"
+            )
 
-        context["units"] = util.remove_obj_from_objarr(units, sample["units"], "uuid")
+            context["specimensite"] = util.remove_obj_from_objarr(
+                specimen_site, sample["specimenSite"]["uuid"], "uuid"
+            )
 
-        context["sample"] = sample
+            units = cu.get_sample_units(req)
 
-        # context["sample"] = response
+            context["units"] = util.remove_obj_from_objarr(
+                units, sample["units"], "uuid"
+            )
 
-    return render(req, "app/commonlab/addsample.html", context=context)
+            context["sample"] = sample
+
+            # context["sample"] = response
+
+            return render(req, "app/commonlab/addsample.html", context=context)
+    except Exception as e:
+        messager.error(req, e)
+        logger.error(e, exc_info=True)
+        return redirect("edittestsample", orderid=orderid, sampleid=sampleid)
 
 
 def render_change_sample_status(req, orderid, sampleid):
@@ -3904,16 +3944,16 @@ def render_add_test_results(req, orderid):
                 if status:
                     return redirect(req.session["redirect_url"])
             except Exception as e:
+                messages.error(req, e)
                 logger.error(e, exc_info=True)
-                # messages.error(req, str(e))
 
-                return redirect(req.session["redirect_url"])
+                return redirect("addtestresults", orderid=orderid)
 
         else:
-            messages.error(req, "Error creating the order")
-            logger.error("Error creating the order", exc_info=True)
+            messages.error(req, "Error creating the results")
+            logger.error("Error creating the results", exc_info=True)
 
-            return redirect("managetestorders", uuid=req.GET["patient"])
+            return redirect("addtestresults", orderid=orderid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
@@ -3940,6 +3980,7 @@ def render_add_test_results(req, orderid):
                         "name": sample["specimenSite"]["display"],
                     }
                     context["source"] = json.dumps(source)
+                    context["collection_date"] = sample["collectionDate"]
                     break
             if len(response["attributes"]) > 0:
                 context["state"] = "edit"
@@ -3953,13 +3994,13 @@ def render_add_test_results(req, orderid):
                 attributes = cu.get_custom_attribute_for_labresults(req, orderid)
                 context["attributes"] = json.dumps(attributes)
 
+            return render(req, "app/commonlab/addtestresults.html", context=context)
+
     except Exception as e:
         messages.error(req, e)
         logger.error(str(e), exc_info=True)
 
-        return redirect("managetestorders", uuid=req.GET["patient"])
-
-    return render(req, "app/commonlab/addtestresults.html", context=context)
+        return redirect("addtestresults", orderid=orderid)
 
 
 def render_edit_test_results(req, orderid):

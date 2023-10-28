@@ -55,6 +55,11 @@
     </form>
 </div>
 <script type="text/javascript">
+    let path = window.location.pathname.split('/')
+    let reportName = path[path.length - 1]
+    if (reportName === "dotsdqresults" || reportName === "mdrdqresults") {
+        $("#month").prop("required", true)
+    }
 
     $('#region-select').prop('required', true)
 

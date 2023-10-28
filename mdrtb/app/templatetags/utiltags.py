@@ -67,3 +67,13 @@ def sum(a, b):
 @register.filter
 def sub(a, b):
     return a - b
+
+
+@register.filter
+def string_to_date(string):
+    date = datetime.strptime(string, "%m/%d/%Y")
+    formatted_month = f"{date.month:02d}"
+    formatted_day = f"{date.day:02d}"
+    year = date.year
+    date_arr = [formatted_day, formatted_month, str(year)]
+    return ".".join(date_arr)

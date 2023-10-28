@@ -4,6 +4,21 @@
 {% endblock %}
 {% block content %}
 
+<style>
+  .program-responsive {
+    width: 100%;
+  }
+
+
+  @media screen and (min-width: 840px) {
+    .program-responsive {
+      width: 75%;
+    }
+
+  }
+</style>
+
+
 {% if view_patient_programs_privilege %}
 
 <section id="modal"
@@ -26,14 +41,14 @@
 
 </section>
 
-<div class="p-2 flex-column-center space-y-6">
+<div class="p-2 flex-column-center space-y-3">
   {% include 'app/components/patient_banner.html' %}
+  {% include 'app/components/breadcrumbs.html'%}
 
-  <section>
-    <div class="m-5 md:m-2">
+  <section class="mx-auto program-responsive">
+    <div class="">
 
-      <div class="py-8">
-        {% include 'app/components/breadcrumbs.html'%}
+      <div class="">
 
         {% if programs %}
 
@@ -44,11 +59,6 @@
               {{'Program.header'|get_message_openMRS:request.session.locale}}
 
             </h2>
-            <a target="_blank" href="{% url 'managetestorders' uuid=uuid %}" class="cancel-button">
-              {{'general.view'|get_message_openMRS:request.session.locale}}
-              {{'mdrtb.all'|get_message:request.session.locale}}
-              {{'Order.header'|get_message_openMRS:request.session.locale}}
-            </a>
 
 
           </div>
@@ -180,7 +190,288 @@
       </div>
     </div>
   </section>
+
+  <section class="mx-auto program-responsive mb-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
+          {{'mdrtb.lab'|get_message:request.session.locale}}
+          {{'Order.header'|get_message_openMRS:request.session.locale}}
+
+        </h2>
+        <a target="_blank" href="{% url 'managetestorders' uuid=uuid %}" class="cancel-button">
+          {{'general.view'|get_message_openMRS:request.session.locale}}
+          {{'mdrtb.all'|get_message:request.session.locale}}
+          {{'Order.header'|get_message_openMRS:request.session.locale}}
+        </a>
+        <a href="{% url 'addlabtest' uuid=uuid %}" class="cancel-button text-sm">
+          {{'general.add'|get_message_openMRS:request.session.locale}}
+          {{'general.new'|get_message_openMRS:request.session.locale}}
+        </a>
+      </div>
+
+
+
+    </div>
+    <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
+      <div class="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
+        <table class="min-w-full leading-normal">
+          <thead>
+            <tr>
+              <th
+                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                {{'commonlabtest.labTestType'|get_message:request.session.locale}}
+              </th>
+              <th
+                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                {{'ConceptProposal.encounter'|get_message_openMRS:request.session.locale}}
+              </th>
+              <th
+                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                {{'commonlabtest.order.labReferenceNo'|get_message:request.session.locale}}
+              </th>
+
+              <th
+                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                {{'ActiveLists.actions'|get_message_openMRS:request.session.locale}}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for lab_result in lab_results %}
+            <tr>
+              <td class="px-5 py-4 border-b border-gray-200 w-fit  text-sm">{{lab_result.labTestType.name}}</td>
+              <td class="px-5 py-4 border-b border-gray-200 w-fit  text-sm">
+                {{lab_result.order.encounter.display|get_encounter_name}}
+              </td>
+              <td class="px-5 py-4 border-b border-gray-200 w-fit  text-sm">
+                {{lab_result.labReferenceNumber}}
+
+              </td>
+              <td id="accordion{{forloop.counter}}" class="px-5 py-4 border-b border-gray-200 w-fit  text-sm">
+                <div class="flex space-x-4">
+                  <div onclick="showResults(this,'{{lab_result.uuid}}')" id="heading{{forloop.counter}}"
+                    data-attributes="{{lab_result.attributes}}" data-te-collapse-init
+                    data-te-target="#collapse{{forloop.counter}}" aria-expanded="false"
+                    aria-controls="collapse{{forloop.counter}}">
+                    <svg id="detail-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                      stroke-width="1.5" stroke="currentColor" class="w-5 h-5 hover:text-blue-500 cursor-pointer">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                  <a href="{% url 'editlabtest' orderid=lab_result.uuid patientid=uuid %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                    </svg>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="4" class="px-4 text-black w-full">
+                <div class="hidden" id="collapse{{forloop.counter}}" data-te-collapse-item
+                  aria-labelledby="heading{{forloop.counter}}" data-te-parent="#accordion{{forloop.counter}}">
+                  <div>
+                    <div id="{{lab_result.uuid}}groups" class="py-4 w-full grid grid-cols-2 gap-2">
+                      <div class="w-full bg-white p-2">
+                        <h1 class="font-bold text-lg text-center">Common</h1>
+                        <div id="{{lab_result.uuid}}common"
+                          class="grid grid-cols-2 place-items-center justify-items-center p-2 w-full">
+                          <div class="border p-2 border-gray-200 font-bold w-full">
+                            {{'ConceptProposal.obs'|get_message_openMRS:request.session.locale}}</div>
+                          <div class="border p-2 border-gray-200 font-bold w-full">
+                            {{'general.value'|get_message_openMRS:request.session.locale}}</div>
+
+
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
 </div>
+
+<script>
+  let itemsAppended = {}
+  const stringToJsonLab = (string) => {
+    if (string.length === 0) {
+      return [];
+    }
+    console.log(string.length);
+    return JSON.parse(
+      string.replace(/'/g, '"')
+        .replace(/None/g, 'null')
+        .replace(/True/g, 'true')
+        .replace(/False/g, 'false'))
+  }
+  const showResults = (element, uuid) => {
+    if (itemsAppended[uuid]) {
+      return;
+    }
+    let attributes = stringToJsonLab($(element).data('attributes'))
+    console.log(attributes)
+    let groups = []
+    let groupHasAttributes = {}
+    for (attribute of attributes) {
+      if (attribute.attributeType.group != null) {
+        if (attribute.valueReference) {
+          groupHasAttributes[attribute.attributeType.group] = true
+        }
+        groups.push(attribute.attributeType.group)
+
+      }
+    }
+    console.log(groupHasAttributes)
+    let duplicatesRemovedGroups = [...new Set(groups)];
+    if (duplicatesRemovedGroups.length === 0) {
+      $(`#${uuid}groups`).removeClass('grid-cols-2').addClass('grid-cols-1')
+    }
+    for (group of duplicatesRemovedGroups) {
+      if (groupHasAttributes[group]) {
+        $(`#${uuid}groups`).append(
+          `<div class="w-full bg-white p-2">
+                        <h1 class="font-bold text-lg text-center">${group}</h1>
+                        <div id="${uuid}${group.toLowerCase()}"
+                          class="grid grid-cols-2 place-items-center justify-items-center  p-2">
+                          <div class="border p-2 border-gray-200 font-bold w-full">{{'ConceptProposal.obs'|get_message_openMRS:request.session.locale}}</div>
+                          <div class="border p-2 border-gray-200 font-bold w-full">{{'general.value'|get_message_openMRS:request.session.locale}}</div>
+
+
+                        </div>
+                      </div>`
+        )
+      }
+
+
+
+
+
+    }
+    for (attribute of attributes) {
+      if (attribute.attributeType.group === null) {
+        if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.ConceptDatatype") {
+          if (attribute.valueReference) {
+            for (answer of attribute.attributeType.answers) {
+              if (answer.uuid === attribute.valueReference) {
+                $(`#${uuid}common`).append(
+                  `
+          <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+          <div class="border w-full p-2 border-gray-200">${answer.display}</div>
+ 
+          `
+                )
+                break;
+              }
+
+            }
+          }
+        } else if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.BooleanDatatype") {
+          $(`#${uuid}common`).append(
+            `<div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+            <div class="border w-full p-2 border-gray-200">${attribute.valueReference === 'on' ? 'True' : 'False'}</div>`
+          )
+        }
+
+
+        else {
+          if (attribute.valueReference != null && attribute.valueReference.length > 0) {
+            $(`#${uuid}common`).append(
+              `
+          <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+          <div class="border w-full p-2 h-full border-gray-200">${attribute.valueReference}</div>
+ 
+          `
+            )
+          }
+
+        }
+
+
+      } else {
+        if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.ConceptDatatype") {
+          if (attribute.valueReference) {
+            for (answer of attribute.attributeType.answers) {
+              if (answer.uuid === attribute.valueReference) {
+                $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
+                  `
+          <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+          <div class="border w-full p-2 border-gray-200">${answer.display}</div>
+ 
+          `
+                )
+                break;
+              }
+
+            }
+          }
+
+        } else {
+          if (attribute.valueReference != null && attribute.valueReference.length > 0) {
+            $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
+              `
+          <div class="border w-full p-2 border-gray-200 ">${attribute.attributeType.name}</div>
+          <div class="border w-full p-2 border-gray-200">${attribute.valueReference}</div>
+
+          `
+            )
+          }
+
+        }
+      }
+    }
+    itemsAppended[uuid] = true;
+
+    if ($(`#${uuid}common`).children().length <= 2) {
+      $(`#${uuid}common`).parent().remove();
+    }
+
+
+
+    $(`#${uuid}groups`).children().each((index, child) => {
+      if ($(child).children(1).children(1).length <= 2) {
+        $(child).parent().html(
+          `
+        <div class="w-full bg-white p-2"><h1 class="font-bold text-lg text-center">No results found</h1></div>
+        `
+        );
+      }
+    });
+
+    if ($(`#${uuid}groups`).children().length === 0) {
+      $(`#${uuid}groups`).append(
+        `
+        <div class="w-full bg-white p-2"><h1 class="font-bold text-lg text-center">No results found</h1></div>
+        `
+      )
+
+    }
+
+    if ($(`#${uuid}groups`).children().length === 1) {
+      $(`#${uuid}groups`).removeClass('grid-cols-2').addClass('grid-cols-1')
+    } else {
+      $(`#${uuid}groups`).removeClass('grid-cols-1').addClass('grid-cols-2')
+    }
+
+
+  }
+
+
+</script>
+
 <script>
   const stringToJson = (string) => {
     return JSON.parse(string.replaceAll('None', 'null').replaceAll(`'`, `"`))

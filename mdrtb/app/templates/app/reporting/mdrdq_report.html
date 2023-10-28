@@ -2,12 +2,11 @@
 
 {% block content %}
 
-
 <div>
     <div id="dq">
         <table class="resultsTable">
             <tr>
-                <th class=normal colspan="4">{{"mdrtb.dq.title"|get_message:request.session.locale}}</th>
+                <th class=normal colspan="3">{{"mdrtb.dq.title"|get_message:request.session.locale}}</th>
             </tr>
             <tr>
                 <th colspan="2">{{"mdrtb.oblast"|get_message:request.session.locale}}</td>
@@ -35,211 +34,70 @@
             </tr>
             <tr>
                 <th colspan="2">{{"mdrtb.year"|get_message:request.session.locale}}</td>
-                <td colspan="2" align="center">{{ request.GET.year }}</td>
+                <td align="center">{{ request.GET.year }}</td>
             </tr>
             <tr>
                 <th colspan="2">{{"mdrtb.quarter"|get_message:request.session.locale}}</td>
-                <td align="center" colspan="2">{{ request.GET.quarter }}</td>
+                <td align="center">{{ request.GET.quarter }}</td>
             </tr>
             <tr>
                 <th colspan="2">{{"mdrtb.month"|get_message:request.session.locale}}</td>
-                <td align="center" colspan="2">{{ request.GET.month }}</td>
+                <td align="center">{{ request.GET.month }}</td>
             </tr>
             <tr>
                 <th colspan="2">{{"mdrtb.dq.numberOfPatients"|get_message:request.session.locale}}</td>
-                <td align="center" colspan="2">{{ results.num }}</td>
+                <td align="center">{{ results.num }}</td>
             </tr>
             <tr>
                 <th colspan="2">{{"mdrtb.dq.numberWithErrors"|get_message:request.session.locale}}</td>
-                <td align="center" colspan="2">{{ results.errorCount }}</td>
+                <td align="center">{{ results.errorCount }}</td>
             </tr>
             <tr>
                 <th colspan="2">{{"mdrtb.dq.errorPercentage"|get_message:request.session.locale}}</td>
-                <td align="center" colspan="2">{{ results.errorPercentage }}</td>
+                <td align="center">{{ results.errorPercentage }}</td>
             </tr>
             <tr>
-                <td colspan="4">&nbsp;</td>
+                <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
-                <td colspan="4">&nbsp;</td>
+                <td colspan="3">&nbsp;</td>
             </tr>
 
-
-            <tr>
-                <th class=normal colspan="4">{{"mdrtb.dq.duplicateForm89"|get_message:request.session.locale}}</th>
+            <th class=normal colspan="3">{{"mdrtb.dq.missingAge"|get_message:request.session.locale}}</th>
             </tr>
             <tr>
                 <td>{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
-                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
-                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
-                <td align="center">{{"mdrtb.dq.links"|get_message:request.session.locale}}</td>
-            </tr>
-            {% for row in results.duplicateForm89 %}
-            <tr>
-
-                <td><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}" target="_blank">{{row.patientName}}</a>
-                </td>
-                <td>{{ row.dateOfBirth | string_to_date }}</td>
-                <td align="center">{{ row.gender }}</td>
-                <td>
-                    {% for link in row.form89Links %}
-                    <a href="{% url 'enrolledprograms' uuid=row.patientUuid %}"
-                        target="_blank">{{"mdrtb.form89"|get_message:request.session.locale}} </a>&nbsp;
-                    {% endfor %}
-                </td>
-            </tr>
-            {% endfor %}
-
-            <tr>
-                <td colspan="4">&nbsp;</td>
-            </tr>
-            <tr>
-                <td colspan="4">&nbsp;</td>
-            </tr>
-
-            <tr>
-                <th class=normal colspan="4">{{"mdrtb.dq.duplicateTB03"|get_message:request.session.locale}}</th>
-            </tr>
-            <tr>
-                <td>{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
-                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
-                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
-                <td align="center">{{"mdrtb.dq.links"|get_message:request.session.locale}}</td>
-            </tr>
-            {% for row in results.duplicateTB03 %}
-            <tr>
-
-                <td><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}" target="_blank">{{row.patientName}}</a>
-                </td>
-                <td>{{ row.dateOfBirth | string_to_date }}</td>
-                <td align="center">{{ row.gender }}</td>
-                <td>
-                    {% for link in row.tb03Links %}
-                    <a href="{{ pageContext.request.contextPath }}{{ link }}"
-                        target="_blank">{{"mdrtb.tb03"|get_message:request.session.locale}} </a>&nbsp;
-                    {% endfor %}
-                </td>
-            </tr>
-            {% endfor %}
-
-            <tr>
-                <td colspan="4">&nbsp;</td>
-            </tr>
-            <tr>
-                <td colspan="4">&nbsp;</td>
-            </tr>
-
-            <tr>
-                <th class=normal colspan="4">{{"mdrtb.dq.missingForm89"|get_message:request.session.locale}}</th>
-            </tr>
-            <tr>
-                <td colspan="2">{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
-                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
-                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
-            </tr>
-            {% for row in results.missingForm89 %}
-            <tr>
-
-                <td colspan="2"><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}"
-                        target="_blank">{{row.patientName}}</td>
-                <td>{{ row.dateOfBirth | string_to_date }}</td>
-                <td align="center">{{ row.gender }}</td>
-            </tr>
-            {% endfor %}
-
-            <tr>
-                <td colspan="4">&nbsp;</td>
-            </tr>
-            <tr>
-                <td colspan="4">&nbsp;</td>
-            </tr>
-            <tr>
-                <th class=normal colspan="4">{{"mdrtb.dq.invalidForm89"|get_message:request.session.locale}}</th>
-            </tr>
-            <tr>
-                <td colspan="2">{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
-                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
-                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
-            </tr>
-            {% for row in results.invalidForm89 %}
-            <tr>
-
-                <td colspan="2"><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}"
-                        target="_blank">{{row.patientName}}</a></td>
-                <td>{{ row.dateOfBirth | string_to_date }}</td>
-                <td align="center">{{ row.gender }}</td>
-            </tr>
-
-            {% endfor %}
-
-            <tr>
-                <td colspan="4">&nbsp;</td>
-            </tr>
-            <tr>
-                <td colspan="4">&nbsp;</td>
-            </tr>
-            <tr>
-                <th class=normal colspan="4">{{"mdrtb.dq.missingAge"|get_message:request.session.locale}}</th>
-            </tr>
-            <tr>
-                <td colspan="2">{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
                 <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
                 <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
             </tr>
             {% for row in results.missingAge %}
             <tr>
 
-                <td colspan="2"><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}"
-                        target="_blank">{{row.patientName}}</a></td>
+                <td><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}" target="_blank">{{row.patientName}}</a>
+                </td>
                 <td>{{ row.dateOfBirth | string_to_date }}</td>
                 <td align="center">{{ row.gender }}</td>
             </tr>
 
             {% endfor %}
             <tr>
-                <td colspan="4">&nbsp;</td>
+                <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
-                <td colspan="4">&nbsp;</td>
+                <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
-                <th class=normal colspan="4">{{"mdrtb.dq.missingPatientGroup"|get_message:request.session.locale}}</th>
+                <th class=normal colspan="3">{{"mdrtb.dq.missingPatientGroup"|get_message:request.session.locale}}</th>
             </tr>
             <tr>
-                <td colspan="2">{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
                 <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
                 <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
             </tr>
             {% for row in results.missingPatientGroup %}
             <tr>
 
-                <td colspan="2"><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}"
-                        target="_blank">{{row.patientName}}</a></td>
-                <td>{{ row.dateOfBirth | string_to_date }}</td>
-                <td align="center">{{ row.gender }}</td>
-            </tr>
-
-            {% endfor %}
-            <tr>
-                <td colspan="4">&nbsp;</td>
-            </tr>
-            <tr>
-                <td colspan="4">&nbsp;</td>
-            </tr>
-            <tr>
-                <th class=normal colspan="4">{{"mdrtb.dq.missingDiagnosticTests"|get_message:request.session.locale}}
-                </th>
-            </tr>
-            <tr>
-                <td colspan="2">{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
-                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
-                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
-            </tr>
-            {% for row in results.missingDiagnosticTests %}
-            <tr>
-
-                <td colspan="2"><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}"
-                        target="_blank">{{row.patientName}}</a>
+                <td><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}" target="_blank">{{row.patientName}}</a>
                 </td>
                 <td>{{ row.dateOfBirth | string_to_date }}</td>
                 <td align="center">{{ row.gender }}</td>
@@ -247,157 +105,127 @@
 
             {% endfor %}
             <tr>
-                <td colspan="4">&nbsp;</td>
+                <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
-                <td colspan="4">&nbsp;</td>
+                <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
-                <th class=normal colspan="4">{{"mdrtb.dq.notStartedTreatment"|get_message:request.session.locale}}</th>
+                <th class=normal colspan="3">{{"mdrtb.dq.missingDST"|get_message:request.session.locale}}</th>
             </tr>
             <tr>
-                <td colspan="2">{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
+                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
+            </tr>
+            {% for row in results.missingDST %}
+            <tr>
+
+                <td><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}" target="_blank">{{row.patientName}}</a>
+                </td>
+                <td>{{ row.dateOfBirth | string_to_date }}</td>
+                <td>{{ row.gender }}</td>
+            </tr>
+
+            {% endfor %}
+            <tr>
+                <td colspan="3">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="3">&nbsp;</td>
+            </tr>
+            <tr>
+                <th class=normal colspan="3">{{"mdrtb.dq.notStartedTreatment"|get_message:request.session.locale}}</th>
+            </tr>
+            <tr>
+                <td>{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
                 <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
                 <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
             </tr>
             {% for row in results.notStartedTreatment %}
             <tr>
 
-                <td colspan="2"><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}"
-                        target="_blank">{{row.patientName}}</a></td>
+                <td><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}" target="_blank">{{row.patientName}}</a>
+                </td>
                 <td>{{ row.dateOfBirth | string_to_date }}</td>
                 <td align="center">{{ row.gender }}</td>
             </tr>
 
             {% endfor %}
             <tr>
-                <td colspan="4">&nbsp;</td>
+                <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
-                <td colspan="4">&nbsp;</td>
+                <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
-                <th class=normal colspan="4">{{"mdrtb.dq.missingOutcomes"|get_message:request.session.locale}}</th>
+                <th class=normal colspan="3">{{"mdrtb.dq.missingOutcomes"|get_message:request.session.locale}}</th>
             </tr>
             <tr>
-                <td colspan="2">{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
                 <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
                 <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
             </tr>
             {% for row in results.missingOutcomes %}
             <tr>
 
-                <td colspan="2"><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}"
-                        target="_blank">{{row.patientName}}</a></td>
+                <td><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}" target="_blank">{{row.patientName}}</a>
+                </td>
                 <td>{{ row.dateOfBirth | string_to_date }}</td>
                 <td align="center">{{ row.gender }}</td>
             </tr>
 
             {% endfor %}
             <tr>
-                <td colspan="4">&nbsp;</td>
+                <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
-                <td colspan="4">&nbsp;</td>
+                <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
-                <th class=normal colspan="4">{{"mdrtb.dq.noDOTSId"|get_message:request.session.locale}}</th>
+                <th class=normal colspan="3">{{"mdrtb.dq.noMDRId"|get_message:request.session.locale}}</th>
             </tr>
             <tr>
-                <td colspan="2">{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
                 <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
                 <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
             </tr>
-            {% for row in results.noDOTSId %}
+            {% for row in results.noMDRId %}
             <tr>
 
-                <td colspan="2"><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}"
-                        target="_blank">{{row.patientName}}</a></td>
+                <td><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}" target="_blank">{{row.patientName}}</a>
+                </td>
                 <td>{{ row.dateOfBirth | string_to_date }}</td>
                 <td align="center">{{ row.gender }}</td>
             </tr>
 
             {% endfor %}
             <tr>
-                <td colspan="4">&nbsp;</td>
+                <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
-                <td colspan="4">&nbsp;</td>
+                <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
-                <th class=normal colspan="4">{{"mdrtb.dq.noSite"|get_message:request.session.locale}}</th>
+                <th class=normal colspan="3">{{"mdrtb.dq.noSite"|get_message:request.session.locale}}</th>
             </tr>
             <tr>
-                <td colspan="2">{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
+                <td>{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
                 <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
                 <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
             </tr>
             {% for row in results.noSite %}
             <tr>
 
-                <td colspan="2"><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}"
-                        target="_blank">{{row.patientName}}</a></td>
-                <td>{{ row.dateOfBirth | string_to_date }}</td>
-                <td align="center">{{ row.gender }}</td>
-            </tr>
-            {% endfor %}
-            <tr>
-                <td colspan="4">&nbsp;</td>
-            </tr>
-            <tr>
-                <td colspan="4">&nbsp;</td>
-            </tr>
-
-
-            <tr>
-                <th class=normal colspan="4">{{"mdrtb.dq.noTransferIn"|get_message:request.session.locale}}</th>
-            </tr>
-            <tr>
-                <td>{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
-                <td>{{"mdrtb.location"|get_message:request.session.locale}}</td>
-                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
-                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
-            </tr>
-            {% for row in results.noTransferIn %}
-            <tr>
-
                 <td><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}" target="_blank">{{row.patientName}}</a>
                 </td>
-                <td>{{ row.locName }}</td>
                 <td>{{ row.dateOfBirth | string_to_date }}</td>
                 <td align="center">{{ row.gender }}</td>
             </tr>
+
             {% endfor %}
 
-            <tr>
-                <td colspan="4">&nbsp;</td>
-            </tr>
-            <tr>
-                <td colspan="4">&nbsp;</td>
-            </tr>
-
-
-            <tr>
-                <th class=normal colspan="4">{{"mdrtb.dq.noTransferOut"|get_message:request.session.locale}}</th>
-            </tr>
-            <tr>
-                <td>{{"mdrtb.dq.fullName"|get_message:request.session.locale}}</td>
-                <td>{{"mdrtb.location"|get_message:request.session.locale}}</td>
-                <td>{{"mdrtb.dq.dob"|get_message:request.session.locale}}</td>
-                <td align="center">{{"mdrtb.dq.gender"|get_message:request.session.locale}}</td>
-            </tr>
-            {% for row in results.noTransferOut %}
-            <tr>
-
-                <td><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}" target="_blank">{{row.patientName}}</a>
-                </td>
-                <td>{{ row.locName }}</td>
-                <td>{{ row.dateOfBirth | string_to_date }}</td>
-                <td align="center">{{ row.gender }}</td>
-            </tr>
-            {% endfor %}
         </table>
-
     </div>
     <input type="button" onclick="tableToExcel('f89', 'Form89')"
         value="{{'mdrtb.exportToExcelBtn'|get_message:request.session.locale}}" />
@@ -585,5 +413,4 @@
         });
     </script>
 </div>
-
 {% endblock %}

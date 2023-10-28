@@ -341,6 +341,7 @@ def get_report_name(key, locale):
         ),
         "form8results": mu.get_global_msgs("mdrtb.form8Parameters", locale=locale),
         "dotsdqresults": mu.get_global_msgs("mdrtb.dotsdq.title", locale=locale),
+        "mdrdqresults": mu.get_global_msgs("mdrtb.dq.title", locale=locale),
     }
 
     return report_map[key]
