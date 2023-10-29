@@ -587,7 +587,6 @@ def get_custom_attribute_for_labresults(
                                                 "display": answer["display"],
                                             }
                                         )
-                                        break
                                     else:
                                         for name in answer["names"]:
                                             if (

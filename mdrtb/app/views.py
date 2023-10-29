@@ -54,7 +54,7 @@ def check_privileges(req, privileges_required):
 
 def index(req):
     # This is a test function
-    print(req.session.get("current_patient_program_flow"))
+    cache.clear()
     return render(req, "app/tbregister/reportmockup.html")
 
 

@@ -86,7 +86,9 @@ def clear_session(req):
                 if query_params
                 else req.session.get("redirect_url")
             )
-        current_patient_program_flow = req.session["current_patient_program_flow"]
+        current_patient_program_flow = req.session.get(
+            "current_patient_program_flow", None
+        )
 
         req.session.flush()
         req.session.create()
