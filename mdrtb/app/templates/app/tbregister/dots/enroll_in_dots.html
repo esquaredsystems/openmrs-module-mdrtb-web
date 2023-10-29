@@ -116,13 +116,17 @@
               d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
           </svg>
         </button>
-        <input class="input form-control" type="date" name="completiondate" id="completiondate"
+        <input required class="input form-control" type="date" name="completiondate" id="completiondate"
           value="{{enrolled_program.dateCompleted | iso_to_normal_date}}" />
 
+
         {% else %}
-        <input class="input form-control" type="date" name="completiondate" id="completiondate" />
+        <input required class="input form-control" type="date" name="completiondate" id="completiondate" />
         {% endif %}
+
       </div>
+      <p hidden id="completiondate_error" style="color: rgba(255, 0, 0, 0.819);">{{'Relationship.InvalidEndDate.error' |
+        get_message_openMRS:request.session.locale}}</p>
       {% if state != 'edit' %}
       <h3 id="initialStates" class="primary-heading text-xl">
         {{'Program.initialStates' | get_message_openMRS:request.session.locale}}</h3>
@@ -147,6 +151,25 @@
     </div>
   </form>
   <script>
+
+
+    $('#completiondate').change((e) => {
+      const completionDate = new Date(e.target.value);
+      const enrollmentDate = new Date($('#enrollmentdate').val());
+      if (completionDate === enrollmentDate || completionDate < enrollmentDate) {
+        $("#completiondate_error").prop("hidden", false); // Show the error message
+        $('#submitBtn').addClass("pointer-events-none")
+        setTimeout(() => {
+          $('#submitBtn').removeClass("pointer-events-none")
+          $("#completiondate_error").prop("hidden", true); // Hide the error message after 500 milliseconds
+          $('#completiondate').val(''); // Clear the value of the date picker
+        }, 2000);
+      }
+    });
+
+
+
+
     const disableSubmit = () => {
       $('#submitBtn').prop('disabled', true)
       $('#submitBtn').removeClass('button-primary')

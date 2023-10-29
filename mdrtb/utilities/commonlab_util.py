@@ -454,16 +454,59 @@ def get_custom_attribute_for_labresults(
                                     concept = mu.get_concept(
                                         req, attribute["datatypeConfig"]
                                     )
+                                    concept_full_name = concept["display"]
+                                    if (
+                                        concept["name"]["conceptNameType"]
+                                        != Constants.FULLY_SPECIFIED.value
+                                    ):
+                                        for name in concept["names"]:
+                                            if (
+                                                name["conceptNameType"]
+                                                == Constants.FULLY_SPECIFIED.value
+                                                and name["locale"]
+                                                == req.session["locale"]
+                                            ):
+                                                concept_full_name = name["name"]
+                                                break
+                                    concept_answers = []
+                                    for answer in concept["answers"]:
+                                        if (
+                                            answer["name"]["conceptNameType"]
+                                            == Constants.FULLY_SPECIFIED.value
+                                            and answer["name"]["locale"]
+                                            == req.session["locale"]
+                                        ):
+                                            concept_answers.append(
+                                                {
+                                                    "uuid": answer["uuid"],
+                                                    "display": answer["display"],
+                                                }
+                                            )
+                                        else:
+                                            for name in answer["names"]:
+                                                if (
+                                                    name["conceptNameType"]
+                                                    == Constants.FULLY_SPECIFIED.value
+                                                    and name["locale"]
+                                                    == req.session["locale"]
+                                                ):
+                                                    concept_answers.append(
+                                                        {
+                                                            "uuid": answer["uuid"],
+                                                            "display": name["display"],
+                                                        }
+                                                    )
+
                                     attrs.append(
                                         {
                                             "attributeType": {
                                                 "uuid": attribute["uuid"],
-                                                "name": concept["display"],
+                                                "name": concept_full_name,
                                                 "datatype": attribute[
                                                     "datatypeClassname"
                                                 ],
                                                 "inputType": datatype["inputType"],
-                                                "answers": concept["answers"],
+                                                "answers": concept_answers,
                                                 "group": attribute["groupName"],
                                             }
                                         }
@@ -476,11 +519,25 @@ def get_custom_attribute_for_labresults(
                                     concept = mu.get_concept_by_search(
                                         req, attribute["name"]
                                     )
+                                    concept_full_name = concept["display"]
+                                    if (
+                                        concept["name"]["conceptNameType"]
+                                        != Constants.FULLY_SPECIFIED.value
+                                    ):
+                                        for name in concept["names"]:
+                                            if (
+                                                name["conceptNameType"]
+                                                == Constants.FULLY_SPECIFIED.value
+                                                and name["locale"]
+                                                == req.session["locale"]
+                                            ):
+                                                concept_full_name = name["name"]
+                                                break
                                     attrs.append(
                                         {
                                             "attributeType": {
                                                 "uuid": attribute["uuid"],
-                                                "name": concept["display"],
+                                                "name": concept_full_name,
                                                 "datatype": attribute[
                                                     "datatypeClassname"
                                                 ],
@@ -516,6 +573,36 @@ def get_custom_attribute_for_labresults(
                                         ):
                                             concept_full_name = name["name"]
                                             break
+                                concept_answers = []
+                                for answer in concept["answers"]:
+                                    if (
+                                        answer["name"]["conceptNameType"]
+                                        == Constants.FULLY_SPECIFIED.value
+                                        and answer["name"]["locale"]
+                                        == req.session["locale"]
+                                    ):
+                                        concept_answers.append(
+                                            {
+                                                "uuid": answer["uuid"],
+                                                "display": answer["display"],
+                                            }
+                                        )
+                                        break
+                                    else:
+                                        for name in answer["names"]:
+                                            if (
+                                                name["conceptNameType"]
+                                                == Constants.FULLY_SPECIFIED.value
+                                                and name["locale"]
+                                                == req.session["locale"]
+                                            ):
+                                                concept_answers.append(
+                                                    {
+                                                        "uuid": answer["uuid"],
+                                                        "display": name["display"],
+                                                    }
+                                                )
+
                                 attrs.append(
                                     {
                                         "attributeType": {
@@ -523,7 +610,7 @@ def get_custom_attribute_for_labresults(
                                             "name": concept_full_name,
                                             "datatype": attribute["datatypeClassname"],
                                             "inputType": datatype["inputType"],
-                                            "answers": concept["answers"],
+                                            "answers": concept_answers,
                                             "group": attribute["groupName"],
                                         }
                                     }

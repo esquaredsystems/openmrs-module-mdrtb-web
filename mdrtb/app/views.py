@@ -54,7 +54,7 @@ def check_privileges(req, privileges_required):
 
 def index(req):
     # This is a test function
-    print(cache.delete("COMMONTESTattribute_types"))
+    print(req.session.get("current_patient_program_flow"))
     return render(req, "app/tbregister/reportmockup.html")
 
 
@@ -88,8 +88,9 @@ def change_locale(req, locale):
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
     try:
         req.session["locale"] = locale
-        cache.delete("concepts")
+        cache.clear()
         mu.get_all_concepts(req)
+        lu.create_location_hierarchy(req)
 
         logged_in_user_uuid = req.session["logged_user"]["user"]["uuid"]
         user_properties = req.session["logged_user"]["user"]["userProperties"]
@@ -357,11 +358,10 @@ def render_enroll_in_dots_program(req, uuid):
                 }
 
                 return redirect("tb03", uuid=uuid)
-
-            return redirect("dotsprogramenroll", uuid=uuid)
+            else:
+                raise Exception("Couldn't enroll patient in progarm")
 
         except Exception as e:
-            logger.error(e)
             messages.error(req, e)
             logger.error(str(e), exc_info=True)
 
@@ -684,7 +684,6 @@ def render_tb03_form(req, uuid):
 
     if req.method == "POST":
         try:
-            raise Exception("Testing")
             response = fu.create_update_tb03(req, uuid, req.POST)
 
             if response:
@@ -706,13 +705,7 @@ def render_tb03_form(req, uuid):
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-        context = {
-            "concepts": concepts,
-            "title": title,
-            "uuid": uuid,
-            "current_patient_program_flow": req.session["current_patient_program_flow"],
-            "identifiers": pu.get_patient_identifiers(req, uuid),
-        }
+
         tb03_concepts = [
             Concepts.TREATMENT_CENTER_FOR_IP.value,
             Concepts.TREATMENT_CENTER_FOR_CP.value,
@@ -723,10 +716,16 @@ def render_tb03_form(req, uuid):
             Concepts.TB_TREATMENT_OUTCOME.value,
             Concepts.CAUSE_OF_DEATH.value,
         ]
-
-        concepts = fu.get_form_concepts(tb03_concepts, req)
         title = mu.get_global_msgs("mdrtb.tb03", locale=req.session["locale"])
 
+        concepts = fu.get_form_concepts(tb03_concepts, req)
+        context = {
+            "concepts": concepts,
+            "title": title,
+            "uuid": uuid,
+            "current_patient_program_flow": req.session["current_patient_program_flow"],
+            "identifiers": pu.get_patient_identifiers(req, uuid),
+        }
         mu.add_url_to_breadcrumb(req, context["title"])
 
         return render(req, "app/tbregister/dots/tb03.html", context=context)
@@ -787,8 +786,6 @@ def render_edit_tb03_form(req, uuid, formid):
         ]
 
         mu.add_url_to_breadcrumb(req, context["title"])
-
-        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
 
         form = fu.get_tb03_by_uuid(req, formid)
 
@@ -997,7 +994,7 @@ def render_adverse_events_form(req, patientid):
         except Exception as e:
             messages.error(req, str(e))
             logger.error(str(e), exc_info=True)
-            return redirect("adverseevents", uuid=patientid)
+            return redirect("adverseevents", patientid=patientid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
@@ -1047,7 +1044,7 @@ def render_adverse_events_form(req, patientid):
         logger.error(e, exc_info=True)
         messages.error(req, str(e))
 
-        return redirect("adverseevents", uuid=patientid)
+        return redirect("adverseevents", patientid=patientid)
 
 
 def render_edit_adverse_events_form(req, patientid, formid):
@@ -1165,7 +1162,7 @@ def render_drug_resistence_form(req, patientid):
         except Exception as e:
             messages.error(req, str(e))
             logger.error(str(e), exc_info=True)
-            return redirect("drugresistanse", uuid=patientid)
+            return redirect("drugresistanse", patientid=patientid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
@@ -3975,12 +3972,7 @@ def render_add_test_results(req, orderid):
                     sample["status"] == Constants.ACCEPTED.value
                     or sample["status"] == Constants.PROCESSED.value
                 ):
-                    source = {
-                        "uuid": sample["specimenSite"]["uuid"],
-                        "name": sample["specimenSite"]["display"],
-                    }
-                    context["source"] = json.dumps(source)
-                    context["collection_date"] = sample["collectionDate"]
+                    context["sample"] = json.dumps(sample)
                     break
             if len(response["attributes"]) > 0:
                 context["state"] = "edit"

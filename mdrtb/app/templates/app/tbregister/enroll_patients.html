@@ -25,14 +25,14 @@
         <div class="input-container">
           <label class="input-label w-full required"
             for="name">{{'mdrtb.givenname'|get_message:request.session.locale}}</label>
-          <input required class="input form-control" type="text" name="givenname" pattern="[A-Za-z]+"
-            title="Name cannont contain numbers" />
+          <input required class="input form-control" type="text" name="givenname"
+            pattern="[^0-9!@#$%^&*()_+{}[\]:;<>,.?~\\/\-=|]+" title="Name cannont contain numbers" />
         </div>
         <div class="input-container">
           <label class="input-label w-full required"
             for="name">{{'mdrtb.familyname'|get_message:request.session.locale}}</label>
-          <input required class="input form-control" type="text" name="familyname" pattern="[A-Za-z]+"
-            title="Name cannont contain numbers" />
+          <input required class="input form-control" type="text" name="familyname"
+            pattern="[^0-9!@#$%^&*()_+{}[\]:;<>,.?~\\/\-=|]+" title="Name cannont contain numbers" />
         </div>
       </div>
       <div class="enrollform-section">

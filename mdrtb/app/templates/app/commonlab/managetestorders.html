@@ -233,8 +233,8 @@
                 if (answer.uuid === attribute.valueReference) {
                   $(`#${uuid}common`).append(
                     `
-          <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
-          <div class="border w-full p-2 border-gray-200">${answer.display}</div>
+          <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+          <div class="border w-full h-full p-2 border-gray-200">${answer.display}</div>
  
           `
                   )
@@ -245,8 +245,8 @@
             }
           } else if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.BooleanDatatype") {
             $(`#${uuid}common`).append(
-              `<div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
-            <div class="border w-full p-2 border-gray-200">${attribute.valueReference === 'on' ? 'True' : 'False'}</div>`
+              `<div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+            <div class="border w-full h-full p-2 border-gray-200">${attribute.valueReference === 'on' ? 'True' : 'False'}</div>`
             )
           }
 
@@ -255,7 +255,7 @@
             if (attribute.valueReference != null && attribute.valueReference.length > 0) {
               $(`#${uuid}common`).append(
                 `
-          <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+          <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
           <div class="border w-full p-2 h-full border-gray-200">${attribute.valueReference}</div>
  
           `
@@ -272,8 +272,8 @@
                 if (answer.uuid === attribute.valueReference) {
                   $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
                     `
-          <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
-          <div class="border w-full p-2 border-gray-200">${answer.display}</div>
+          <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+          <div class="border w-full h-full p-2 border-gray-200">${answer.display}</div>
  
           `
                   )
@@ -287,8 +287,8 @@
             if (attribute.valueReference != null && attribute.valueReference.length > 0) {
               $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
                 `
-          <div class="border w-full p-2 border-gray-200 ">${attribute.attributeType.name}</div>
-          <div class="border w-full p-2 border-gray-200">${attribute.valueReference}</div>
+          <div class="border w-full h-full p-2 border-gray-200 ">${attribute.attributeType.name}</div>
+          <div class="border w-full h-full p-2 border-gray-200">${attribute.valueReference}</div>
 
           `
               )

@@ -86,10 +86,12 @@ def clear_session(req):
                 if query_params
                 else req.session.get("redirect_url")
             )
+        current_patient_program_flow = req.session["current_patient_program_flow"]
 
         req.session.flush()
         req.session.create()
         req.session["redirect_url"] = redirect_url
+        req.session["current_patient_program_flow"] = current_patient_program_flow
         logger.info("Session cleared. New created")
     except KeyError as ke:
         logger.error(str(ke), exc_info=True)
@@ -159,25 +161,27 @@ def post(req, endpoint, data):
     response = requests.post(
         url=REST_API_BASE_URL + endpoint, headers=get_auth_headers(req), json=data
     )
-    data = response.json()
     logger.info(f"'Making POST call to /{endpoint}'")
     if response.ok:
+        data = response.json()
         logger.info(f"POST Request successful, status: {response.status_code}")
         return True, data
+    if response.status_code == 403:
+        clear_session(req)
     logger.info(f"'POST Request failed to /{endpoint}, status: {response.status_code}'")
-    if "error" in data:
-        logger.error(data, exc_info=True)
-        short_error_message = data["error"]["message"]
+    if "error" in response.json():
+        logger.error(response.json(), exc_info=True)
+        short_error_message = response.json()["error"]["message"]
         detailed_message = None
-        if "globalErrors" in data["error"]:
-            detailed_message = data["error"]["globalErrors"][0]["message"]
+        if "globalErrors" in response.json()["error"]:
+            detailed_message = response.json()["error"]["globalErrors"][0]["message"]
         error_message = (
             short_error_message + ": " + detailed_message
             if detailed_message
             else short_error_message
         )
+        response.raise_for_status()
         raise Exception(error_message)
-    response.raise_for_status()
 
 
 @handle_rest_exceptions

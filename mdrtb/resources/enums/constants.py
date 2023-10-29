@@ -64,6 +64,7 @@ class Constants(enum.Enum):
     )
 
     SPECIMEN_SOURCE = "5baeba18-9bf1-95ad-9a51-f56f59403436"
+    TUBERCILOSIS_SAMPLE_SOURCE = "1b5310d2-6dce-dd56-05f5-a24fa5abd9f2"
     DATE_OF_REQUEST_FOR_LABORATORY_INVESTIGATION = (
         "ce49756b-929b-3920-f1a1-3fd205440576"
     )

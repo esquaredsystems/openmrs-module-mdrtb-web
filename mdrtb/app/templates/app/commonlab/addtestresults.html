@@ -40,7 +40,8 @@
   </form>
 </div>
 <script>
-  let specimen_source = JSON.parse("{{source|escapejs}}");
+  let sample = JSON.parse("{{sample|escapejs}}");
+  console.log(sample)
   let specimen_collection_date = "{{collection_date}}";
   let auditInfo = JSON.parse("{{audit_info_json|escapejs}}")
   let attributes = JSON.parse("{{attributes | escapejs}}");
@@ -193,12 +194,13 @@
           `
           );
         } else if (attribute.attributeType.inputType === 'select') {
-          if (attribute.attributeType.uuid === "{{'SPECIMEN_SOURCE' | get_constant }}") {
+          if (attribute.attributeType.uuid === "{{'SPECIMEN_SOURCE' | get_constant }}"
+            || attribute.attributeType.uuid === "{{'TUBERCILOSIS_SAMPLE_SOURCE' | get_constant }}") {
             $("#attributes-container").append(
               ` <div class="input-container">
             <label class="input-label">${attribute.attributeType.name}</label>
             <select style="background-color:${disabled_form_field};" id=${attribute.attributeType.uuid} name=${attribute.attributeType.uuid} class="input pointer-events-none">
-              <option value=${specimen_source.uuid} selected>${specimen_source.name}</option>
+              <option value=${sample.specimenSite.uuid} selected>${sample.specimenSite.display}</option>
             </select>
           `
             )
@@ -263,7 +265,7 @@
               ` <div class="input-container">
             <label class="input-label">${attribute.attributeType.name}</label>
             <input style="background-color:${disabled_form_field};" class="input pointer-events-none" type=text name=${attribute.attributeType.uuid} 
-            value=${specimen_collection_date.slice(0, 10).split("-").reverse().join(".")} /input >
+            value=${sample.collectionDate.slice(0, 10).split("-").reverse().join(".")} /input >
             </div>
           `
             );
@@ -276,7 +278,8 @@
             </div>
           `
             );
-          } else if (attribute.attributeType.name === "DATE OF REQUEST FOR LABORATORY INVESTIGATION") {
+          } else if (attribute.attributeType.name === "DATE OF REQUEST FOR LABORATORY INVESTIGATION"
+            || attribute.attributeType.name === "INVESTIGATION DATE") {
             $(`#attributes-container`).append(
               ` <div class="input-container">
             <label class="input-label">${attribute.attributeType.name}</label>
@@ -285,6 +288,16 @@
             </div>
           `
             );
+          } else if (attribute.attributeType.name === "TUBERCULOSIS SPECIMEN ID") {
+            $(`#attributes-container`).append(
+              ` <div class="input-container">
+            <label class="input-label">${attribute.attributeType.name}</label>
+            <input style="background-color:${disabled_form_field};" class="input pointer-events-none" type=text name=${attribute.attributeType.uuid} 
+            value=${sample.sampleIdentifier} /input >
+            </div>
+          `
+            );
+
           }
 
           else {
