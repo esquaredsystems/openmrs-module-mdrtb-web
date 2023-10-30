@@ -109,9 +109,17 @@
           <div class="input-container">
             <label class="tb03-form-label w-full" for="dateOfResistance">
               {{'mdrtb.tb03u.dateOfResistanceTypeDuringTreatment'|get_message:request.session.locale}}</label>
-            <input class="input form-control" type="date" disabled
+            <input class="input form-control" type="text" disabled
               value="{{current_patient_program_flow.current_program.dateEnrolled | iso_to_normal_date}}">
           </div>
+          {% if state == 'edit' %}
+          <div class="input-container">
+            <label class="tb03-form-label w-full" for="dateOfResistance">
+              {{'mdrtb.location'|get_message:request.session.locale}}</label>
+            <input id="location" class="input form-control" type="text" disabled
+              value="{{form.encounter.location.name}}">
+          </div>
+          {% else %}
           <div id="locations-container" class="flex flex-col space-y-4">
             <div class="input-container">
               <label class="input-label w-full"
@@ -149,6 +157,7 @@
               </select>
             </div>
           </div>
+          {% endif %}
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="sldRegisterNumber">{{'mdrtb.tb03.sldRegisterNumber'|get_message:request.session.locale}}</label>
@@ -486,12 +495,14 @@
     $('select').prop('disabled', true).prop('', false)
     $('textarea').prop('disabled', true).prop('', false)
     $('#canceleditbtn').prop('hidden', true)
+
   }
   $('#editbtn').click(function () {
     $('input').prop('disabled', false)
     $('select').prop('disabled', false)
     $('textarea').prop('disabled', false)
     $('#canceleditbtn').prop('hidden', false)
+    $("#location").prop('disabled', true)
   })
   $('#canceleditbtn').click(function () {
     $('input').prop('disabled', true)

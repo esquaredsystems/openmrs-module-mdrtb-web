@@ -1,41 +1,29 @@
-from django.shortcuts import render, redirect, HttpResponseRedirect
-
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 import utilities.restapi_utils as ru
 import utilities.metadata_util as mu
 from django.core.cache import cache
-
 import utilities.commonlab_util as cu
 import utilities.patient_utils as pu
 import utilities.forms_util as fu
 import utilities.common_utils as util
 import utilities.locations_util as lu
-
 import json
 import datetime
-import traceback
 import logging
-
 from django.contrib import messages
-
 from resources.enums.mdrtbConcepts import Concepts
-
 from resources.enums.privileges import Privileges
-
 from resources.enums.constants import Constants
-
-from django.views.decorators.cache import never_cache, cache_control
-
 
 logger = logging.getLogger("django")
 
 
-# start memcache if u havent
+# start memcache if u haven't
 
 
 def check_if_session_alive(req):
     session_id = req.session.get("session_id")
-
     if not session_id:
         return False
 
@@ -74,8 +62,7 @@ def get_locations(req):
                 return JsonResponse(locations, safe=False)
 
         except Exception as e:
-            logger.error(str(e), exc_info=True)
-            messages.error(req, e)
+            log_and_show_error(e, req)
 
             raise Exception(str(e))
 
@@ -95,7 +82,7 @@ def change_locale(req, locale):
         logged_in_user_uuid = req.session["logged_user"]["user"]["uuid"]
         user_properties = req.session["logged_user"]["user"]["userProperties"]
         user_properties["defaultLocale"] = locale
-        status, response = ru.post(
+        _, _ = ru.post(
             req,
             f"user/{logged_in_user_uuid}",
             {"userProperties": user_properties},
@@ -103,10 +90,8 @@ def change_locale(req, locale):
 
         return redirect(req.session["redirect_url"])
     except Exception as e:
-        messages.error(req, str(e))
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
         return redirect(req.session["redirect_url"])
-    return redirect(req.session["redirect_url"])
 
 
 def get_concepts(req, uuid=None):
@@ -123,8 +108,7 @@ def get_concepts(req, uuid=None):
         _, response = ru.get(req, url, parameters=params)
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         response = {"error": str(e)}
 
@@ -158,8 +142,7 @@ def render_login(req):
                 return render(req, "app/tbregister/login.html", context=context)
 
         except Exception as e:
-            messages.error(req, e)
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
             return redirect("login")
 
     else:
@@ -180,8 +163,7 @@ def search_patients_query(req):
         _, response = ru.get(req, "patient", parameters={"q": q, "v": "full"})
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         response = {"error": str(e)}
 
@@ -192,13 +174,13 @@ def render_search_patients_view(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = (
-        mu.get_global_msgs(
-            "general.search", locale=req.session["locale"], source="OpenMRS"
-        )
-        + " "
-        + mu.get_global_msgs(
-            "general.patient", locale=req.session["locale"], source="OpenMRS"
-        )
+            mu.get_global_msgs(
+                "general.search", locale=req.session["locale"], source="OpenMRS"
+            )
+            + " "
+            + mu.get_global_msgs(
+        "general.patient", locale=req.session["locale"], source="OpenMRS"
+    )
     )
     context = {"title": title}
 
@@ -224,8 +206,7 @@ def render_search_patients_view(req):
 
     except Exception as e:
         context["minSearchCharacters"] = 2
-        messages.error(req, str(e))
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return render(req, "app/tbregister/search_patients.html", context=context)
 
@@ -233,6 +214,9 @@ def render_search_patients_view(req):
 def render_enroll_patient(req):
     if not check_if_session_alive(req):
         return redirect("login")
+
+    title = mu.get_global_msgs("mdrtb.enrollNewPatient", locale=req.session["locale"])
+    context = {"title": title}
 
     if req.method == "POST":
         try:
@@ -242,14 +226,8 @@ def render_enroll_patient(req):
                 return redirect("dotsprogramenroll", uuid=response["uuid"])
 
         except Exception as e:
-            messages.error(req, str(e))
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
     try:
-        title = mu.get_global_msgs(
-            "mdrtb.enrollNewPatient", locale=req.session["locale"]
-        )
-        context = {"title": title}
-
         privileges_required = [Privileges.ADD_PATIENTS]
 
         context.update(check_privileges(req, privileges_required))
@@ -264,8 +242,7 @@ def render_enroll_patient(req):
         mu.add_url_to_breadcrumb(req, context["title"])
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
     finally:
         return render(
@@ -281,13 +258,13 @@ def render_enrolled_programs(req, uuid):
     if not check_if_session_alive(req):
         return redirect("login")
     title = (
-        mu.get_global_msgs(
-            "Program.enrolled", locale=req.session["locale"], source="OpenMRS"
-        )
-        + " "
-        + mu.get_global_msgs(
-            "Program.header", locale=req.session["locale"], source="OpenMRS"
-        )
+            mu.get_global_msgs(
+                "Program.enrolled", locale=req.session["locale"], source="OpenMRS"
+            )
+            + " "
+            + mu.get_global_msgs(
+        "Program.header", locale=req.session["locale"], source="OpenMRS"
+    )
     )
     context = {
         "title": title,
@@ -314,15 +291,13 @@ def render_enrolled_programs(req, uuid):
 
         if programs:
             context["programs"] = programs
-
-        lab_results = cu.get_lab_test_orders_for_dashboard(req, uuid)
-        if lab_results:
-            context["lab_results"] = lab_results
-            context["lab_json"] = json.dumps(lab_results)
+            lab_results = cu.get_lab_test_orders_for_dashboard(req, uuid)
+            if lab_results:
+                context["lab_results"] = lab_results
+                context["lab_json"] = json.dumps(lab_results)
 
     except Exception as e:
-        messages.error(req, str(e))
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
     finally:
         return render(req, "app/tbregister/enrolled_programs.html", context=context)
@@ -362,8 +337,7 @@ def render_enroll_in_dots_program(req, uuid):
                 raise Exception("Couldn't enroll patient in progarm")
 
         except Exception as e:
-            messages.error(req, e)
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
 
             return redirect("dotsprogramenroll", uuid=uuid)
 
@@ -384,16 +358,12 @@ def render_enroll_in_dots_program(req, uuid):
             )
 
         else:
-            messages.error(req, "Error fetching programs. Please try again later")
-            logger.error(
-                "Error fetching programs. Please try again later", exc_info=True
-            )
+            log_and_show_error("Error fetching programs. Please try again later", req)
 
             return redirect("searchPatientsView")
 
     except Exception as e:
-        messages.error(req, str(e))
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
     finally:
         return render(req, "app/tbregister/dots/enroll_in_dots.html", context=context)
@@ -427,8 +397,7 @@ def render_enroll_patient_in_mdrtb(req, uuid):
             return redirect("tb03u", uuid=uuid)
 
         except Exception as e:
-            messages.error(req, e)
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
             return render(
                 req, "app/tbregister/mdr/enroll_in_mdrtb.html", context=context
             )
@@ -447,16 +416,12 @@ def render_enroll_patient_in_mdrtb(req, uuid):
             context["jsonprogram"] = json.dumps(program)
 
         else:
-            messages.error(req, "Error fetching programs. Please try again later")
-            logger.error(
-                "Error fetching programs. Please try again later", exc_info=True
-            )
+            log_and_show_error("Error fetching programs. Please try again later", req)
 
             return redirect("searchPatientsView")
 
     except Exception as e:
-        messages.error(req, str(e))
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
     finally:
         return render(req, "app/tbregister/mdr/enroll_in_mdrtb.html", context=context)
 
@@ -466,6 +431,7 @@ def render_edit_dots_program(req, uuid, programid):
         Privileges.EDIT_PATIENT_PROGRAMS,
         Privileges.EDIT_DOTS_MDR_DATA,
     ]
+    title = mu.get_global_msgs("mdrtb.editProgram", locale=req.session["locale"])
 
     context = {"title": title, "uuid": uuid, "state": "edit"}
     if not check_if_session_alive(req):
@@ -498,15 +464,12 @@ def render_edit_dots_program(req, uuid, programid):
                 return redirect("enrolledprograms", uuid=uuid)
 
         except Exception as e:
-            messages.error(req, str(e))
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
             return render(
                 req, "app/tbregister/dots/enroll_in_dots.html", context=context
             )
 
     try:
-        title = mu.get_global_msgs("mdrtb.editProgram", locale=req.session["locale"])
-
         context.update(check_privileges(req, privileges_required))
 
         if not context["edit_patient_programs_privilege"]:
@@ -521,14 +484,12 @@ def render_edit_dots_program(req, uuid, programid):
         return render(req, "app/tbregister/dots/enroll_in_dots.html", context=context)
 
     except Exception as e:
-        messages.error(req, str(e))
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect("editdotsprogram", uuid=uuid, programid=programid)
 
 
 def render_edit_mdrtb_program(req, uuid, programid):
-    context = {"title": title, "uuid": uuid, "state": "edit"}
     privileges_required = [
         Privileges.EDIT_PATIENT_PROGRAMS,
         Privileges.EDIT_DOTS_MDR_DATA,
@@ -536,6 +497,9 @@ def render_edit_mdrtb_program(req, uuid, programid):
 
     if not check_if_session_alive(req):
         return redirect("login")
+
+    title = mu.get_global_msgs("mdrtb.editProgram", locale=req.session["locale"])
+    context = {"title": title, "uuid": uuid, "state": "edit"}
 
     if req.method == "POST":
         body = {
@@ -564,15 +528,12 @@ def render_edit_mdrtb_program(req, uuid, programid):
                 return redirect("enrolledprograms", uuid=uuid)
 
         except Exception as e:
-            messages.error(req, str(e))
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
             return render(
                 req, "app/tbregister/mdr/enroll_in_mdrtb.html", context=context
             )
 
     try:
-        title = mu.get_global_msgs("mdrtb.editProgram", locale=req.session["locale"])
-
         context.update(check_privileges(req, privileges_required))
 
         if not context["edit_patient_programs_privilege"]:
@@ -587,7 +548,7 @@ def render_edit_mdrtb_program(req, uuid, programid):
         return render(req, "app/tbregister/mdr/enroll_in_mdrtb.html", context=context)
 
     except Exception as e:
-        messages.error(req, str(e))
+        log_and_show_error(e, req)
 
         return redirect("editmdrtbprogram", uuid=uuid, programid=programid)
 
@@ -666,14 +627,12 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
 
             context["mdrEnrolled"] = pu.check_if_patient_enrolled_in_mdrtb(req, uuid)
         else:
-            messages.error(req, "Error fetching patient info")
-            logger.error("Error fetching patient info", exc_info=True)
+            log_and_show_error("Error fetching patient info", req)
 
             return redirect(req.session["redirect_url"])
 
     except Exception as e:
-        messages.error(req, str(e))
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
     finally:
         return render(req, "app/tbregister/dashboard.html", context=context)
 
@@ -699,8 +658,7 @@ def render_tb03_form(req, uuid):
                 return redirect(redirect_to)
 
         except Exception as e:
-            messages.error(req, str(e))
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
             return redirect("tb03", uuid=uuid)
 
     try:
@@ -731,8 +689,7 @@ def render_tb03_form(req, uuid):
         return render(req, "app/tbregister/dots/tb03.html", context=context)
 
     except Exception as e:
-        logger.error(e, exc_info=True)
-        messages.error(req, str(e))
+        log_and_show_error(e, req)
 
         return redirect("tb03", uuid=uuid)
 
@@ -753,16 +710,15 @@ def render_edit_tb03_form(req, uuid, formid):
                 return redirect(req.session["redirect_url"])
 
         except Exception as e:
-            messages.error(req, str(e))
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
             return redirect("edittb03", uuid=uuid, formid=formid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         title = (
-            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
-            + " "
-            + mu.get_global_msgs("mdrtb.tb03", locale=req.session["locale"])
+                mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+                + " "
+                + mu.get_global_msgs("mdrtb.tb03", locale=req.session["locale"])
         )
         context = {
             "title": title,
@@ -801,8 +757,7 @@ def render_edit_tb03_form(req, uuid, formid):
             return render(req, "app/tbregister/dots/tb03.html", context=context)
 
     except Exception as e:
-        messages.error(req, str(e))
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect("edittb03", uuid=uuid, formid=formid)
 
@@ -818,8 +773,7 @@ def render_delete_tb03_form(req, formid):
                 messages.warning(req, "Form deleted")
 
         except Exception as e:
-            messages.error(req, str(e))
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
 
         finally:
             return redirect(req.session["redirect_url"])
@@ -845,8 +799,7 @@ def render_tb03u_form(req, uuid):
                 return redirect(redirect_to)
 
         except Exception as e:
-            messages.error(req, str(e))
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
             return redirect("tb03u", uuid=uuid)
 
     try:
@@ -884,9 +837,8 @@ def render_tb03u_form(req, uuid):
         return render(req, "app/tbregister/mdr/tb03u.html", context=context)
 
     except Exception as e:
-        logger.error(e, exc_info=True)
-        messages.error(req, str(e))
-        logger.error(str(e), exc_info=True)
+
+        log_and_show_error(e, req)
 
         return redirect("tb03u", uuid=uuid)
 
@@ -899,20 +851,19 @@ def render_edit_tb03u_form(req, uuid, formid):
 
     if req.method == "POST":
         try:
-            response = fu.create_update_tb03u(req, uuid, req.POST, formid=formid)
+            fu.create_update_tb03u(req, uuid, req.POST, formid=formid)
             return redirect(req.session["redirect_url"])
 
         except Exception as e:
-            logger.error(str(e), exc_info=True)
-            messages.error(req, str(e))
+            log_and_show_error(e, req)
             return redirect("edittb03u", uuid=uuid, formid=formid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         title = (
-            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
-            + " "
-            + mu.get_global_msgs("mdrtb.tb03u", locale=req.session["locale"])
+                mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+                + " "
+                + mu.get_global_msgs("mdrtb.tb03u", locale=req.session["locale"])
         )
         context = {
             "title": title,
@@ -958,8 +909,7 @@ def render_edit_tb03u_form(req, uuid, formid):
             return render(req, "app/tbregister/mdr/tb03u.html", context=context)
 
     except Exception as e:
-        messages.error(req, str(e))
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect("edittb03u", uuid=uuid, formid=formid)
 
@@ -972,8 +922,7 @@ def render_delete_tb03u_form(req, formid):
             ru.delete(req, f"encounter/{formid}")
 
         except Exception as e:
-            messages.error(req, str(e))
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
 
         finally:
             return redirect(req.session["redirect_url"], permanent=True)
@@ -992,8 +941,7 @@ def render_adverse_events_form(req, patientid):
                 return redirect(req.session["redirect_url"], permanent=True)
 
         except Exception as e:
-            messages.error(req, str(e))
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
             return redirect("adverseevents", patientid=patientid)
 
     try:
@@ -1041,8 +989,7 @@ def render_adverse_events_form(req, patientid):
         return render(req, "app/tbregister/mdr/adverse_events.html", context=context)
 
     except Exception as e:
-        logger.error(e, exc_info=True)
-        messages.error(req, str(e))
+        log_and_show_error(e, req)
 
         return redirect("adverseevents", patientid=patientid)
 
@@ -1064,16 +1011,15 @@ def render_edit_adverse_events_form(req, patientid, formid):
                 return redirect(req.session["redirect_url"], permanent=True)
 
         except Exception as e:
-            messages.error(req, str(e))
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
             return redirect("editadverseevents", uuid=patientid, formid=formid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         title = (
-            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
-            + " "
-            + mu.get_global_msgs("mdrtb.pv.aeForm", locale=req.session["locale"])
+                mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+                + " "
+                + mu.get_global_msgs("mdrtb.pv.aeForm", locale=req.session["locale"])
         )
         context = {
             "title": title,
@@ -1126,8 +1072,7 @@ def render_edit_adverse_events_form(req, patientid, formid):
             )
 
     except Exception as e:
-        messages.error(req, str(e))
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect("editadverseevents", uuid=patientid, formid=formid)
 
@@ -1140,8 +1085,7 @@ def render_delete_adverse_events_form(req, formid):
             messages.success(req, "Form deleted successfully")
 
     except Exception as e:
-        messages.error(req, str(e))
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
     finally:
         return redirect(req.session["redirect_url"], permanent=True)
@@ -1160,8 +1104,7 @@ def render_drug_resistence_form(req, patientid):
                 return redirect(req.session["redirect_url"], permanent=True)
 
         except Exception as e:
-            messages.error(req, str(e))
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
             return redirect("drugresistanse", patientid=patientid)
 
     try:
@@ -1180,8 +1123,7 @@ def render_drug_resistence_form(req, patientid):
         return render(req, "app/tbregister/mdr/drug_resistence.html", context=context)
 
     except Exception as e:
-        messages.error(req, str(e))
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
         return redirect("drugresistanse", uuid=patientid)
 
 
@@ -1202,15 +1144,14 @@ def render_edit_drug_resistence_form(req, patientid, formid):
                 return redirect(req.session["redirect_url"], permanent=True)
 
         except Exception as e:
-            messages.error(req, str(e))
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
             return redirect("editdrugresistanse", uuid=patientid, formid=formid)
 
     try:
         title = (
-            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
-            + " "
-            + mu.get_global_msgs("mdrtb.drdt", locale=req.session["locale"])
+                mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+                + " "
+                + mu.get_global_msgs("mdrtb.drdt", locale=req.session["locale"])
         )
         context = {"title": title, "patient_id": patientid, "state": "edit"}
 
@@ -1236,7 +1177,7 @@ def render_edit_drug_resistence_form(req, patientid, formid):
         return render(req, "app/tbregister/mdr/drug_resistence.html", context=context)
 
     except Exception as e:
-        messages.error(req, str(e))
+        log_and_show_error(e, req)
         return redirect("editdrugresistanse", uuid=patientid, formid=formid)
 
 
@@ -1248,8 +1189,7 @@ def render_delete_drug_resistence_form(req, formid):
             messages.success(req, "Form deleted successfully")
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
     finally:
         return redirect(req.session.get("redirect_url"), permanent=True)
@@ -1268,8 +1208,7 @@ def render_regimen_form(req, patientid):
                 return redirect(req.session["redirect_url"])
 
         except Exception as e:
-            messages.error(req, str(e))
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
             return redirect("regimen", uuid=patientid)
 
     try:
@@ -1293,8 +1232,7 @@ def render_regimen_form(req, patientid):
         return render(req, "app/tbregister/mdr/regimen.html", context=context)
 
     except Exception as e:
-        messages.error(req, str(e))
-        logger.error(e, exc_info=True)
+        log_and_show_error(e, req)
         return redirect("regimen", uuid=patientid)
 
 
@@ -1315,8 +1253,7 @@ def render_edit_regimen_form(req, patientid, formid):
                 return redirect(req.session["redirect_url"])
 
         except Exception as e:
-            messages.error(req, str(e))
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
             return redirect("editregimen", uuid=patientid, formid=formid)
 
     try:
@@ -1331,9 +1268,9 @@ def render_edit_regimen_form(req, patientid, formid):
 
         form = fu.get_regimen_by_uuid(req, formid)
         title = (
-            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
-            + " "
-            + mu.get_global_msgs("mdrtb.pv.regimenForm", locale=req.session["locale"])
+                mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+                + " "
+                + mu.get_global_msgs("mdrtb.pv.regimenForm", locale=req.session["locale"])
         )
         context = {
             "title": title,
@@ -1357,8 +1294,7 @@ def render_edit_regimen_form(req, patientid, formid):
         return render(req, "app/tbregister/mdr/regimen.html", context=context)
 
     except Exception as e:
-        messages.error(req, str(e))
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
         return redirect(req.session.get("redirect_url"))
 
 
@@ -1370,7 +1306,7 @@ def render_delete_regimen_form(req, formid):
             messages.success(req, "Form deleted successfully")
 
     except Exception as e:
-        messages.error(req, e)
+        log_and_show_error(e, req)
 
     finally:
         return redirect(req.session.get("redirect_url"))
@@ -1389,8 +1325,7 @@ def render_form_89(req, uuid):
                 return redirect(req.session["redirect_url"], permanent=True)
 
         except Exception as e:
-            messages.error(req, str(e))
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
             return redirect("form89", uuid=uuid)
 
     try:
@@ -1432,9 +1367,8 @@ def render_form_89(req, uuid):
         return render(req, "app/tbregister/dots/form89.html", context=context)
 
     except Exception as e:
-        logger.error(e, exc_info=True)
-        messages.error(req, str(e))
-        logger.error(str(e), exc_info=True)
+
+        log_and_show_error(e, req)
 
         return redirect("form89", uuid=uuid)
 
@@ -1454,16 +1388,16 @@ def render_edit_form_89(req, uuid, formid):
                 return redirect(req.session["redirect_url"])
 
         except Exception as e:
-            messages.error(req, str(e))
-            logger.error(e, exc_info=True)
+            log_and_show_error(e, req)
+
             return redirect("editform89", uuid=uuid, formid=formid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         title = (
-            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
-            + " "
-            + mu.get_global_msgs("mdrtb.form89", locale=req.session["locale"])
+                mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+                + " "
+                + mu.get_global_msgs("mdrtb.form89", locale=req.session["locale"])
         )
         context = {
             "title": title,
@@ -1507,8 +1441,7 @@ def render_edit_form_89(req, uuid, formid):
             return render(req, "app/tbregister/dots/form89.html", context=context)
 
     except Exception as e:
-        messages.error(req, str(e))
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect("editform89", uuid=uuid, formid=formid)
 
@@ -1518,8 +1451,7 @@ def render_delete_form_89(req, formid):
         ru.delete(req, f"mdrtb/form89/{formid}")
 
     except Exception as e:
-        messages.error(req, str(e))
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
     finally:
         return redirect(req.session["redirect_url"])
@@ -1555,7 +1487,7 @@ def render_user_profile(req):
             )
             logged_in_user_uuid = req.session["logged_user"]["user"]["uuid"]
 
-            status, response = ru.post(
+            _, _ = ru.post(
                 req,
                 f"user/{logged_in_user_uuid}",
                 {"userProperties": user_properties},
@@ -1563,8 +1495,7 @@ def render_user_profile(req):
 
             return redirect(req.session["redirect_url"])
         except Exception as e:
-            messages.error(req, str(e))
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
 
             return redirect(req.session["redirect_url"])
 
@@ -1617,8 +1548,7 @@ def render_user_profile(req):
         return render(req, "app/tbregister/user_profile.html", context=context)
 
     except Exception as e:
-        messages.error(req, str(e))
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect(req.session["redirect_url"])
 
@@ -1636,9 +1566,8 @@ def render_transferout_form(req, patientuuid):
                 return redirect(req.session["redirect_url"])
 
         except Exception as e:
-            messages.error(req, e)
-            logger.error(str(e), exc_info=True)
-            return redirect("transferout", uuid=uuid)
+            log_and_show_error(e, req)
+            return redirect("transferout", uuid=patientuuid)
 
     else:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
@@ -1667,8 +1596,7 @@ def render_edit_transferout_form(req, patientuuid, formid):
                 return redirect(req.session["redirect_url"])
 
         except Exception as e:
-            messages.error(req, e)
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
             return redirect("edittransferout", uuid=patientuuid, formid=formid)
 
     try:
@@ -1676,9 +1604,9 @@ def render_edit_transferout_form(req, patientuuid, formid):
 
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         title = (
-            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
-            + " "
-            + mu.get_global_msgs("mdrtb.transferOut", locale=req.session["locale"])
+                mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+                + " "
+                + mu.get_global_msgs("mdrtb.transferOut", locale=req.session["locale"])
         )
         context = {
             "title": title,
@@ -1696,8 +1624,7 @@ def render_edit_transferout_form(req, patientuuid, formid):
         return render(req, "app/tbregister/dots/transfer.html", context=context)
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(e, exc_info=True)
+        log_and_show_error(e, req)
         return redirect("edittransferout", uuid=patientuuid, formid=formid)
 
 
@@ -1709,8 +1636,7 @@ def render_delete_transferout_form(req, formid):
             messages.warning(req, "Form deleted")
 
     except Exception as e:
-        messages.error(req, str(e))
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
     finally:
         return redirect(req.session["redirect_url"])
@@ -1819,50 +1745,11 @@ def render_patient_list(req):
                     req, "app/reporting/patientlist_report.html", context=context
                 )
     except Exception as e:
-        logger.error(e, exc_info=True)
-        messages.error(req, e)
+
+        log_and_show_error(e, req)
         return redirect("/")
 
     return render(req, "app/reporting/patientlist_report_form.html", context=context)
-
-    # def render_tb03_report_form(req):
-    if not check_if_session_alive(req):
-        return redirect("login")
-    title = mu.get_global_msgs("mdrtb.tb03Parameters", locale=req.session["locale"])
-    context = {
-        "title": title,
-        "months": util.get_months(),
-        "quarters": util.get_quarters(),
-    }
-
-    req.session["redirect_url"] = req.META.get("HTTP_REFERER")
-    if req.method == "POST":
-        month = req.POST.get("month")
-
-        quarter = req.POST.get("quarter")
-
-        keys_to_check = ["facility", "district", "region"]
-
-        location = None
-
-        for key in keys_to_check:
-            value = req.POST.get(key)
-
-            if value and len(value) > 0:
-                location = value
-
-                break
-
-        year = req.POST.get("year")
-
-        if month:
-            url = f"/tb03results?year={year}&month={month}&location={location}"
-
-        elif quarter:
-            url = f"/tb03results?year={year}&quarter={quarter}&location={location}"
-        return redirect(url)
-
-    return render(req, "app/reporting/tb03_report_form.html", context)
 
 
 def render_tb03_report(req):
@@ -1901,50 +1788,9 @@ def render_tb03_report(req):
         return redirect("searchPatientsView")
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect("searchPatientsView")
-
-    # def render_tb03_single_report_form(req):
-    if not check_if_session_alive(req):
-        return redirect("login")
-    title = mu.get_global_msgs("mdrtb.tb03Parameters", locale=req.session["locale"])
-    context = {
-        "title": title,
-        "months": util.get_months(),
-        "quarters": util.get_quarters(),
-    }
-
-    if req.method == "POST":
-        month = req.POST.get("month")
-
-        quarter = req.POST.get("quarter")
-
-        keys_to_check = ["facility", "district", "region"]
-
-        location = None
-
-        for key in keys_to_check:
-            value = req.POST.get(key)
-
-            if value and len(value) > 0:
-                location = value
-
-                break
-
-        year = req.POST.get("year")
-
-        if month:
-            url = f"/tb03singleresults?year={year}&month={month}&location={location}"
-
-        elif quarter:
-            url = (
-                f"/tb03singleresults?year={year}&quarter={quarter}&location={location}"
-            )
-        return redirect(url)
-
-    return render(req, "app/reporting/tb03_single_report_form.html", context)
 
 
 def render_tb03_single_report(req):
@@ -1983,50 +1829,9 @@ def render_tb03_single_report(req):
         return redirect("searchPatientsView")
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect("searchPatientsView")
-
-    # def render_tb03u_single_report_form(req):
-    if not check_if_session_alive(req):
-        return redirect("login")
-    title = mu.get_global_msgs("mdrtb.tb03uParameters", locale=req.session["locale"])
-    context = {
-        "title": title,
-        "months": util.get_months(),
-        "quarters": util.get_quarters(),
-    }
-
-    if req.method == "POST":
-        month = req.POST.get("month")
-
-        quarter = req.POST.get("quarter")
-
-        keys_to_check = ["facility", "district", "region"]
-
-        location = None
-
-        for key in keys_to_check:
-            value = req.POST.get(key)
-
-            if value and len(value) > 0:
-                location = value
-
-                break
-
-        year = req.POST.get("year")
-
-        if month:
-            url = f"/tb03usingleresults?year={year}&month={month}&location={location}"
-
-        elif quarter:
-            url = (
-                f"/tb03usingleresults?year={year}&quarter={quarter}&location={location}"
-            )
-        return redirect(url)
-
-    return render(req, "app/reporting/tb03u_single_report_form.html", context)
 
 
 def render_tb03u_single_report(req):
@@ -2065,48 +1870,9 @@ def render_tb03u_single_report(req):
         return redirect("searchPatientsView")
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect("searchPatientsView")
-
-    # def render_tb03u_report_form(req):
-    if not check_if_session_alive(req):
-        return redirect("login")
-    title = mu.get_global_msgs("mdrtb.tb03uParameters", locale=req.session["locale"])
-    context = {
-        "title": title,
-        "months": util.get_months(),
-        "quarters": util.get_quarters(),
-    }
-
-    if req.method == "POST":
-        month = req.POST.get("month")
-
-        quarter = req.POST.get("quarter")
-
-        keys_to_check = ["facility", "district", "region"]
-
-        location = None
-
-        for key in keys_to_check:
-            value = req.POST.get(key)
-
-            if value and len(value) > 0:
-                location = value
-
-                break
-
-        year = req.POST.get("year")
-
-        if month:
-            url = f"/tb03uresults?year={year}&month={month}&location={location}"
-
-        elif quarter:
-            url = f"/tb03uresults?year={year}&quarter={quarter}&location={location}"
-        return redirect(url)
-
-    return render(req, "app/reporting/tb03u_report_form.html", context)
 
 
 def render_tb03u_report(req):
@@ -2145,48 +1911,9 @@ def render_tb03u_report(req):
         return redirect("searchPatientsView")
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect("searchPatientsView")
-
-    # def render_form89_report_form(req):
-    if not check_if_session_alive(req):
-        return redirect("login")
-    title = mu.get_global_msgs("mdrtb.form89Parameters", locale=req.session["locale"])
-    context = {
-        "title": title,
-        "months": util.get_months(),
-        "quarters": util.get_quarters(),
-    }
-
-    if req.method == "POST":
-        month = req.POST.get("month")
-
-        quarter = req.POST.get("quarter")
-
-        keys_to_check = ["facility", "district", "region"]
-
-        location = None
-
-        for key in keys_to_check:
-            value = req.POST.get(key)
-
-            if value and len(value) > 0:
-                location = value
-
-                break
-
-        year = req.POST.get("year")
-
-        if month:
-            url = f"/form89results?year={year}&month={month}&location={location}"
-
-        elif quarter:
-            url = f"/form89results?year={year}&quarter={quarter}&location={location}"
-        return redirect(url)
-
-    return render(req, "app/reporting/form89_report_form.html", context)
 
 
 def render_form89_report(req):
@@ -2225,48 +1952,9 @@ def render_form89_report(req):
         return redirect("searchPatientsView")
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect("searchPatientsView")
-
-    # def render_tb08_report_form(req):
-    if not check_if_session_alive(req):
-        return redirect("login")
-    title = mu.get_global_msgs("mdrtb.tb08Parameters", locale=req.session["locale"])
-    context = {
-        "title": title,
-        "months": util.get_months(),
-        "quarters": util.get_quarters(),
-    }
-
-    if req.method == "POST":
-        month = req.POST.get("month")
-
-        quarter = req.POST.get("quarter")
-
-        keys_to_check = ["facility", "district", "region"]
-
-        location = None
-
-        for key in keys_to_check:
-            value = req.POST.get(key)
-
-            if value and len(value) > 0:
-                location = value
-
-                break
-
-        year = req.POST.get("year")
-
-        if month:
-            url = f"/tb08results?year={year}&month={month}&location={location}"
-
-        elif quarter:
-            url = f"/tb08results?year={year}&quarter={quarter}&location={location}"
-        return redirect(url)
-
-    return render(req, "app/reporting/tb08_report_form.html", context)
 
 
 def render_tb08_report(req):
@@ -2312,48 +2000,9 @@ def render_tb08_report(req):
         return redirect("searchPatientsView")
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect(req.session["redirect_url"])
-
-    # def render_tb08u_report_form(req):
-    if not check_if_session_alive(req):
-        return redirect("login")
-    title = mu.get_global_msgs("mdrtb.tb08uParameters", locale=req.session["locale"])
-    context = {
-        "title": title,
-        "months": util.get_months(),
-        "quarters": util.get_quarters(),
-    }
-
-    if req.method == "POST":
-        month = req.POST.get("month")
-
-        quarter = req.POST.get("quarter")
-
-        keys_to_check = ["facility", "district", "region"]
-
-        location = None
-
-        for key in keys_to_check:
-            value = req.POST.get(key)
-
-            if value and len(value) > 0:
-                location = value
-
-                break
-
-        year = req.POST.get("year")
-
-        if month:
-            url = f"/tb08uresults?year={year}&month={month}&location={location}"
-
-        elif quarter:
-            url = f"/tb08uresults?year={year}&quarter={quarter}&location={location}"
-        return redirect(url)
-
-    return render(req, "app/reporting/tb08u_report_form.html", context)
 
 
 def render_tb08u_report(req):
@@ -2399,52 +2048,9 @@ def render_tb08u_report(req):
         return redirect("searchPatientsView")
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect(req.session["redirect_url"])
-
-    # def render_tb07u_report_form(req):
-    if not check_if_session_alive(req):
-        return redirect("login")
-    title = mu.get_global_msgs("mdrtb.tb07uParameters", locale=req.session["locale"])
-    context = {
-        "title": title,
-        "months": util.get_months(),
-        "quarters": util.get_quarters(),
-    }
-
-    if req.method == "POST":
-        try:
-            month = req.POST.get("month")
-
-            quarter = req.POST.get("quarter")
-
-            keys_to_check = ["facility", "district", "region"]
-
-            location = None
-
-            for key in keys_to_check:
-                value = req.POST.get(key)
-
-                if value and len(value) > 0:
-                    location = value
-
-                    break
-
-            year = req.POST.get("year")
-
-            if month:
-                url = f"/tb07uresults?year={year}&month={month}&location={location}"
-
-            elif quarter:
-                url = f"/tb07uresults?year={year}&quarter={quarter}&location={location}"
-            return redirect(url)
-        except Exception as e:
-            messages.error(req, e)
-            logger.error(str(e), exc_info=True)
-            return redirect(req.session["redirect_url"])
-    return render(req, "app/reporting/tb07u_report_form.html", context)
 
 
 def render_tb07u_report(req):
@@ -2490,52 +2096,9 @@ def render_tb07u_report(req):
         return redirect("searchPatientsView")
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect(req.session["redirect_url"])
-
-    # def render_tb07_report_form(req):
-    if not check_if_session_alive(req):
-        return redirect("login")
-    title = mu.get_global_msgs("mdrtb.tb07uParameters", locale=req.session["locale"])
-    context = {
-        "title": title,
-        "months": util.get_months(),
-        "quarters": util.get_quarters(),
-    }
-
-    if req.method == "POST":
-        try:
-            month = req.POST.get("month")
-
-            quarter = req.POST.get("quarter")
-
-            keys_to_check = ["facility", "district", "region"]
-
-            location = None
-
-            for key in keys_to_check:
-                value = req.POST.get(key)
-
-                if value and len(value) > 0:
-                    location = value
-
-                    break
-
-            year = req.POST.get("year")
-
-            if month:
-                url = f"/tb07results?year={year}&month={month}&location={location}"
-
-            elif quarter:
-                url = f"/tb07results?year={year}&quarter={quarter}&location={location}"
-            return redirect(url)
-        except Exception as e:
-            messages.error(req, e)
-            logger.error(str(e), exc_info=True)
-            return redirect(req.session["redirect_url"])
-    return render(req, "app/reporting/tb07_report_form.html", context)
 
 
 def render_tb07_report(req):
@@ -2576,48 +2139,9 @@ def render_tb07_report(req):
 
         return redirect("searchPatientsView")
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect(req.session["redirect_url"])
-
-    # def render_form8_report_form(req):
-    if not check_if_session_alive(req):
-        return redirect("login")
-    title = mu.get_global_msgs("mdrtb.form8Parameters", locale=req.session["locale"])
-    context = {
-        "title": title,
-        "months": util.get_months(),
-        "quarters": util.get_quarters(),
-    }
-
-    if req.method == "POST":
-        month = req.POST.get("month")
-
-        quarter = req.POST.get("quarter")
-
-        keys_to_check = ["facility", "district", "region"]
-
-        location = None
-
-        for key in keys_to_check:
-            value = req.POST.get(key)
-
-            if value and len(value) > 0:
-                location = value
-
-                break
-
-        year = req.POST.get("year")
-
-        if month:
-            url = f"/form8results?year={year}&month={month}&location={location}"
-
-        elif quarter:
-            url = f"/form8results?year={year}&quarter={quarter}&location={location}"
-        return redirect(url)
-
-    return render(req, "app/reporting/form8_report_form.html", context)
 
 
 def render_form8_report(req):
@@ -2657,50 +2181,9 @@ def render_form8_report(req):
         return redirect("searchPatientsView")
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect(req.session["redirect_url"])
-
-    # def render_missing_tb03_report_form(req):
-    if not check_if_session_alive(req):
-        return redirect("login")
-    title = mu.get_global_msgs("mdrtb.dq.missingtb03", locale=req.session["locale"])
-    context = {
-        "title": title,
-        "months": util.get_months(),
-        "quarters": util.get_quarters(),
-    }
-
-    if req.method == "POST":
-        month = req.POST.get("month")
-
-        quarter = req.POST.get("quarter")
-
-        keys_to_check = ["facility", "district", "region"]
-
-        location = None
-
-        for key in keys_to_check:
-            value = req.POST.get(key)
-
-            if value and len(value) > 0:
-                location = value
-
-                break
-
-        year = req.POST.get("year")
-
-        if month:
-            url = f"/missingtb03results?year={year}&month={month}&location={location}"
-
-        elif quarter:
-            url = (
-                f"/missingtb03results?year={year}&quarter={quarter}&location={location}"
-            )
-        return redirect(url)
-
-    return render(req, "app/reporting/missing_tb03_report_form.html", context)
 
 
 def render_missing_tb03_report(req):
@@ -2747,48 +2230,9 @@ def render_missing_tb03_report(req):
         return redirect("searchPatientsView")
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect(req.session["redirect_url"])
-
-    # def render_missing_tb03u_report_form(req):
-    if not check_if_session_alive(req):
-        return redirect("login")
-    title = mu.get_global_msgs("mdrtb.dq.missingtb03u", locale=req.session["locale"])
-    context = {
-        "title": title,
-        "months": util.get_months(),
-        "quarters": util.get_quarters(),
-    }
-
-    if req.method == "POST":
-        month = req.POST.get("month")
-
-        quarter = req.POST.get("quarter")
-
-        keys_to_check = ["facility", "district", "region"]
-
-        location = None
-
-        for key in keys_to_check:
-            value = req.POST.get(key)
-
-            if value and len(value) > 0:
-                location = value
-
-                break
-
-        year = req.POST.get("year")
-
-        if month:
-            url = f"/missingtb03uresults?year={year}&month={month}&location={location}"
-
-        elif quarter:
-            url = f"/missingtb03uresults?year={year}&quarter={quarter}&location={location}"
-        return redirect(url)
-
-    return render(req, "app/reporting/missing_tb03u_report_form.html", context)
 
 
 def render_missing_tb03u_report(req):
@@ -2835,8 +2279,7 @@ def render_missing_tb03u_report(req):
         return redirect("searchPatientsView")
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect(req.session["redirect_url"])
 
@@ -2878,8 +2321,7 @@ def render_dotsdq_report(req):
 
         return redirect("searchPatientsView")
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect(req.session["redirect_url"])
 
@@ -2921,8 +2363,7 @@ def render_mdrdq_report(req):
 
         return redirect("searchPatientsView")
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect(req.session["redirect_url"])
 
@@ -2978,8 +2419,8 @@ def render_closed_reports(req):
                 messages.info(req, "No saved reports found.")
 
         except Exception as e:
-            logger.error(e, exc_info=True)
-            messages.error(req, e)
+
+            log_and_show_error(e, req)
 
     return render(req, "app/reporting/closed_reports.html", context)
 
@@ -2996,8 +2437,7 @@ def render_single_closed_report(req, uuid):
             context["table_data"] = util.string_to_html(response["tableData"])
         return render(req, "app/reporting/single_closed_report.html", context)
     except Exception as e:
-        logger.error(e, exc_info=True)
-        messages.error(req, e)
+        log_and_show_error(e, req)
         return redirect(req.session["redirect_url"])
 
 
@@ -3046,18 +2486,18 @@ def save_closed_report(req):
                                     )
                                 )
                                 if (
-                                    report_location["region"]["uuid"]
-                                    == location["region"]["uuid"]
+                                        report_location["region"]["uuid"]
+                                        == location["region"]["uuid"]
                                 ):
                                     if (
-                                        report_location["district"] is not None
-                                        and report_location["district"]["uuid"]
-                                        == location["district"]["uuid"]
+                                            report_location["district"] is not None
+                                            and report_location["district"]["uuid"]
+                                            == location["district"]["uuid"]
                                     ):
                                         if report_location["facility"] is not None:
                                             if (
-                                                report_location["facility"]["uuid"]
-                                                == location["facility"]["uuid"]
+                                                    report_location["facility"]["uuid"]
+                                                    == location["facility"]["uuid"]
                                             ):
                                                 overwrite_report = True
                                                 report_to_overwrite = report["uuid"]
@@ -3070,7 +2510,6 @@ def save_closed_report(req):
                             raise Exception(
                                 f"The {report['reportName']} with the following parameters already exists and is LOCKED"
                             )
-                            break
                 else:
                     overwrite_report = True
 
@@ -3097,11 +2536,10 @@ def save_closed_report(req):
                     raise Exception("Failed to save report")
             else:
                 raise Exception(
-                    f"The {report['reportName']} with the following parameters already exists and is LOCKED"
+                    f"The {report_name} with the following parameters already exists and is LOCKED"
                 )
         except Exception as e:
-            logger.error(e, exc_info=True)
-            messages.error(req, e)
+            log_and_show_error(e, req)
             return redirect("/")
     else:
         pass
@@ -3139,8 +2577,7 @@ def render_manage_test_types(req):
                 )
 
         except Exception as e:
-            messages.error(req, e)
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
 
             return redirect(req.session["redirect_url"])
 
@@ -3156,8 +2593,7 @@ def render_manage_test_types(req):
         return render(req, "app/commonlab/managetesttypes.html", context=context)
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect(req.session["redirect_url"])
 
@@ -3471,8 +2907,7 @@ def render_managetestorders(req, uuid):
         return render(req, "app/commonlab/managetestorders.html", context=context)
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect(req.session["redirect_url"])
 
@@ -3515,14 +2950,12 @@ def render_add_lab_test(req, uuid):
                 return redirect("managetestorders", uuid=uuid)
 
             else:
-                messages.error(req, response["error"]["message"])
-                logger.error(response["error"]["message"], exc_info=True)
+                log_and_show_error(response["error"]["message"], req)
 
                 return redirect("managetestorders", uuid=uuid)
 
         except Exception as e:
-            messages.error(req, e)
-            logger.error(str(e), exc_info=True)
+            log_and_show_error(e, req)
 
             return redirect("addlabtest", uuid=uuid)
 
@@ -3555,8 +2988,7 @@ def render_add_lab_test(req, uuid):
         return render(req, "app/commonlab/addlabtest.html", context=context)
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect("addlabtest", uuid=uuid)
 
@@ -3599,14 +3031,12 @@ def render_edit_lab_test(req, patientid, orderid):
                 return redirect("managetestorders", uuid=patientid)
 
             else:
-                messages.error(req, "Error creating test order")
-                logger.error("Error creating test order", exc_info=True)
+                log_and_show_error("Error creating test order", req)
 
                 return render(req, "app/commonlab/addlabtest.html", context=context)
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(e, exc_info=True)
+        log_and_show_error(e, req)
         return redirect("editlabtest", uuid=patientid, orderid=orderid)
 
     try:
@@ -3657,14 +3087,12 @@ def render_edit_lab_test(req, patientid, orderid):
             return render(req, "app/commonlab/addlabtest.html", context=context)
 
         else:
-            messages.error(req, "Error getting lab test")
-            logger.error("Error getting lab test", exc_info=True)
+            log_and_show_error("Error getting lab test", req)
 
             return redirect("managetestorders", uuid=patientid)
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect("editlabtest", uuid=patientid, orderid=orderid)
 
@@ -3712,7 +3140,7 @@ def render_add_test_sample(req, orderid):
 
     context = {
         "title": mu.get_global_msgs("mdrtb.add", locale=req.session["locale"])
-        + mu.get_global_msgs("mdrtb.sample", locale=req.session["locale"]),
+                 + mu.get_global_msgs("mdrtb.sample", locale=req.session["locale"]),
         "orderid": orderid,
     }
 
@@ -3735,8 +3163,7 @@ def render_add_test_sample(req, orderid):
             return redirect("managetestsamples", orderid=orderid)
 
         else:
-            messages.error(req, "Error adding samples")
-            logger.error("Error adding samples", exc_info=True)
+            log_and_show_error("Error adding samples", req)
 
             return redirect("addtestsample", orderid=orderid)
     try:
@@ -3756,8 +3183,7 @@ def render_add_test_sample(req, orderid):
 
         return render(req, "app/commonlab/addsample.html", context=context)
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
         return redirect("addtestsample", orderid=orderid)
 
 
@@ -3767,7 +3193,7 @@ def render_edit_test_sample(req, orderid, sampleid):
 
     context = {
         "title": mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
-        + mu.get_global_msgs("mdrtb.sample", locale=req.session["locale"]),
+                 + mu.get_global_msgs("mdrtb.sample", locale=req.session["locale"]),
         "orderid": orderid,
         "sampleid": sampleid,
         "state": "edit",
@@ -3792,8 +3218,7 @@ def render_edit_test_sample(req, orderid, sampleid):
             return redirect("managetestsamples", orderid=orderid)
 
         else:
-            messages.error(req, "Error adding samples")
-            logger.error("Error adding samples", exc_info=True)
+            log_and_show_error("Error adding samples", req)
 
             return redirect("edittestsample", orderid=orderid, sampleid=sampleid)
 
@@ -3837,8 +3262,7 @@ def render_edit_test_sample(req, orderid, sampleid):
 
             return render(req, "app/commonlab/addsample.html", context=context)
     except Exception as e:
-        messager.error(req, e)
-        logger.error(e, exc_info=True)
+        log_and_show_error(e, req)
         return redirect("edittestsample", orderid=orderid, sampleid=sampleid)
 
 
@@ -3846,9 +3270,8 @@ def render_change_sample_status(req, orderid, sampleid):
     statuses = {"Accept": "ACCEPTED", "Reject": "REJECTED"}
 
     if req.method == "POST":
+        sample_status = statuses[req.POST["status"]]
         try:
-            sample_status = statuses[req.POST["status"]]
-
             status, _ = ru.post(
                 req, f"commonlab/labtestsample/{sampleid}", {"status": sample_status}
             )
@@ -3860,9 +3283,8 @@ def render_change_sample_status(req, orderid, sampleid):
                 else:
                     messages.warning(req, f"Sample {sample_status}")
 
-        except Exception as e:
-            messages.error(req, f"Sample {sample_status}")
-            logger.error(f"Sample {sample_status}", exc_info=True)
+        except Exception:
+            log_and_show_error(f"Sample {sample_status}", req)
 
     return redirect("managetestsamples", orderid=orderid)
 
@@ -3941,15 +3363,12 @@ def render_add_test_results(req, orderid):
                 if status:
                     return redirect(req.session["redirect_url"])
             except Exception as e:
-                messages.error(req, e)
-                logger.error(e, exc_info=True)
+                log_and_show_error(e, req)
 
                 return redirect("addtestresults", orderid=orderid)
 
         else:
-            messages.error(req, "Error creating the results")
-            logger.error("Error creating the results", exc_info=True)
-
+            log_and_show_error("Error creating the results", req)
             return redirect("addtestresults", orderid=orderid)
 
     try:
@@ -3969,8 +3388,8 @@ def render_add_test_results(req, orderid):
             context["lab_reference"] = response["labReferenceNumber"]
             for sample in response["labTestSamples"]:
                 if (
-                    sample["status"] == Constants.ACCEPTED.value
-                    or sample["status"] == Constants.PROCESSED.value
+                        sample["status"] == Constants.ACCEPTED.value
+                        or sample["status"] == Constants.PROCESSED.value
                 ):
                     context["sample"] = json.dumps(sample)
                     break
@@ -3989,22 +3408,9 @@ def render_add_test_results(req, orderid):
             return render(req, "app/commonlab/addtestresults.html", context=context)
 
     except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
+        log_and_show_error(e, req)
 
         return redirect("addtestresults", orderid=orderid)
-
-
-def render_edit_test_results(req, orderid):
-    try:
-        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
-        attributes = cu.get_labtest_attributes(req, orderid)
-    except Exception as e:
-        messages.error(req, e)
-        logger.error(str(e), exc_info=True)
-
-        return redirect(req.session["redirect_url"])
 
 
 def check_if_sample_exists(req, orderid):
@@ -4023,23 +3429,22 @@ def check_if_sample_exists(req, orderid):
                         sample_accepted = True
                         break
             return sample_accepted
-    except Exception as e:
-        messages.error(req, "Error fetching Samples")
-        logger.error(str(e), exc_info=True)
-
+    except Exception:
+        log_and_show_error("Error fetching Samples", req)
         return sample_accepted
 
 
 def render_logout(req):
     try:
         status, _ = ru.delete(req, "session")
-
         if status:
             ru.clear_session(req)
             return redirect("login")
-
     except Exception as e:
-        messages.error(req, str(e))
-        logger.error(str(e), exc_info=True)
-
+        log_and_show_error(e, req)
         return redirect(req.session.get("redirect_url"))
+
+
+def log_and_show_error(error, req):
+    messages.error(req, error)
+    logger.error(error, exc_info=True)

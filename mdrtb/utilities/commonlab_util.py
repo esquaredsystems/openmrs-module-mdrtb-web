@@ -321,7 +321,7 @@ def get_reference_concept_of_labtesttype(req, labtestid):
 
         return labtest["referenceConcept"]["uuid"]
 
-    except Exception as e:
+    except Exception:
         return None
 
 
@@ -511,7 +511,7 @@ def get_custom_attribute_for_labresults(
                                             }
                                         }
                                     )
-                                except Exception as e:
+                                except Exception:
                                     continue
 
                             else:
@@ -546,7 +546,7 @@ def get_custom_attribute_for_labresults(
                                             }
                                         }
                                     )
-                                except Exception as e:
+                                except Exception:
                                     continue
                 else:
                     continue
@@ -614,7 +614,7 @@ def get_custom_attribute_for_labresults(
                                         }
                                     }
                                 )
-                            except Exception as e:
+                            except Exception:
                                 continue
 
                         else:
@@ -646,7 +646,7 @@ def get_custom_attribute_for_labresults(
                                         }
                                     }
                                 )
-                            except Exception as e:
+                            except Exception:
                                 continue
         if attributes_to_get is None:
             cache.set(

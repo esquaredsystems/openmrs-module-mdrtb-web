@@ -318,7 +318,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="causeOfDeath">{{'mdrtb.causeOfDeath'|get_message:request.session.locale}}</label>
-            <select id="causeOfDeath" class="input form-control" name="{{'CAUSE_OF_DEATH' | get_concept }}">
+            <select disabled id="causeOfDeath" class="input form-control" name="{{'CAUSE_OF_DEATH' | get_concept }}">
               {% if state == 'edit' %}
               <option selected value="{{form.causeOfDeath.uuid}}">{{form.causeOfDeath.display}}</option>
               {% else %}
@@ -335,21 +335,22 @@
             <label class="tb03-form-label w-full"
               for="otherCauseOfdeath">{{'mdrtb.tb03.otherCauseOfDeath'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input type="text" class="input form-control" value="{{form.otherCauseOfDeath}}"
-              name="{{'OTHER_CAUSE_OF_DEATH' | get_concept }}" />
+            <input disabled id="otherCauseOfDeath" type="text" class="input form-control"
+              value="{{form.otherCauseOfDeath}}" name="{{'OTHER_CAUSE_OF_DEATH' | get_concept }}" />
             {% else %}
-            <input type="text" class="input form-control" name="{{'OTHER_CAUSE_OF_DEATH' | get_concept }}" />
+            <input disabled id="otherCauseOfDeath" type="text" class="input form-control"
+              name="{{'OTHER_CAUSE_OF_DEATH' | get_concept }}" />
             {% endif %}
           </div>
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="deathDate">{{'mdrtb.tb03.afterOutcomeDeathDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input type="date" class="input form-control"
+            <input id="dateofDeath" type="date" class="input form-control"
               value="{{form.dateOfDeathAfterTreatmentOutcome|iso_to_normal_date}}"
               name="{{'DATE_OF_DEATH_AFTER_TREATMENT_OUTCOME' | get_concept }}" />
             {% else %}
-            <input type="date" class="input form-control"
+            <input disabled type="date" class="input form-control" id="dateofDeath"
               name="{{'DATE_OF_DEATH_AFTER_TREATMENT_OUTCOME' | get_concept }}" />
             {% endif %}
           </div>
@@ -388,8 +389,14 @@
   $('#treatmentOutcome').change((e) => {
     let outcome = e.target.value
     if (outcome === "{{'DIED' | get_concept}}") {
+      $('#dateofDeath').prop('disabled', false)
+      $('#otherCauseOfDeath').prop('disabled', false)
+      $('#causeOfDeath').prop('disabled', false)
       $('#causeOfDeath').prop('required', true)
     } else {
+      $('#otherCauseOfDeath').prop('disabled', true)
+      $('#dateofDeath').prop('disabled', true)
+      $('#causeOfDeath').prop('disabled', true)
       $('#causeOfDeath').prop('required', false)
     }
   })

@@ -36,7 +36,7 @@ def read_properties_file(filepath, mode, encoding):
             configdata.append(line)
         file.close()
         return configdata
-    except Exception as e:
+    except Exception:
         return None
 
 
@@ -51,7 +51,7 @@ def calculate_age(dob):
     - int: age
 
     """
-    age = 0
+
     try:
         converted_date = datetime.strptime(dob, "%m/%d/%Y").date()
         today_date = date.today()
@@ -59,7 +59,7 @@ def calculate_age(dob):
             return (today_date.year - converted_date.year) - 1
         elif today_date.day >= converted_date.day:
             return today_date.year - converted_date.year
-    except Exception as e:
+    except Exception:
         return None
 
 
@@ -77,7 +77,7 @@ def iso_to_normal(date):
     try:
         normal = date[: date.find("T")].replace("-", ".")
         return normal
-    except Exception as e:
+    except Exception:
         return None
 
 

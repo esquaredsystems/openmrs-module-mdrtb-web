@@ -103,7 +103,7 @@ def get_all_concepts(req):
             seralized_concepts = pickle.dumps(response["results"])
             compressed_concepts = zlib.compress(seralized_concepts)
             cache.set("concepts", compressed_concepts, timeout=None)
-    except Exception as e:
+    except Exception:
         pass
 
 
@@ -340,7 +340,7 @@ def get_encounter_by_uuid(req, uuid):
         status, response = ru.get(req, f"encounter/{uuid}", {"v": "full"})
         if status:
             return response
-    except Exception as e:
+    except Exception:
         return None
 
 

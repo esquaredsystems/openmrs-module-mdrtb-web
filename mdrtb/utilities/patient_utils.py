@@ -246,7 +246,7 @@ def enroll_patient_in_program(req, patientid, data):
                 "location": data.get("facility", data.get("district", None)),
             }
 
-            identifier_status, iden_response = ru.post(
+            ru.post(
                 req, f"patient/{patientid}/identifier", patient_identifier
             )
         status, response = ru.post(req, "programenrollment", program_body)
@@ -608,5 +608,5 @@ def get_patient_treatment_outcome(req, patientuuid, concept):
         )
         if status:
             return response["results"][0]["value"]["display"]
-    except Exception as e:
+    except Exception:
         return None

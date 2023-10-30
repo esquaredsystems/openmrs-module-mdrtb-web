@@ -42,7 +42,7 @@ def get_form_concepts(concept_ids, req):
                     if name["locale"] == "en":
                         key = name["name"].lower().replace(" ", "").replace("-", "")
                         concept_dict[key] = answers
-        except Exception as e:
+        except Exception:
             continue
     return concept_dict
 
@@ -219,7 +219,7 @@ def get_encounters_by_patient_and_type(req, patientid, encounterType, params=Non
         )
         if status:
             return response["results"]
-    except Exception as e:
+    except Exception:
         return None
 
 
@@ -518,7 +518,7 @@ def create_update_adverse_event(req, patientuuid, data, formid=None):
                                     else cu.date_to_sql_format(value),
                                 }
                             )
-        except Exception as e:
+        except Exception:
             raise Exception
     else:
         ae = {
@@ -724,7 +724,7 @@ def create_update_form89(req, patientuuid, data, formid=None):
                                     else cu.date_to_sql_format(value),
                                 }
                             )
-        except Exception as e:
+        except Exception:
             raise Exception
     else:
         form89 = {
