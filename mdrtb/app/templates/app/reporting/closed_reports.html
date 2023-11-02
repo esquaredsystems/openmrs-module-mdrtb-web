@@ -7,6 +7,10 @@
 
 
 {%block content%}
+
+
+
+
 {% if report_data %}
 <style>
     .btn-primary {
@@ -120,8 +124,10 @@
     console.log(JSON.parse("{{jsondata|escapejs}}"))
 </script>
 {% else %}
+
 <div class="mx-auto w-2/4">
-    <form onsubmit="disableSubmit()" action="{% url 'closedreports' %}" method="post" class="flex flex-col space-y-6">
+    <form onsubmit="disableSubmit()" action="{% url 'closedreports' type=type %}" method="post"
+        class="flex flex-col space-y-6">
         {% csrf_token %}
         <h2 class="page-title">{{"mdrtb.viewClosedReports"|get_message:request.session.locale}}</h2>
         <div>

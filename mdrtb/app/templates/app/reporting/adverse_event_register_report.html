@@ -1,0 +1,352 @@
+{% extends 'app/reporting/report_base.html' %}
+
+{% block content %}
+
+<div>
+    <div id="ae" style="font-size:smaller; width:980px;">
+        <table border="0" width="100%">
+            <tbody>
+                <tr>
+                    <td align="center" style="font-size:14px; font-weight:bold;border:0px" width="100%">
+                        {{"mdrtb.pv.register.title"|get_message:request.session.locale}}</td>
+                    <!-- <td align="right" style="font-size:14px; font-weight:bold;border:0px" valign="top" width="10%">AE</td> -->
+                </tr>
+            </tbody>
+        </table>
+        &nbsp;
+        <table width="100%" border="1">
+            <tr>
+                <td>
+                    {{"mdrtb.tb07u.nameOfFacility"|get_message:request.session.locale}}: <u>{{ fName }}</u><br />
+                    {{"mdrtb.tb07u.regionCityDistrict"|get_message:request.session.locale}}: <u> {{ oName }}/{{ dName }}
+                    </u><br />
+                    {{"mdrtb.tb07u.tbCoordinatorName"|get_message:request.session.locale}}: ___________________ </br>
+                    {{"mdrtb.tb07u.signature"|get_message:request.session.locale}}: _________________
+                </td>
+
+                <td>
+                    {{"mdrtb.pv.quarter"|get_message:request.session.locale}},{{"mdrtb.pv.year"|get_message:request.session.locale}}:
+                    <u>{{ quarter }}, {{ year }}</u></br>
+                    {{"mdrtb.pv.reportDate"|get_message:request.session.locale}}:<u>&nbsp; {{ reportDate }}</u>
+                </td>
+            </tr>
+
+
+        </table>
+
+
+        <table border="1" cellpadding="1" cellspacing="1" dir="ltr" style="width: 980px;">
+            <tbody>
+                <tr>
+                    <th rowspan="2">
+                        <spring:message code="mdrtb.pv.serialNumber" text="serialz" />
+                    </th>
+                    <th rowspan="2">{{"mdrtb.pv.register.patientId"|get_message:request.session.locale}}</th>
+                    <th rowspan="2">{{"mdrtb.pv.register.patientName"|get_message:request.session.locale}}</th>
+                    <th rowspan="2">
+                        <spring:message code="mdrtb.pv.register.patientBirthdate" text="dobz" />
+                    </th>
+                    <th rowspan="2">{{"mdrtb.pv.register.onsetDate"|get_message:request.session.locale}}</th>
+                    <th rowspan="2">{{"mdrtb.pv.register.adverseEvent"|get_message:request.session.locale}}</th>
+                    <th rowspan="2">
+                        <spring:message code="mdrtb.pv.register.diagnosticInvestigation" text="diz" />
+                    </th>
+                    <th colspan="2">{{"mdrtb.pv.register.typeOfEvent"|get_message:request.session.locale}}</th>
+
+                    <th rowspan="2">
+                        <spring:message code="mdrtb.pv.register.requiringAncillary" text="ancz" />
+                    </th>
+                    <th rowspan="2">
+                        <spring:message code="mdrtb.pv.register.requiringChanges" text="ancz" />
+                    </th>
+                    <th rowspan="2">{{"mdrtb.pv.register.suspectedDrug"|get_message:request.session.locale}}</th>
+                    <th rowspan="2">
+                        <spring:message code="mdrtb.pv.register.suspectedDrugTxStartDate" text="drugz" />
+                    </th>
+
+                    <th rowspan="2">{{"mdrtb.pv.register.actionTaken"|get_message:request.session.locale}}</th>
+                    <th rowspan="2">
+                        <spring:message code="mdrtb.pv.register.actionOutcome" text="outcomez" />
+                    </th>
+                    <th rowspan="2">
+                        <spring:message code="mdrtb.pv.register.treatmentRegimenAtOnset" text="regimenz" />
+                    </th>
+
+                    <th rowspan="2">{{"mdrtb.pv.register.drugRechallenge"|get_message:request.session.locale}}</th>
+                    <th rowspan="2">{{"mdrtb.pv.register.causalityAssessment"|get_message:request.session.locale}}</th>
+                    <th rowspan="2">
+                        <spring:message code="mdrtb.pv.register.yellowCardDate" text="Yellowz" />
+                    </th>
+
+                    <!-- <th rowspan="2">{{"mdrtb.pv.outcomeDate"|get_message:request.session.locale}}</th>
+            <th rowspan="2">{{"mdrtb.pv.eventOnsetLocation"|get_message:request.session.locale}}</th>
+            <th rowspan="2">{{"mdrtb.pv.meddraCode"|get_message:request.session.locale}}</th>-->
+
+                    <th rowspan="2">{{"mdrtb.pv.register.comments"|get_message:request.session.locale}}</th>
+                </tr>
+
+                <tr>
+                    <th>{{"mdrtb.pv.register.serious"|get_message:request.session.locale}}</th>
+                    <th>{{"mdrtb.pv.register.ofSpecialInterest"|get_message:request.session.locale}}</th>
+                </tr>
+
+                <tr>
+                    <td align="center">1</td>
+                    <td align="center">2</td>
+                    <td align="center">3</td>
+                    <td align="center">4</td>
+                    <td align="center">5</td>
+                    <td align="center">6</td>
+                    <td align="center">7</td>
+                    <td align="center">8a</td>
+                    <td align="center">8b</td>
+                    <td align="center">9</td>
+                    <td align="center">10</td>
+                    <td align="center">11</td>
+                    <td align="center">12</td>
+                    <td align="center">13</td>
+                    <td align="center">14</td>
+                    <td align="center">15</td>
+                    <td align="center">16</td>
+                    <td align="center">17</td>
+                    <td align="center">18</td>
+                    <td align="center">19</td>
+
+                </tr>
+
+                {% for form in forms %}
+                <tr>
+                    <td><a href="{{ pageContext.request.contextPath }}/module/mdrtb/form/ae.form?encounterId={{ form.AEForm.encounter.id }}&patientProgramId={{ form.AEForm.patientProgramId }}"
+                            target="_blank">{{loop.index+1}}</a></td>
+                    <td align="left">{{ form.identifier }}</td>
+                    <td align="left">{{ form.patientName }}</td>
+                    <td align="center">{{ form.birthDate }}</td>
+                    <td align="center">{{ form.onsetDate }}</td>
+                    <td align="left">{{ form.AEDescription }}</td>
+                    <td align="left">{{ form.diagnosticInvestigation }}</td>
+                    <td align="center">{{ form.serious }}</td>
+                    <td align="center">{{ form.ofSpecialInterest }}</td>
+                    <td align="center">{{ form.ancillaryDrugs }}</td>
+                    <td align="center">{{ form.doseChanged }}</td>
+                    <td align="center">{{ form.suspectedDrug }}</td>
+                    <td>&nbsp;</td>
+                    <td align="left">{{ form.actionTaken }}</td>
+                    <td align="left">{{ form.actionOutcome }}</td>
+                    <td align="left">{{ form.txRegimen }}</td>
+                    <td align="left">{{ form.drugRechallenge }}</td>
+                    <td align="left">{{ form.causalityAssessment }}</td>
+                    <td align="center">{{ form.yellowCardDate }}</td>
+                    <td align=left">{{ form.comments }}</td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+        </table>
+
+    </div>
+    <input type="button" onclick="tableToExcel('ae', 'AE')"
+        value="{{'mdrtb.exportToExcelBtn'|get_message:request.session.locale}}" />
+    <button>
+        <a style="text-decoration: none; color: black;" href="/">
+            {{'mdrtb.back'|get_message:request.session.locale}}
+        </a>
+    </button>
+    <input type="button" onclick="printForm()" value="{{'mdrtb.print'|get_message:request.session.locale}}" />
+    <button onclick="saveHtml()">{{'mdrtb.save'|get_message:request.session.locale}}</button>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.1.js"></script>
+    <script type="text/javascript">
+
+        console.log(JSON.parse("{{js|escapejs}}"))
+
+
+
+        function saveHtml() {
+            let htmlContent = document.getElementById("ae").outerHTML;
+            htmlContent = htmlContent.replace(/\s{2,}/g, ' ');
+            let year = "{{request.GET.year}}"
+            let location = "{{request.GET.location}}"
+            let quarter = "{{request.GET.quarter}}" ? "{{request.GET.quarter}}" : null;
+            let month = "{{request.GET.month}}" ? "{{request.GET.month}}" : null;
+
+            data = {
+                csrfmiddlewaretoken: "{{csrf_token}}",
+                reportName: "Adverse-events-register",
+                year,
+                location,
+                reportType: "MDRTB",
+                tableData: htmlContent
+            }
+
+            if (month != null) data.month = month
+            if (quarter != null) data.quarter = quarter
+
+
+            $.ajax({
+                method: "POST",
+                url: "/saveclosedreport",
+                data: data,
+                success: (data) => {
+                    if (data.success) {
+                        alert("Report saved successfully")
+                    } else {
+                        alert("Failed to save report")
+                    }
+                }
+            })
+
+
+        }
+
+
+
+        function printForm() {
+            var mywindow = window.open('', 'PRINT', 'height=400,width=600');
+
+            mywindow.document.write('<html><head><title><spring:message code="mdrtb.tb03u" text="TB03y"/></title>');
+            mywindow.document.write('</head><body >');
+            // mywindow.document.write('<h1><spring:message code="mdrtb.pv.aeForm" text="AE"/></h1>');
+            mywindow.document.write(document.getElementById("aeRegister").innerHTML);
+
+            mywindow.document.write('</body></html>');
+
+            mywindow.document.close(); // necessary for IE >= 10
+            mywindow.focus(); // necessary for IE >= 10*/
+
+            mywindow.print();
+            mywindow.close();
+
+            return true;
+        }
+        var tableToExcel = (function () {
+            var uri = 'data:application/vnd.ms-excel;base64,'
+                , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>TB03</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>'
+                , base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) }
+                , format = function (s, c) { return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; }) }
+            return function (table, name) {
+                if (!table.nodeType) table = document.getElementById(table)
+                var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
+                window.location.href = uri + base64(format(template, ctx))
+            }
+        })()
+        function savePdf(action, reportName, formPath) {
+            var tableData = (document.getElementById("tb03")).innerHTML.toString();
+            var oblast = "{{ oblast }}";
+            var district = "{{ district }}";
+            var facility = "{{ facility }}";
+            var year = "{{ year }}";
+            if (!"{{quarter}}") {
+                var quarter = "\"" + "{{quarter}}" + "\"";
+            } else {
+                var quarter = "";
+            }
+            if (!"{{month}}") {
+                var month = "\"" + "{{month}}" + "\"";
+            } else {
+                var month = "";
+            }
+            var reportDate = "{{ reportDate }}";
+
+            var form = document.createElement("FORM");
+
+            form.setAttribute("id", "closeReportForm");
+            form.setAttribute("name", "closeReportForm");
+            form.setAttribute("method", "post");
+            form.setAttribute("action", action);
+
+            document.body.appendChild(form);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "oblast");
+            input.setAttribute("name", "oblast");
+            input.setAttribute("value", oblast);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "district");
+            input.setAttribute("name", "district");
+            input.setAttribute("value", district);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "facility");
+            input.setAttribute("name", "facility");
+            input.setAttribute("value", facility);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "year");
+            input.setAttribute("name", "year");
+            input.setAttribute("value", year);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "quarter");
+            input.setAttribute("name", "quarter");
+            input.setAttribute("value", quarter);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "month");
+            input.setAttribute("name", "month");
+            input.setAttribute("value", month);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "reportDate");
+            input.setAttribute("name", "reportDate");
+            input.setAttribute("value", reportDate);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "table");
+            input.setAttribute("name", "table");
+            input.setAttribute("value", tableData);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "formPath");
+            input.setAttribute("name", "formPath");
+            input.setAttribute("value", formPath);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "reportName");
+            input.setAttribute("name", "reportName");
+            input.setAttribute("value", reportName);
+            form.appendChild(input);
+
+            var input = document.createElement("INPUT");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("id", "reportType");
+            input.setAttribute("name", "reportType");
+            input.setAttribute("value", "DOTSTB");
+            form.appendChild(input);
+
+            form.submit();
+        }
+        $(document).ready(function () {
+            $("#tableToSql").bind("click", function () {
+                if (confirm('{{"mdrtb.closeReportMessage"|get_message:request.session.locale}}')) {
+                    savePdf("closeReport.form", "TB-03", "tb03Results");
+                }
+            });
+            /* $("#tableToPdf").click(function(){
+                savePdf("exportReport.form", "TB 03", "tb03Results");
+            }); */
+        });
+    </script>
+
+</div>
+
+{% endblock %}

@@ -2368,7 +2368,7 @@ def render_mdrdq_report(req):
         return redirect(req.session["redirect_url"])
 
 
-def render_closed_reports(req):
+def render_closed_reports(req,type):
     if not check_if_session_alive(req):
         return redirect("login")
     context = {
@@ -2377,7 +2377,8 @@ def render_closed_reports(req):
         ),
         "months": util.get_months(),
         "quarters": util.get_quarters(),
-        "reports": util.get_report_names(req.session["locale"]),
+        "reports": util.get_report_names(type,req.session["locale"]),
+        "type" : type
     }
 
     logged_in_user = req.session["logged_user"]["user"]["username"]

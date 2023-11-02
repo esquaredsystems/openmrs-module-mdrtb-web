@@ -222,29 +222,30 @@ def get_quarters():
     return ["1", "2", "3", "4"]
 
 
-def get_report_names(locale):
+def get_report_names(type,locale):
     reports = [
-        {"code": "mdrtb.dotsreport07", "value": "TB-07"},
-        {"code": "mdrtb.dotsreport08", "value": "TB-08"},
-        {"code": "mdrtb.tb03", "value": "TB-03"},
-        {"code": "mdrtb.tb03ExportSingleLine", "value": "TB-03"},
-        {"code": "mdrtb.form8.title", "value": "Form8"},
-        {"code": "mdrtb.form89", "value": "FORM-89"},
-        {"code": "mdrtb.dotsdq.title", "value": "DOTS Data Quality Report"},
-        {"code": "mdrtb.dq.missingtb03", "value": "MISSING TB-03"},
-        {"code": "mdrtb.tb07u", "value": "TB-07u"},
-        {"code": "mdrtb.tb08Fast", "value": "TB-08u"},
-        {"code": "mdrtb.tb03u", "value": "TB-03u"},
-        {"code": "mdrtb.tb03uExportSingleLine", "value": "TB-03u"},
-        {"code": "mdrtb.dq.title", "value": "DOTS Data Quality Report"},
-        {"code": "mdrtb.dq.missingtb03u", "value": "MISSING TB03u"},
-        {"code": "mdrtb.patientLists", "value": "Patient List"},
+        {"code": "mdrtb.dotsreport07", "value": "TB-07","type":"DOTS"},
+        {"code": "mdrtb.dotsreport08", "value": "TB-08","type":"DOTS"},
+        {"code": "mdrtb.tb03", "value": "TB-03","type":"DOTS"},
+        {"code": "mdrtb.tb03ExportSingleLine", "value": "TB-03","type":"DOTS"},
+        {"code": "mdrtb.form8.title", "value": "Form8","type":"DOTS"},
+        {"code": "mdrtb.form89", "value": "FORM-89","type":"DOTS"},
+        {"code": "mdrtb.dotsdq.title", "value": "DOTS Data Quality Report","type":"DOTS"},
+        {"code": "mdrtb.dq.missingtb03", "value": "MISSING TB-03","type":"DOTS"},
+        {"code": "mdrtb.tb07u", "value": "TB-07u","type":"MDR"},
+        {"code": "mdrtb.tb08Fast", "value": "TB-08u","type":"MDR"},
+        {"code": "mdrtb.tb03u", "value": "TB-03u","type":"MDR"},
+        {"code": "mdrtb.tb03uExportSingleLine", "value": "TB-03u","type":"MDR"},
+        {"code": "mdrtb.dq.title", "value": "DOTS Data Quality Report","type":"MDR"},
+        {"code": "mdrtb.dq.missingtb03u", "value": "MISSING TB03u","type":"MDR"},
+        {"code": "mdrtb.patientLists", "value": "Patient List","type":"MDR"},
     ]
     messages = []
     for report in reports:
-        message = mu.get_global_msgs(report["code"], locale=locale)
-        value = report["value"]
-        messages.append({"report_name": message, "value": value})
+        if report['type'] == type.upper():
+            message = mu.get_global_msgs(report["code"], locale=locale)
+            value = report["value"]
+            messages.append({"report_name": message, "value": value})
     return messages
 
 
