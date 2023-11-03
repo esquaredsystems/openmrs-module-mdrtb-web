@@ -5,7 +5,7 @@
 <div class="p-4 m-6 mx-auto w-1/2 flex flex-col justify-center">
   <h1 class="page-title">{{'mdrtb.patientLists'|get_message:request.session.locale}}</h1>
 
-  <form onsubmit="disableSubmit()" method="post" action="{% url 'patientlist' %}" class=" flex flex-col space-y-6  p-4">
+  <form target="_blank" method="post" action="{% url 'patientlist' %}" class=" flex flex-col space-y-6  p-4">
     {% csrf_token %}
     <div>
       {% include 'app/components/locations.html' %}
