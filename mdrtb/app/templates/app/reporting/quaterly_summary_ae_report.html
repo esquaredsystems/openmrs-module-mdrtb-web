@@ -1,10 +1,1056 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'app/reporting/report_base.html' %}
+
+{% block content %}
+<div>
+	<div id="ae" style="font-size:smaller; width:980px;">
+		<style type="text/css">
+			th {
+				vertical-align: top;
+				text-align: left;
+			}
+
+			th,
+			td {
+				font-size: smaller;
+				border: 1px solid #000000
+			}
+
+			border {
+				border: 1px solid #000000
+			}
+		</style>
+
+		<table border="0" width="100%">
+			<tbody>
+				<tr>
+					<td align="center" style="font-size:14px; font-weight:bold;border:0px" width="90%">
+						{{"mdrtb.pv.qtrReportTitle"|get_message:request.session.locale}}</td>
+					<td align="right" style="font-size:14px; font-weight:bold;border:0px" valign="top" width="10%">AE
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		&nbsp;
+		<table width="100%" border="1">
+			<tr>
+				<td>
+					{{"mdrtb.tb07u.nameOfFacility"|get_message:request.session.locale}}:
+					<u>{{ location.facility.name}}</u><br />
+					{{"mdrtb.tb07u.regionCityDistrict"|get_message:request.session.locale}}:
+					<u> {{ location.region.name}}/{{ location.district.name }}
+					</u><br />
+					{{"mdrtb.tb07u.tbCoordinatorName"|get_message:request.session.locale}}: ___________________ </br>
+					{{"mdrtb.tb07u.signature"|get_message:request.session.locale}}: _________________
+				</td>
+
+				<td>
+					{{"mdrtb.pv.quarter"|get_message:request.session.locale}},{{"mdrtb.pv.year"|get_message:request.session.locale}}:
+					<u> {{ request.GET.quarter }}, {{ request.GET.year }}</u></br>
+					{{"mdrtb.pv.reportDate"|get_message:request.session.locale}}:<u>&nbsp;
+						{{report_date|get_report_date}}</u>
+				</td>
+			</tr>
+
+
+		</table>
+
+		<h5>{{"mdrtb.pv.table1.title"|get_message:request.session.locale}}</h5>
+		<table border="1" cellpadding="1" cellspacing="1" dir="ltr" style="width: 980px;">
+			<tbody>
+				<tr>
+					<th>{{"mdrtb.pv.regimen"|get_message:request.session.locale}}</th>
+					<th>{{"mdrtb.pv.table1.startingThisQuarter"|get_message:request.session.locale}}</th>
+					<th>{{"mdrtb.pv.table1.onRegimen"|get_message:request.session.locale}}</th>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.standardRegimen"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table1.standardRegimenStarting }}</td>
+					<td align="center">{{ tables.table1.standardRegimenEver }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.shortRegimen"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table1.shortRegimenStarting }}</td>
+					<td align="center">{{ tables.table1.shortRegimenEver }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.regimenWithBdq"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table1.regimenWithBdqStarting }}</td>
+					<td align="center">{{ tables.table1.regimenWithBdqEver }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.regimenWithDlm"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table1.regimenWithDlmStarting }}</td>
+					<td align="center">{{ tables.table1.regimenWithDlmEver }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.regimenWithBdqAndDlm"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table1.regimenWithBdqDlmStarting }}</td>
+					<td align="center">{{ tables.table1.regimenWithBdqDlmEver }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.regimenWithCfzLzd"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table1.regimenWithCfzLzdStarting }}</td>
+					<td align="center">{{ tables.table1.regimenWithCfzLzdEver }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.table1.otherRegimenSpecify"|get_message:request.session.locale}}</td>
+					<td></td>
+					<td></td>
+				</tr>
+
+			</tbody>
+		</table>
+
+		<br /><br />
+		<h5>{{"mdrtb.pv.table2.title"|get_message:request.session.locale}}</h5>
+		<table border="1" cellpadding="1" cellspacing="1" dir="ltr" style="width: 980px;">
+			<tbody>
+				<tr>
+					<th align="center">{{"mdrtb.pv.adverseEvent"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.standardRegimen"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.shortRegimen"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.regimenWithBdq"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.regimenWithDlm"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.regimenWithBdqAndDlm"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.regimenWithCfzLzd"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.other"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.total"|get_message:request.session.locale}}</th>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.saes"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table2.saeStandard }}</td>
+					<td align="center">{{ tables.table2.saeShort }}</td>
+					<td align="center">{{ tables.table2.saeBdq }}</td>
+					<td align="center">{{ tables.table2.saeDlm }}</td>
+					<td align="center">{{ tables.table2.saeBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.saeCfzLzd }}</td>
+					<td align="center">{{ tables.table2.saeOther }}</td>
+					<td align="center">{{ tables.table2.saeTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.death"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table2.deathStandard }}</td>
+					<td align="center">{{ tables.table2.deathShort }}</td>
+					<td align="center">{{ tables.table2.deathBdq }}</td>
+					<td align="center">{{ tables.table2.deathDlm }}</td>
+					<td align="center">{{ tables.table2.deathBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.deathCfzLzd }}</td>
+					<td align="center">{{ tables.table2.deathOther }}</td>
+					<td align="center">{{ tables.table2.deathTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.hospitalization"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table2.hospitalizationStandard }}</td>
+					<td align="center">{{ tables.table2.hospitalizationShort }}</td>
+					<td align="center">{{ tables.table2.hospitalizationBdq }}</td>
+					<td align="center">{{ tables.table2.hospitalizationDlm }}</td>
+					<td align="center">{{ tables.table2.hospitalizationBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.hospitalizationCfzLzd }}</td>
+					<td align="center">{{ tables.table2.hospitalizationOther }}</td>
+					<td align="center">{{ tables.table2.hospitalizationTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.disability"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table2.disabilityStandard }}</td>
+					<td align="center">{{ tables.table2.disabilityShort }}</td>
+					<td align="center">{{ tables.table2.disabilityBdq }}</td>
+					<td align="center">{{ tables.table2.disabilityDlm }}</td>
+					<td align="center">{{ tables.table2.disabilityBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.disabilityCfzLzd }}</td>
+					<td align="center">{{ tables.table2.disabilityOther }}</td>
+					<td align="center">{{ tables.table2.disabilityTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.congenitalAbnormality"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table2.congenitalAbnormalityStandard }}</td>
+					<td align="center">{{ tables.table2.congenitalAbnormalityShort }}</td>
+					<td align="center">{{ tables.table2.congenitalAbnormalityBdq }}</td>
+					<td align="center">{{ tables.table2.congenitalAbnormalityDlm }}</td>
+					<td align="center">{{ tables.table2.congenitalAbnormalityBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.congenitalAbnormalityCfzLzd }}</td>
+					<td align="center">{{ tables.table2.congenitalAbnormalityOther }}</td>
+					<td align="center">{{ tables.table2.congenitalAbnormalityTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.lifeThreateningExperience"|get_message:request.session.locale}}
+					</td>
+					<td align="center">{{ tables.table2.lifeThreateningExperienceStandard }}</td>
+					<td align="center">{{ tables.table2.lifeThreateningExperienceShort }}</td>
+					<td align="center">{{ tables.table2.lifeThreateningExperienceBdq }}</td>
+					<td align="center">{{ tables.table2.lifeThreateningExperienceDlm }}</td>
+					<td align="center">{{ tables.table2.lifeThreateningExperienceBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.lifeThreateningExperienceCfzLzd }}</td>
+					<td align="center">{{ tables.table2.lifeThreateningExperienceOther }}</td>
+					<td align="center">{{ tables.table2.lifeThreateningExperienceTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.specialInterest"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table2.specialInterestStandard }}</td>
+					<td align="center">{{ tables.table2.specialInterestShort }}</td>
+					<td align="center">{{ tables.table2.specialInterestBdq }}</td>
+					<td align="center">{{ tables.table2.specialInterestDlm }}</td>
+					<td align="center">{{ tables.table2.specialInterestBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.specialInterestCfzLzd }}</td>
+					<td align="center">{{ tables.table2.specialInterestOther }}</td>
+					<td align="center">{{ tables.table2.specialInterestTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.peripheralNeuropathy"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table2.peripheralNeuropathyStandard }}</td>
+					<td align="center">{{ tables.table2.peripheralNeuropathyShort }}</td>
+					<td align="center">{{ tables.table2.peripheralNeuropathyBdq }}</td>
+					<td align="center">{{ tables.table2.peripheralNeuropathyDlm }}</td>
+					<td align="center">{{ tables.table2.peripheralNeuropathyBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.peripheralNeuropathyCfzLzd }}</td>
+					<td align="center">{{ tables.table2.peripheralNeuropathyOther }}</td>
+					<td align="center">{{ tables.table2.peripheralNeuropathyTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.psychiatricDisorders"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table2.psychiatricDisorderStandard }}</td>
+					<td align="center">{{ tables.table2.psychiatricDisorderShort }}</td>
+					<td align="center">{{ tables.table2.psychiatricDisorderBdq }}</td>
+					<td align="center">{{ tables.table2.psychiatricDisorderDlm }}</td>
+					<td align="center">{{ tables.table2.psychiatricDisorderBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.psychiatricDisorderCfzLzd }}</td>
+					<td align="center">{{ tables.table2.psychiatricDisorderOther }}</td>
+					<td align="center">{{ tables.table2.psychiatricDisorderTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.opticNerveDisorders"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table2.opticNerveDisorderStandard }}</td>
+					<td align="center">{{ tables.table2.opticNerveDisorderShort }}</td>
+					<td align="center">{{ tables.table2.opticNerveDisorderBdq }}</td>
+					<td align="center">{{ tables.table2.opticNerveDisorderDlm }}</td>
+					<td align="center">{{ tables.table2.opticNerveDisorderBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.opticNerveDisorderCfzLzd }}</td>
+					<td align="center">{{ tables.table2.opticNerveDisorderOther }}</td>
+					<td align="center">{{ tables.table2.opticNerveDisorderTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.ototoxicity"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table2.ototoxicityStandard }}</td>
+					<td align="center">{{ tables.table2.ototoxicityShort }}</td>
+					<td align="center">{{ tables.table2.ototoxicityBdq }}</td>
+					<td align="center">{{ tables.table2.ototoxicityDlm }}</td>
+					<td align="center">{{ tables.table2.ototoxicityBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.ototoxicityCfzLzd }}</td>
+					<td align="center">{{ tables.table2.ototoxicityOther }}</td>
+					<td align="center">{{ tables.table2.ototoxicityTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.myelosuppression"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table2.myelosuppressionStandard }}</td>
+					<td align="center">{{ tables.table2.myelosuppressionShort }}</td>
+					<td align="center">{{ tables.table2.myelosuppressionBdq }}</td>
+					<td align="center">{{ tables.table2.myelosuppressionDlm }}</td>
+					<td align="center">{{ tables.table2.myelosuppressionBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.myelosuppressionCfzLzd }}</td>
+					<td align="center">{{ tables.table2.myelosuppressionOther }}</td>
+					<td align="center">{{ tables.table2.myelosuppressionTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.qtProlongation"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table2.qtProlongationStandard }}</td>
+					<td align="center">{{ tables.table2.qtProlongationShort }}</td>
+					<td align="center">{{ tables.table2.qtProlongationBdq }}</td>
+					<td align="center">{{ tables.table2.qtProlongationDlm }}</td>
+					<td align="center">{{ tables.table2.qtProlongationBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.qtProlongationCfzLzd }}</td>
+					<td align="center">{{ tables.table2.qtProlongationOther }}</td>
+					<td align="center">{{ tables.table2.qtProlongationTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.lacticAcidosis"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table2.lacticAcidosisStandard }}</td>
+					<td align="center">{{ tables.table2.lacticAcidosisShort }}</td>
+					<td align="center">{{ tables.table2.lacticAcidosisBdq }}</td>
+					<td align="center">{{ tables.table2.lacticAcidosisDlm }}</td>
+					<td align="center">{{ tables.table2.lacticAcidosisBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.lacticAcidosisCfzLzd }}</td>
+					<td align="center">{{ tables.table2.lacticAcidosisOther }}</td>
+					<td align="center">{{ tables.table2.lacticAcidosisTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.hepatitis"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table2.hepatitisStandard }}</td>
+					<td align="center">{{ tables.table2.hepatitisShort }}</td>
+					<td align="center">{{ tables.table2.hepatitisBdq }}</td>
+					<td align="center">{{ tables.table2.hepatitisDlm }}</td>
+					<td align="center">{{ tables.table2.hepatitisBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.hepatitisCfzLzd }}</td>
+					<td align="center">{{ tables.table2.hepatitisOther }}</td>
+					<td align="center">{{ tables.table2.hepatitisTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.hypothyroidism"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table2.hypothyroidismStandard }}</td>
+					<td align="center">{{ tables.table2.hypothyroidismShort }}</td>
+					<td align="center">{{ tables.table2.hypothyroidismBdq }}</td>
+					<td align="center">{{ tables.table2.hypothyroidismDlm }}</td>
+					<td align="center">{{ tables.table2.hypothyroidismBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.hypothyroidismCfzLzd }}</td>
+					<td align="center">{{ tables.table2.hypothyroidismOther }}</td>
+					<td align="center">{{ tables.table2.hypothyroidismTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.hypokalemia"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table2.hypokalemiaStandard }}</td>
+					<td align="center">{{ tables.table2.hypokalemiaShort }}</td>
+					<td align="center">{{ tables.table2.hypokalemiaBdq }}</td>
+					<td align="center">{{ tables.table2.hypokalemiaDlm }}</td>
+					<td align="center">{{ tables.table2.hypokalemiaBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.hypokalemiaCfzLzd }}</td>
+					<td align="center">{{ tables.table2.hypokalemiaOther }}</td>
+					<td align="center">{{ tables.table2.hypokalemiaTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.pancreatitis"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table2.pancreatitisStandard }}</td>
+					<td align="center">{{ tables.table2.pancreatitisShort }}</td>
+					<td align="center">{{ tables.table2.pancreatitisBdq }}</td>
+					<td align="center">{{ tables.table2.pancreatitisDlm }}</td>
+					<td align="center">{{ tables.table2.pancreatitisBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.pancreatitisCfzLzd }}</td>
+					<td align="center">{{ tables.table2.pancreatitisOther }}</td>
+					<td align="center">{{ tables.table2.pancreatitisTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.phospholipidosis"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table2.phospholipidosisStandard }}</td>
+					<td align="center">{{ tables.table2.phospholipidosisShort }}</td>
+					<td align="center">{{ tables.table2.phospholipidosisBdq }}</td>
+					<td align="center">{{ tables.table2.phospholipidosisDlm }}</td>
+					<td align="center">{{ tables.table2.phospholipidosisBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.phospholipidosisCfzLzd }}</td>
+					<td align="center">{{ tables.table2.phospholipidosisOther }}</td>
+					<td align="center">{{ tables.table2.phospholipidosisTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.renalFailure"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table2.renalFailureStandard }}</td>
+					<td align="center">{{ tables.table2.renalFailureShort }}</td>
+					<td align="center">{{ tables.table2.renalFailureBdq }}</td>
+					<td align="center">{{ tables.table2.renalFailureDlm }}</td>
+					<td align="center">{{ tables.table2.renalFailureBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.renalFailureCfzLzd }}</td>
+					<td align="center">{{ tables.table2.renalFailureOther }}</td>
+					<td align="center">{{ tables.table2.renalFailureTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.total"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table2.totalStandard }}</td>
+					<td align="center">{{ tables.table2.totalShort }}</td>
+					<td align="center">{{ tables.table2.totalBdq }}</td>
+					<td align="center">{{ tables.table2.totalDlm }}</td>
+					<td align="center">{{ tables.table2.totalBdqAndDlm }}</td>
+					<td align="center">{{ tables.table2.totalCfzLzd }}</td>
+					<td align="center">{{ tables.table2.totalOther }}</td>
+					<td align="center">{{ tables.table2.totalTotal }}</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<br /><br />
+		<h5>{{"mdrtb.pv.table3.title"|get_message:request.session.locale}}</h5>
+		<table border="1" cellpadding="1" cellspacing="1" dir="ltr" style="width: 980px;">
+			<tbody>
+				<tr>
+					<th align="center">{{"mdrtb.pv.adverseEvent"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.bdq"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.dlm"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.cfz"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.lzd"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.am"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.cm"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.mfx"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.lfx"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.cyc"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.pas"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.pto"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.z"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.e"|get_message:request.session.locale}}</th>
+					<th align="center">{{"mdrtb.pv.total"|get_message:request.session.locale}}</th>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.saes"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table3.saeBdq }}</td>
+					<td align="center">{{ tables.table3.saeDlm }}</td>
+					<td align="center">{{ tables.table3.saeCfz }}</td>
+					<td align="center">{{ tables.table3.saeLzd }}</td>
+					<td align="center">{{ tables.table3.saeAm }}</td>
+					<td align="center">{{ tables.table3.saeCm }}</td>
+					<td align="center">{{ tables.table3.saeMfx }}</td>
+					<td align="center">{{ tables.table3.saeLfx }}</td>
+					<td align="center">{{ tables.table3.saeCyc }}</td>
+					<td align="center">{{ tables.table3.saePas }}</td>
+					<td align="center">{{ tables.table3.saePto }}</td>
+					<td align="center">{{ tables.table3.saeZ }}</td>
+					<td align="center">{{ tables.table3.saeE }}</td>
+					<td align="center">{{ tables.table3.saeTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.death"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table3.deathBdq }}</td>
+					<td align="center">{{ tables.table3.deathDlm }}</td>
+					<td align="center">{{ tables.table3.deathCfz }}</td>
+					<td align="center">{{ tables.table3.deathLzd }}</td>
+					<td align="center">{{ tables.table3.deathAm }}</td>
+					<td align="center">{{ tables.table3.deathCm }}</td>
+					<td align="center">{{ tables.table3.deathMfx }}</td>
+					<td align="center">{{ tables.table3.deathLfx }}</td>
+					<td align="center">{{ tables.table3.deathCyc }}</td>
+					<td align="center">{{ tables.table3.deathPas }}</td>
+					<td align="center">{{ tables.table3.deathPto }}</td>
+					<td align="center">{{ tables.table3.deathZ }}</td>
+					<td align="center">{{ tables.table3.deathE }}</td>
+					<td align="center">{{ tables.table3.deathTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.hospitalization"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table3.hospitalizationBdq }}</td>
+					<td align="center">{{ tables.table3.hospitalizationDlm }}</td>
+					<td align="center">{{ tables.table3.hospitalizationCfz }}</td>
+					<td align="center">{{ tables.table3.hospitalizationLzd }}</td>
+					<td align="center">{{ tables.table3.hospitalizationAm }}</td>
+					<td align="center">{{ tables.table3.hospitalizationCm }}</td>
+					<td align="center">{{ tables.table3.hospitalizationMfx }}</td>
+					<td align="center">{{ tables.table3.hospitalizationLfx }}</td>
+					<td align="center">{{ tables.table3.hospitalizationCyc }}</td>
+					<td align="center">{{ tables.table3.hospitalizationPas }}</td>
+					<td align="center">{{ tables.table3.hospitalizationPto }}</td>
+					<td align="center">{{ tables.table3.hospitalizationZ }}</td>
+					<td align="center">{{ tables.table3.hospitalizationE }}</td>
+					<td align="center">{{ tables.table3.hospitalizationTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.disability"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table3.disabilityBdq }}</td>
+					<td align="center">{{ tables.table3.disabilityDlm }}</td>
+					<td align="center">{{ tables.table3.disabilityCfz }}</td>
+					<td align="center">{{ tables.table3.disabilityLzd }}</td>
+					<td align="center">{{ tables.table3.disabilityAm }}</td>
+					<td align="center">{{ tables.table3.disabilityCm }}</td>
+					<td align="center">{{ tables.table3.disabilityMfx }}</td>
+					<td align="center">{{ tables.table3.disabilityLfx }}</td>
+					<td align="center">{{ tables.table3.disabilityCyc }}</td>
+					<td align="center">{{ tables.table3.disabilityPas }}</td>
+					<td align="center">{{ tables.table3.disabilityPto }}</td>
+					<td align="center">{{ tables.table3.disabilityZ }}</td>
+					<td align="center">{{ tables.table3.disabilityE }}</td>
+					<td align="center">{{ tables.table3.disabilityTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.congenitalAbnormality"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table3.congenitalAbnormalityBdq }}</td>
+					<td align="center">{{ tables.table3.congenitalAbnormalityDlm }}</td>
+					<td align="center">{{ tables.table3.congenitalAbnormalityCfz }}</td>
+					<td align="center">{{ tables.table3.congenitalAbnormalityLzd }}</td>
+					<td align="center">{{ tables.table3.congenitalAbnormalityAm }}</td>
+					<td align="center">{{ tables.table3.congenitalAbnormalityCm }}</td>
+					<td align="center">{{ tables.table3.congenitalAbnormalityMfx }}</td>
+					<td align="center">{{ tables.table3.congenitalAbnormalityLfx }}</td>
+					<td align="center">{{ tables.table3.congenitalAbnormalityCyc }}</td>
+					<td align="center">{{ tables.table3.congenitalAbnormalityPas }}</td>
+					<td align="center">{{ tables.table3.congenitalAbnormalityPto }}</td>
+					<td align="center">{{ tables.table3.congenitalAbnormalityZ }}</td>
+					<td align="center">{{ tables.table3.congenitalAbnormalityE }}</td>
+					<td align="center">{{ tables.table3.congenitalAbnormalityTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.lifeThreateningExperience"|get_message:request.session.locale}}
+					</td>
+					<td align="center">{{ tables.table3.lifeThreateningExperienceBdq }}</td>
+					<td align="center">{{ tables.table3.lifeThreateningExperienceDlm }}</td>
+					<td align="center">{{ tables.table3.lifeThreateningExperienceCfz }}</td>
+					<td align="center">{{ tables.table3.lifeThreateningExperienceLzd }}</td>
+					<td align="center">{{ tables.table3.lifeThreateningExperienceAm }}</td>
+					<td align="center">{{ tables.table3.lifeThreateningExperienceCm }}</td>
+					<td align="center">{{ tables.table3.lifeThreateningExperienceMfx }}</td>
+					<td align="center">{{ tables.table3.lifeThreateningExperienceLfx }}</td>
+					<td align="center">{{ tables.table3.lifeThreateningExperienceCyc }}</td>
+					<td align="center">{{ tables.table3.lifeThreateningExperiencePas }}</td>
+					<td align="center">{{ tables.table3.lifeThreateningExperiencePto }}</td>
+					<td align="center">{{ tables.table3.lifeThreateningExperienceZ }}</td>
+					<td align="center">{{ tables.table3.lifeThreateningExperienceE }}</td>
+					<td align="center">{{ tables.table3.lifeThreateningExperienceTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.specialInterest"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table3.specialInterestBdq }}</td>
+					<td align="center">{{ tables.table3.specialInterestDlm }}</td>
+					<td align="center">{{ tables.table3.specialInterestCfz }}</td>
+					<td align="center">{{ tables.table3.specialInterestLzd }}</td>
+					<td align="center">{{ tables.table3.specialInterestAm }}</td>
+					<td align="center">{{ tables.table3.specialInterestCm }}</td>
+					<td align="center">{{ tables.table3.specialInterestMfx }}</td>
+					<td align="center">{{ tables.table3.specialInterestLfx }}</td>
+					<td align="center">{{ tables.table3.specialInterestCyc }}</td>
+					<td align="center">{{ tables.table3.specialInterestPas }}</td>
+					<td align="center">{{ tables.table3.specialInterestPto }}</td>
+					<td align="center">{{ tables.table3.specialInterestZ }}</td>
+					<td align="center">{{ tables.table3.specialInterestE }}</td>
+					<td align="center">{{ tables.table3.specialInterestTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.peripheralNeuropathy"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table3.peripheralNeuropathyBdq }}</td>
+					<td align="center">{{ tables.table3.peripheralNeuropathyDlm }}</td>
+					<td align="center">{{ tables.table3.peripheralNeuropathyCfz }}</td>
+					<td align="center">{{ tables.table3.peripheralNeuropathyLzd }}</td>
+					<td align="center">{{ tables.table3.peripheralNeuropathyAm }}</td>
+					<td align="center">{{ tables.table3.peripheralNeuropathyCm }}</td>
+					<td align="center">{{ tables.table3.peripheralNeuropathyMfx }}</td>
+					<td align="center">{{ tables.table3.peripheralNeuropathyLfx }}</td>
+					<td align="center">{{ tables.table3.peripheralNeuropathyCyc }}</td>
+					<td align="center">{{ tables.table3.peripheralNeuropathyPas }}</td>
+					<td align="center">{{ tables.table3.peripheralNeuropathyPto }}</td>
+					<td align="center">{{ tables.table3.peripheralNeuropathyZ }}</td>
+					<td align="center">{{ tables.table3.peripheralNeuropathyE }}</td>
+					<td align="center">{{ tables.table3.peripheralNeuropathyTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.psychiatricDisorders"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table3.psychiatricDisorderBdq }}</td>
+					<td align="center">{{ tables.table3.psychiatricDisorderDlm }}</td>
+					<td align="center">{{ tables.table3.psychiatricDisorderCfz }}</td>
+					<td align="center">{{ tables.table3.psychiatricDisorderLzd }}</td>
+					<td align="center">{{ tables.table3.psychiatricDisorderAm }}</td>
+					<td align="center">{{ tables.table3.psychiatricDisorderCm }}</td>
+					<td align="center">{{ tables.table3.psychiatricDisorderMfx }}</td>
+					<td align="center">{{ tables.table3.psychiatricDisorderLfx }}</td>
+					<td align="center">{{ tables.table3.psychiatricDisorderCyc }}</td>
+					<td align="center">{{ tables.table3.psychiatricDisorderPas }}</td>
+					<td align="center">{{ tables.table3.psychiatricDisorderPto }}</td>
+					<td align="center">{{ tables.table3.psychiatricDisorderZ }}</td>
+					<td align="center">{{ tables.table3.psychiatricDisorderE }}</td>
+					<td align="center">{{ tables.table3.psychiatricDisorderTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.opticNerveDisorders"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table3.opticNerveDisorderBdq }}</td>
+					<td align="center">{{ tables.table3.opticNerveDisorderDlm }}</td>
+					<td align="center">{{ tables.table3.opticNerveDisorderCfz }}</td>
+					<td align="center">{{ tables.table3.opticNerveDisorderLzd }}</td>
+					<td align="center">{{ tables.table3.opticNerveDisorderAm }}</td>
+					<td align="center">{{ tables.table3.opticNerveDisorderCm }}</td>
+					<td align="center">{{ tables.table3.opticNerveDisorderMfx }}</td>
+					<td align="center">{{ tables.table3.opticNerveDisorderLfx }}</td>
+					<td align="center">{{ tables.table3.opticNerveDisorderCyc }}</td>
+					<td align="center">{{ tables.table3.opticNerveDisorderPas }}</td>
+					<td align="center">{{ tables.table3.opticNerveDisorderPto }}</td>
+					<td align="center">{{ tables.table3.opticNerveDisorderZ }}</td>
+					<td align="center">{{ tables.table3.opticNerveDisorderE }}</td>
+					<td align="center">{{ tables.table3.opticNerveDisorderTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.ototoxicity"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table3.ototoxicityBdq }}</td>
+					<td align="center">{{ tables.table3.ototoxicityDlm }}</td>
+					<td align="center">{{ tables.table3.ototoxicityCfz }}</td>
+					<td align="center">{{ tables.table3.ototoxicityLzd }}</td>
+					<td align="center">{{ tables.table3.ototoxicityAm }}</td>
+					<td align="center">{{ tables.table3.ototoxicityCm }}</td>
+					<td align="center">{{ tables.table3.ototoxicityMfx }}</td>
+					<td align="center">{{ tables.table3.ototoxicityLfx }}</td>
+					<td align="center">{{ tables.table3.ototoxicityCyc }}</td>
+					<td align="center">{{ tables.table3.ototoxicityPas }}</td>
+					<td align="center">{{ tables.table3.ototoxicityPto }}</td>
+					<td align="center">{{ tables.table3.ototoxicityZ }}</td>
+					<td align="center">{{ tables.table3.ototoxicityE }}</td>
+					<td align="center">{{ tables.table3.ototoxicityTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.myelosuppression"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table3.myelosuppressionBdq }}</td>
+					<td align="center">{{ tables.table3.myelosuppressionDlm }}</td>
+					<td align="center">{{ tables.table3.myelosuppressionCfz }}</td>
+					<td align="center">{{ tables.table3.myelosuppressionLzd }}</td>
+					<td align="center">{{ tables.table3.myelosuppressionAm }}</td>
+					<td align="center">{{ tables.table3.myelosuppressionCm }}</td>
+					<td align="center">{{ tables.table3.myelosuppressionMfx }}</td>
+					<td align="center">{{ tables.table3.myelosuppressionLfx }}</td>
+					<td align="center">{{ tables.table3.myelosuppressionCyc }}</td>
+					<td align="center">{{ tables.table3.myelosuppressionPas }}</td>
+					<td align="center">{{ tables.table3.myelosuppressionPto }}</td>
+					<td align="center">{{ tables.table3.myelosuppressionZ }}</td>
+					<td align="center">{{ tables.table3.myelosuppressionE }}</td>
+					<td align="center">{{ tables.table3.myelosuppressionTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.qtProlongation"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table3.qtProlongationBdq }}</td>
+					<td align="center">{{ tables.table3.qtProlongationDlm }}</td>
+					<td align="center">{{ tables.table3.qtProlongationCfz }}</td>
+					<td align="center">{{ tables.table3.qtProlongationLzd }}</td>
+					<td align="center">{{ tables.table3.qtProlongationAm }}</td>
+					<td align="center">{{ tables.table3.qtProlongationCm }}</td>
+					<td align="center">{{ tables.table3.qtProlongationMfx }}</td>
+					<td align="center">{{ tables.table3.qtProlongationLfx }}</td>
+					<td align="center">{{ tables.table3.qtProlongationCyc }}</td>
+					<td align="center">{{ tables.table3.qtProlongationPas }}</td>
+					<td align="center">{{ tables.table3.qtProlongationPto }}</td>
+					<td align="center">{{ tables.table3.qtProlongationZ }}</td>
+					<td align="center">{{ tables.table3.qtProlongationE }}</td>
+					<td align="center">{{ tables.table3.qtProlongationTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.lacticAcidosis"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table3.lacticAcidosisBdq }}</td>
+					<td align="center">{{ tables.table3.lacticAcidosisDlm }}</td>
+					<td align="center">{{ tables.table3.lacticAcidosisCfz }}</td>
+					<td align="center">{{ tables.table3.lacticAcidosisLzd }}</td>
+					<td align="center">{{ tables.table3.lacticAcidosisAm }}</td>
+					<td align="center">{{ tables.table3.lacticAcidosisCm }}</td>
+					<td align="center">{{ tables.table3.lacticAcidosisMfx }}</td>
+					<td align="center">{{ tables.table3.lacticAcidosisLfx }}</td>
+					<td align="center">{{ tables.table3.lacticAcidosisCyc }}</td>
+					<td align="center">{{ tables.table3.lacticAcidosisPas }}</td>
+					<td align="center">{{ tables.table3.lacticAcidosisPto }}</td>
+					<td align="center">{{ tables.table3.lacticAcidosisZ }}</td>
+					<td align="center">{{ tables.table3.lacticAcidosisE }}</td>
+					<td align="center">{{ tables.table3.lacticAcidosisTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.hepatitis"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table3.hepatitisBdq }}</td>
+					<td align="center">{{ tables.table3.hepatitisDlm }}</td>
+					<td align="center">{{ tables.table3.hepatitisCfz }}</td>
+					<td align="center">{{ tables.table3.hepatitisLzd }}</td>
+					<td align="center">{{ tables.table3.hepatitisAm }}</td>
+					<td align="center">{{ tables.table3.hepatitisCm }}</td>
+					<td align="center">{{ tables.table3.hepatitisMfx }}</td>
+					<td align="center">{{ tables.table3.hepatitisLfx }}</td>
+					<td align="center">{{ tables.table3.hepatitisCyc }}</td>
+					<td align="center">{{ tables.table3.hepatitisPas }}</td>
+					<td align="center">{{ tables.table3.hepatitisPto }}</td>
+					<td align="center">{{ tables.table3.hepatitisZ }}</td>
+					<td align="center">{{ tables.table3.hepatitisE }}</td>
+					<td align="center">{{ tables.table3.hepatitisTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.hypothyroidism"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table3.hypothyroidismBdq }}</td>
+					<td align="center">{{ tables.table3.hypothyroidismDlm }}</td>
+					<td align="center">{{ tables.table3.hypothyroidismCfz }}</td>
+					<td align="center">{{ tables.table3.hypothyroidismLzd }}</td>
+					<td align="center">{{ tables.table3.hypothyroidismAm }}</td>
+					<td align="center">{{ tables.table3.hypothyroidismCm }}</td>
+					<td align="center">{{ tables.table3.hypothyroidismMfx }}</td>
+					<td align="center">{{ tables.table3.hypothyroidismLfx }}</td>
+					<td align="center">{{ tables.table3.hypothyroidismCyc }}</td>
+					<td align="center">{{ tables.table3.hypothyroidismPas }}</td>
+					<td align="center">{{ tables.table3.hypothyroidismPto }}</td>
+					<td align="center">{{ tables.table3.hypothyroidismZ }}</td>
+					<td align="center">{{ tables.table3.hypothyroidismE }}</td>
+					<td align="center">{{ tables.table3.hypothyroidismTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.hypokalemia"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table3.hypokalemiaBdq }}</td>
+					<td align="center">{{ tables.table3.hypokalemiaDlm }}</td>
+					<td align="center">{{ tables.table3.hypokalemiaCfz }}</td>
+					<td align="center">{{ tables.table3.hypokalemiaLzd }}</td>
+					<td align="center">{{ tables.table3.hypokalemiaAm }}</td>
+					<td align="center">{{ tables.table3.hypokalemiaCm }}</td>
+					<td align="center">{{ tables.table3.hypokalemiaMfx }}</td>
+					<td align="center">{{ tables.table3.hypokalemiaLfx }}</td>
+					<td align="center">{{ tables.table3.hypokalemiaCyc }}</td>
+					<td align="center">{{ tables.table3.hypokalemiaPas }}</td>
+					<td align="center">{{ tables.table3.hypokalemiaPto }}</td>
+					<td align="center">{{ tables.table3.hypokalemiaZ }}</td>
+					<td align="center">{{ tables.table3.hypokalemiaE }}</td>
+					<td align="center">{{ tables.table3.hypokalemiaTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.pancreatitis"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table3.pancreatitisBdq }}</td>
+					<td align="center">{{ tables.table3.pancreatitisDlm }}</td>
+					<td align="center">{{ tables.table3.pancreatitisCfz }}</td>
+					<td align="center">{{ tables.table3.pancreatitisLzd }}</td>
+					<td align="center">{{ tables.table3.pancreatitisAm }}</td>
+					<td align="center">{{ tables.table3.pancreatitisCm }}</td>
+					<td align="center">{{ tables.table3.pancreatitisMfx }}</td>
+					<td align="center">{{ tables.table3.pancreatitisLfx }}</td>
+					<td align="center">{{ tables.table3.pancreatitisCyc }}</td>
+					<td align="center">{{ tables.table3.pancreatitisPas }}</td>
+					<td align="center">{{ tables.table3.pancreatitisPto }}</td>
+					<td align="center">{{ tables.table3.pancreatitisZ }}</td>
+					<td align="center">{{ tables.table3.pancreatitisE }}</td>
+					<td align="center">{{ tables.table3.pancreatitisTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.phospholipidosis"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table3.phospholipidosisBdq }}</td>
+					<td align="center">{{ tables.table3.phospholipidosisDlm }}</td>
+					<td align="center">{{ tables.table3.phospholipidosisCfz }}</td>
+					<td align="center">{{ tables.table3.phospholipidosisLzd }}</td>
+					<td align="center">{{ tables.table3.phospholipidosisAm }}</td>
+					<td align="center">{{ tables.table3.phospholipidosisCm }}</td>
+					<td align="center">{{ tables.table3.phospholipidosisMfx }}</td>
+					<td align="center">{{ tables.table3.phospholipidosisLfx }}</td>
+					<td align="center">{{ tables.table3.phospholipidosisCyc }}</td>
+					<td align="center">{{ tables.table3.phospholipidosisPas }}</td>
+					<td align="center">{{ tables.table3.phospholipidosisPto }}</td>
+					<td align="center">{{ tables.table3.phospholipidosisZ }}</td>
+					<td align="center">{{ tables.table3.phospholipidosisE }}</td>
+					<td align="center">{{ tables.table3.phospholipidosisTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.report.renalFailure"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table3.renalFailureBdq }}</td>
+					<td align="center">{{ tables.table3.renalFailureDlm }}</td>
+					<td align="center">{{ tables.table3.renalFailureCfz }}</td>
+					<td align="center">{{ tables.table3.renalFailureLzd }}</td>
+					<td align="center">{{ tables.table3.renalFailureAm }}</td>
+					<td align="center">{{ tables.table3.renalFailureCm }}</td>
+					<td align="center">{{ tables.table3.renalFailureMfx }}</td>
+					<td align="center">{{ tables.table3.renalFailureLfx }}</td>
+					<td align="center">{{ tables.table3.renalFailureCyc }}</td>
+					<td align="center">{{ tables.table3.renalFailurePas }}</td>
+					<td align="center">{{ tables.table3.renalFailurePto }}</td>
+					<td align="center">{{ tables.table3.renalFailureZ }}</td>
+					<td align="center">{{ tables.table3.renalFailureE }}</td>
+					<td align="center">{{ tables.table3.renalFailureTotal }}</td>
+				</tr>
+				<tr>
+					<td align="left">{{"mdrtb.pv.total"|get_message:request.session.locale}}</td>
+					<td align="center">{{ tables.table3.totalBdq }}</td>
+					<td align="center">{{ tables.table3.totalDlm }}</td>
+					<td align="center">{{ tables.table3.totalCfz }}</td>
+					<td align="center">{{ tables.table3.totalLzd }}</td>
+					<td align="center">{{ tables.table3.totalAm }}</td>
+					<td align="center">{{ tables.table3.totalCm }}</td>
+					<td align="center">{{ tables.table3.totalMfx }}</td>
+					<td align="center">{{ tables.table3.totalLfx }}</td>
+					<td align="center">{{ tables.table3.totalCyc }}</td>
+					<td align="center">{{ tables.table3.totalPas }}</td>
+					<td align="center">{{ tables.table3.totalPto }}</td>
+					<td align="center">{{ tables.table3.totalZ }}</td>
+					<td align="center">{{ tables.table3.totalE }}</td>
+					<td align="center">{{ tables.table3.totalTotal }}</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<br /><br />
+		<h5>{{"mdrtb.pv.table4.title"|get_message:request.session.locale}}</h5>
+		<table border="1" cellpadding="1" cellspacing="1" dir="ltr" style="width: 980px;">
+			<tbody>
+				<tr>
+					<th>{{"mdrtb.pv.table4.ae"|get_message:request.session.locale}}</th>
+					<th>{{"mdrtb.pv.table4.numberOfPatients"|get_message:request.session.locale}}</th>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.nausea"|get_message:request.session.locale}}</td>
+					<td>{{tables.table4.nausea }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.diarrhoea"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.diarrhoea }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.arthalgia"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.arthalgia }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.dizziness"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.dizziness }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.hearingDisturbances"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.hearingDisturbances }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.headaches"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.headaches }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.sleepDisturbances"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.sleepDisturbances }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.electrolyteDisturbances"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.electrolyteDisturbance }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.abdominalPain"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.abdominalPain }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.anorexia"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.anorexia }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.gastritis"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.gastritis }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.peripheralNeuropathy"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.peripheralNeuropathy }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.depression"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.depression }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.tinnitus"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.tinnitus }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.allergicReaction"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.allergicReaction }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.rash"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.rash }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.visualDisturbances"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.visualDisturbances }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.seizures"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.seizures }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.hypothyroidism"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.hypothyroidism }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.psychosis"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.psychosis }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.suicidalIdeation"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.suicidalIdeation }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.hepatitis"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.hepatitis }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.renalFailure"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.renalFailure }}</td>
+				</tr>
+				<tr>
+					<td>{{"mdrtb.pv.qtProlongation"|get_message:request.session.locale}}</td>
+					<td>{{ tables.table4.qtProlongation }}</td>
+				</tr>
+
+			</tbody>
+		</table>
+
+
+
+
+
+	</div>
+	<input type="button" onclick="tableToExcel('ae', 'AE')"
+		value="{{'mdrtb.exportToExcelBtn'|get_message:request.session.locale}}" />
+	<button>
+		<a style="text-decoration: none; color: black;" href="/">
+			{{'mdrtb.back'|get_message:request.session.locale}}
+		</a>
+	</button>
+	<input type="button" onclick="printForm()" value="{{'mdrtb.print'|get_message:request.session.locale}}" />
+	<button onclick="saveHtml()">{{'mdrtb.save'|get_message:request.session.locale}}</button>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.1.js"></script>
+	<script type="text/javascript">
+
+		console.log(JSON.parse("{{js|escapejs}}"))
+
+
+
+		function saveHtml() {
+			let htmlContent = document.getElementById("ae").outerHTML;
+			htmlContent = htmlContent.replace(/\s{2,}/g, ' ');
+			let year = "{{request.GET.year}}"
+			let location = "{{request.GET.location}}"
+			let quarter = "{{request.GET.quarter}}" ? "{{request.GET.quarter}}" : null;
+			let month = "{{request.GET.month}}" ? "{{request.GET.month}}" : null;
+
+			data = {
+				csrfmiddlewaretoken: "{{csrf_token}}",
+				reportName: "Adverse-events-register",
+				year,
+				location,
+				reportType: "MDRTB",
+				tableData: htmlContent
+			}
+
+			if (month != null) data.month = month
+			if (quarter != null) data.quarter = quarter
+
+
+			$.ajax({
+				method: "POST",
+				url: "/saveclosedreport",
+				data: data,
+				success: (data) => {
+					if (data.success) {
+						alert("Report saved successfully")
+					} else {
+						alert("Failed to save report")
+					}
+				}
+			})
+
+
+		}
+
+
+
+		function printForm() {
+			var mywindow = window.open('', 'PRINT', 'height=400,width=600');
+
+			mywindow.document.write('<html><head><title><spring:message code="mdrtb.tb03u" text="TB03y"/></title>');
+			mywindow.document.write('</head><body >');
+			// mywindow.document.write('<h1><spring:message code="mdrtb.pv.aeForm" text="AE"/></h1>');
+			mywindow.document.write(document.getElementById("aeRegister").innerHTML);
+
+			mywindow.document.write('</body></html>');
+
+			mywindow.document.close(); // necessary for IE >= 10
+			mywindow.focus(); // necessary for IE >= 10*/
+
+			mywindow.print();
+			mywindow.close();
+
+			return true;
+		}
+		var tableToExcel = (function () {
+			var uri = 'data:application/vnd.ms-excel;base64,'
+				, template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>TB03</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>'
+				, base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) }
+				, format = function (s, c) { return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; }) }
+			return function (table, name) {
+				if (!table.nodeType) table = document.getElementById(table)
+				var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
+				window.location.href = uri + base64(format(template, ctx))
+			}
+		})()
+		function savePdf(action, reportName, formPath) {
+			var tableData = (document.getElementById("tb03")).innerHTML.toString();
+			var oblast = "{{ oblast }}";
+			var district = "{{ district }}";
+			var facility = "{{ facility }}";
+			var year = "{{ year }}";
+			if (!"{{quarter}}") {
+				var quarter = "\"" + "{{quarter}}" + "\"";
+			} else {
+				var quarter = "";
+			}
+			if (!"{{month}}") {
+				var month = "\"" + "{{month}}" + "\"";
+			} else {
+				var month = "";
+			}
+			var reportDate = "{{ reportDate }}";
+
+			var form = document.createElement("FORM");
+
+			form.setAttribute("id", "closeReportForm");
+			form.setAttribute("name", "closeReportForm");
+			form.setAttribute("method", "post");
+			form.setAttribute("action", action);
+
+			document.body.appendChild(form);
+
+			var input = document.createElement("INPUT");
+			input.setAttribute("type", "hidden");
+			input.setAttribute("id", "oblast");
+			input.setAttribute("name", "oblast");
+			input.setAttribute("value", oblast);
+			form.appendChild(input);
+
+			var input = document.createElement("INPUT");
+			input.setAttribute("type", "hidden");
+			input.setAttribute("id", "district");
+			input.setAttribute("name", "district");
+			input.setAttribute("value", district);
+			form.appendChild(input);
+
+			var input = document.createElement("INPUT");
+			input.setAttribute("type", "hidden");
+			input.setAttribute("id", "facility");
+			input.setAttribute("name", "facility");
+			input.setAttribute("value", facility);
+			form.appendChild(input);
+
+			var input = document.createElement("INPUT");
+			input.setAttribute("type", "hidden");
+			input.setAttribute("id", "year");
+			input.setAttribute("name", "year");
+			input.setAttribute("value", year);
+			form.appendChild(input);
+
+			var input = document.createElement("INPUT");
+			input.setAttribute("type", "hidden");
+			input.setAttribute("id", "quarter");
+			input.setAttribute("name", "quarter");
+			input.setAttribute("value", quarter);
+			form.appendChild(input);
+
+			var input = document.createElement("INPUT");
+			input.setAttribute("type", "hidden");
+			input.setAttribute("id", "month");
+			input.setAttribute("name", "month");
+			input.setAttribute("value", month);
+			form.appendChild(input);
+
+			var input = document.createElement("INPUT");
+			input.setAttribute("type", "hidden");
+			input.setAttribute("id", "reportDate");
+			input.setAttribute("name", "reportDate");
+			input.setAttribute("value", reportDate);
+			form.appendChild(input);
+
+			var input = document.createElement("INPUT");
+			input.setAttribute("type", "hidden");
+			input.setAttribute("id", "table");
+			input.setAttribute("name", "table");
+			input.setAttribute("value", tableData);
+			form.appendChild(input);
+
+			var input = document.createElement("INPUT");
+			input.setAttribute("type", "hidden");
+			input.setAttribute("id", "formPath");
+			input.setAttribute("name", "formPath");
+			input.setAttribute("value", formPath);
+			form.appendChild(input);
+
+			var input = document.createElement("INPUT");
+			input.setAttribute("type", "hidden");
+			input.setAttribute("id", "reportName");
+			input.setAttribute("name", "reportName");
+			input.setAttribute("value", reportName);
+			form.appendChild(input);
+
+			var input = document.createElement("INPUT");
+			input.setAttribute("type", "hidden");
+			input.setAttribute("id", "reportType");
+			input.setAttribute("name", "reportType");
+			input.setAttribute("value", "DOTSTB");
+			form.appendChild(input);
+
+			form.submit();
+		}
+		$(document).ready(function () {
+			$("#tableToSql").bind("click", function () {
+				if (confirm('{{"mdrtb.closeReportMessage"|get_message:request.session.locale}}')) {
+					savePdf("closeReport.form", "TB-03", "tb03Results");
+				}
+			});
+			/* $("#tableToPdf").click(function(){
+				savePdf("exportReport.form", "TB 03", "tb03Results");
+			}); */
+		});
+	</script>
+
+
+</div>
+
+
+
+{% endblock %}

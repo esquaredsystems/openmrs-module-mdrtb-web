@@ -247,6 +247,7 @@
                     {{request.GET.quarter}}-{{request.GET.year}}
                     <br />
                     {{"mdrtb.tb08u.dateOfReport"|get_message:request.session.locale}}
+                    {{report_date|get_report_date}}
                 </td>
             </tr>
         </table>

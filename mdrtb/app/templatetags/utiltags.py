@@ -61,7 +61,7 @@ def get_range(number):
 
 @register.filter
 def sum(a, b):
-    return a + b
+    return int(a) + int(b)
 
 
 @register.filter
@@ -77,3 +77,16 @@ def string_to_date(string):
     year = date.year
     date_arr = [formatted_day, formatted_month, str(year)]
     return ".".join(date_arr)
+
+@register.filter
+def get_report_date(date):
+    if date:
+        normal_date = str(parser.isoparse(date)).split(" ")[0]
+        time = str(parser.isoparse(date)).split(" ")[1]
+        splitted = normal_date.split("-")
+        splitted.reverse()
+        normal_date = ".".join(splitted)
+        time = ":".join(time.split(".")[0].split(".")[0].split(":"))
+        return " ".join([normal_date, time])
+    else:
+        return None

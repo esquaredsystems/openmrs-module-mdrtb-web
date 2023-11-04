@@ -36,9 +36,9 @@
         </td>
 
         <td>
-            <spring:message code="mdrtb.tb08u.tbCasesDetectedDuringQuarterYear" arguments="{{ quarter }},{{ year }}" />
+            {{"mdrtb.tb08u.tbCasesDetectedDuringQuarterYear"}} {{request.GET.quarter}},{{request.GET.year}}
             <br />
-            {{"mdrtb.tb08u.dateOfReport"|get_message:request.session.locale}} {{''}}
+            {{"mdrtb.tb08u.dateOfReport"|get_message:request.session.locale}} {{report_date|get_report_date}}
         </td>
         </tr>
     </table>

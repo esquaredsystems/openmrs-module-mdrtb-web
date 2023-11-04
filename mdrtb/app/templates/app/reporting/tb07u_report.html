@@ -39,7 +39,9 @@
 
         <td>
             {{"mdrtb.tb07u.tbCasesDetectedDuringQuarterYear" | get_message:request.session.locale}}
+            {{request.GET.quarter}},{{request.GET.year}}
             {{"mdrtb.tb07u.dateOfReport"|get_message:request.session.locale}}
+            {{report_date|get_report_date}}
         </td>
         </tr>
     </table>

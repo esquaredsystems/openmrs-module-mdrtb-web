@@ -143,10 +143,12 @@
             href="{% url 'reportform' target='form8results' %}">{{'mdrtb.form8.title'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
-          <a class="tw-dropdown-item" href="#">{{'mdrtb.pv.qtrReportTitle'|get_message:request.session.locale}}</a>
+          <a class="tw-dropdown-item"
+            href="{% url 'reportform' target='adverseeventsregister' %}">{{'mdrtb.pv.register.title'|get_message:request.session.locale}}</a>
         </li>
         <li data-te-dropdown-item-ref>
-          <a class="tw-dropdown-item" href="#">{{'mdrtb.pv.register.title'|get_message:request.session.locale}}</a>
+          <a class="tw-dropdown-item"
+            href="{% url 'reportform' target='quarterlyae' %}">{{'mdrtb.pv.qtrReportTitle'|get_message:request.session.locale}}</a>
         </li>
       </ul>
     </div>

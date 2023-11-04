@@ -70,7 +70,7 @@
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.onsetDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input disabled type="date" class="input form-control" name="encounterDateTime"
+            <input disabled type="text" class="input form-control" name="encounterDateTime"
               value="{{form.encounter.encounterDatetime | iso_to_normal_date }}">
             {% else %}
             <input type="date" class="input form-control" name="encounterDateTime">

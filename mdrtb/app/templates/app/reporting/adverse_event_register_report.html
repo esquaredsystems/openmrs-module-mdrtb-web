@@ -17,8 +17,10 @@
         <table width="100%" border="1">
             <tr>
                 <td>
-                    {{"mdrtb.tb07u.nameOfFacility"|get_message:request.session.locale}}: <u>{{ fName }}</u><br />
-                    {{"mdrtb.tb07u.regionCityDistrict"|get_message:request.session.locale}}: <u> {{ oName }}/{{ dName }}
+                    {{"mdrtb.tb07u.nameOfFacility"|get_message:request.session.locale}}: <u>
+                        {{ location.facility.name}}</u><br />
+                    {{"mdrtb.tb07u.regionCityDistrict"|get_message:request.session.locale}}: <u>
+                        {{ location.region.name}}/{{ location.district.name }}
                     </u><br />
                     {{"mdrtb.tb07u.tbCoordinatorName"|get_message:request.session.locale}}: ___________________ </br>
                     {{"mdrtb.tb07u.signature"|get_message:request.session.locale}}: _________________
@@ -26,8 +28,8 @@
 
                 <td>
                     {{"mdrtb.pv.quarter"|get_message:request.session.locale}},{{"mdrtb.pv.year"|get_message:request.session.locale}}:
-                    <u>{{ quarter }}, {{ year }}</u></br>
-                    {{"mdrtb.pv.reportDate"|get_message:request.session.locale}}:<u>&nbsp; {{ reportDate }}</u>
+                    <u>{{ request.GET.quarter }}, {{ request.GET.year }}</u></br>
+                    {{"mdrtb.pv.reportDate"|get_message:request.session.locale}}:<u>&nbsp; {{ report_date|get_report_date }}</u>
                 </td>
             </tr>
 
@@ -39,43 +41,47 @@
             <tbody>
                 <tr>
                     <th rowspan="2">
-                        <spring:message code="mdrtb.pv.serialNumber" text="serialz" />
+
+                        {{"mdrtb.pv.register.serialNumber"|get_message:request.session.locale}}
                     </th>
                     <th rowspan="2">{{"mdrtb.pv.register.patientId"|get_message:request.session.locale}}</th>
                     <th rowspan="2">{{"mdrtb.pv.register.patientName"|get_message:request.session.locale}}</th>
                     <th rowspan="2">
-                        <spring:message code="mdrtb.pv.register.patientBirthdate" text="dobz" />
+
+                        {{"mdrtb.pv.register.patientBirthdate"|get_message:request.session.locale}}
                     </th>
                     <th rowspan="2">{{"mdrtb.pv.register.onsetDate"|get_message:request.session.locale}}</th>
                     <th rowspan="2">{{"mdrtb.pv.register.adverseEvent"|get_message:request.session.locale}}</th>
                     <th rowspan="2">
-                        <spring:message code="mdrtb.pv.register.diagnosticInvestigation" text="diz" />
+                        {{"mdrtb.pv.register.diagnosticInvestigation"|get_message:request.session.locale}}
                     </th>
                     <th colspan="2">{{"mdrtb.pv.register.typeOfEvent"|get_message:request.session.locale}}</th>
 
                     <th rowspan="2">
-                        <spring:message code="mdrtb.pv.register.requiringAncillary" text="ancz" />
+                        {{"mdrtb.pv.register.requiringAncillary"|get_message:request.session.locale}}
                     </th>
                     <th rowspan="2">
-                        <spring:message code="mdrtb.pv.register.requiringChanges" text="ancz" />
+                        {{"mdrtb.pv.register.requiringChanges"|get_message:request.session.locale}}
                     </th>
                     <th rowspan="2">{{"mdrtb.pv.register.suspectedDrug"|get_message:request.session.locale}}</th>
                     <th rowspan="2">
-                        <spring:message code="mdrtb.pv.register.suspectedDrugTxStartDate" text="drugz" />
+                        {{"mdrtb.pv.register.suspectedDrugTxStartDate"|get_message:request.session.locale}}
                     </th>
 
                     <th rowspan="2">{{"mdrtb.pv.register.actionTaken"|get_message:request.session.locale}}</th>
                     <th rowspan="2">
-                        <spring:message code="mdrtb.pv.register.actionOutcome" text="outcomez" />
+
+                        {{"mdrtb.pv.register.actionOutcome"|get_message:request.session.locale}}
                     </th>
                     <th rowspan="2">
-                        <spring:message code="mdrtb.pv.register.treatmentRegimenAtOnset" text="regimenz" />
+
+                        {{"mdrtb.pv.register.treatmentRegimenAtOnset"|get_message:request.session.locale}}
                     </th>
 
                     <th rowspan="2">{{"mdrtb.pv.register.drugRechallenge"|get_message:request.session.locale}}</th>
                     <th rowspan="2">{{"mdrtb.pv.register.causalityAssessment"|get_message:request.session.locale}}</th>
                     <th rowspan="2">
-                        <spring:message code="mdrtb.pv.register.yellowCardDate" text="Yellowz" />
+                        {{"mdrtb.pv.register.yellowCardDate"|get_message:request.session.locale}}
                     </th>
 
                     <!-- <th rowspan="2">{{"mdrtb.pv.outcomeDate"|get_message:request.session.locale}}</th>
@@ -116,13 +122,13 @@
 
                 {% for form in forms %}
                 <tr>
-                    <td><a href="{{ pageContext.request.contextPath }}/module/mdrtb/form/ae.form?encounterId={{ form.AEForm.encounter.id }}&patientProgramId={{ form.AEForm.patientProgramId }}"
-                            target="_blank">{{loop.index+1}}</a></td>
-                    <td align="left">{{ form.identifier }}</td>
+                    <td><a href="{% url 'editadverseevents' patientid=form.patientUuid formid=form.adverseEventsForm.encounter.uuid %}"
+                            target="_blank">{{forloop.counter}}</a></td>
+                    <td align="left">{{ form.patientIdentifier }}</td>
                     <td align="left">{{ form.patientName }}</td>
-                    <td align="center">{{ form.birthDate }}</td>
+                    <td align="center">{{ form.birthdate }}</td>
                     <td align="center">{{ form.onsetDate }}</td>
-                    <td align="left">{{ form.AEDescription }}</td>
+                    <td align="left">{{ form.aeDescription }}</td>
                     <td align="left">{{ form.diagnosticInvestigation }}</td>
                     <td align="center">{{ form.serious }}</td>
                     <td align="center">{{ form.ofSpecialInterest }}</td>
@@ -134,7 +140,7 @@
                     <td align="left">{{ form.actionOutcome }}</td>
                     <td align="left">{{ form.txRegimen }}</td>
                     <td align="left">{{ form.drugRechallenge }}</td>
-                    <td align="left">{{ form.causalityAssessment }}</td>
+                    <td align="left">{{ form.adverseEventsForm.casualityAssessmentResult.display }}</td>
                     <td align="center">{{ form.yellowCardDate }}</td>
                     <td align=left">{{ form.comments }}</td>
                 </tr>

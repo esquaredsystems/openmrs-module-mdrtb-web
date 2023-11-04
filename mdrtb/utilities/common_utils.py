@@ -1,6 +1,6 @@
 from pathlib import Path
 from datetime import datetime, date
-from dateutil.parser import parse
+from dateutil import parser
 import utilities.metadata_util as mu
 from bs4 import BeautifulSoup
 
@@ -222,27 +222,31 @@ def get_quarters():
     return ["1", "2", "3", "4"]
 
 
-def get_report_names(type,locale):
+def get_report_names(type, locale):
     reports = [
-        {"code": "mdrtb.dotsreport07", "value": "TB-07","type":"DOTS"},
-        {"code": "mdrtb.dotsreport08", "value": "TB-08","type":"DOTS"},
-        {"code": "mdrtb.tb03", "value": "TB-03","type":"DOTS"},
-        {"code": "mdrtb.tb03ExportSingleLine", "value": "TB-03","type":"DOTS"},
-        {"code": "mdrtb.form8.title", "value": "Form8","type":"DOTS"},
-        {"code": "mdrtb.form89", "value": "FORM-89","type":"DOTS"},
-        {"code": "mdrtb.dotsdq.title", "value": "DOTS Data Quality Report","type":"DOTS"},
-        {"code": "mdrtb.dq.missingtb03", "value": "MISSING TB-03","type":"DOTS"},
-        {"code": "mdrtb.tb07u", "value": "TB-07u","type":"MDR"},
-        {"code": "mdrtb.tb08Fast", "value": "TB-08u","type":"MDR"},
-        {"code": "mdrtb.tb03u", "value": "TB-03u","type":"MDR"},
-        {"code": "mdrtb.tb03uExportSingleLine", "value": "TB-03u","type":"MDR"},
-        {"code": "mdrtb.dq.title", "value": "DOTS Data Quality Report","type":"MDR"},
-        {"code": "mdrtb.dq.missingtb03u", "value": "MISSING TB03u","type":"MDR"},
-        {"code": "mdrtb.patientLists", "value": "Patient List","type":"MDR"},
+        {"code": "mdrtb.dotsreport07", "value": "TB-07", "type": "DOTS"},
+        {"code": "mdrtb.dotsreport08", "value": "TB-08", "type": "DOTS"},
+        {"code": "mdrtb.tb03", "value": "TB-03", "type": "DOTS"},
+        {"code": "mdrtb.tb03ExportSingleLine", "value": "TB-03", "type": "DOTS"},
+        {"code": "mdrtb.form8.title", "value": "Form8", "type": "DOTS"},
+        {"code": "mdrtb.form89", "value": "FORM-89", "type": "DOTS"},
+        {
+            "code": "mdrtb.dotsdq.title",
+            "value": "DOTS Data Quality Report",
+            "type": "DOTS",
+        },
+        {"code": "mdrtb.dq.missingtb03", "value": "MISSING TB-03", "type": "DOTS"},
+        {"code": "mdrtb.tb07u", "value": "TB-07u", "type": "MDR"},
+        {"code": "mdrtb.tb08Fast", "value": "TB-08u", "type": "MDR"},
+        {"code": "mdrtb.tb03u", "value": "TB-03u", "type": "MDR"},
+        {"code": "mdrtb.tb03uExportSingleLine", "value": "TB-03u", "type": "MDR"},
+        {"code": "mdrtb.dq.title", "value": "DOTS Data Quality Report", "type": "MDR"},
+        {"code": "mdrtb.dq.missingtb03u", "value": "MISSING TB03u", "type": "MDR"},
+        {"code": "mdrtb.patientLists", "value": "Patient List", "type": "MDR"},
     ]
     messages = []
     for report in reports:
-        if report['type'] == type.upper():
+        if report["type"] == type.upper():
             message = mu.get_global_msgs(report["code"], locale=locale)
             value = report["value"]
             messages.append({"report_name": message, "value": value})
@@ -343,6 +347,10 @@ def get_report_name(key, locale):
         "form8results": mu.get_global_msgs("mdrtb.form8Parameters", locale=locale),
         "dotsdqresults": mu.get_global_msgs("mdrtb.dotsdq.title", locale=locale),
         "mdrdqresults": mu.get_global_msgs("mdrtb.dq.title", locale=locale),
+        "adverseeventsregister": mu.get_global_msgs(
+            "mdrtb.pv.register.title", locale=locale
+        ),
+        "quarterlyae": mu.get_global_msgs("mdrtb.pv.qtrReportTitle", locale=locale),
     }
 
     return report_map[key]
@@ -351,3 +359,7 @@ def get_report_name(key, locale):
 def string_to_html(html_string):
     html_doc = BeautifulSoup(html_string, "html.parser")
     return str(html_doc)
+
+
+def get_date_time_now():
+    return  datetime.now().isoformat()

@@ -153,6 +153,16 @@ urlpatterns = [
     path("tb07uresults", views.render_tb07u_report, name="tb07uresults"),
     path("dotsdqresults", views.render_dotsdq_report, name="dotsdqresults"),
     path("mdrdqresults", views.render_mdrdq_report, name="mdrdqresults"),
+    path(
+        "adverseeventsregister",
+        views.render_adverse_events_register_report,
+        name="adverseeventsregister",
+    ),
+    path(
+        "quarterlyae",
+        views.render_quaterly_summary_ae_report,
+        name="quarterlyae",
+    ),
     path("<str:type>/closedreports", views.render_closed_reports, name="closedreports"),
     path(
         "viewclosedreport/<str:uuid>",
