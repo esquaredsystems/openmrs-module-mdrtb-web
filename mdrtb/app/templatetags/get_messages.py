@@ -3,6 +3,15 @@ from utilities import metadata_util as mu
 from datetime import datetime
 
 
+@register.simple_tag
+def get_message_with_params(message_code, locale, default=None, *args):
+    if locale == "en":
+        value = mu.get_global_msgs(message_code, default=default)
+    else:
+        value = mu.get_global_msgs(message_code, locale=locale, default=default)
+    return value.format(*args)
+
+
 @register.filter
 def get_message(message_code, locale, default=None):
     if locale == "en":
