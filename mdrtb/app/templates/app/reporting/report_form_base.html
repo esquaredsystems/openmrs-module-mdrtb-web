@@ -13,14 +13,27 @@
             <label class="input-label w-1/6" for="year">{{"mdrtb.year"|get_message:request.session.locale}}</label>
             <input required type="text" class="input form-control" name="year" size="4" id="year">
         </div>
-        <div class="input-container">
-            <label class="input-label w-1/6" for="month">{{"mdrtb.month"|get_message:request.session.locale}}</label>
-            <select name="month" id="month" class="input form-control">
-                <option value="">Select</option>
-                {% for month in months %}
-                <option value="{{month.value}}">{{month.name}}</option>
-                {% endfor %}
-            </select>
+        <div class="flex items-center space-x-4">
+            <div class="input-container">
+                <label style="width: 43%;" class="input-label" for="month">Start
+                    {{"mdrtb.month"|get_message:request.session.locale}}</label>
+                <select name="month" id="month" class="input form-control">
+                    <option value="">Select</option>
+                    {% for month in months %}
+                    <option value="{{month.value}}">{{month.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="input-container">
+                <label style="width: 43%;" class="input-label" for="endmonth">End
+                    {{"mdrtb.month"|get_message:request.session.locale}}</label>
+                <select name="endmonth" id="endmonth" class="input form-control">
+                    <option value="">Select</option>
+                    {% for month in months %}
+                    <option value="{{month.value}}">{{month.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
         <div class="input-container">
             <label class="input-label w-1/6"
@@ -64,6 +77,7 @@
     $('#region-select').prop('required', true)
 
     $('#month').change((e) => {
+        $("#endmonth").val(e.target.value)
         if (e.target.value != '') {
             $("input[name='quarter']").prop('disabled', true)
             $("input[name='quarter']").prop('title', 'Quarter cannot be selected with month')
@@ -77,9 +91,11 @@
 
         if (e.target.value != '') {
             $('#month').prop('disabled', true)
+            $('#endmonth').prop('disabled', true)
             $('#month').prop('title', 'Month cannot be selected with quarter')
         } else {
             $('#month').prop('disabled', false)
+            $('#endmonth').prop('disabled', false)
             $('#month').prop('title', '')
         }
     })

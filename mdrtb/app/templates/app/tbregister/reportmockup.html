@@ -1,16 +1,120 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'app/base/base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css"
-        integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
-</head>
+{% block content %}
+<div class="mx-auto w-2/4">
+    <form target="_blank" id="report_form" action="" method="post" class="flex flex-col space-y-6">
+        {% csrf_token %}
+        <h2 class="page-title">{{title}}</h2>
+        <div>
+        </div>
+        <div class="input-container">
+            <label class="input-label w-1/6" for="year">{{"mdrtb.year"|get_message:'en'}}</label>
+            <input required type="text" class="input form-control" name="year" size="4" id="year">
+        </div>
+        <div class="flex items-center justify-start space-x-4">
+            <div class="input-container">
+                <label style="width: 43%;" class="input-label" for="month">Start
+                    {{"mdrtb.month"|get_message:'en'}}</label>
+                <select name="month" id="month" class="input form-control">
+                    <option value="">Select</option>
+                    {% for month in months %}
+                    <option value="{{month.value}}">{{month.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="input-container">
+                <label style="width: 43%;" class="input-label" for="endmonth">End
+                    {{"mdrtb.month"|get_message:'en'}}</label>
+                <select name="endmonth" id="endmonth" class="input form-control">
+                    <option value="">Select</option>
+                    {% for month in months %}
+                    <option value="{{month.value}}">{{month.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="input-container">
+            <label class="input-label w-1/6" for="quarter">{{"mdrtb.quarter"|get_message:'en'}}</label>
 
-<body>
-    {{date|iso_to_normal_date}}
-</body>
+            <div class="flex items-center w-full space-x-4">
+                <div class="space-x-2 flex items-center">
+                    <label for="">Select</label>
+                    <input checked type="radio" name="quarter" id="quarter" class="radio-input" value="">
+                </div>
+                {% for quarter in quarters %}
+                <div class="space-x-2 flex items-center">
+                    <label for="quarter">{{quarter}}</label>
+                    <input type="radio" name="quarter" class="radio-input" value="{{quarter}}">
+                </div>
+                {% endfor %}
 
-</html>
+            </div>
+
+
+
+        </div>
+        <div class="flex-center space-x-4 mt-4">
+            <button type="submit" id="submitBtn"
+                class="button-primary w-1/5">{{'general.submit'|get_message_openMRS:'en'}}</button>
+
+            <a href="/" class="cancel-button">
+                {{'general.cancel'|get_message_openMRS:'en'}}
+            </a>
+        </div>
+
+    </form>
+</div>
+<script type="text/javascript">
+
+
+
+    let path = window.location.pathname.split('/')
+    let reportName = path[path.length - 1]
+    if (reportName === "dotsdqresults" || reportName === "mdrdqresults") {
+        $("#month").prop("required", true)
+    }
+
+    $('#region-select').prop('required', true)
+
+    $('#month').change((e) => {
+        $("#endmonth").val(e.target.value)
+        if (e.target.value != '') {
+            $("input[name='quarter']").prop('disabled', true)
+            $("input[name='quarter']").prop('title', 'Quarter cannot be selected with month')
+        } else {
+            $("input[name='quarter']").prop('disabled', false)
+            $("input[name='quarter']").prop('title', '')
+        }
+    })
+    $("input[name='quarter']").change((e) => {
+
+
+        if (e.target.value != '') {
+            $('#month').prop('disabled', true)
+            $('#endmonth').prop('disabled', true)
+            $('#month').prop('title', 'Month cannot be selected with quarter')
+        } else {
+            $('#month').prop('disabled', false)
+            $('#endmonth').prop('disabled', false)
+            $('#month').prop('title', '')
+        }
+    })
+    const disableSubmit = () => {
+        $('#submitBtn').prop('disabled', true)
+        $('#submitBtn').removeClass('button-primary')
+        $('#submitBtn').html(`
+        <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
+                colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+            </lord-icon>
+
+        
+        `)
+
+    }
+
+
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</script>
+
+{% endblock %}

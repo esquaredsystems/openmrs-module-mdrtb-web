@@ -42,7 +42,12 @@ def check_privileges(req, privileges_required):
 
 def index(req):
     # This is a test function
-    context = {"date": util.get_date_time_now()}
+    context = {
+        "title": "TB03 parameteres",
+        "months": util.get_months(),
+        "quarters": util.get_quarters(),
+        # "target": target,
+    }
 
     return render(req, "app/tbregister/reportmockup.html", context=context)
 
@@ -1660,6 +1665,7 @@ def render_report_form(req, target):
     req.session["redirect_url"] = req.META.get("HTTP_REFERER")
     if req.method == "POST":
         month = req.POST.get("month")
+        end_month = req.POST.get("endmonth")
 
         quarter = req.POST.get("quarter")
 
@@ -1678,7 +1684,7 @@ def render_report_form(req, target):
         year = req.POST.get("year")
         url = f"/{target}?year={year}&location={location}"
         if month:
-            url = f"/{target}?year={year}&month={month}&location={location}"
+            url = f"/{target}?year={year}&month={month}&month2={endmonth}location={location}"
 
         elif quarter:
             url = f"/{target}?year={year}&quarter={quarter}&location={location}"
@@ -1758,6 +1764,7 @@ def render_tb03_report(req):
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER")
         month = req.GET.get("month", None)
+        end_month = req.GET.get("month2", None)
 
         quarter = req.GET.get("quarter", None)
 
@@ -1769,6 +1776,7 @@ def render_tb03_report(req):
 
         if month:
             params["month"] = month
+            params["month2"] = end_month
 
         elif quarter:
             params["quarter"] = quarter
@@ -1803,6 +1811,7 @@ def render_tb03_single_report(req):
 
     try:
         month = req.GET.get("month")
+        end_month = req.GET.get("month2", None)
 
         quarter = req.GET.get("quarter")
 
@@ -1814,6 +1823,7 @@ def render_tb03_single_report(req):
 
         if month:
             params["month"] = month
+            params["month2"] = end_month
 
         elif quarter:
             params["quarter"] = quarter
@@ -1845,7 +1855,7 @@ def render_tb03u_single_report(req):
 
     try:
         month = req.GET.get("month")
-
+        end_month = req.GET.get("month2", None)
         quarter = req.GET.get("quarter")
 
         location = req.GET.get("location")
@@ -1856,6 +1866,7 @@ def render_tb03u_single_report(req):
 
         if month:
             params["month"] = month
+            params["month2"] = end_month
 
         elif quarter:
             params["quarter"] = quarter
@@ -1887,6 +1898,7 @@ def render_tb03u_report(req):
 
     try:
         month = req.GET.get("month")
+        end_month = req.GET.get("month2", None)
 
         quarter = req.GET.get("quarter")
 
@@ -1898,6 +1910,7 @@ def render_tb03u_report(req):
 
         if month:
             params["month"] = month
+            params["month2"] = end_month
 
         elif quarter:
             params["quarter"] = quarter
@@ -1929,6 +1942,7 @@ def render_form89_report(req):
 
     try:
         month = req.GET.get("month")
+        end_month = req.GET.get("month2", None)
 
         quarter = req.GET.get("quarter")
 
@@ -1940,6 +1954,7 @@ def render_form89_report(req):
 
         if month:
             params["month"] = month
+            params["month2"] = end_month
 
         elif quarter:
             params["quarter"] = quarter
@@ -1975,6 +1990,7 @@ def render_tb08_report(req):
         context = {"title": "TB08 Report"}
 
         month = req.GET.get("month")
+        end_month = req.GET.get("month2", None)
 
         quarter = req.GET.get("quarter")
 
@@ -1986,6 +2002,7 @@ def render_tb08_report(req):
 
         if month:
             params["month"] = month
+            params["month2"] = end_month
 
         elif quarter:
             params["quarter"] = quarter
@@ -2024,6 +2041,7 @@ def render_tb08u_report(req):
         context = {"title": "TB08u Report"}
 
         month = req.GET.get("month")
+        end_month = req.GET.get("month2", None)
 
         quarter = req.GET.get("quarter")
 
@@ -2035,6 +2053,7 @@ def render_tb08u_report(req):
 
         if month:
             params["month"] = month
+            params["month2"] = end_month
 
         elif quarter:
             params["quarter"] = quarter
@@ -2073,6 +2092,7 @@ def render_tb07u_report(req):
         context = {"title": "TB07u Report"}
 
         month = req.GET.get("month")
+        end_month = req.GET.get("month2", None)
 
         quarter = req.GET.get("quarter")
 
@@ -2084,6 +2104,7 @@ def render_tb07u_report(req):
 
         if month:
             params["month"] = month
+            params["month2"] = end_month
 
         elif quarter:
             params["quarter"] = quarter
@@ -2122,6 +2143,7 @@ def render_tb07_report(req):
         context = {"title": "TB07 Report"}
 
         month = req.GET.get("month")
+        end_month = req.GET.get("month2", None)
 
         quarter = req.GET.get("quarter")
 
@@ -2132,6 +2154,7 @@ def render_tb07_report(req):
         params = {"year": year, "location": location}
 
         if month:
+            params["month2"] = end_month
             params["month"] = month
 
         elif quarter:
@@ -2165,6 +2188,7 @@ def render_form8_report(req):
         context = {"title": "Form8 Report"}
 
         month = req.GET.get("month")
+        end_month = req.GET.get("month2", None)
 
         quarter = req.GET.get("quarter")
 
@@ -2176,6 +2200,7 @@ def render_form8_report(req):
 
         if month:
             params["month"] = month
+            params["month2"] = end_month
 
         elif quarter:
             params["quarter"] = quarter
@@ -2208,6 +2233,7 @@ def render_missing_tb03_report(req):
         context = {"title": "Missing TB03 Report"}
 
         month = req.GET.get("month")
+        end_month = req.GET.get("month2", None)
 
         quarter = req.GET.get("quarter")
 
@@ -2219,6 +2245,7 @@ def render_missing_tb03_report(req):
 
         if month:
             params["month"] = month
+            params["month2"] = end_month
 
         elif quarter:
             params["quarter"] = quarter
@@ -2258,6 +2285,7 @@ def render_missing_tb03u_report(req):
         context = {"title": "Missing TB03u Report"}
 
         month = req.GET.get("month")
+        end_month = req.GET.get("month2", None)
 
         quarter = req.GET.get("quarter")
 
@@ -2269,6 +2297,7 @@ def render_missing_tb03u_report(req):
 
         if month:
             params["month"] = month
+            params["month2"] = end_month
 
         elif quarter:
             params["quarter"] = quarter
@@ -2308,6 +2337,7 @@ def render_dotsdq_report(req):
         context = {"title": "Dots Data Quality Report"}
 
         month = req.GET.get("month")
+        end_month = req.GET.get("month2", None)
 
         quarter = req.GET.get("quarter")
 
@@ -2318,7 +2348,8 @@ def render_dotsdq_report(req):
         params = {"year": year, "location": location, "type": "dots"}
 
         if month:
-            params["month"] = month
+            params["month"] = 
+            params["month2"] = end_month
 
         elif quarter:
             params["quarter"] = quarter
@@ -2351,6 +2382,7 @@ def render_mdrdq_report(req):
         context = {"title": "MDRTB Data Quality Report"}
 
         month = req.GET.get("month")
+        end_month = req.GET.get("month2", None)
 
         quarter = req.GET.get("quarter")
 
@@ -2362,6 +2394,7 @@ def render_mdrdq_report(req):
 
         if month:
             params["month"] = month
+            params["month2"] = end_month
 
         elif quarter:
             params["quarter"] = quarter
@@ -2394,6 +2427,7 @@ def render_adverse_events_register_report(req):
         context = {"title": "Adverse Events Register Report"}
 
         month = req.GET.get("month")
+        end_month = req.GET.get("month2", None)
 
         quarter = req.GET.get("quarter")
 
@@ -2405,6 +2439,7 @@ def render_adverse_events_register_report(req):
 
         if month:
             params["month"] = month
+            params["month2"] = end_month
 
         elif quarter:
             params["quarter"] = quarter
@@ -2445,6 +2480,7 @@ def render_quaterly_summary_ae_report(req):
         context = {"title": "Adverse Events Register Report"}
 
         month = req.GET.get("month")
+        end_month = req.GET.get("month2", None)
 
         quarter = req.GET.get("quarter")
 
@@ -2456,6 +2492,7 @@ def render_quaterly_summary_ae_report(req):
 
         if month:
             params["month"] = month
+            params["month2"] = end_month
 
         elif quarter:
             params["quarter"] = quarter
