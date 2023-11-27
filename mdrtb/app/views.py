@@ -2348,7 +2348,7 @@ def render_dotsdq_report(req):
         params = {"year": year, "location": location, "type": "dots"}
 
         if month:
-            params["month"] = 
+            params["month"] = month
             params["month2"] = end_month
 
         elif quarter:
