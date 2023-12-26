@@ -134,6 +134,13 @@ def create_patient(req, data):
     try:
         status, response = ru.post(req, "patient", patient_info)
         if status:
+            location_enrolled_in = data.get(
+                "facility", data.get("district", data.get("region", None))
+            )
+            if location_enrolled_in:
+                req.session["location_enrolled_in"] = mu.get_location(
+                    req, location_enrolled_in, "FULL"
+                )
             return status, response
     except Exception as e:
         raise Exception(str(e))
@@ -221,7 +228,10 @@ def enroll_patient_in_program(req, patientid, data):
             "patient": patientid,
             "program": data["program"],
             "dateEnrolled": data["enrollmentdate"],
-            "location": data.get("facility", data.get("district", None)),
+            "location": data.get(
+                "facility",
+                data.get("district", req.session.get("location_enrolled_in")["uuid"]),
+            ),
             "dateCompleted": data["completiondate"]
             if not data["completiondate"] == ""
             else None,
@@ -246,9 +256,7 @@ def enroll_patient_in_program(req, patientid, data):
                 "location": data.get("facility", data.get("district", None)),
             }
 
-            ru.post(
-                req, f"patient/{patientid}/identifier", patient_identifier
-            )
+            ru.post(req, f"patient/{patientid}/identifier", patient_identifier)
         status, response = ru.post(req, "programenrollment", program_body)
         if status:
             return response["uuid"]

@@ -41,13 +41,19 @@ def check_privileges(req, privileges_required):
 
 
 def index(req):
+    # TODO: Follow this dictonary format for fallback msgs
+    translations = {"mdrtb.pv": {"tj": None, "ru": None, "en": "PV"}}
+    translation = translations.get("mdrtb.pv")
+    localTrans = (
+        translation.get("tj")
+        if translation.get("tj") is not None
+        else translation.get("ru")
+        if translation.get("ru") is not None
+        else translation.get("en")
+    )
+
     # This is a test function
-    context = {
-        "title": "TB03 parameteres",
-        "months": util.get_months(),
-        "quarters": util.get_quarters(),
-        # "target": target,
-    }
+    context = {"title": "TB03 parameteres", "translation": localTrans}
 
     return render(req, "app/tbregister/reportmockup.html", context=context)
 
@@ -348,6 +354,9 @@ def render_enroll_in_dots_program(req, uuid):
             return redirect("dotsprogramenroll", uuid=uuid)
 
     try:
+        enrolled_location = req.session.get("location_enrolled_in", None)
+        context["enrolled_location"] = enrolled_location
+
         context.update(check_privileges(req, privileges_required))
 
         if not context["add_patient_programs_privilege"]:

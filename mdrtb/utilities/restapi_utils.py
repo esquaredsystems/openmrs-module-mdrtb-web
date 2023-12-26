@@ -164,6 +164,7 @@ def post(req, endpoint, data):
         url=REST_API_BASE_URL + endpoint, headers=get_auth_headers(req), json=data
     )
     logger.info(f"'Making POST call to /{endpoint}'")
+    response.raise_for_status()
     if response.ok:
         data = response.json()
         logger.info(f"POST Request successful, status: {response.status_code}")
@@ -182,8 +183,8 @@ def post(req, endpoint, data):
             if detailed_message
             else short_error_message
         )
-        response.raise_for_status()
         raise Exception(error_message)
+    
 
 
 @handle_rest_exceptions
