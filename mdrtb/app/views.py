@@ -15,6 +15,8 @@ from django.contrib import messages
 from resources.enums.mdrtbConcepts import Concepts
 from resources.enums.privileges import Privileges
 from resources.enums.constants import Constants
+import zlib
+import pickle
 
 logger = logging.getLogger("django")
 
@@ -41,19 +43,8 @@ def check_privileges(req, privileges_required):
 
 
 def index(req):
-    # TODO: Follow this dictonary format for fallback msgs
-    translations = {"mdrtb.pv": {"tj": None, "ru": None, "en": "PV"}}
-    translation = translations.get("mdrtb.pv")
-    localTrans = (
-        translation.get("tj")
-        if translation.get("tj") is not None
-        else translation.get("ru")
-        if translation.get("ru") is not None
-        else translation.get("en")
-    )
-
     # This is a test function
-    context = {"title": "TB03 parameteres", "translation": localTrans}
+    context = {"title": "TB03 parameteres"}
 
     return render(req, "app/tbregister/reportmockup.html", context=context)
 
