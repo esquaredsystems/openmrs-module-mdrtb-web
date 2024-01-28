@@ -15,13 +15,9 @@ from django.contrib import messages
 from resources.enums.mdrtbConcepts import Concepts
 from resources.enums.privileges import Privileges
 from resources.enums.constants import Constants
-import zlib
-import pickle
+
 
 logger = logging.getLogger("django")
-
-
-# start memcache if u haven't
 
 
 def check_if_session_alive(req):
@@ -1681,13 +1677,18 @@ def render_report_form(req, target):
 
                 break
 
+        url = f"/{target}?"
         year = req.POST.get("year")
-        url = f"/{target}?year={year}&location={location}"
+        if year:
+            url += f"year={year}&"
+        if location:
+            url += f"location={location}&"
         if month:
-            url = f"/{target}?year={year}&month={month}&month2={endmonth}location={location}"
-
+            url += f"month={month}&month2={end_month}&"
         elif quarter:
-            url = f"/{target}?year={year}&quarter={quarter}&location={location}"
+            url += f"quarter={quarter}&"
+        url += "1=1"
+        print(url)
         return redirect(url)
 
     return render(req, "app/reporting/report_form_base.html", context)

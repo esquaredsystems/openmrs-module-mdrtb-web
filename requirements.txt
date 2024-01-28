@@ -29,3 +29,4 @@ tzdata==2022.2
 urllib3==1.26.12
 whitenoise
 django-cors-headers==4.2.0
+bs4
