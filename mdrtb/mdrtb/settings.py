@@ -130,8 +130,7 @@ USE_TZ = True
 STATIC_ROOT = BASE_DIR / "static"
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [
-    BASE_DIR / "app/static",
-    BASE_DIR / "theme/node_modules/tw-elements/dist/js/",
+    BASE_DIR / "app/static"
 ]
 
 # Default primary key field type

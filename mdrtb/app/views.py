@@ -1687,7 +1687,7 @@ def render_report_form(req, target):
             url += f"month={month}&month2={end_month}&"
         elif quarter:
             url += f"quarter={quarter}&"
-        url += "1=1"
+        url += "a=1"
         print(url)
         return redirect(url)
 
@@ -2164,7 +2164,12 @@ def render_tb07_report(req):
         status, response = ru.get(req, "mdrtb/tb07report", params)
 
         if status:
-            context["location"] = mu.get_location(req, location)
+            # This line has to be added to every reporting view (render_<report_name>_report)
+            # Not to the form views which has report_form in the end they are for generating report from form
+            # This will default the location to Country if the location is null
+            context["location"] = Constants.COUNTRY.value
+            if location:
+                context["location"] = mu.get_location(req, location)
             context["reporttime"] = datetime.datetime.today().strftime("%Y-%m-%d")
 
             context["table1"] = response["results"][0]
@@ -2175,7 +2180,6 @@ def render_tb07_report(req):
         return redirect("searchPatientsView")
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect(req.session["redirect_url"])
 
 
