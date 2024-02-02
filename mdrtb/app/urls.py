@@ -204,7 +204,7 @@ urlpatterns = [
     ),
     path(
         "commonlab/labtest/<str:uuid>/manageattributes",
-        views.render_manageAttributes,
+        views.render_manage_attributes,
         name="manageattr",
     ),
     path(
@@ -214,7 +214,7 @@ urlpatterns = [
     ),
     path(
         "commonlab/labtest/<str:testid>/editattributes/<str:attrid>",
-        views.render_editAttribute,
+        views.render_edit_attribute,
         name="editattr",
     ),
     path(

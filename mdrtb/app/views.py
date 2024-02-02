@@ -16,7 +16,6 @@ from resources.enums.mdrtbConcepts import Concepts
 from resources.enums.privileges import Privileges
 from resources.enums.constants import Constants
 
-
 logger = logging.getLogger("django")
 
 
@@ -24,13 +23,11 @@ def check_if_session_alive(req):
     session_id = req.session.get("session_id")
     if not session_id:
         return False
-
     return True
 
 
 def check_privileges(req, privileges_required):
     perms = {}
-
     for privilege in privileges_required:
         perms[privilege.name.lower() + "_privilege"] = mu.check_if_user_has_privilege(
             req, privilege.value, req.session["logged_user"]["user"]["privileges"]
@@ -41,30 +38,22 @@ def check_privileges(req, privileges_required):
 def index(req):
     # This is a test function
     context = {"title": "TB03 parameteres"}
-
     return render(req, "app/tbregister/reportmockup.html", context=context)
 
 
 def get_locations(req):
     """
-
     This function will fetch the locations in a levels hierarchy
     """
-
     if check_if_session_alive(req):
         try:
             locations = lu.create_location_hierarchy(req)
-
             if locations:
                 logger.info("Locations fetched successfully")
-
                 return JsonResponse(locations, safe=False)
-
         except Exception as e:
             log_and_show_error(e, req)
-
             raise Exception(str(e))
-
     else:
         return JsonResponse(data={})
 
@@ -86,7 +75,6 @@ def change_locale(req, locale):
             f"user/{logged_in_user_uuid}",
             {"userProperties": user_properties},
         )
-
         return redirect(req.session["redirect_url"])
     except Exception as e:
         log_and_show_error(e, req)
@@ -96,21 +84,15 @@ def change_locale(req, locale):
 def get_concepts(req, uuid=None):
     if not check_if_session_alive(req):
         return redirect("login")
-
     try:
         url = f"concept/{uuid}" if uuid else "concept"
-
         params = {}
         if "q" in req.GET:
             params["q"] = req.GET["q"]
-
         _, response = ru.get(req, url, parameters=params)
-
     except Exception as e:
         log_and_show_error(e, req)
-
         response = {"error": str(e)}
-
     return JsonResponse(response)
 
 
@@ -118,54 +100,39 @@ def render_login(req):
     if check_if_session_alive(req):
         redirect_page = req.session.get("redirect_url")
         logger.info("Redirecting from login page")
-
         return redirect(redirect_page if redirect_page else "searchPatientsView")
-
     context = {"title": mu.get_global_msgs("auth.login", locale="ru", source="OpenMRS")}
-
     if req.method == "POST":
         username = req.POST.get("username")
-
         password = req.POST.get("password")
-
         try:
             response = ru.initiate_session(req, username, password)
-
             if response:
                 redirect_page = req.session.get("redirect_url")
                 return redirect(
                     redirect_page if redirect_page else "searchPatientsView"
                 )
-
             else:
                 return render(req, "app/tbregister/login.html", context=context)
-
         except Exception as e:
             log_and_show_error(e, req)
             return redirect("login")
-
     else:
         context["title"] = mu.get_global_msgs(
             "auth.login", locale="ru", source="OpenMRS"
         )
-
         return render(req, "app/tbregister/login.html", context=context)
 
 
 def search_patients_query(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
     try:
         q = req.GET["q"]
-
         _, response = ru.get(req, "patient", parameters={"q": q, "v": "full"})
-
     except Exception as e:
         log_and_show_error(e, req)
-
         response = {"error": str(e)}
-
     return JsonResponse(response)
 
 
@@ -173,16 +140,15 @@ def render_search_patients_view(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = (
-        mu.get_global_msgs(
-            "general.search", locale=req.session["locale"], source="OpenMRS"
-        )
-        + " "
-        + mu.get_global_msgs(
-            "general.patient", locale=req.session["locale"], source="OpenMRS"
-        )
+            mu.get_global_msgs(
+                "general.search", locale=req.session["locale"], source="OpenMRS"
+            )
+            + " "
+            + mu.get_global_msgs(
+        "general.patient", locale=req.session["locale"], source="OpenMRS"
+    )
     )
     context = {"title": title}
-
     privileges_required = [
         Privileges.GET_PATIENTS,
         Privileges.ADD_PATIENTS,
@@ -191,58 +157,40 @@ def render_search_patients_view(req):
     try:
         if "breadcrumbs" in req.session:
             del req.session["breadcrumbs"]
-
         if "current_patient_program_flow" in req.session:
             del req.session["current_patient_program_flow"]
-
-        minSearchCharacters = mu.get_global_properties(req, "minSearchCharacters")
-
-        context["minSearchCharacters"] = minSearchCharacters
-
+        min_search_characters = mu.get_global_properties(req, "minSearchCharacters")
+        context["minSearchCharacters"] = min_search_characters
         context.update(check_privileges(req, privileges_required))
-
         return render(req, "app/tbregister/search_patients.html", context=context)
-
     except Exception as e:
         context["minSearchCharacters"] = 2
         log_and_show_error(e, req)
-
         return render(req, "app/tbregister/search_patients.html", context=context)
 
 
 def render_enroll_patient(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
     title = mu.get_global_msgs("mdrtb.enrollNewPatient", locale=req.session["locale"])
     context = {"title": title}
-
     if req.method == "POST":
         try:
             status, response = pu.create_patient(req, req.POST)
-
             if status:
                 return redirect("dotsprogramenroll", uuid=response["uuid"])
-
         except Exception as e:
             log_and_show_error(e, req)
     try:
         privileges_required = [Privileges.ADD_PATIENTS]
-
         context.update(check_privileges(req, privileges_required))
-
         if not context["add_patients_privilege"]:
             raise Exception("Privileges required: Add Patients")
-
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
         context["identifiertypes"] = mu.get_patient_identifier_types(req)
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
     except Exception as e:
         log_and_show_error(e, req)
-
     finally:
         return render(
             req,
@@ -253,120 +201,91 @@ def render_enroll_patient(req):
 
 def render_enrolled_programs(req, uuid):
     privileges_required = [Privileges.VIEW_PATIENT_PROGRAMS]
-
     if not check_if_session_alive(req):
         return redirect("login")
     title = (
-        mu.get_global_msgs(
-            "Program.enrolled", locale=req.session["locale"], source="OpenMRS"
-        )
-        + " "
-        + mu.get_global_msgs(
-            "Program.header", locale=req.session["locale"], source="OpenMRS"
-        )
+            mu.get_global_msgs(
+                "Program.enrolled", locale=req.session["locale"], source="OpenMRS"
+            )
+            + " "
+            + mu.get_global_msgs(
+        "Program.header", locale=req.session["locale"], source="OpenMRS"
+    )
     )
     context = {
         "title": title,
         "uuid": uuid,
         "dots_program": Constants.DOTS_PROGRAM.value,
     }
-
     try:
         context.update(check_privileges(req, privileges_required))
-
         if not context["view_patient_programs_privilege"]:
             raise Exception("Privileges required: View patient programs")
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
         programs = pu.get_enrolled_programs_by_patient(req, uuid)
-
         patient = pu.get_patient(req, uuid)
-
         if patient:
             context["patient"] = patient
-
         if programs:
             context["programs"] = programs
             lab_results = cu.get_lab_test_orders_for_dashboard(req, uuid)
             if lab_results:
                 context["lab_results"] = lab_results
                 context["lab_json"] = json.dumps(lab_results)
-
     except Exception as e:
         log_and_show_error(e, req)
-
     finally:
         return render(req, "app/tbregister/enrolled_programs.html", context=context)
-
         # return redirect(req.session["redirect_url"])
 
 
 def render_enroll_in_dots_program(req, uuid):
     privileges_required = [Privileges.ADD_PATIENT_PROGRAMS]
-
     if not check_if_session_alive(req):
         return redirect("login", permanent=True)
     title = mu.get_global_msgs(
         "Program.add", locale=req.session["locale"], source="OpenMRS"
     )
     context = {"title": title, "uuid": uuid}
-
     if req.method == "POST":
         try:
             patient_program = pu.enroll_patient_in_program(req, uuid, req.POST)
-
             if patient_program:
                 program = Constants(req.POST["program"]).name.replace("_", " ").title()
                 messages.success(
                     req, "Patient Successfully enrolled in {}".format(program)
                 )
-
                 req.session["current_patient_program_flow"] = {
                     "current_patient": pu.get_patient(req, uuid),
                     "current_program": pu.get_enrolled_programs_by_patient(
                         req, uuid, enrollment_id=patient_program
                     ),
                 }
-
                 return redirect("tb03", uuid=uuid)
             else:
                 raise Exception("Couldn't enroll patient in progarm")
-
         except Exception as e:
             log_and_show_error(e, req)
-
             return redirect("dotsprogramenroll", uuid=uuid)
-
     try:
         enrolled_location = req.session.get("location_enrolled_in", None)
         context["enrolled_location"] = enrolled_location
-
         context.update(check_privileges(req, privileges_required))
-
         if not context["add_patient_programs_privilege"]:
             raise Exception("Privileges required: Add patient programs")
-
         program = pu.get_program_by_uuid(req, Constants.DOTS_PROGRAM.value)
-
         if program:
             context["jsonprogram"] = json.dumps(program)
-
             mu.add_url_to_breadcrumb(req, context["title"])
             return render(
                 req, "app/tbregister/dots/enroll_in_dots.html", context=context
             )
-
         else:
             log_and_show_error("Error fetching programs. Please try again later", req)
-
             return redirect("searchPatientsView")
-
     except Exception as e:
         log_and_show_error(e, req)
-
     finally:
         return render(req, "app/tbregister/dots/enroll_in_dots.html", context=context)
 
@@ -377,51 +296,36 @@ def render_enroll_patient_in_mdrtb(req, uuid):
         "mdrtb.enrollment.enrollMdrtb", locale=req.session["locale"]
     )
     context = {"title": title, "uuid": uuid}
-
     if req.method == "POST":
         try:
             patient_program = pu.enroll_patient_in_program(req, uuid, req.POST)
-
             if not patient_program:
                 raise Exception("Error enrolling patient in MDRTB program")
-
             program = Constants(req.POST["program"]).name.replace("_", " ").title()
-
             messages.success(req, "Patient Successfully enrolled in {}".format(program))
-
             req.session["current_patient_program_flow"] = {
                 "current_patient": pu.get_patient(req, uuid),
                 "current_program": pu.get_enrolled_programs_by_patient(
                     req, uuid, enrollment_id=patient_program
                 ),
             }
-
             return redirect("tb03u", uuid=uuid)
-
         except Exception as e:
             log_and_show_error(e, req)
             return render(
                 req, "app/tbregister/mdr/enroll_in_mdrtb.html", context=context
             )
-
     try:
         context.update(check_privileges(req, privileges_required))
-
         if not context["add_patient_programs_privilege"]:
             raise Exception("Privileges required: Add patient programs")
-
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
         program = pu.get_program_by_uuid(req, Constants.MDRTB_PROGRAM.value)
-
         if program:
             context["jsonprogram"] = json.dumps(program)
-
         else:
             log_and_show_error("Error fetching programs. Please try again later", req)
-
             return redirect("searchPatientsView")
-
     except Exception as e:
         log_and_show_error(e, req)
     finally:
@@ -434,23 +338,18 @@ def render_edit_dots_program(req, uuid, programid):
         Privileges.EDIT_DOTS_MDR_DATA,
     ]
     title = mu.get_global_msgs("mdrtb.editProgram", locale=req.session["locale"])
-
     context = {"title": title, "uuid": uuid, "state": "edit"}
     if not check_if_session_alive(req):
         return redirect("login")
-
     if req.method == "POST":
         body = {
             "dateEnrolled": req.POST.get("enrollmentdate"),
             "location": req.POST.get("facility") or req.POST.get("district"),
             "dateCompleted": req.POST.get("completiondate"),
         }
-
         body = {key: value for key, value in body.items() if value}
-
         try:
             status, response = ru.post(req, f"programenrollment/{programid}", body)
-
             if status:
                 req.session["current_location"] = {
                     "uuid": response["location"]["uuid"],
@@ -458,36 +357,24 @@ def render_edit_dots_program(req, uuid, programid):
                         "name", response["location"]["display"]
                     ),
                 }
-
                 req.session["current_date_enrolled"] = response["dateEnrolled"]
-
                 req.session["current_patient_program"] = response["uuid"]
-
                 return redirect("enrolledprograms", uuid=uuid)
-
         except Exception as e:
             log_and_show_error(e, req)
             return render(
                 req, "app/tbregister/dots/enroll_in_dots.html", context=context
             )
-
     try:
         context.update(check_privileges(req, privileges_required))
-
         if not context["edit_patient_programs_privilege"]:
             raise Exception("Privileges required: Edit patient programs")
-
         enrolled_program = pu.get_enrolled_program_by_uuid(req, programid)
-
         context["enrolled_program"] = enrolled_program
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         return render(req, "app/tbregister/dots/enroll_in_dots.html", context=context)
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect("editdotsprogram", uuid=uuid, programid=programid)
 
 
@@ -496,25 +383,19 @@ def render_edit_mdrtb_program(req, uuid, programid):
         Privileges.EDIT_PATIENT_PROGRAMS,
         Privileges.EDIT_DOTS_MDR_DATA,
     ]
-
     if not check_if_session_alive(req):
         return redirect("login")
-
     title = mu.get_global_msgs("mdrtb.editProgram", locale=req.session["locale"])
     context = {"title": title, "uuid": uuid, "state": "edit"}
-
     if req.method == "POST":
         body = {
             "dateEnrolled": req.POST.get("enrollmentdate"),
             "location": req.POST.get("facility") or req.POST.get("district"),
             "dateCompleted": req.POST.get("completiondate"),
         }
-
         body = {key: value for key, value in body.items() if value}
-
         try:
             status, response = ru.post(req, f"programenrollment/{programid}", body)
-
             if status:
                 req.session["current_location"] = {
                     "uuid": response["location"]["uuid"],
@@ -522,36 +403,24 @@ def render_edit_mdrtb_program(req, uuid, programid):
                         "name", response["location"]["display"]
                     ),
                 }
-
                 req.session["current_date_enrolled"] = response["dateEnrolled"]
-
                 req.session["current_patient_program"] = response["uuid"]
-
                 return redirect("enrolledprograms", uuid=uuid)
-
         except Exception as e:
             log_and_show_error(e, req)
             return render(
                 req, "app/tbregister/mdr/enroll_in_mdrtb.html", context=context
             )
-
     try:
         context.update(check_privileges(req, privileges_required))
-
         if not context["edit_patient_programs_privilege"]:
             raise Exception("Privileges required: Edit patient programs")
-
         enrolled_program = pu.get_enrolled_program_by_uuid(req, programid)
-
         context["enrolled_program"] = enrolled_program
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         return render(req, "app/tbregister/mdr/enroll_in_mdrtb.html", context=context)
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect("editmdrtbprogram", uuid=uuid, programid=programid)
 
 
@@ -566,33 +435,22 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
         Privileges.ADD_PATIENT_PROGRAMS,
         Privileges.VIEW_COMMONLABTEST_RESULTS,
     ]
-
     if not check_if_session_alive(req):
         return redirect("login")
-
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
     query_params = {
         key: value[0] if len(value) == 1 else value for key, value in req.GET.lists()
     }
-
     req.session["redirect_query_params"] = query_params
-
     program = req.GET["program"]
     title = mu.get_global_msgs("mdrtb.patientDashboard", locale=req.session["locale"])
-
     context = {"uuid": uuid, "title": title}
-
     try:
         context.update(check_privileges(req, privileges_required))
-
         if not context["view_encounters_privilege"]:
             raise Exception("Privileges required: View Encounters")
-
         mu.add_url_to_breadcrumb(req, context["title"], query_params=query_params)
-
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
         if mdrtb:
             context["mdrtb"] = True
         (
@@ -605,34 +463,25 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
         ) = pu.get_patient_dashboard_info(
             req, uuid, program, is_mdrtb=mdrtb is not None, get_lab_data=True
         )
-
         req.session["current_patient_program_flow"] = {
             "current_patient": patient,
             "current_program": program_info,
         }
-
         if lab_results:
             context["lab_results"] = lab_results
             context["lab_json"] = json.dumps(lab_results)
-
         if forms:
             context["forms"] = forms
-
         if transfer_out:
             context["transfer_out"] = transfer_out[0]
-
         if patient and program:
             context["patient"] = patient
-
             context["program"] = program_info
             context["treatment_outcome"] = treatment_outcome
-
             context["mdrEnrolled"] = pu.check_if_patient_enrolled_in_mdrtb(req, uuid)
         else:
             log_and_show_error("Error fetching patient info", req)
-
             return redirect(req.session["redirect_url"])
-
     except Exception as e:
         log_and_show_error(e, req)
     finally:
@@ -718,9 +567,9 @@ def render_edit_tb03_form(req, uuid, formid):
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         title = (
-            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
-            + " "
-            + mu.get_global_msgs("mdrtb.tb03", locale=req.session["locale"])
+                mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+                + " "
+                + mu.get_global_msgs("mdrtb.tb03", locale=req.session["locale"])
         )
         context = {
             "title": title,
@@ -862,9 +711,9 @@ def render_edit_tb03u_form(req, uuid, formid):
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         title = (
-            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
-            + " "
-            + mu.get_global_msgs("mdrtb.tb03u", locale=req.session["locale"])
+                mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+                + " "
+                + mu.get_global_msgs("mdrtb.tb03u", locale=req.session["locale"])
         )
         context = {
             "title": title,
@@ -1018,9 +867,9 @@ def render_edit_adverse_events_form(req, patientid, formid):
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         title = (
-            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
-            + " "
-            + mu.get_global_msgs("mdrtb.pv.aeForm", locale=req.session["locale"])
+                mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+                + " "
+                + mu.get_global_msgs("mdrtb.pv.aeForm", locale=req.session["locale"])
         )
         context = {
             "title": title,
@@ -1152,9 +1001,9 @@ def render_edit_drug_resistence_form(req, patientid, formid):
 
     try:
         title = (
-            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
-            + " "
-            + mu.get_global_msgs("mdrtb.drdt", locale=req.session["locale"])
+                mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+                + " "
+                + mu.get_global_msgs("mdrtb.drdt", locale=req.session["locale"])
         )
         context = {"title": title, "patient_id": patientid, "state": "edit"}
 
@@ -1271,9 +1120,9 @@ def render_edit_regimen_form(req, patientid, formid):
 
         form = fu.get_regimen_by_uuid(req, formid)
         title = (
-            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
-            + " "
-            + mu.get_global_msgs("mdrtb.pv.regimenForm", locale=req.session["locale"])
+                mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+                + " "
+                + mu.get_global_msgs("mdrtb.pv.regimenForm", locale=req.session["locale"])
         )
         context = {
             "title": title,
@@ -1359,11 +1208,11 @@ def render_form_89(req, uuid):
 
         concepts = fu.get_form_concepts(form89_concepts, req)
 
-        site_of_TB = fu.get_patient_site_of_TB(req, uuid)
+        site_of_tb = fu.get_patient_site_of_TB(req, uuid)
 
         context["concepts"] = concepts
 
-        context["site_of_TB"] = site_of_TB
+        context["site_of_TB"] = site_of_tb
 
         mu.add_url_to_breadcrumb(req, context["title"])
 
@@ -1397,9 +1246,9 @@ def render_edit_form_89(req, uuid, formid):
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         title = (
-            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
-            + " "
-            + mu.get_global_msgs("mdrtb.form89", locale=req.session["locale"])
+                mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+                + " "
+                + mu.get_global_msgs("mdrtb.form89", locale=req.session["locale"])
         )
         context = {
             "title": title,
@@ -1606,9 +1455,9 @@ def render_edit_transferout_form(req, patientuuid, formid):
 
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         title = (
-            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
-            + " "
-            + mu.get_global_msgs("mdrtb.transferOut", locale=req.session["locale"])
+                mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+                + " "
+                + mu.get_global_msgs("mdrtb.transferOut", locale=req.session["locale"])
         )
         context = {
             "title": title,
@@ -1644,9 +1493,25 @@ def render_delete_transferout_form(req, formid):
         return redirect(req.session["redirect_url"])
 
 
-# Reporting Views
+def render_logout(req):
+    try:
+        status, _ = ru.delete(req, "session")
+        if status:
+            ru.clear_session(req)
+            return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+        return redirect(req.session.get("redirect_url"))
 
 
+def log_and_show_error(error, req):
+    messages.error(req, error)
+    logger.error(error, exc_info=True)
+
+
+#########################
+# Reporting Views START #
+#########################
 def render_report_form(req, target):
     if not check_if_session_alive(req):
         return redirect("login")
@@ -1657,26 +1522,18 @@ def render_report_form(req, target):
         "quarters": util.get_quarters(),
         "target": target,
     }
-
     req.session["redirect_url"] = req.META.get("HTTP_REFERER")
     if req.method == "POST":
         month = req.POST.get("month")
         end_month = req.POST.get("endmonth")
-
         quarter = req.POST.get("quarter")
-
         keys_to_check = ["facility", "district", "region"]
-
         location = None
-
         for key in keys_to_check:
             value = req.POST.get(key)
-
             if value and len(value) > 0:
                 location = value
-
                 break
-
         url = f"/{target}?"
         year = req.POST.get("year")
         if year:
@@ -1690,7 +1547,6 @@ def render_report_form(req, target):
         url += "a=1"
         print(url)
         return redirect(url)
-
     return render(req, "app/reporting/report_form_base.html", context)
 
 
@@ -1703,87 +1559,57 @@ def render_patient_list(req):
         "quarters": util.get_quarters(),
         "title": title,
     }
-
     try:
         if req.method == "POST":
             month = req.POST.get("month")
-
             quarter = req.POST.get("quarter")
-
             keys_to_check = ["facility", "district", "region"]
-
             location = None
-
             for key in keys_to_check:
                 value = req.POST.get(key)
-
                 if value and len(value) > 0:
                     location = value
-
                     break
-
             year = req.POST.get("year")
-
             listname = req.POST.get("listname")
-
             params = {"year": year, "listname": listname, "location": location}
-
             if month:
                 params["month"] = month
-
                 context["month"] = month
-
             elif quarter:
                 params["quarter"] = quarter
-
                 context["quarter"] = quarter
-
             status, response = ru.get(req, "mdrtb/patientlist", params)
-
             if status:
                 context["year"] = year
-
                 context["listname"] = util.get_patient_list_options(listname)
-
                 context["location"] = lu.get_location_by_uuid(req, location)["name"]
-
                 context["string_data"] = response["results"][0]["stringData"]
-
                 return render(
                     req, "app/reporting/patientlist_report.html", context=context
                 )
     except Exception as e:
         log_and_show_error(e, req)
         return redirect("/")
-
     return render(req, "app/reporting/patientlist_report_form.html", context=context)
 
 
 def render_tb03_report(req):
     context = {"title": "TB03 Report"}
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER")
         month = req.GET.get("month", None)
         end_month = req.GET.get("month2", None)
-
         quarter = req.GET.get("quarter", None)
-
         location = req.GET.get("location")
-
         year = req.GET.get("year")
-
         params = {"year": year, "location": location}
-
         if month:
             params["month"] = month
             params["month2"] = end_month
-
         elif quarter:
             params["quarter"] = quarter
-
         status, response = ru.get(req, "mdrtb/tb03report", params)
-
         if status:
             context["patientSet"] = [
                 {
@@ -1796,41 +1622,28 @@ def render_tb03_report(req):
                 mu.get_location(req, uuid=location, representation="FULL")
             )
             context["report_date"] = util.get_date_time_now()
-
             return render(req, "app/reporting/tb03_report.html", context)
-
         return redirect("searchPatientsView")
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect("searchPatientsView")
 
 
 def render_tb03_single_report(req):
     context = {"title": "TB03 Report"}
-
     try:
         month = req.GET.get("month")
         end_month = req.GET.get("month2", None)
-
         quarter = req.GET.get("quarter")
-
         location = req.GET.get("location")
-
         year = req.GET.get("year")
-
         params = {"year": year, "location": location}
-
         if month:
             params["month"] = month
             params["month2"] = end_month
-
         elif quarter:
             params["quarter"] = quarter
-
         status, response = ru.get(req, "mdrtb/tb03report", params)
-
         if status:
             context["patientSet"] = [
                 {
@@ -1840,40 +1653,28 @@ def render_tb03_single_report(req):
                 for record in response["results"]
             ]
             context["report_date"] = util.get_date_time_now()
-
             return render(req, "app/reporting/tb03_single_report.html", context)
-
         return redirect("searchPatientsView")
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect("searchPatientsView")
 
 
 def render_tb03u_single_report(req):
     context = {"title": "TB03u Single Report"}
-
     try:
         month = req.GET.get("month")
         end_month = req.GET.get("month2", None)
         quarter = req.GET.get("quarter")
-
         location = req.GET.get("location")
-
         year = req.GET.get("year")
-
         params = {"year": year, "location": location}
-
         if month:
             params["month"] = month
             params["month2"] = end_month
-
         elif quarter:
             params["quarter"] = quarter
-
         status, response = ru.get(req, "mdrtb/tb03ureport", params)
-
         if status:
             context["patientSet"] = [
                 {
@@ -1883,41 +1684,28 @@ def render_tb03u_single_report(req):
                 for record in response["results"]
             ]
             context["report_date"] = util.get_date_time_now()
-
             return render(req, "app/reporting/tb03u_single_report.html", context)
-
         return redirect("searchPatientsView")
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect("searchPatientsView")
 
 
 def render_tb03u_report(req):
     context = {"title": "TB03u Report"}
-
     try:
         month = req.GET.get("month")
         end_month = req.GET.get("month2", None)
-
         quarter = req.GET.get("quarter")
-
         location = req.GET.get("location")
-
         year = req.GET.get("year")
-
         params = {"year": year, "location": location}
-
         if month:
             params["month"] = month
             params["month2"] = end_month
-
         elif quarter:
             params["quarter"] = quarter
-
         status, response = ru.get(req, "mdrtb/tb03ureport", params)
-
         if status:
             context["patientSet"] = [
                 {
@@ -1927,41 +1715,28 @@ def render_tb03u_report(req):
                 for record in response["results"]
             ]
             context["report_date"] = util.get_date_time_now()
-
             return render(req, "app/reporting/tb03u_report.html", context)
-
         return redirect("searchPatientsView")
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect("searchPatientsView")
 
 
 def render_form89_report(req):
     context = {"title": "Form89 Report"}
-
     try:
         month = req.GET.get("month")
         end_month = req.GET.get("month2", None)
-
         quarter = req.GET.get("quarter")
-
         location = req.GET.get("location")
-
         year = req.GET.get("year")
-
         params = {"year": year, "location": location}
-
         if month:
             params["month"] = month
             params["month2"] = end_month
-
         elif quarter:
             params["quarter"] = quarter
-
         status, response = ru.get(req, "mdrtb/form89report", params)
-
         if status:
             context["patientSet"] = [
                 {
@@ -1970,199 +1745,31 @@ def render_form89_report(req):
                 }
                 for record in response["results"]
             ]
-
             return render(req, "app/reporting/form89_report.html", context)
-
         return redirect("searchPatientsView")
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect("searchPatientsView")
 
 
 def render_tb08_report(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER")
-
         context = {"title": "TB08 Report"}
-
         month = req.GET.get("month")
         end_month = req.GET.get("month2", None)
-
         quarter = req.GET.get("quarter")
-
         location = req.GET.get("location")
-
         year = req.GET.get("year")
-
         params = {"year": year, "location": location}
-
         if month:
             params["month"] = month
             params["month2"] = end_month
-
         elif quarter:
             params["quarter"] = quarter
-
         status, response = ru.get(req, "mdrtb/tb08report", params)
-
-        if status:
-            context["location"] = mu.get_location(req, location)
-
-            context["patientSet"] = [
-                {
-                    key: value if value is not None else ""
-                    for key, value in record.items()
-                }
-                for record in response["results"]
-            ]
-            context["report_date"] = util.get_date_time_now()
-
-            return render(req, "app/reporting/tb08_report.html", context)
-
-        return redirect("searchPatientsView")
-
-    except Exception as e:
-        log_and_show_error(e, req)
-
-        return redirect(req.session["redirect_url"])
-
-
-def render_tb08u_report(req):
-    if not check_if_session_alive(req):
-        return redirect("login")
-
-    try:
-        req.session["redirect_url"] = req.META.get("HTTP_REFERER")
-
-        context = {"title": "TB08u Report"}
-
-        month = req.GET.get("month")
-        end_month = req.GET.get("month2", None)
-
-        quarter = req.GET.get("quarter")
-
-        location = req.GET.get("location")
-
-        year = req.GET.get("year")
-
-        params = {"year": year, "location": location}
-
-        if month:
-            params["month"] = month
-            params["month2"] = end_month
-
-        elif quarter:
-            params["quarter"] = quarter
-
-        status, response = ru.get(req, "mdrtb/tb08ureport", params)
-
-        if status:
-            context["location"] = mu.get_location(req, location)
-
-            context["patientSet"] = [
-                {
-                    key: value if value is not None else ""
-                    for key, value in record.items()
-                }
-                for record in response["results"]
-            ]
-            context["report_date"] = util.get_date_time_now()
-
-            return render(req, "app/reporting/tb08u_report.html", context)
-
-        return redirect("searchPatientsView")
-
-    except Exception as e:
-        log_and_show_error(e, req)
-
-        return redirect(req.session["redirect_url"])
-
-
-def render_tb07u_report(req):
-    if not check_if_session_alive(req):
-        return redirect("login")
-
-    try:
-        req.session["redirect_url"] = req.META.get("HTTP_REFERER")
-
-        context = {"title": "TB07u Report"}
-
-        month = req.GET.get("month")
-        end_month = req.GET.get("month2", None)
-
-        quarter = req.GET.get("quarter")
-
-        location = req.GET.get("location")
-
-        year = req.GET.get("year")
-
-        params = {"year": year, "location": location}
-
-        if month:
-            params["month"] = month
-            params["month2"] = end_month
-
-        elif quarter:
-            params["quarter"] = quarter
-
-        status, response = ru.get(req, "mdrtb/tb07ureport", params)
-
-        if status:
-            context["location"] = mu.get_location(req, location)
-
-            context["patientSet"] = [
-                {
-                    key: value if value is not None else ""
-                    for key, value in record.items()
-                }
-                for record in response["results"]
-            ]
-            context["report_date"] = util.get_date_time_now()
-
-            return render(req, "app/reporting/tb07u_report.html", context)
-
-        return redirect("searchPatientsView")
-
-    except Exception as e:
-        log_and_show_error(e, req)
-
-        return redirect(req.session["redirect_url"])
-
-
-def render_tb07_report(req):
-    if not check_if_session_alive(req):
-        return redirect("login")
-
-    try:
-        req.session["redirect_url"] = req.META.get("HTTP_REFERER")
-
-        context = {"title": "TB07 Report"}
-
-        month = req.GET.get("month")
-        end_month = req.GET.get("month2", None)
-
-        quarter = req.GET.get("quarter")
-
-        location = req.GET.get("location")
-
-        year = req.GET.get("year")
-
-        params = {"year": year, "location": location}
-
-        if month:
-            params["month2"] = end_month
-            params["month"] = month
-
-        elif quarter:
-            params["quarter"] = quarter
-
-        status, response = ru.get(req, "mdrtb/tb07report", params)
-
         if status:
             # This line has to be added to every reporting view (render_<report_name>_report)
             # Not to the form views which has report_form in the end they are for generating report from form
@@ -2170,13 +1777,121 @@ def render_tb07_report(req):
             context["location"] = Constants.COUNTRY.value
             if location:
                 context["location"] = mu.get_location(req, location)
-            context["reporttime"] = datetime.datetime.today().strftime("%Y-%m-%d")
+            context["patientSet"] = [
+                {
+                    key: value if value is not None else ""
+                    for key, value in record.items()
+                }
+                for record in response["results"]
+            ]
+            context["report_date"] = util.get_date_time_now()
+            return render(req, "app/reporting/tb08_report.html", context)
+        return redirect("searchPatientsView")
+    except Exception as e:
+        log_and_show_error(e, req)
+        return redirect(req.session["redirect_url"])
 
+
+def render_tb08u_report(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    try:
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER")
+        context = {"title": "TB08u Report"}
+        month = req.GET.get("month")
+        end_month = req.GET.get("month2", None)
+        quarter = req.GET.get("quarter")
+        location = req.GET.get("location")
+        year = req.GET.get("year")
+        params = {"year": year, "location": location}
+        if month:
+            params["month"] = month
+            params["month2"] = end_month
+        elif quarter:
+            params["quarter"] = quarter
+        status, response = ru.get(req, "mdrtb/tb08ureport", params)
+        if status:
+            context["location"] = Constants.COUNTRY.value
+            if location:
+                context["location"] = mu.get_location(req, location)
+            context["patientSet"] = [
+                {
+                    key: value if value is not None else ""
+                    for key, value in record.items()
+                }
+                for record in response["results"]
+            ]
+            context["report_date"] = util.get_date_time_now()
+            return render(req, "app/reporting/tb08u_report.html", context)
+        return redirect("searchPatientsView")
+    except Exception as e:
+        log_and_show_error(e, req)
+        return redirect(req.session["redirect_url"])
+
+
+def render_tb07u_report(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    try:
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER")
+        context = {"title": "TB07u Report"}
+        month = req.GET.get("month")
+        end_month = req.GET.get("month2", None)
+        quarter = req.GET.get("quarter")
+        location = req.GET.get("location")
+        year = req.GET.get("year")
+        params = {"year": year, "location": location}
+        if month:
+            params["month"] = month
+            params["month2"] = end_month
+        elif quarter:
+            params["quarter"] = quarter
+        status, response = ru.get(req, "mdrtb/tb07ureport", params)
+        if status:
+            context["location"] = Constants.COUNTRY.value
+            if location:
+                context["location"] = mu.get_location(req, location)
+            context["patientSet"] = [
+                {
+                    key: value if value is not None else ""
+                    for key, value in record.items()
+                }
+                for record in response["results"]
+            ]
+            context["report_date"] = util.get_date_time_now()
+            return render(req, "app/reporting/tb07u_report.html", context)
+        return redirect("searchPatientsView")
+    except Exception as e:
+        log_and_show_error(e, req)
+        return redirect(req.session["redirect_url"])
+
+
+def render_tb07_report(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    try:
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER")
+        context = {"title": "TB07 Report"}
+        month = req.GET.get("month")
+        end_month = req.GET.get("month2", None)
+        quarter = req.GET.get("quarter")
+        location = req.GET.get("location")
+        year = req.GET.get("year")
+        params = {"year": year, "location": location}
+        if month:
+            params["month2"] = end_month
+            params["month"] = month
+        elif quarter:
+            params["quarter"] = quarter
+        status, response = ru.get(req, "mdrtb/tb07report", params)
+        if status:
+            context["location"] = Constants.COUNTRY.value
+            if location:
+                context["location"] = mu.get_location(req, location)
+            context["reporttime"] = datetime.datetime.today().strftime("%Y-%m-%d")
             context["table1"] = response["results"][0]
             context["json"] = json.dumps(response["results"][0])
-
             return render(req, "app/reporting/tb07_report.html", context)
-
         return redirect("searchPatientsView")
     except Exception as e:
         log_and_show_error(e, req)
@@ -2186,79 +1901,56 @@ def render_tb07_report(req):
 def render_form8_report(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER")
-
         context = {"title": "Form8 Report"}
-
         month = req.GET.get("month")
         end_month = req.GET.get("month2", None)
-
         quarter = req.GET.get("quarter")
-
         location = req.GET.get("location")
-
         year = req.GET.get("year")
-
         params = {"year": year, "location": location}
-
         if month:
             params["month"] = month
             params["month2"] = end_month
-
         elif quarter:
             params["quarter"] = quarter
-
         status, response = ru.get(req, "mdrtb/form8report", params)
-
         if status:
-            context["location"] = mu.get_location(req, location)
-
+            context["location"] = Constants.COUNTRY.value
+            if location:
+                context["location"] = mu.get_location(req, location)
             context["form8data"] = response["results"][0]
             context["report_date"] = util.get_date_time_now()
-
             return render(req, "app/reporting/form8_report.html", context)
-
         return redirect("searchPatientsView")
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect(req.session["redirect_url"])
 
 
 def render_missing_tb03_report(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER")
-
         context = {"title": "Missing TB03 Report"}
-
         month = req.GET.get("month")
         end_month = req.GET.get("month2", None)
-
         quarter = req.GET.get("quarter")
-
         location = req.GET.get("location")
-
         year = req.GET.get("year")
-
         params = {"year": year, "location": location}
-
         if month:
             params["month"] = month
             params["month2"] = end_month
-
         elif quarter:
             params["quarter"] = quarter
-
         status, response = ru.get(req, "mdrtb/tb03missingreport", params)
-
         if status:
-            context["location"] = mu.get_location(req, location)
+            context["location"] = Constants.COUNTRY.value
+            if location:
+                context["location"] = mu.get_location(req, location)
             missing_tb03_summary = response["results"][0]
             missing_tb03_data = response["results"][0]["dqItems"]
             for patient in missing_tb03_data:
@@ -2269,48 +1961,35 @@ def render_missing_tb03_report(req):
             context["summary"] = missing_tb03_summary
             context["missingTB03"] = missing_tb03_data
             context["report_date"] = util.get_date_time_now()
-
             return render(req, "app/reporting/missing_tb03_report.html", context)
-
         return redirect("searchPatientsView")
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect(req.session["redirect_url"])
 
 
 def render_missing_tb03u_report(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER")
-
         context = {"title": "Missing TB03u Report"}
-
         month = req.GET.get("month")
         end_month = req.GET.get("month2", None)
-
         quarter = req.GET.get("quarter")
-
         location = req.GET.get("location")
-
         year = req.GET.get("year")
-
         params = {"year": year, "location": location}
-
         if month:
             params["month"] = month
             params["month2"] = end_month
-
         elif quarter:
             params["quarter"] = quarter
-
         status, response = ru.get(req, "mdrtb/tb03umissingreport", params)
-
         if status:
-            context["location"] = mu.get_location(req, location)
+            context["location"] = Constants.COUNTRY.value
+            if location:
+                context["location"] = mu.get_location(req, location)
             missing_tb03u_summary = response["results"][0]
             missing_tb03u_data = response["results"][0]["dqItems"]
             for patient in missing_tb03u_data:
@@ -2321,136 +2000,93 @@ def render_missing_tb03u_report(req):
             context["summary"] = missing_tb03u_summary
             context["missingTB03u"] = missing_tb03u_data
             context["report_date"] = util.get_date_time_now()
-
             return render(req, "app/reporting/missing_tb03u_report.html", context)
-
         return redirect("searchPatientsView")
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect(req.session["redirect_url"])
 
 
 def render_dotsdq_report(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER")
-
         context = {"title": "Dots Data Quality Report"}
-
         month = req.GET.get("month")
         end_month = req.GET.get("month2", None)
-
         quarter = req.GET.get("quarter")
-
         location = req.GET.get("location")
-
         year = req.GET.get("year")
-
         params = {"year": year, "location": location, "type": "dots"}
-
         if month:
             params["month"] = month
             params["month2"] = end_month
-
         elif quarter:
             params["quarter"] = quarter
-
         status, response = ru.get(req, "mdrtb/dataquality", params)
-
         if status:
             context["location"] = lu.get_single_location_hierarchy(
                 mu.get_location(req, uuid=location, representation="FULL")
             )
             context["results"] = response["results"][0]
             context["report_date"] = util.get_date_time_now()
-
             return render(req, "app/reporting/dotsdq_report.html", context)
-
         return redirect("searchPatientsView")
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect(req.session["redirect_url"])
 
 
 def render_mdrdq_report(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER")
-
         context = {"title": "MDRTB Data Quality Report"}
-
         month = req.GET.get("month")
         end_month = req.GET.get("month2", None)
-
         quarter = req.GET.get("quarter")
-
         location = req.GET.get("location")
-
         year = req.GET.get("year")
-
         params = {"year": year, "location": location, "type": "mdrtb"}
-
         if month:
             params["month"] = month
             params["month2"] = end_month
-
         elif quarter:
             params["quarter"] = quarter
-
         status, response = ru.get(req, "mdrtb/dataquality", params)
-
         if status:
             context["location"] = lu.get_single_location_hierarchy(
                 mu.get_location(req, uuid=location, representation="FULL")
             )
             context["results"] = response["results"][0]
             context["report_date"] = util.get_date_time_now()
-
             return render(req, "app/reporting/mdrdq_report.html", context)
-
         return redirect("searchPatientsView")
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect(req.session["redirect_url"])
 
 
 def render_adverse_events_register_report(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER")
-
         context = {"title": "Adverse Events Register Report"}
-
         month = req.GET.get("month")
         end_month = req.GET.get("month2", None)
-
         quarter = req.GET.get("quarter")
-
         location = req.GET.get("location")
-
         year = req.GET.get("year")
-
         params = {"year": year, "location": location, "type": "mdrtb"}
-
         if month:
             params["month"] = month
             params["month2"] = end_month
-
         elif quarter:
             params["quarter"] = quarter
-
         status, response = ru.get(req, "mdrtb/adverseeventsregister", params)
-
         if status:
             context["location"] = lu.get_single_location_hierarchy(
                 mu.get_location(req, uuid=location, representation="FULL")
@@ -2463,47 +2099,33 @@ def render_adverse_events_register_report(req):
                 for record in response["results"]
             ]
             context["report_date"] = util.get_date_time_now()
-
             return render(
                 req, "app/reporting/adverse_event_register_report.html", context
             )
-
         return redirect("searchPatientsView")
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect(req.session["redirect_url"])
 
 
 def render_quaterly_summary_ae_report(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER")
-
         context = {"title": "Adverse Events Register Report"}
-
         month = req.GET.get("month")
         end_month = req.GET.get("month2", None)
-
         quarter = req.GET.get("quarter")
-
         location = req.GET.get("location")
-
         year = req.GET.get("year")
-
         params = {"year": year, "location": location, "type": "mdrtb"}
-
         if month:
             params["month"] = month
             params["month2"] = end_month
-
         elif quarter:
             params["quarter"] = quarter
-
         status, response = ru.get(req, "mdrtb/adverseeventsquarterly", params)
-
         if status:
             context["location"] = lu.get_single_location_hierarchy(
                 mu.get_location(req, uuid=location, representation="FULL")
@@ -2519,16 +2141,12 @@ def render_quaterly_summary_ae_report(req):
             for item in tables:
                 for key, value in item.items():
                     tables_dict[key] = value
-
             context["tables"] = tables_dict
             context["report_date"] = util.get_date_time_now()
-
             return render(req, "app/reporting/quaterly_summary_ae_report.html", context)
-
         return redirect("searchPatientsView")
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect(req.session["redirect_url"])
 
 
@@ -2544,12 +2162,10 @@ def render_closed_reports(req, type):
         "reports": util.get_report_names(type, req.session["locale"]),
         "type": type,
     }
-
     logged_in_user = req.session["logged_user"]["user"]["username"]
     if logged_in_user == "admin":
         context["unlock_privilege"] = True
         context["delete_privilege"] = True
-
     if req.method == "POST":
         try:
             params = {
@@ -2562,14 +2178,12 @@ def render_closed_reports(req, type):
                 params["quarter"] = req.POST["quarter"]
             elif "month" in req.POST:
                 params["month"] = req.POST["month"]
-
             if "subregion" in req.POST and req.POST["subregion"]:
                 params["subregion"] = req.POST["subregion"]
             if "district" in req.POST and req.POST["district"]:
                 params["district"] = req.POST["district"]
             if "facility" in req.POST and req.POST["facility"]:
                 params["facility"] = req.POST["facility"]
-
             status, response = ru.get(req, "mdrtb/reportdata", params)
             if status and len(response["results"]) > 0:
                 for report in response["results"]:
@@ -2577,15 +2191,12 @@ def render_closed_reports(req, type):
                         report["location"] = mu.get_location(
                             req, report["location"]["uuid"]
                         )
-
                 context["report_data"] = response["results"]
                 context["jsondata"] = json.dumps(response["results"])
             else:
                 messages.info(req, "No saved reports found.")
-
         except Exception as e:
             log_and_show_error(e, req)
-
     return render(req, "app/reporting/closed_reports.html", context)
 
 
@@ -2614,25 +2225,19 @@ def save_closed_report(req):
             )
             year = req.POST["year"]
             report_name = req.POST["reportName"]
-
             params = {
                 "year": year,
                 "name": report_name,
                 "region": location["region"]["uuid"],
             }
-
             if location["district"]:
                 params["district"] = location["district"]["uuid"]
-
             if location["facility"]:
                 params["facility"] = location["district"]["uuid"]
-
             if "month" in req.POST and req.POST["month"]:
                 params["month"] = req.POST["month"]
-
             if "quarter" in req.POST and req.POST["quarter"]:
                 params["quarter"] = req.POST["quarter"]
-
             exist_status, exist_report = ru.get(
                 req, "mdrtb/reportdata", parameters=params
             )
@@ -2650,18 +2255,18 @@ def save_closed_report(req):
                                     )
                                 )
                                 if (
-                                    report_location["region"]["uuid"]
-                                    == location["region"]["uuid"]
+                                        report_location["region"]["uuid"]
+                                        == location["region"]["uuid"]
                                 ):
                                     if (
-                                        report_location["district"] is not None
-                                        and report_location["district"]["uuid"]
-                                        == location["district"]["uuid"]
+                                            report_location["district"] is not None
+                                            and report_location["district"]["uuid"]
+                                            == location["district"]["uuid"]
                                     ):
                                         if report_location["facility"] is not None:
                                             if (
-                                                report_location["facility"]["uuid"]
-                                                == location["facility"]["uuid"]
+                                                    report_location["facility"]["uuid"]
+                                                    == location["facility"]["uuid"]
                                             ):
                                                 overwrite_report = True
                                                 report_to_overwrite = report["uuid"]
@@ -2707,69 +2312,55 @@ def save_closed_report(req):
             return redirect("/")
     else:
         pass
+#########################
+# Reporting Views - END #
+#########################
 
 
-# CommonLab Views
-
-
+#########################
+# CommonLab Views START #
+#########################
 def render_manage_test_types(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
     context = {
         "title": mu.get_global_msgs(
             "commonlabtest.labtesttype.manage", locale=req.session["locale"]
         )
     }
-
     if req.method == "POST":
         try:
             search_results = cu.get_test_types_by_search(req, req.POST["search"])
-
             if len(search_results) > 0:
                 context["response"] = search_results
                 return render(
                     req, "app/commonlab/managetesttypes.html", context=context
                 )
-
             else:
                 status, response = ru.get(req, "commonlab/labtesttype", {"v": "full"})
-
                 context["response"] = response["results"]
                 return render(
                     req, "app/commonlab/managetesttypes.html", context=context
                 )
-
         except Exception as e:
             log_and_show_error(e, req)
-
             return redirect(req.session["redirect_url"])
-
     try:
         status, response = ru.get(req, "commonlab/labtesttype", {"v": "full"})
-
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         context["response"] = response["results"] if status else []
-
         return render(req, "app/commonlab/managetesttypes.html", context=context)
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect(req.session["redirect_url"])
 
 
 def fetch_attributes(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
     response = cu.get_attributes_of_labtest(req, req.GET["uuid"])
-
     attributes = []
-
     for attribute in response:
         attributes.append(
             {
@@ -2783,20 +2374,17 @@ def fetch_attributes(req):
                 else attribute["multisetName"],
             }
         )
-
     return JsonResponse({"attributes": attributes})
 
 
 def render_add_test_type(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
     context = {
         "title": mu.get_global_msgs(
             "commonlabtest.labtesttype.add", locale=req.session["locale"]
         )
     }
-
     if req.method == "POST":
         body = {
             "name": req.POST["testname"],
@@ -2806,49 +2394,34 @@ def render_add_test_type(req):
             "description": req.POST["description"],
             "shortName": None if req.POST["shortname"] == "" else req.POST["shortname"],
         }
-
         status, response = cu.add_edit_test_type(req, body, "commonlab/labtesttype")
-
         if status:
             return redirect("managetesttypes")
-
         else:
             context["error"] = response
-
             return render(req, "app/commonlab/addtesttypes.html", context=context)
-
     context["testGroups"] = cu.get_commonlab_test_groups()
-
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
     mu.add_url_to_breadcrumb(req, context["title"])
-
     return render(req, "app/commonlab/addtesttypes.html", context=context)
 
 
 def render_edit_test_type(req, uuid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     context = {
         "title": mu.get_global_msgs(
             "commonlabtest.labtesttype.edit", locale=req.session["locale"]
         )
     }
-
     status, response = ru.get(
         req, f"commonlab/labtesttype/{uuid}", {"v": "full", "lang": "en"}
     )
-
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
     mu.add_url_to_breadcrumb(req, context["title"])
-
     if status:
         data = response
-
         context["state"] = "edit"
-
         context["testType"] = {
             "uuid": data["uuid"],
             "name": data["name"],
@@ -2861,17 +2434,12 @@ def render_edit_test_type(req, uuid):
                 "name": data["referenceConcept"]["display"],
             },
         }
-
         # context["referenceConcepts"] = cu.get_commonlab_concepts_by_type(
-
         #     req, "labtesttype"
-
         # )
-
         context["testGroups"] = util.remove_given_str_from_arr(
             cu.get_commonlab_test_groups(), data["testGroup"]
         )
-
     if req.method == "POST":
         body = {
             "name": req.POST["testname"],
@@ -2881,53 +2449,39 @@ def render_edit_test_type(req, uuid):
             "description": req.POST["description"],
             "shortName": None if req.POST["shortname"] == "" else req.POST["shortname"],
         }
-
         status, response = cu.add_edit_test_type(
             req, body, f"commonlab/labtesttype/{uuid}"
         )
-
         if status:
             return redirect("managetesttypes")
-
     return render(req, "app/commonlab/addtesttypes.html", context=context)
 
 
 def render_retire_test_type(req, uuid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     if req.method == "POST":
         status, _ = ru.delete(req, f"commonlab/labtesttype/{uuid}")
-
         if status:
             return redirect("managetesttypes")
-
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
     return render(req, "app/commonlab/addtesttypes.html")
 
 
-def render_manageAttributes(req, uuid):
+def render_manage_attributes(req, uuid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     context = {"labTestUuid": uuid, "title": "Manage Attributes"}
-
     response = cu.get_attributes_of_labtest(req, uuid)
-
     context["attributes"] = response
-
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
     mu.add_url_to_breadcrumb(req, context["title"])
-
     return render(req, "app/commonlab/manageattributes.html", context=context)
 
 
 def render_addattributes(req, uuid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     context = {
         "labTestUuid": uuid,
         "prefferedHandlers": cu.get_preffered_handler(),
@@ -2936,7 +2490,6 @@ def render_addattributes(req, uuid):
             "commonlabtest.labtestattributetype.add", locale=req.session["locale"]
         ),
     }
-
     if req.method == "POST":
         body = {
             "labTestType": uuid,
@@ -2953,23 +2506,17 @@ def render_addattributes(req, uuid):
             "multisetName": req.POST.get("mutname", ""),
             "handlerConfig": req.POST.get("handleconfig", ""),
         }
-
         status, response = ru.post(req, "commonlab/labtestattributetype", body)
-
         if status:
             return redirect(f"/commonlab/labtest/{uuid}/manageattributes")
-
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
     mu.add_url_to_breadcrumb(req, context["title"])
-
     return render(req, "app/commonlab/addattributes.html", context=context)
 
 
-def render_editAttribute(req, testid, attrid):
+def render_edit_attribute(req, testid, attrid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     context = {
         "state": "edit",
         "testid": testid,
@@ -2977,33 +2524,25 @@ def render_editAttribute(req, testid, attrid):
             "commonlabtest.labtestattributetype.edit", locale=req.session["locale"]
         ),
     }
-
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
     mu.add_url_to_breadcrumb(req, context["title"])
-
     status, response = ru.get(
         req, f"commonlab/labtestattributetype/{attrid}", {"v": "full"}
     )
-
     if status:
         context["attribute"] = cu.get_custom_attribute(
             response,
             response["datatypeClassname"],
             response["preferredHandlerClassname"],
         )
-
         context["dataTypes"] = util.remove_given_str_from_obj_arr(
             cu.get_attributes_data_types(), response["datatypeClassname"], "views"
         )
-
         context["prefferedHandlers"] = util.remove_given_str_from_obj_arr(
             cu.get_preffered_handler(), response["preferredHandlerClassname"], "views"
         )
-
     else:
         redirect(f"/commonlab/labtest/{testid}/manageattributes")
-
     if req.method == "POST":
         body = {
             "name": req.POST["name"],
@@ -3019,21 +2558,17 @@ def render_editAttribute(req, testid, attrid):
             "multisetName": req.POST.get("mutname", ""),
             "handlerConfig": req.POST.get("handleconfig", ""),
         }
-
         status, response = ru.post(
             req, f"commonlab/labtestattributetype/{attrid}", body
         )
-
         if status:
             return redirect(f"/commonlab/labtest/{testid}/manageattributes")
-
     return render(req, "app/commonlab/addattributes.html", context=context)
 
 
 def render_managetestorders(req, uuid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     try:
         context = {
             "title": mu.get_global_msgs(
@@ -3041,11 +2576,8 @@ def render_managetestorders(req, uuid):
             ),
             "patient": uuid,
         }
-
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         status, response = ru.get(
             req,
             f"commonlab/labtestorder",
@@ -3054,39 +2586,31 @@ def render_managetestorders(req, uuid):
                 "v": "custom:(uuid,labTestType,labReferenceNumber,order,auditInfo,labTestSamples)",
             },
         )
-
         if status:
             for lab_result in response["results"]:
                 attributes = cu.get_labtest_attributes(req, lab_result["uuid"])
                 lab_result.update({"attributes": attributes})
-
             orders = response["results"]
             for order in orders:
                 sample_accepted = check_if_sample_exists(req, order["uuid"])
                 order.update({"sample_accepted": sample_accepted})
             context["orders"] = response["results"]
-
             context["json_orders"] = json.dumps(response["results"])
-
         return render(req, "app/commonlab/managetestorders.html", context=context)
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect(req.session["redirect_url"])
 
 
 def render_add_lab_test(req, uuid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     context = {
         "title": mu.get_global_msgs(
             "commonlabtest.labtest.add", locale=req.session["locale"]
         ),
         "patient": uuid,
     }
-
     if req.method == "POST":
         try:
             body = {
@@ -3107,37 +2631,25 @@ def render_add_lab_test(req, uuid):
                     "careSetting": req.POST["careSetting"],
                 },
             }
-
             status, response = ru.post(req, "commonlab/labtestorder", body)
-
             if status:
                 return redirect("managetestorders", uuid=uuid)
-
             else:
                 log_and_show_error(response["error"]["message"], req)
-
                 return redirect("managetestorders", uuid=uuid)
-
         except Exception as e:
             log_and_show_error(e, req)
-
             return redirect("addlabtest", uuid=uuid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         encounters = pu.get_patient_encounters(req, uuid)
-
         labtests, testgroups = cu.get_test_groups_and_tests(req)
         if encounters:
             context["encounters"] = encounters["results"]
-
             context["testgroups"] = list(dict.fromkeys(testgroups))
-
             context["labtests"] = json.dumps(labtests)
-
             context["care_setting"] = {
                 "inpatient": {
                     "name": Constants.INPATIENT.name.title(),
@@ -3148,19 +2660,15 @@ def render_add_lab_test(req, uuid):
                     "value": Constants.OUTPATIENT.value,
                 },
             }
-
         return render(req, "app/commonlab/addlabtest.html", context=context)
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect("addlabtest", uuid=uuid)
 
 
 def render_edit_lab_test(req, patientid, orderid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     context = {
         "title": mu.get_global_msgs(
             "commonlabtest.order.edit", locale=req.session["locale"]
@@ -3169,7 +2677,6 @@ def render_edit_lab_test(req, patientid, orderid):
         "orderid": orderid,
         "patientid": patientid,
     }
-
     try:
         if req.method == "POST":
             body = {
@@ -3190,53 +2697,38 @@ def render_edit_lab_test(req, patientid, orderid):
                 },
             }
             status, response = ru.post(req, f"commonlab/labtestorder/{orderid}", body)
-
             if status:
                 return redirect("managetestorders", uuid=patientid)
-
             else:
                 log_and_show_error("Error creating test order", req)
-
                 return render(req, "app/commonlab/addlabtest.html", context=context)
-
     except Exception as e:
         log_and_show_error(e, req)
         return redirect("editlabtest", uuid=patientid, orderid=orderid)
-
     try:
         status, response = ru.get(
             req,
             f"commonlab/labtestorder/{orderid}",
             {"v": "full"},
         )
-
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         if status:
             encounters = pu.get_patient_encounters(
                 req, response["order"]["patient"]["uuid"]
             )
-
             labtests, testgroups = cu.get_test_groups_and_tests(req)
-
             context["laborder"] = cu.get_custom_lab_order(response)
-
             context["encounters"] = util.remove_obj_from_objarr(
                 encounters["results"],
                 context["laborder"]["order"]["encounter"]["uuid"],
                 "uuid",
             )
-
             testgroups = list(dict.fromkeys(testgroups))
-
             context["testgroups"] = util.remove_given_str_from_arr(
                 testgroups, context["laborder"]["labtesttype"]["testGroup"]
             )
-
             context["labtests"] = json.dumps(labtests)
-
             context["care_setting"] = {
                 "inpatient": {
                     "name": Constants.INPATIENT.name.title(),
@@ -3247,28 +2739,20 @@ def render_edit_lab_test(req, patientid, orderid):
                     "value": Constants.OUTPATIENT.value,
                 },
             }
-
             return render(req, "app/commonlab/addlabtest.html", context=context)
-
         else:
             log_and_show_error("Error getting lab test", req)
-
             return redirect("managetestorders", uuid=patientid)
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect("editlabtest", uuid=patientid, orderid=orderid)
 
 
 def render_delete_lab_test(req, patientid, orderid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     status, response = ru.delete(req, f"commonlab/labtestorder/{orderid}")
-
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
     if status:
         return redirect("managetestorders", uuid=patientid)
 
@@ -3276,38 +2760,30 @@ def render_delete_lab_test(req, patientid, orderid):
 def render_managetestsamples(req, orderid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     context = {
         "title": mu.get_global_msgs(
             "commonlabtest.labtestsample.manage", locale=req.session["locale"]
         ),
         "orderid": orderid,
     }
-
     status, response = ru.get(
         req, f"commonlab/labtestorder/{orderid}", {"v": "custom:(labTestSamples)"}
     )
-
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
     mu.add_url_to_breadcrumb(req, context["title"])
-
     if status:
         context["samples"] = response["labTestSamples"]
-
     return render(req, "app/commonlab/managetestsamples.html", context=context)
 
 
 def render_add_test_sample(req, orderid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     context = {
         "title": mu.get_global_msgs("mdrtb.add", locale=req.session["locale"])
-        + mu.get_global_msgs("mdrtb.sample", locale=req.session["locale"]),
+                 + mu.get_global_msgs("mdrtb.sample", locale=req.session["locale"]),
         "orderid": orderid,
     }
-
     if req.method == "POST":
         body = {
             "labTest": orderid,
@@ -3320,31 +2796,22 @@ def render_add_test_sample(req, orderid):
             "status": "COLLECTED",
             "collector": req.session["logged_user"]["currentProvider"]["uuid"],
         }
-
         status, response = ru.post(req, "commonlab/labtestsample", body)
-
         if status:
             return redirect("managetestsamples", orderid=orderid)
-
         else:
             log_and_show_error("Error adding samples", req)
-
             return redirect("addtestsample", orderid=orderid)
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         context["specimentype"] = cu.get_commonlab_concepts_by_type(
             req, "commonlabtest.specimenTypeConceptUuid"
         )
-
         context["specimensite"] = cu.get_commonlab_concepts_by_type(
             req, "commonlabtest.specimenSiteConceptUuid"
         )
-
         context["units"] = cu.get_sample_units(req)
-
         return render(req, "app/commonlab/addsample.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
@@ -3354,15 +2821,13 @@ def render_add_test_sample(req, orderid):
 def render_edit_test_sample(req, orderid, sampleid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     context = {
         "title": mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
-        + mu.get_global_msgs("mdrtb.sample", locale=req.session["locale"]),
+                 + mu.get_global_msgs("mdrtb.sample", locale=req.session["locale"]),
         "orderid": orderid,
         "sampleid": sampleid,
         "state": "edit",
     }
-
     if req.method == "POST":
         body = {
             "labTest": orderid,
@@ -3375,55 +2840,38 @@ def render_edit_test_sample(req, orderid, sampleid):
             "status": "COLLECTED",
             "collector": req.session["logged_user"]["currentProvider"]["uuid"],
         }
-
         status, response = ru.post(req, f"commonlab/labtestsample/{sampleid}", body)
-
         if status:
             return redirect("managetestsamples", orderid=orderid)
-
         else:
             log_and_show_error("Error adding samples", req)
-
             return redirect("edittestsample", orderid=orderid, sampleid=sampleid)
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         status, response = ru.get(
             req, f"commonlab/labtestsample/{sampleid}", {"v": "full"}
         )
-
         if status:
             sample = response
-
             specimen_type = cu.get_commonlab_concepts_by_type(
                 req, "commonlabtest.specimenTypeConceptUuid"
             )
-
             specimen_site = cu.get_commonlab_concepts_by_type(
                 req, "commonlabtest.specimenSiteConceptUuid"
             )
-
             context["specimentype"] = util.remove_obj_from_objarr(
                 specimen_type, sample["specimenType"]["uuid"], "uuid"
             )
-
             context["specimensite"] = util.remove_obj_from_objarr(
                 specimen_site, sample["specimenSite"]["uuid"], "uuid"
             )
-
             units = cu.get_sample_units(req)
-
             context["units"] = util.remove_obj_from_objarr(
                 units, sample["units"], "uuid"
             )
-
             context["sample"] = sample
-
             # context["sample"] = response
-
             return render(req, "app/commonlab/addsample.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
@@ -3432,33 +2880,26 @@ def render_edit_test_sample(req, orderid, sampleid):
 
 def render_change_sample_status(req, orderid, sampleid):
     statuses = {"Accept": "ACCEPTED", "Reject": "REJECTED"}
-
     if req.method == "POST":
         sample_status = statuses[req.POST["status"]]
         try:
             status, _ = ru.post(
                 req, f"commonlab/labtestsample/{sampleid}", {"status": sample_status}
             )
-
             if status:
                 if sample_status == "ACCEPTED":
                     messages.success(req, f"Sample {sample_status}")
-
                 else:
                     messages.warning(req, f"Sample {sample_status}")
-
         except Exception:
             log_and_show_error(f"Sample {sample_status}", req)
-
     return redirect("managetestsamples", orderid=orderid)
 
 
 def render_delete_sample(req, orderid, sampleid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     status, reponse = ru.delete(req, f"commonlab/labtestsample/{sampleid}")
-
     if status:
         return redirect(req.session["redirect_url"])
 
@@ -3466,18 +2907,15 @@ def render_delete_sample(req, orderid, sampleid):
 def render_add_test_results(req, orderid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     context = {
         "title": mu.get_global_msgs(
             "mdrtb.addTestResults", locale=req.session["locale"]
         ),
         "orderid": orderid,
     }
-
     if req.method == "POST":
         state = req.POST["state"] if "state" in req.POST else None
         status, laborder = ru.get(req, f"commonlab/labtestorder/{orderid}", {})
-
         if status:
             body = {
                 "order": laborder["order"]["uuid"],
@@ -3485,7 +2923,6 @@ def render_add_test_results(req, orderid):
                 "labTestType": laborder["labTestType"]["uuid"],
                 "attributes": [],
             }
-
             for key, value in req.POST.items():
                 if key == "csrfmiddlewaretoken":
                     continue
@@ -3511,7 +2948,6 @@ def render_add_test_results(req, orderid):
                                         "valueReference": value,
                                     }
                                 )
-
                     else:
                         body["attributes"].append(
                             {
@@ -3528,32 +2964,27 @@ def render_add_test_results(req, orderid):
                     return redirect(req.session["redirect_url"])
             except Exception as e:
                 log_and_show_error(e, req)
-
                 return redirect("addtestresults", orderid=orderid)
-
         else:
             log_and_show_error("Error creating the results", req)
             return redirect("addtestresults", orderid=orderid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         status, response = ru.get(
             req,
             f"commonlab/labtestorder/{orderid}",
             {"v": "custom:(attributes,auditInfo,labReferenceNumber,labTestSamples)"},
         )
-
         if status:
             context["audit_info_json"] = json.dumps(response["auditInfo"])
             context["auditInfo"] = response["auditInfo"]
             context["lab_reference"] = response["labReferenceNumber"]
             for sample in response["labTestSamples"]:
                 if (
-                    sample["status"] == Constants.ACCEPTED.value
-                    or sample["status"] == Constants.PROCESSED.value
+                        sample["status"] == Constants.ACCEPTED.value
+                        or sample["status"] == Constants.PROCESSED.value
                 ):
                     context["sample"] = json.dumps(sample)
                     break
@@ -3564,13 +2995,10 @@ def render_add_test_results(req, orderid):
                 )
                 if attributes:
                     context["attributes"] = json.dumps(attributes)
-
             else:
                 attributes = cu.get_custom_attribute_for_labresults(req, orderid)
                 context["attributes"] = json.dumps(attributes)
-
             return render(req, "app/commonlab/addtestresults.html", context=context)
-
     except Exception as e:
         log_and_show_error(e, req)
 
@@ -3597,18 +3025,6 @@ def check_if_sample_exists(req, orderid):
         log_and_show_error("Error fetching Samples", req)
         return sample_accepted
 
-
-def render_logout(req):
-    try:
-        status, _ = ru.delete(req, "session")
-        if status:
-            ru.clear_session(req)
-            return redirect("login")
-    except Exception as e:
-        log_and_show_error(e, req)
-        return redirect(req.session.get("redirect_url"))
-
-
-def log_and_show_error(error, req):
-    messages.error(req, error)
-    logger.error(error, exc_info=True)
+#######################
+# CommonLab Views END #
+#######################

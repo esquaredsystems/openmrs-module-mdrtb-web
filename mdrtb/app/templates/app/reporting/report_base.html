@@ -7,6 +7,11 @@
 </head>
 
 <style>
+    @media print {
+        header, footer {
+            display: none;
+        }
+    }
     * {
         font-family: "Nunito Sans", sans-serif;
     }
@@ -106,8 +111,6 @@
         border-left: 1px black solid;
     }
 
-
-
     /* td,
     th {
         padding: 1rem;
@@ -117,10 +120,26 @@
 <body style="margin: 1rem; font-size: small;">
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.1.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script type="text/javascript">
+        function printForm() {
+            window.print();
+        }
+
+        function tableToExcel(table, name) {
+            // Implement Excel export logic using SheetJS (xlsx)
+            var element = document.getElementById(table);
+            var ws = XLSX.utils.table_to_sheet(element);
+            var wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+            XLSX.writeFile(wb, name + '.xlsx');
+        }
+
+    </script>
     {% block content %}
     {% endblock %}
-
-
 
 </body>
 

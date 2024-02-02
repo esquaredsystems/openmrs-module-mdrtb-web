@@ -115,7 +115,7 @@
                 <th class=normal colspan="4">{{"mdrtb.dq.missingtb03"|get_message:request.session.locale}}</th>
             </tr>
             <tr>
-                <th colspan="2">{{"mdrtb.oblast"|get_message:request.session.locale}}</td>
+                <td colspan="2">{{"mdrtb.oblast"|get_message:request.session.locale}}</td>
                     {% if location.parent is None %}
                 <td colspan="2">{{ location.location }}</td>
                 {% else %}
@@ -123,7 +123,7 @@
                 {% endif %}
             </tr>
             <tr>
-                <th colspan="2">{{"mdrtb.district"|get_message:request.session.locale}}</td>
+                <td colspan="2">{{"mdrtb.district"|get_message:request.session.locale}}</td>
                     {% if location.parent is not None %}
                     {% if location.grandparent is None %}
                 <td colspan="2">{{ location.location }}</td>
@@ -135,7 +135,7 @@
                 {% endif %}
             </tr>
             <tr>
-                <th colspan="2">{{"mdrtb.facility"|get_message:request.session.locale}}</td>
+                <td colspan="2">{{"mdrtb.facility"|get_message:request.session.locale}}</td>
                     {% if location.parent and location.grandparent %}
                 <td colspan="2">{{ location.location }}</td>
                 {% else %}
@@ -143,27 +143,27 @@
                 {% endif %}
             </tr>
             <tr>
-                <th colspan="2">{{"mdrtb.year"|get_message:request.session.locale}}</td>
+                <td colspan="2">{{"mdrtb.year"|get_message:request.session.locale}}</td>
                 <td colspan="2" align="right">{{ request.GET.year }}</td>
             </tr>
             <tr>
-                <th colspan="2">{{"mdrtb.quarter"|get_message:request.session.locale}}</td>
+                <td colspan="2">{{"mdrtb.quarter"|get_message:request.session.locale}}</td>
                 <td align="right" colspan="2">{{ request.GET.quarter }}</td>
             </tr>
             <tr>
-                <th colspan="2">{{"mdrtb.month"|get_message:request.session.locale}}</td>
+                <td colspan="2">{{"mdrtb.month"|get_message:request.session.locale}}</td>
                 <td align="right" colspan="2">{{ request.GET.month }}</td>
             </tr>
             <tr>
-                <th colspan="2">{{"mdrtb.dq.numberOfPatients"|get_message:request.session.locale}}</td>
+                <td colspan="2">{{"mdrtb.dq.numberOfPatients"|get_message:request.session.locale}}</td>
                 <td align="right" colspan="2">{{ summary.totalCases }}</td>
             </tr>
             <tr>
-                <th colspan="2">{{"mdrtb.dq.numberWithErrors"|get_message:request.session.locale}}</td>
+                <td colspan="2">{{"mdrtb.dq.numberWithErrors"|get_message:request.session.locale}}</td>
                 <td align="right" colspan="2">{{ summary.errorCount }}</td>
             </tr>
             <tr>
-                <th colspan="2">{{"mdrtb.dq.errorPercentage"|get_message:request.session.locale}}</td>
+                <td colspan="2">{{"mdrtb.dq.errorPercentage"|get_message:request.session.locale}}</td>
                 <td align="right" colspan="2">{{ summary.errorPercentage }}</td>
             </tr>
             <tr>
@@ -206,7 +206,7 @@
     <input type="button" onclick="printForm()" value="{{'mdrtb.print'|get_message:request.session.locale}}" />
     <button onclick="saveHtml()">{{'mdrtb.save'|get_message:request.session.locale}}</button>
     {% endif %}
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.1.js"></script>
+
     <script type="text/javascript">
         function saveHtml() {
             let htmlContent = document.getElementById("dq").outerHTML;
@@ -237,38 +237,8 @@
                     console.log(data)
                 }
             })
-
-
         }
-        function printForm() {
-            var mywindow = window.open('', 'PRINT', 'height=400,width=600');
 
-            mywindow.document.write('<html><head><title>{{"mdrtb.dq.missingtb03"|get_message:request.session.locale}}</title>');
-            mywindow.document.write('</head><body >');
-            // mywindow.document.write('<h1><spring:message code="mdrtb.pv.aeForm" text="AE"/></h1>');
-            mywindow.document.write(document.getElementById("dq").innerHTML);
-
-            mywindow.document.write('</body></html>');
-
-            mywindow.document.close(); // necessary for IE >= 10
-            mywindow.focus(); // necessary for IE >= 10*/
-
-            mywindow.print();
-            mywindow.close();
-
-            return true;
-        }
-        var tableToExcel = (function () {
-            var uri = 'data:application/vnd.ms-excel;base64,'
-                , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>TB03</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>'
-                , base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) }
-                , format = function (s, c) { return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; }) }
-            return function (table, name) {
-                if (!table.nodeType) table = document.getElementById(table)
-                var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
-                window.location.href = uri + base64(format(template, ctx))
-            }
-        })()
         function savePdf(action, reportName, formPath) {
             var tableData = (document.getElementById("tb03")).innerHTML.toString();
             var oblast = "{{ oblast }}";

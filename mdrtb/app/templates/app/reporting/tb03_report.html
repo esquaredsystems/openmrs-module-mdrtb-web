@@ -3,8 +3,6 @@
 {% block content %}
 
 
-
-
 <div>
     <div>
         <div id="tb03">
@@ -44,7 +42,8 @@
                         {{'mdrtb.tb03.diagnosticMethod'|get_message:request.session.locale}}
                     </th>
                     <th class="normal" rowspan="2" rowspan="2">
-                        {{'mdrtb.tb03.dstSampleCollectionDate'|get_message:request.session.locale}}</th>
+                        {{'mdrtb.tb03.dstSampleCollectionDate'|get_message:request.session.locale}}
+                    </th>
                     <th class="reggroup" colspan="17" rowspan="1">
                         {{'mdrtb.tb03.dst'|get_message:request.session.locale}}
                     </th>
@@ -172,12 +171,14 @@
                         <div>Dlm</div>
                     </th>
                     <th class="normal" colspan="3">
-                        {{'mdrtb.tb03.m234'|get_message:request.session.locale}}<br />{{'mdrtb.tb03.month'|get_message:request.session.locale}}
+                        {{'mdrtb.tb03.m234'|get_message:request.session.locale}}<br/>{{'mdrtb.tb03.month'|get_message:request.session.locale}}
                     </th>
                     <th class="normal" colspan="3">{{'mdrtb.tb03.five'|get_message:request.session.locale}}
-                        {{'mdrtb.tb03.month'|get_message:request.session.locale}}</th>
+                        {{'mdrtb.tb03.month'|get_message:request.session.locale}}
+                    </th>
                     <th class="normal" colspan="3">{{'mdrtb.tb03.m68'|get_message:request.session.locale}}
-                        {{'mdrtb.tb03.month'|get_message:request.session.locale}}</th>
+                        {{'mdrtb.tb03.month'|get_message:request.session.locale}}
+                    </th>
                     <th class="" rowspan="3">
                         <div><span>{{'mdrtb.tb03.cured'|get_message:request.session.locale}}</span></div>
                     </th>
@@ -301,7 +302,7 @@
                     <td rowspan="2">{{ row.patientName }}</td>
                     <td rowspan="2" align="center">{{ row.gender }}</td>
                     <td align="center">{{row.ageAtTB03Registration }}</td>
-                    <td rowspan="2">{{ row.residentialAddress }},<br /></td>
+                    <td rowspan="2">{{ row.residentialAddress }},<br/></td>
                     <td>{{row.intensivePhaseFacility }}</td>
                     <td>{{row.treatmentRegimen }}</td>
                     <td align="center" rowspan="2">{{ row.siteOfDisease }}</td>
@@ -316,10 +317,10 @@
                     <td rowspan="2">{{row.cpStartDate }}</td>
 
                     <td colspan="3" align="center">{{row.diagnosticSmearResult }}</td>
-                    <td colspan="3" align="center">{{row.xpertMTBResult }} {{row.xpertRIFResult }} </td>
-                    <td align="center">{{row.hainTestDate }} </td>
+                    <td colspan="3" align="center">{{row.xpertMTBResult }} {{row.xpertRIFResult }}</td>
+                    <td align="center">{{row.hainTestDate }}</td>
                     <td colspan="3" align="center">{{row.hainMTBResult }}</td>
-                    <td align="center">{{row.hain2TestDate }} </td>
+                    <td align="center">{{row.hain2TestDate }}</td>
                     <td colspan="3" align="center">{{row.hain2MTBResult }}</td>
                     <td colspan="3" align="center">{{row.cultureResult }}</td>
                     <td>{{ row.dstCollectionDate}}</td>
@@ -450,7 +451,7 @@
         </div>
 
         <input type="button" onclick="tableToExcel('tb03', 'TB03')"
-            value="{{'mdrtb.exportToExcelBtn'|get_message:request.session.locale}}" />
+               value="{{'mdrtb.exportToExcelBtn'|get_message:request.session.locale}}"/>
         <!-- <input type="button" id="tableToPdf" name="tableToPdf" value="{{'mdrtb.exportToPdfBtn'|get_message:request.session.locale}}" /> -->
         <!-- <openmrs:hasPrivilege privilege="Manage Report Closing">
                 <input type="button" id="tableToSql" name="tableToSql"
@@ -461,16 +462,12 @@
                 {{'mdrtb.back'|get_message:request.session.locale}}
             </a>
         </button>
-        <input type="button" onclick="printForm()" value="{{'mdrtb.print'|get_message:request.session.locale}}" />
+        <input type="button" onclick="printForm()" value="{{'mdrtb.print'|get_message:request.session.locale}}"/>
         <button onclick="saveHtml()">{{'mdrtb.save'|get_message:request.session.locale}}</button>
     </div>
 
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.1.js"></script>
     <script type="text/javascript">
-
         console.log(JSON.parse("{{js|escapejs}}"))
-
-
 
         function saveHtml() {
             let htmlContent = document.getElementById("tb03").outerHTML;
@@ -505,41 +502,8 @@
                     }
                 }
             })
-
-
         }
 
-
-
-        function printForm() {
-            var mywindow = window.open('', 'PRINT', 'height=400,width=600');
-
-            mywindow.document.write('<html><head><title><spring:message code="mdrtb.tb03u" text="TB03y"/></title>');
-            mywindow.document.write('</head><body >');
-            // mywindow.document.write('<h1><spring:message code="mdrtb.pv.aeForm" text="AE"/></h1>');
-            mywindow.document.write(document.getElementById("tb03").innerHTML);
-
-            mywindow.document.write('</body></html>');
-
-            mywindow.document.close(); // necessary for IE >= 10
-            mywindow.focus(); // necessary for IE >= 10*/
-
-            mywindow.print();
-            mywindow.close();
-
-            return true;
-        }
-        var tableToExcel = (function () {
-            var uri = 'data:application/vnd.ms-excel;base64,'
-                , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>TB03</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>'
-                , base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) }
-                , format = function (s, c) { return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; }) }
-            return function (table, name) {
-                if (!table.nodeType) table = document.getElementById(table)
-                var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
-                window.location.href = uri + base64(format(template, ctx))
-            }
-        })()
         function savePdf(action, reportName, formPath) {
             var tableData = (document.getElementById("tb03")).innerHTML.toString();
             var oblast = "{{ oblast }}";
