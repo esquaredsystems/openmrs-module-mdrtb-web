@@ -130,14 +130,14 @@
                     <div><span>{{ row.identifier }}</span></div>
                 </td>
                 <td>{{ row.tb03RegistrationDate }}</td>
-                <td>{{ row.patient.personName.familyName }}, {{ row.patient.personName.givenName }}</td>
+                <td>{{ row.personName.familyName }}, {{ row.personName.givenName }}</td>
                 <td align="center">{{ row.gender }}</td>
                 <td align="center">{{row.ageAtTB03Registration }}</td>
                 <td>{{ row.dateOfBirth }}</td>
-                <td>{{ row.patient.personAddress.stateProvince }}</td>
-                <td>{{ row.patient.personAddress.countyDistrict }}</td>
-                <td>{{ row.patient.personAddress.region }}</td>
-                <td>{{ row.patient.personAddress.address1 }}</td>
+                <td>{{ row.personAddress.stateProvince }}</td>
+                <td>{{ row.personAddress.countyDistrict }}</td>
+                <td>{{ row.personAddress.region }}</td>
+                <td>{{ row.personAddress.address1 }}</td>
                 <td>{{ row.form89.pregnant.displayString }}</td>
                 <td>{{ row.form89.locationType.displayString }}</td>
                 <td>{{ row.form89.profession.displayString }}</td>
