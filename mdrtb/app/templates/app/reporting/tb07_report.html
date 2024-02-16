@@ -1,28 +1,24 @@
-{% extends 'app/reporting/report_base.html' %}
+{% extends 'app/base/report_base.html' %}
 
 {% block content %}
 
-
-
 <div>
+    <style>
+        th {
+            vertical-align: top;
+            text-align: left;
+        }
+        th,
+        td {
+            font-size: smaller;
+            border: 1px solid #000000
+        }
+        border {
+            border: 1px solid #000000
+        }
+    </style>
+
     <div id="tb07" style="font-size:smaller; width:980px;">
-        <style type="text/css">
-            th {
-                vertical-align: top;
-                text-align: left;
-            }
-
-            th,
-            td {
-                font-size: smaller;
-                border: 1px solid #000000
-            }
-
-            border {
-                border: 1px solid #000000
-            }
-        </style>
-
         <table border="0" width="100%">
             <tbody>
                 <tr>
@@ -1327,181 +1323,19 @@
             </tbody>
         </table>
     </div>
-    <button>
-        <a style="text-decoration: none; color: black;" href="/">
-            {{'mdrtb.back'|get_message:request.session.locale}}
-        </a>
-    </button>
-    <input type="button" onclick="tableToExcel('tb07', 'TB07')"
-        value="{{'mdrtb.exportToExcelBtn'|get_message:request.session.locale}}" />
-    <button onclick="printForm()">
-        {{'mdrtb.print'|get_message:request.session.locale}}
-
-    </button>
-    <!-- <input type="button" id="tableToPdf" name="tableToPdf" value="{{"mdrtb.exportToPdfBtn"|get_message:request.session.locale}}" /> -->
-
-    <button onclick="saveHtml()">{{'mdrtb.save'|get_message:request.session.locale}}</button>
-    <script type="text/javascript">
-        function saveHtml() {
-
-            let htmlContent = document.getElementById("tb07").outerHTML;
-            htmlContent = htmlContent.replace(/\s{2,}/g, ' ');
-
-            let year = "{{request.GET.year}}"
-            let location = "{{request.GET.location}}"
-            let quarter = "{{request.GET.quarter}}" ? "{{request.GET.quarter}}" : null;
-            let month = "{{request.GET.month}}" ? "{{request.GET.month}}" : null;
-
-            data = {
-                csrfmiddlewaretoken: "{{csrf_token}}",
-                reportName: "TB-07",
-                year,
-                location,
-                tableData: htmlContent
-            }
-
-            if (month != null) data.month = month
-            if (quarter != null) data.quarter = quarter
-
-            $.ajax({
-                method: "POST",
-                url: "/saveclosedreport",
-                data: data,
-                success: (data) => {
-                    if (data.success) {
-                        alert("Report saved successfully")
-                    } else {
-                        alert("Failed to save report")
-                    }
-                }
-            })
-        }
-
-        function savePdf(action, reportName, formPath) {
-            var tableData = (document.getElementById("tb07")).innerHTML.toString();
-            var oblast = "{{ oblast }}";
-            var district = "{{ district }}";
-            var facility = "{{ facility }}";
-            var year = "{{ year }}";
-            if (!"{{quarter}}") {
-                var quarter = "\"" + "{{quarter}}" + "\"";
-            } else {
-                var quarter = "";
-            }
-            if (!"{{month}}") {
-                var month = "\"" + "{{month}}" + "\"";
-            } else {
-                var month = "";
-            }
-            var reportDate = "{{ reportDate }}";
-
-            var form = document.createElement("FORM");
-
-            form.setAttribute("id", "closeReportForm");
-            form.setAttribute("name", "closeReportForm");
-            form.setAttribute("method", "post");
-            form.setAttribute("action", action);
-
-            document.body.appendChild(form);
-
-            var input = document.createElement("INPUT");
-            input.setAttribute("type", "hidden");
-            input.setAttribute("id", "oblast");
-            input.setAttribute("name", "oblast");
-            input.setAttribute("value", oblast);
-            form.appendChild(input);
-
-            var input = document.createElement("INPUT");
-            input.setAttribute("type", "hidden");
-            input.setAttribute("id", "district");
-            input.setAttribute("name", "district");
-            input.setAttribute("value", district);
-            form.appendChild(input);
-
-            var input = document.createElement("INPUT");
-            input.setAttribute("type", "hidden");
-            input.setAttribute("id", "facility");
-            input.setAttribute("name", "facility");
-            input.setAttribute("value", facility);
-            form.appendChild(input);
-
-            var input = document.createElement("INPUT");
-            input.setAttribute("type", "hidden");
-            input.setAttribute("id", "year");
-            input.setAttribute("name", "year");
-            input.setAttribute("value", year);
-            form.appendChild(input);
-
-            var input = document.createElement("INPUT");
-            input.setAttribute("type", "hidden");
-            input.setAttribute("id", "quarter");
-            input.setAttribute("name", "quarter");
-            input.setAttribute("value", quarter);
-            form.appendChild(input);
-
-            var input = document.createElement("INPUT");
-            input.setAttribute("type", "hidden");
-            input.setAttribute("id", "month");
-            input.setAttribute("name", "month");
-            input.setAttribute("value", month);
-            form.appendChild(input);
-
-            var input = document.createElement("INPUT");
-            input.setAttribute("type", "hidden");
-            input.setAttribute("id", "reportDate");
-            input.setAttribute("name", "reportDate");
-            input.setAttribute("value", reportDate);
-            form.appendChild(input);
-
-            var input = document.createElement("INPUT");
-            input.setAttribute("type", "hidden");
-            input.setAttribute("id", "table");
-            input.setAttribute("name", "table");
-            input.setAttribute("value", tableData);
-            form.appendChild(input);
-
-            var input = document.createElement("INPUT");
-            input.setAttribute("type", "hidden");
-            input.setAttribute("id", "formPath");
-            input.setAttribute("name", "formPath");
-            input.setAttribute("value", formPath);
-            form.appendChild(input);
-
-            var input = document.createElement("INPUT");
-            input.setAttribute("type", "hidden");
-            input.setAttribute("id", "reportName");
-            input.setAttribute("name", "reportName");
-            input.setAttribute("value", reportName);
-            form.appendChild(input);
-
-            var input = document.createElement("INPUT");
-            input.setAttribute("type", "hidden");
-            input.setAttribute("id", "reportType");
-            input.setAttribute("name", "reportType");
-            input.setAttribute("value", "DOTSTB");
-            form.appendChild(input);
-
-            form.submit();
-        }
-        $(document).ready(function () {
-            $("#tableToSql").bind("click", function () {
-                if (confirm('{{"mdrtb.closeReportMessage"|get_message:request.session.locale}}')) {
-                    savePdf("closeReport.form", "tb07", "tb07Results");
-                }
-            });
-        });
-    </script>
-
+    <input id="exportButton" type="button" onclick="tableToExcel('tb07', 'TB-07')"
+           value="{{'mdrtb.exportToExcelBtn'|get_message:request.session.locale}}" />
+    <input id="printButton" type="button" onclick="printForm()"
+           value="{{'mdrtb.print'|get_message:request.session.locale}}" />
+    <button id="saveButton" onclick="saveHtml('tb07', 'TB-07', 'DOTSTB')">{{'mdrtb.save'|get_message:request.session.locale}}</button>
+    <a href="/" type="button" id="back" name="back">{{'mdrtb.back'|get_message:request.session.locale}}</a>
     <script>
-        console.log(JSON.parse("{{json|escapejs}}"));
-        console.log("{{ reportStatus }}");
         if ("{{ reportStatus }}" === "true") {
-            document.getElementById("tableToSql").disabled = true;
+            document.getElementById("saveButton").disabled = true;
         } else {
-            document.getElementById("tableToSql").disabled = false;
+            document.getElementById("saveButton").disabled = false;
         }
     </script>
-
 </div>
 
 {% endblock %}

@@ -3,13 +3,10 @@
 {% block content %}
 
 
-
-
 <div class="m-4">
   {% include 'app/components/breadcrumbs.html'%}
 </div>
 <div id="modal-parent">
-
 
   <div style="width: 70%;" class="mx-auto overflow-x-scroll px-4 sm:px-8">
     <div class="py-8">
@@ -208,22 +205,15 @@
         if (groupHasAttributes[group]) {
           $(`#${uuid}groups`).append(
             `<div class="w-full bg-white p-2">
-                        <h1 class="font-bold text-lg text-center">${group}</h1>
-                        <div id="${uuid}${group.toLowerCase()}"
-                          class="grid grid-cols-2 place-items-center justify-items-center  p-2">
-                          <div class="border p-2 border-gray-200 font-bold w-full">{{'ConceptProposal.obs'|get_message_openMRS:request.session.locale}}</div>
-                          <div class="border p-2 border-gray-200 font-bold w-full">{{'general.value'|get_message_openMRS:request.session.locale}}</div>
-
-
-                        </div>
-                      </div>`
+                <h1 class="font-bold text-lg text-center">${group}</h1>
+                <div id="${uuid}${group.toLowerCase()}"
+                  class="grid grid-cols-2 place-items-center justify-items-center  p-2">
+                  <div class="border p-2 border-gray-200 font-bold w-full">{{'ConceptProposal.obs'|get_message_openMRS:request.session.locale}}</div>
+                  <div class="border p-2 border-gray-200 font-bold w-full">{{'general.value'|get_message_openMRS:request.session.locale}}</div>
+                </div>
+              </div>`
           )
         }
-
-
-
-
-
       }
       for (attribute of attributes) {
         if (attribute.attributeType.group === null) {
@@ -233,14 +223,10 @@
                 if (answer.uuid === attribute.valueReference) {
                   $(`#${uuid}common`).append(
                     `
-          <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
-          <div class="border w-full h-full p-2 border-gray-200">${answer.display}</div>
- 
-          `
-                  )
+                    <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+                    <div class="border w-full h-full p-2 border-gray-200">${answer.display}</div>`)
                   break;
                 }
-
               }
             }
           } else if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.BooleanDatatype") {
@@ -249,22 +235,14 @@
             <div class="border w-full h-full p-2 border-gray-200">${attribute.valueReference === 'on' ? 'True' : 'False'}</div>`
             )
           }
-
-
           else {
             if (attribute.valueReference != null && attribute.valueReference.length > 0) {
               $(`#${uuid}common`).append(
                 `
-          <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
-          <div class="border w-full p-2 h-full border-gray-200">${attribute.valueReference}</div>
- 
-          `
-              )
+                <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+                <div class="border w-full p-2 h-full border-gray-200">${attribute.valueReference}</div>`)
             }
-
           }
-
-
         } else {
           if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.ConceptDatatype") {
             if (attribute.valueReference) {
@@ -272,28 +250,19 @@
                 if (answer.uuid === attribute.valueReference) {
                   $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
                     `
-          <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
-          <div class="border w-full h-full p-2 border-gray-200">${answer.display}</div>
- 
-          `
-                  )
+                    <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+                    <div class="border w-full h-full p-2 border-gray-200">${answer.display}</div>`)
                   break;
                 }
-
               }
             }
-
           } else {
             if (attribute.valueReference != null && attribute.valueReference.length > 0) {
               $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
                 `
-          <div class="border w-full h-full p-2 border-gray-200 ">${attribute.attributeType.name}</div>
-          <div class="border w-full h-full p-2 border-gray-200">${attribute.valueReference}</div>
-
-          `
-              )
+                <div class="border w-full h-full p-2 border-gray-200 ">${attribute.attributeType.name}</div>
+                <div class="border w-full h-full p-2 border-gray-200">${attribute.valueReference}</div>`)
             }
-
           }
         }
       }
@@ -302,34 +271,22 @@
       if ($(`#${uuid}common`).children().length <= 2) {
         $(`#${uuid}common`).parent().remove();
       }
-
       $(`#${uuid}groups`).children().each((index, child) => {
         if ($(child).children(1).children(1).length <= 2) {
           $(child).parent().html(
-            `
-        <div class="w-full bg-white p-2"><h1 class="font-bold text-lg text-center">No results found</h1></div>
-        `
-          );
+            `<div class="w-full bg-white p-2"><h1 class="font-bold text-lg text-center">No results found</h1></div>`);
         }
       });
 
-
       if ($(`#${uuid}groups`).children().length === 0) {
         $(`#${uuid}groups`).append(
-          `
-        <div class="w-full bg-white p-2"><h1 class="font-bold text-lg text-center">No results found</h1></div>
-        `
-        )
-
+          `<div class="w-full bg-white p-2"><h1 class="font-bold text-lg text-center">No results found</h1></div>`)
       }
-
       if ($(`#${uuid}groups`).children().length === 1) {
         $(`#${uuid}groups`).removeClass('grid-cols-2').addClass('grid-cols-1')
       } else {
         $(`#${uuid}groups`).removeClass('grid-cols-1').addClass('grid-cols-2')
       }
-
-
     }
 
   </script>

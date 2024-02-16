@@ -224,14 +224,16 @@ def enroll_patient_in_program(req, patientid, data):
         Exception: If an error occurs while enrolling the patient in the program.
     """
     try:
+        location = data.get("facility")
+        if not location:
+            location = data.get("district")
+        if not location and req.session.get("location_enrolled_in"):
+            location = req.session.get("location_enrolled_in")["uuid"]
         program_body = {
             "patient": patientid,
             "program": data["program"],
             "dateEnrolled": data["enrollmentdate"],
-            "location": data.get(
-                "facility",
-                data.get("district", req.session.get("location_enrolled_in")["uuid"]),
-            ),
+            "location": location,
             "dateCompleted": data["completiondate"]
             if not data["completiondate"] == ""
             else None,

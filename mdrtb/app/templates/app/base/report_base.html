@@ -143,6 +143,39 @@
             XLSX.writeFile(wb, name + '.xlsx');
         }
 
+        function saveHtml(tableId, reportName, reportType) {
+            // Prompt the user for confirmation
+            let confirmationMessage = "{{'mdrtb.closeReportMessage'|get_message:request.session.locale}}";
+            if (!window.confirm(confirmationMessage)) {
+                return;
+            }
+            let htmlContent = document.getElementById(tableId).outerHTML;
+            htmlContent = htmlContent.replace(/\s{2,}/g, ' ');
+            let year = "{{request.GET.year}}"
+            let location = "{{request.GET.location}}"
+            let quarter = "{{request.GET.quarter}}" ? "{{request.GET.quarter}}" : null;
+            let month = "{{request.GET.month}}" ? "{{request.GET.month}}" : null;
+            data = {
+                csrfmiddlewaretoken: "{{csrf_token}}",
+                reportName,
+                year,
+                location,
+                reportType,
+                tableData: htmlContent
+            }
+            if (month != null) data.month = month
+            if (quarter != null) data.quarter = quarter
+            $.ajax({
+                method: "POST",
+                url: "/saveclosedreport",
+                data: data,
+                success: (data) => {
+                let successMessage = "{{'mdrtb.successfullyupdated'|get_message:request.session.locale}}";
+                    window.alert(successMessage);
+                }
+            })
+        }
+
         // Attach an error event listener to the window object
         window.addEventListener('error', function (event) {
           // Prevent the default page refresh behavior

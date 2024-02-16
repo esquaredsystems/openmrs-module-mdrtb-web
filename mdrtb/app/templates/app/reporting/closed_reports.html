@@ -8,9 +8,6 @@
 
 {%block content%}
 
-
-
-
 {% if report_data %}
 <style>
     .btn-primary {
@@ -21,7 +18,7 @@
 <div class="m-12 rounded">
     <table class="table table-bordered">
         <thead class=" table-dark">
-            <th>Report Name</tH>
+            <th>Report Name</th>
             <th>Report Date</th>
             <th>Region</th>
             <th>District</th>
@@ -37,7 +34,7 @@
 
             <tr>
                 <td>{{report.reportName}}</td>
-                <td>02/03/2023</td>
+                <td>{{report.reportDate}}</td>
                 <!-- If the selected location is region -->
                 {% if report.location.parent is None and report.location.grandparent is None %}
                 <td>{{report.location.location}}</td>
@@ -72,13 +69,6 @@
                     <a class="no-underline outline-none " target="_blank"
                         href="{% url 'viewclosedreport' uuid=report.uuid %}">
                         <button class="btn btn-primary border-0 d-flex align-items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="w-5 h-5 cursor-pointer">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
                             <span class="ml-2">View</span>
                         </button>
                     </a>
@@ -102,7 +92,6 @@
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                             </svg>
-
                             <span class="ml-2">Unlock</span>
                         </button>
                     </a>
@@ -117,8 +106,6 @@
 
     <button class="button-primary w-1/6"><a href="javascript:history.go(-1)"
             class="no-underline text-white">Back</a></button>
-
-
 </div>
 <script>
     console.log(JSON.parse("{{jsondata|escapejs}}"))
@@ -163,13 +150,13 @@
 
             <div class="flex items-center w-full space-x-4">
                 <div class="space-x-2 flex items-center">
-                    <label for="">Select</label>
+                    <label for="quarter">Select</label>
                     <input checked type="radio" name="quarter" id="quarter" class="radio-input" value="">
                 </div>
                 {% for quarter in quarters %}
                 <div class="space-x-2 flex items-center">
                     <label for="quarter">{{quarter}}</label>
-                    <input type="radio" name="quarter" id="quarter" class="radio-input" value="{{quarter}}">
+                    <input type="radio" name="quarter" id="quarter_{{quarter}}" class="radio-input" value="{{quarter}}">
                 </div>
                 {% endfor %}
 
@@ -203,16 +190,12 @@
         if (e.target.value != '') {
             $('#quarter').prop('disabled', true)
             $('#quarter').prop('title', 'Quarter cannot be selected with month')
-
         } else {
             $('#quarter').prop('disabled', false)
             $('#quarter').prop('title', '')
-
         }
     })
     $("input[name='quarter']").change((e) => {
-
-
         if (e.target.value != '') {
             $('#month').prop('disabled', true)
             $('#month').prop('title', 'Month cannot be selected with quarter')
@@ -226,16 +209,10 @@
         $('#submitBtn').removeClass('button-primary')
         $('#submitBtn').html(`
         <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
-                colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
-            </lord-icon>
-
-        
-        `)
+            colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+        </lord-icon>`)
     }
 
-
-</script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </script>
 {% endif %}
 

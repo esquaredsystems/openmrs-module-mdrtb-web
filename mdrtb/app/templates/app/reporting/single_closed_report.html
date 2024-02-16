@@ -1,4 +1,4 @@
-{% extends 'app/reporting/report_base.html' %}
+{% extends 'app/base/report_base.html' %}
 
 
 {% block title %}
@@ -12,9 +12,9 @@
 
 </div>
 <div class="m-4 flex items-center space-x-2">
-    <button class="button-primary" onclick="ExportToExcel('xlsx')">Export to Excel</button>
-    <button class=" border-4 p-2 border-black" onclick="print()">Print</button>
-    <button class="cancel-button"><a href="javascript:history.go(-1)">Back</a></button>
+    <button class="button-primary" onclick="ExportToExcel('xlsx')">{{'mdrtb.exportToExcelBtn'|get_message:request.session.locale}}</button>
+    <button class=" border-4 p-2 border-black" onclick="print()">{{'mdrtb.print'|get_message:request.session.locale}}</button>
+    <a href="/" type="button" id="back" name="back">{{'mdrtb.back'|get_message:request.session.locale}}</a>
 </div>
 
 

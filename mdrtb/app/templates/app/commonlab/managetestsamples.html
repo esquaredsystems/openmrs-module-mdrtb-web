@@ -63,15 +63,6 @@
                     class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
                     Accept / Reject
                   </th>
-
-
-
-
-
-
-
-
-
                 </tr>
               </thead>
               <tbody>
@@ -79,7 +70,7 @@
                 <tr>
                   <td class="px-5 pt-3 border-b border-gray-200 w-min  text-sm">
                     <p class="text-gray-900 whitespace-no-wrap">
-                      {{sample.specimenType.display}}
+                      {{sample.specimenType.display}} ({{sample.sampleIdentifier}})
                     </p>
                   </td>
                   <td class=" px-5 pt-3 border-b border-gray-200 w-min text-sm">
@@ -93,7 +84,7 @@
                       {{sample.status}}
                     </p>
                   </td>
-                  <td class="px-5  py-3 border-b w-min border-gray-200 bg-white text-sm">
+                  <td class="px-5 py-3 border-b w-min border-gray-200 bg-white text-sm">
                     <div class="flex space-x-4">
 
                       <a href="{% url 'edittestsample' orderid=orderid sampleid=sample.uuid %}">
@@ -131,7 +122,6 @@
 
                 </tr>
                 {% endfor %}
-
 
               </tbody>
             </table>

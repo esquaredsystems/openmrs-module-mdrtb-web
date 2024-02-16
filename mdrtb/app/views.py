@@ -2173,17 +2173,17 @@ def render_closed_reports(req, type):
                 "region": req.POST["region"],
             }
             if "report" in req.POST:
-                params["name"] = req.POST["report"]
+                params["name"] = req.POST["report"] if req.POST["report"] != "" else None
             if "quarter" in req.POST:
-                params["quarter"] = req.POST["quarter"]
+                params["quarter"] = req.POST["quarter"] if req.POST["quarter"] != "" else None
             elif "month" in req.POST:
-                params["month"] = req.POST["month"]
+                params["month"] = req.POST["month"] if req.POST["month"] != "" else None
             if "subregion" in req.POST and req.POST["subregion"]:
-                params["subregion"] = req.POST["subregion"]
+                params["subregion"] = req.POST["subregion"] if req.POST["subregion"] != "" else None
             if "district" in req.POST and req.POST["district"]:
-                params["district"] = req.POST["district"]
+                params["district"] = req.POST["district"] if req.POST["district"] != "" else None
             if "facility" in req.POST and req.POST["facility"]:
-                params["facility"] = req.POST["facility"]
+                params["facility"] = req.POST["facility"] if req.POST["facility"] != "" else None
             status, response = ru.get(req, "mdrtb/reportdata", params)
             if status and len(response["results"]) > 0:
                 for report in response["results"]:
@@ -2234,53 +2234,36 @@ def save_closed_report(req):
                 params["district"] = location["district"]["uuid"]
             if location["facility"]:
                 params["facility"] = location["district"]["uuid"]
-            if "month" in req.POST and req.POST["month"]:
+            if req.POST.get("month"):
                 params["month"] = req.POST["month"]
-            if "quarter" in req.POST and req.POST["quarter"]:
+            if req.POST.get("quarter"):
                 params["quarter"] = req.POST["quarter"]
-            exist_status, exist_report = ru.get(
+
+            _, exist_report = ru.get(
                 req, "mdrtb/reportdata", parameters=params
             )
             report_to_overwrite = None
-            if exist_status:
-                if len(exist_report["results"]) > 0:
-                    for report in exist_report["results"]:
-                        if report["reportStatus"] == "UNLOCKED":
-                            if report["reportName"] == report_name:
-                                report_location = lu.get_single_location_hierarchy(
-                                    mu.get_location(
-                                        req,
-                                        uuid=report["location"]["uuid"],
-                                        representation="FULL",
-                                    )
-                                )
-                                if (
-                                        report_location["region"]["uuid"]
-                                        == location["region"]["uuid"]
-                                ):
-                                    if (
-                                            report_location["district"] is not None
-                                            and report_location["district"]["uuid"]
-                                            == location["district"]["uuid"]
-                                    ):
-                                        if report_location["facility"] is not None:
-                                            if (
-                                                    report_location["facility"]["uuid"]
-                                                    == location["facility"]["uuid"]
-                                            ):
-                                                overwrite_report = True
-                                                report_to_overwrite = report["uuid"]
-                                                break
-                                        else:
-                                            overwrite_report = True
-                                            report_to_overwrite = report["uuid"]
-                                            break
-                        else:
-                            raise Exception(
-                                f"The {report['reportName']} with the following parameters already exists and is LOCKED"
-                            )
-                else:
-                    overwrite_report = True
+            if exist_report and len(exist_report.get("results", [])) > 0:
+                for report in exist_report.get("results", []):
+                    if report["reportStatus"] == "UNLOCKED" and report["reportName"] == report_name:
+                        report_location = lu.get_single_location_hierarchy(
+                            mu.get_location(req, uuid=report["location"]["uuid"], representation="FULL")
+                        )
+                        if (report_location["region"]["uuid"] == location["region"]["uuid"]
+                                and (not report_location["district"]
+                                or report_location["district"]["uuid"] == location["district"]["uuid"])
+                                and (not report_location["facility"]
+                                or report_location["facility"]["uuid"] == location["facility"]["uuid"])
+                        ):
+                            overwrite_report = True
+                            report_to_overwrite = report["uuid"]
+                            break
+                    else:
+                        raise Exception(
+                            f"The {report['reportName']} with the following parameters already exists and is LOCKED"
+                        )
+            else:
+                overwrite_report = True
 
             if overwrite_report:
                 report_data = {
@@ -2291,9 +2274,9 @@ def save_closed_report(req):
                     "reportStatus": "UNLOCKED",
                     "reportType": req.POST["reportType"],
                 }
-                if "quarter" in req.POST and req.POST["quarter"] is not None:
+                if req.POST.get("quarter"):
                     report_data["quarter"] = req.POST["quarter"]
-                if "month" in req.POST and req.POST["month"] is not None:
+                if req.POST.get("month"):
                     report_data["month"] = req.POST["month"]
                 if report_to_overwrite is not None:
                     report_data["uuid"] = report_to_overwrite
@@ -2790,12 +2773,14 @@ def render_add_test_sample(req, orderid):
             "specimenType": req.POST["specimentype"],
             "specimenSite": req.POST["specimensite"],
             "sampleIdentifier": req.POST["specimenid"],
-            "quantity": "" if not req.POST["quantity"] else req.POST["quantity"],
-            "units": "" if not req.POST["units"] else req.POST["units"],
             "collectionDate": req.POST["collectedon"],
             "status": "COLLECTED",
             "collector": req.session["logged_user"]["currentProvider"]["uuid"],
         }
+        if "quantity" in req.POST and req.POST["quantity"]:
+            body["quantity"] = req.POST["quantity"]
+        if "units" in req.POST and req.POST["units"]:
+            body["units"] = req.POST["units"]
         status, response = ru.post(req, "commonlab/labtestsample", body)
         if status:
             return redirect("managetestsamples", orderid=orderid)

@@ -180,7 +180,7 @@ def is_date(string, fuzzy=False):
     """
     try:
         if type(string) == str:
-            parse(string, fuzzy=fuzzy)
+            parser.parse(string, fuzzy=fuzzy)
             return True
         return string
     except ValueError:

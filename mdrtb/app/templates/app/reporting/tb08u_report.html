@@ -1,4 +1,4 @@
-{% extends 'app/reporting/report_base.html' %}
+{% extends 'app/base/report_base.html' %}
 
 {% block content %}
 
@@ -9,7 +9,6 @@
             vertical-align: middle;
             text-align: center;
         }
-
         th,
         td {
             font-size: smaller;
@@ -57,8 +56,6 @@
             <th colspan="2" align="center">{{"mdrtb.tb08u.died"|get_message:request.session.locale}}</th>
             <th rowspan="2" align="center">{{"mdrtb.tb08u.failure"|get_message:request.session.locale}}</th>
             <th rowspan="2" align="center">{{"mdrtb.tb08u.ltfu"|get_message:request.session.locale}}</th>
-
-
             <th rowspan="2" align="center">{{"mdrtb.tb08u.notAssessed"|get_message:request.session.locale}}</th>
             <th rowspan="2" align="center">{{"mdrtb.tb08u.total"|get_message:request.session.locale}}</th>
         </tr>
@@ -70,204 +67,123 @@
         <tr>
             <td colspan="2">{{"mdrtb.tb08u.newCases"|get_message:request.session.locale}}</td>
             <td>{{table1.newRegisteredShort }}</td>
-
             <td>{{table1.newCuredShort }}</td>
-
             <td>{{table1.newCompletedShort }}</td>
-
             <td>{{table1.newTxSuccessShort }}</td>
-
             <td>{{table1.newDiedTBShort }}</td>
-
             <td>{{table1.newDiedNotTBShort }}</td>
-
             <td>{{table1.newFailedShort }}</td>
-
             <td>{{table1.newDefaultedShort }}</td>
-
             <td>{{table1.newNotAssessedShort }}</td>
-
             <td>{{table1.newTotalShort }}</td>
         </tr>
         <tr>
             <td rowspan="2" align="center">{{"mdrtb.tb08u.relapse"|get_message:request.session.locale}}</td>
             <td align="center">I</td>
             <td>{{table1.relapse1RegisteredShort }}</td>
-
             <td>{{table1.relapse1CuredShort }}</td>
-
             <td>{{table1.relapse1CompletedShort }}</td>
-
             <td>{{table1.relapse1TxSuccessShort }}</td>
-
             <td>{{table1.relapse1DiedTBShort }}</td>
-
             <td>{{table1.relapse1DiedNotTBShort }}</td>
-
             <td>{{table1.relapse1FailedShort }}</td>
-
             <td>{{table1.relapse1DefaultedShort }}</td>
-
             <td>{{table1.relapse1NotAssessedShort }}</td>
-
             <td>{{table1.relapse1TotalShort }}</td>
         </tr>
         <tr>
             <td align="center">II</td>
             <td>{{table1.relapse2RegisteredShort }}</td>
-
             <td>{{table1.relapse2CuredShort }}</td>
-
             <td>{{table1.relapse2CompletedShort }}</td>
-
             <td>{{table1.relapse2TxSuccessShort }}</td>
-
             <td>{{table1.relapse2DiedTBShort }}</td>
-
             <td>{{table1.relapse2DiedNotTBShort }}</td>
-
             <td>{{table1.relapse2FailedShort }}</td>
-
             <td>{{table1.relapse2DefaultedShort }}</td>
-
             <td>{{table1.relapse2NotAssessedShort }}</td>
-
             <td>{{table1.relapse2TotalShort }}</td>
         </tr>
         <tr>
             <td rowspan="2" align="center">{{"mdrtb.tb08u.afterDefault"|get_message:request.session.locale}}</td>
             <td align="center">I</td>
             <td>{{table1.default1RegisteredShort }}</td>
-
             <td>{{table1.default1CuredShort }}</td>
-
             <td>{{table1.default1CompletedShort }}</td>
-
             <td>{{table1.default1TxSuccessShort }}</td>
-
             <td>{{table1.default1DiedTBShort }}</td>
-
             <td>{{table1.default1DiedNotTBShort }}</td>
-
             <td>{{table1.default1FailedShort }}</td>
-
             <td>{{table1.default1DefaultedShort }}</td>
-
             <td>{{table1.default1NotAssessedShort }}</td>
-
             <td>{{table1.default1TotalShort }}</td>
         </tr>
         <tr>
             <td align="center">II</td>
             <td>{{table1.default2RegisteredShort }}</td>
-
             <td>{{table1.default2CuredShort }}</td>
-
             <td>{{table1.default2CompletedShort }}</td>
-
             <td>{{table1.default2TxSuccessShort }}</td>
-
             <td>{{table1.default2DiedTBShort }}</td>
-
             <td>{{table1.default2DiedNotTBShort }}</td>
-
             <td>{{table1.default2FailedShort }}</td>
-
             <td>{{table1.default2DefaultedShort }}</td>
-
             <td>{{table1.default2NotAssessedShort }}</td>
-
             <td>{{table1.default2TotalShort }}</td>
         </tr>
         <tr>
             <td rowspan="2" align="center">{{"mdrtb.tb08u.afterFailure"|get_message:request.session.locale}}</td>
             <td align="center">I</td>
             <td>{{table1.failure1RegisteredShort }}</td>
-
             <td>{{table1.failure1CuredShort }}</td>
-
             <td>{{table1.failure1CompletedShort }}</td>
-
             <td>{{table1.failure1TxSuccessShort }}</td>
-
             <td>{{table1.failure1DiedTBShort }}</td>
-
             <td>{{table1.failure1DiedNotTBShort }}</td>
-
             <td>{{table1.failure1FailedShort }}</td>
-
             <td>{{table1.failure1DefaultedShort }}</td>
-
             <td>{{table1.failure1NotAssessedShort }}</td>
-
             <td>{{table1.failure1TotalShort }}</td>
         </tr>
         <tr>
             <td align="center">II</td>
             <td>{{table1.failure2RegisteredShort }}</td>
-
             <td>{{table1.failure2CuredShort }}</td>
-
             <td>{{table1.failure2CompletedShort }}</td>
-
             <td>{{table1.failure2TxSuccessShort }}</td>
-
             <td>{{table1.failure2DiedTBShort }}</td>
-
             <td>{{table1.failure2DiedNotTBShort }}</td>
-
             <td>{{table1.failure2FailedShort }}</td>
-
             <td>{{table1.failure2DefaultedShort }}</td>
-
             <td>{{table1.failure2NotAssessedShort }}</td>
-
             <td>{{table1.failure2TotalShort }}</td>
         </tr>
 
         <tr>
             <td colspan="2">{{"mdrtb.tb08u.other"|get_message:request.session.locale}}</td>
             <td>{{table1.otherRegisteredShort }}</td>
-
             <td>{{table1.otherCuredShort }}</td>
-
             <td>{{table1.otherCompletedShort }}</td>
-
             <td>{{table1.otherTxSuccessShort }}</td>
-
             <td>{{table1.otherDiedTBShort }}</td>
-
             <td>{{table1.otherDiedNotTBShort }}</td>
-
             <td>{{table1.otherFailedShort }}</td>
-
             <td>{{table1.otherDefaultedShort }}</td>
-
             <td>{{table1.otherNotAssessedShort }}</td>
-
             <td>{{table1.otherTotalShort }}</td>
         </tr>
 
         <tr>
             <td colspan="2">{{"mdrtb.tb08u.totalRow"|get_message:request.session.locale}}</td>
             <td>{{table1.totalRegisteredShort }}</td>
-
             <td>{{table1.totalCuredShort }}</td>
-
             <td>{{table1.totalCompletedShort }}</td>
-
             <td>{{table1.totalTxSuccessShort }}</td>
-
             <td>{{table1.totalDiedTBShort }}</td>
-
             <td>{{table1.totalDiedNotTBShort }}</td>
-
             <td>{{table1.totalFailedShort }}</td>
-
             <td>{{table1.totalDefaultedShort }}</td>
-
             <td>{{table1.totalNotAssessedShort }}</td>
-
             <td>{{table1.totalRegisteredShort }}</td>
         </tr>
     </table>
@@ -314,8 +230,6 @@
             <th colspan="2" align="center">{{"mdrtb.tb08u.died"|get_message:request.session.locale}}</th>
             <th rowspan="2" align="center">{{"mdrtb.tb08u.failure"|get_message:request.session.locale}}</th>
             <th rowspan="2" align="center">{{"mdrtb.tb08u.ltfu"|get_message:request.session.locale}}</th>
-
-
             <th rowspan="2" align="center">{{"mdrtb.tb08u.notAssessed"|get_message:request.session.locale}}</th>
             <th rowspan="2" align="center">{{"mdrtb.tb08u.total"|get_message:request.session.locale}}</th>
         </tr>
