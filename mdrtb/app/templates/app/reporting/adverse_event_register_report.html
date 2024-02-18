@@ -33,13 +33,13 @@
                     {{"mdrtb.tb07u.regionCityDistrict"|get_message:request.session.locale}}: <u>
                         {{ location.region.name}}/{{ location.district.name }}
                     </u><br />
-                    {{"mdrtb.tb07u.tbCoordinatorName"|get_message:request.session.locale}}: ___________________ </br>
+                    {{"mdrtb.tb07u.tbCoordinatorName"|get_message:request.session.locale}}: ___________________ <br>
                     {{"mdrtb.tb07u.signature"|get_message:request.session.locale}}: _________________
                 </td>
 
                 <td>
                     {{"mdrtb.pv.quarter"|get_message:request.session.locale}},{{"mdrtb.pv.year"|get_message:request.session.locale}}:
-                    <u>{{ request.GET.quarter }}, {{ request.GET.year }}</u></br>
+                    <u>{{ request.GET.quarter }}, {{ request.GET.year }}</u><br>
                     {{"mdrtb.pv.reportDate"|get_message:request.session.locale}}:<u>&nbsp; {{ report_date|get_report_date }}</u>
                 </td>
             </tr>

@@ -27,31 +27,25 @@
 	<!--	<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />-->
 	<!--	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>-->
 
-
-
 </head>
 
 <style>
 	.responsive {
 		width: 100%;
 	}
-
 	@media screen and (min-width: 840px) {
 		.responsive {
 			width: 50%;
 		}
 	}
-
 	.required:after {
 		content: " *";
 		color: red;
 	}
-
 	input:-webkit-autofill,
 	input:-webkit-autofill:focus {
 		transition: background-color 600000s 0s, color 600000s 0s;
 	}
-
 	input[data-autocompleted] {
 		background-color: transparent !important;
 	}
@@ -83,7 +77,6 @@
 					d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z"
 					clip-rule="evenodd" />
 			</svg>
-
 			{% elif message.tags == 'success' %}
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
 				<path fill-rule="evenodd"
@@ -102,10 +95,8 @@
 					d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z"
 					clip-rule="evenodd" />
 			</svg>
-
 			{% endif %}
 		</div>
-
 		<div>{{message}}</div>
 
 	</div>
@@ -115,36 +106,26 @@
 			$('.alert-danger').addClass('-left-40')
 			$('.alert-danger').remove()
 		}
-
 		$('.alert-er').each(() => {
 			setTimeout(() => {
 				$('.alert-er').removeClass('left-0')
 				$('.alert-er').addClass('-left-40')
-
 			}, 2000)
 			setTimeout(() => {
 				$('.alert-er').remove()
-
-
 			}, 2100)
 		})
-
-
 	</script>
 	{% endif %}
 	{% endfor %}
 	{% endif %}
-
-
 
 	<div class="scrollbar-hide">
 		{%block content%}
 		{% endblock %}
 	</div>
 	<script>
-
 		let locationByUuids;
-
 		const getLocations = async () => {
 			await $.ajax(
 				{
@@ -156,7 +137,6 @@
 								acc[location.uuid] = location;
 								return acc;
 							}, {});
-
 							locations.forEach(location => {
 								if (location.level === "region".toUpperCase()) {
 									$('#region-select').append(`<option value=${location.uuid}>${location.name}</option>`)
@@ -164,8 +144,6 @@
 							})
 							$("#region-select").prop("disabled", false);
 							$("#region-select").prop("title", "");
-
-
 						}
 					},
 					error: (err) => { }
@@ -184,17 +162,14 @@
 		let clearSubregions = () => {
 			$('#subregion-container') && $('#subregion-container').addClass('hidden')
 			$("#subregion-select").html(`<option value="">Select</option>`)
-
 		}
 		const clearDistrictsAndFacilities = () => {
-
 			$('#district-select').prop('disabled', true)
 			$('#district-select').prop('required', false)
 			$("#district-select").html(`<option value="">Select</option>`)
 			$('#facility-select').prop('disabled', true)
 			$('#facility-select').prop('required', false)
 			$("#facility-select").html(`<option value="">Select</option>`)
-
 		}
 		const insertchildren = (selectedLocation, insertInto, level) => {
 			const selectedRegion = $('#region-select').val()
@@ -212,7 +187,6 @@
 						}
 					}
 				}
-
 			}
 		}
 		const clearFacilities = () => {
@@ -239,10 +213,6 @@
 				}
 			}
 		})
-
-
-
-
 		$('#district-select').change(selectedDistrict => {
 			clearFacilities()
 			insertchildren(selectedDistrict.target.value, '#facility-select', 'facility')
@@ -251,9 +221,6 @@
 			clearDistrictsAndFacilities()
 			insertchildren(selectedSubRegion.target.value, '#district-select', 'district')
 		})
-
-
-
 	</script>
 
 </body>

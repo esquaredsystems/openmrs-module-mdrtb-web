@@ -24,26 +24,26 @@
       <div class="enrollform-section">
         <div class="input-container">
           <label class="input-label w-full required"
-            for="name">{{'mdrtb.givenname'|get_message:request.session.locale}}</label>
-          <input required class="input form-control" type="text" name="givenname"
+            for="givenname">{{'mdrtb.givenname'|get_message:request.session.locale}}</label>
+          <input required class="input form-control" type="text" id="givenname" name="givenname"
             pattern="[^0-9!@#$%^&*()_+{}[\]:;<>,.?~\\/\-=|]+" title="Name cannont contain numbers" />
         </div>
         <div class="input-container">
           <label class="input-label w-full required"
-            for="name">{{'mdrtb.familyname'|get_message:request.session.locale}}</label>
-          <input required class="input form-control" type="text" name="familyname"
+            for="familyname">{{'mdrtb.familyname'|get_message:request.session.locale}}</label>
+          <input required class="input form-control" type="text" id="familyname" name="familyname"
             pattern="[^0-9!@#$%^&*()_+{}[\]:;<>,.?~\\/\-=|]+" title="Name cannont contain numbers" />
         </div>
       </div>
       <div class="enrollform-section">
         <div class="input-container">
           <label id="dob-label" class="input-label w-full required"
-            for="name">{{'mdrtb.birthdate'|get_message:request.session.locale}}</label>
+            for="dob">{{'mdrtb.birthdate'|get_message:request.session.locale}}</label>
           <input required class="disabled:pointer-events-none input" type="date" max="2022-12-31" name="dob" id="dob" />
         </div>
         <div class="input-container ">
           <label id="age-label" class="input-label w-full required"
-            for="name">{{'mdrtb.age'|get_message:request.session.locale}}</label>
+            for="age">{{'mdrtb.age'|get_message:request.session.locale}}</label>
           <input required class="input disabled:pointer-events-none" type="number" name="age" id="age" min="1" />
         </div>
       </div>
@@ -52,7 +52,7 @@
           <label class="input-label w-full required"
             for="patientidentifiertype">{{'mdrtb.dotsIdentifier'|get_message:request.session.locale}}</label>
           <input hidden required class="input form-control" type="text" value="{{'DOTS_IDENTIFIER' | get_constant }}"
-            name="patientidentifiertype" />
+            name="patientidentifiertype" id="patientidentifiertype" />
           <input required class="input form-control" type="text" name="patientidentifier" />
         </div>
         <div class="input-container">
@@ -60,12 +60,12 @@
             for="name">{{'mdrtb.gender'|get_message:request.session.locale}}</label>
           <div class="radios-container">
             <div class="radio-container">
-              <label for="Male">{{'mdrtb.male'|get_message:request.session.locale}}</label>
-              <input required class="radio-input" name="gender" type="radio" value="M" />
+              <label for="male">{{'mdrtb.male'|get_message:request.session.locale}}</label>
+              <input required class="radio-input" id="male" name="gender" type="radio" value="M" />
             </div>
             <div class="radio-container">
-              <label for="Female">{{'mdrtb.female'|get_message:request.session.locale}}</label>
-              <input class="radio-input" required name="gender" type="radio" value="F" />
+              <label for="female">{{'mdrtb.female'|get_message:request.session.locale}}</label>
+              <input class="radio-input" required id="female" name="gender" type="radio" value="F" />
             </div>
           </div>
         </div>

@@ -140,8 +140,9 @@
             {% for row in results.missingForm89 %}
             <tr>
 
-                <td colspan="2"><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}"
-                        target="_blank">{{row.patientName}}</td>
+                <td colspan="2">
+                    <a href="{% url 'enrolledprograms' uuid=row.patientUuid %}" target="_blank">{{row.patientName}}</a>
+                </td>
                 <td>{{ row.dateOfBirth | string_to_date }}</td>
                 <td align="center">{{ row.gender }}</td>
             </tr>
