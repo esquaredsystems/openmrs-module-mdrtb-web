@@ -297,25 +297,36 @@
           <div class="input-container">
             <label
               class="tb03-form-label w-full">{{'mdrtb.tb03.siteOfDisease'|get_message:request.session.locale}}</label>
-            <select name="{{'ANATOMICAL_SITE_OF_TB' | get_concept }}" class="input form-control" disabled>
-              <option value="{site_of_TB.uuid}">{{site_of_TB.name}}</option>
-            </select>
-          </div>
-        </div>
-        <div class="flex items-center justify-between space-x-6">
-          <div class="input-container">
-            <label
-              class="tb03-form-label w-full">{{'mdrtb.form89.epLocation'|get_message:request.session.locale}}</label>
             <select name="{{'ANATOMICAL_SITE_OF_TB' | get_concept }}" class="input form-control">
               {% if state == 'edit' %}
 
-              <option selected value="{{form.pulSite.uuid}}">{{form.pulSite.display}}</option>
+              <option selected value="{{form.anatomicalSite.uuid}}">{{form.anatomicalSite.display}}</option>
               {% else %}
 
               <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
 
               {% for concept in concepts.siteoftbdisease %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label
+              class="tb03-form-label w-full">{{'mdrtb.form89.eptbLocation'|get_message:request.session.locale}}</label>
+            <select name="{{'LOCATION_OF_EPTB' | get_concept }}" class="input form-control">
+              {% if state == 'edit' %}
+
+              <option selected value="{{form.eptbSite.uuid}}">{{form.eptbSite.display}}</option>
+              {% else %}
+
+              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+              {% endif %}
+
+              {% for concept in concepts.locationofextrapulmonarytb %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>

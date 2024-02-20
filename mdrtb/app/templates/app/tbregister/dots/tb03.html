@@ -209,7 +209,7 @@
               {% else %}
               <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
-              {% for concept in concepts.siteoftbdisease %}
+              {% for concept in concepts.anatomicalSite %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>

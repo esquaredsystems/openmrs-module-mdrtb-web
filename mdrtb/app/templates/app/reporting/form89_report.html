@@ -56,9 +56,9 @@
                 <th class="normal" rowspan="2">
                     {{"mdrtb.form89.otherMethodOfDetection"|get_message:request.session.locale}}</th>
                 <th class="normal" rowspan="2">{{"mdrtb.tb03.siteOfDisease"|get_message:request.session.locale}}</th>
-                <th class="normal" rowspan="2">{{"mdrtb.form89.epSite"|get_message:request.session.locale}}</th>
-                <th class="normal" rowspan="2">{{"mdrtb.form89.epLocation"|get_message:request.session.locale}}</th>
-                <th class="normal" rowspan="2">{{"mdrtb.form89.pSite"|get_message:request.session.locale}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.eptbSite"|get_message:request.session.locale}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.eptbLocation"|get_message:request.session.locale}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.ptbSite"|get_message:request.session.locale}}</th>
                 <th class="normal" rowspan="2">{{"mdrtb.form89.presenceOfDecay"|get_message:request.session.locale}}
                 </th>
                 <th class="normal" rowspan="2">{{"mdrtb.form89.dateOfDecaySurvey"|get_message:request.session.locale}}
@@ -121,9 +121,6 @@
 
             </tr>
 
-
-
-
             {% for row in patientSet %}
             <tr {% if forloop.counter|divisibleby:2 %} bgcolor="#D3D3D3" {% endif %}>
                 <td>
@@ -138,33 +135,32 @@
                 <td>{{ row.personAddress.countyDistrict }}</td>
                 <td>{{ row.personAddress.region }}</td>
                 <td>{{ row.personAddress.address1 }}</td>
-                <td>{{ row.form89.pregnant.displayString }}</td>
-                <td>{{ row.form89.locationType.displayString }}</td>
-                <td>{{ row.form89.profession.displayString }}</td>
-                <td>{{ row.form89.populationCategory.displayString }}</td>
-                <td>{{ row.form89.countryOfOrigin }}</td>
-                <td>{{ row.form89.placeOfDetection.displayString }}</td>
+                <td>{{ row.pregnant.display }}</td>
+                <td>{{ row.locationType.display }}</td>
+                <td>{{ row.profession.display }}</td>
+                <td>{{ row.populationCategory.display }}</td>
+                <td>{{ row.countryOfOrigin }}</td>
+                <td>{{ row.placeOfDetection.display }}</td>
                 <td>{{ row.dateFirstSeekingHelp }}</td>
-                <td>{{ row.form89.circumstancesOfDetection.displayString }}</td>
-                <td>{{ row.form89.cityOfOrigin }}</td>
+                <td>{{ row.circumstancesOfDetection.display }}</td>
+                <td>{{ row.cityOfOrigin }}</td>
                 <td>{{ row.dateOfReturn }}</td>
-                <td>{{ row.form89.methodOfDetection.displayString }}</td>
-                <td>{{ row.form89.otherMethodOfDetection }}</td>
-                <td>{{ row.form89.anatomicalSite.displayString }}</td>
-                <td>{{ row.form89.epSite.displayString }}</td>
-                <td>{{ row.form89.epLocation.displayString }}</td>
-                <td>{{ row.form89.pulSite.displayString }}</td>
-                <td>{{ row.form89.presenceOfDecay.displayString }}</td>
+                <td>{{ row.methodOfDetection.display }}</td>
+                <td>{{ row.otherMethodOfDetection }}</td>
+                <td>{{ row.anatomicalSite.display }}</td>
+                <td>{{ row.eptbSite.display }}</td>
+                <td>{{ row.eptbLocation.display }}</td>
+                <td>{{ row.ptbLocation.display }}</td>
+                <td>{{ row.presenceOfDecay.display }}</td>
                 <td>{{ row.dateOfDecaySurvey }}</td>
-                <td>{{ row.form89.complication }}</td>
-
+                <td>{{ row.complication }}</td>
 
                 <td align="center">{{row.diagnosticSmearResult }}</td>
                 <td>{{row.diagnosticSmearDate }}</td>
                 <td>{{row.diagnosticSmearLab }}</td>
                 <td>{{row.diagnosticSmearTestNumber }}</td>
 
-                <td align="center">{{row.xpertMTBResult }} {{row.xpertRIFResult }} </td>
+                <td align="center">{{row.xpertMTBResult }} </td>
                 <td>{{row.xpertTestDate }}</td>
                 <td>{{row.xpertLab }}</td>
                 <td>{{row.xpertTestNumber }}</td>
@@ -183,28 +179,25 @@
                 <td>{{row.hain2Lab }}</td>
                 <td>{{row.hain2TestNumber }}</td>
 
-                <td>{{ row.form89.diabetes.displayString }}</td>
-                <td>{{ row.form89.cnsdl.displayString }}</td>
-                <td>{{ row.form89.htHeartDisease.displayString }}</td>
-                <td>{{ row.form89.ulcer.displayString }}</td>
-                <td>{{ row.form89.mentalDisorder.displayString }}</td>
-                <td>{{ row.form89.ibc20.displayString }}</td>
-                <td>{{ row.form89.cancer.displayString }}</td>
-                <td>{{ row.form89.hepatitis.displayString }}</td>
-                <td>{{ row.form89.kidneyDisease.displayString }}</td>
-                <td>{{ row.form89.otherDisease }}</td>
+                <td>{{ row.diabetes.display }}</td>
+                <td>{{ row.cnsdl.display }}</td>
+                <td>{{ row.htHeartDisease.display }}</td>
+                <td>{{ row.ulcer.display }}</td>
+                <td>{{ row.mentalDisorder.display }}</td>
+                <td>{{ row.ibc20.display }}</td>
+                <td>{{ row.cancer.display }}</td>
+                <td>{{ row.hepatitis.display }}</td>
+                <td>{{ row.kidneyDisease.display }}</td>
+                <td>{{ row.otherDisease }}</td>
                 <td>{{row.cmacDate }} </td>
-                <td>{{row.form89.cmacNumber }} </td>
-                <td>{{row.form89.prescribedTreatment.displayString }} </td>
-                <td>{{row.form89.placeOfCommission.displayString }} </td>
-                <td>{{row.form89.nameOfDoctor }} </td>
+                <td>{{row.cmacNumber }} </td>
+                <td>{{row.prescribedTreatment.display }} </td>
+                <td>{{row.placeOfCommission.display }} </td>
+                <td>{{row.nameOfDoctor }} </td>
                 <td><a
                         href="{{ pageContext.request.contextPath }}/module/mdrtb/form/form89.form?patientProgramId={{ row.form89.patientProgramId }}&encounterId={{ row.form89.encounter.id }}">{{"mdrtb.view"|get_message:request.session.locale}}</a>
                 </td>
             </tr>
-
-
-
             {% endfor %}
         </table>
 
