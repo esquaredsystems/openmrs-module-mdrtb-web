@@ -168,6 +168,7 @@ class Concepts(enum.Enum):
     PULMONARY_TB = "31b6002c-0370-102d-b0e3-001ec94a0cc1"
     EXTRA_PULMONARY_TB = "31b5fe7e-0370-102d-b0e3-001ec94a0cc1"
     ANATOMICAL_SITE_OF_TB = "31b4c61c-0370-102d-b0e3-001ec94a0cc1"
+    LOCATION_OF_EPTB = "dfcaa03e-6d07-11ee-af2b-e86a64440f18"
 
     # Antiretrovirals (for HIV status section and HIV regimens)
     ANTIRETROVIRALS = "31b2955e-0370-102d-b0e3-001ec94a0cc1"

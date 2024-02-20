@@ -140,9 +140,8 @@ def create_update_tb03(req, patientuuid, data, formid=None):
                                     "person": obs["person"]["uuid"],
                                     "obsDatetime": obs["obsDatetime"],
                                     "concept": obs["concept"]["uuid"],
-                                    "value": value
-                                    if not cu.is_date(value)
-                                    else cu.date_to_sql_format(value),
+                                    "value": value if cu.is_uuid(value)
+                                    else (cu.date_to_sql_format(value) if cu.is_date(value) else value)
                                 }
                             )
 
@@ -268,7 +267,7 @@ def remove_tb03_duplicates(concepts, form_data):
         concepts.get("resultofhivtest", []), form_data.get("hivStatus", None)
     )
     remove_duplicate_concepts(
-        concepts.get("siteoftbdisease", []), form_data.get("anatomicalSite", None)
+        concepts.get("anatomicalSite", []), form_data.get("anatomicalSite", None)
     )
     remove_duplicate_concepts(
         concepts.get("tuberculosispatientcategory", []),
@@ -427,7 +426,7 @@ def remove_tb03u_duplicates(concepts, form_data):
         None
     """
     remove_duplicate_concepts(
-        concepts.get("siteoftbdisease", []), form_data.get("anatomicalSite", None)
+        concepts.get("anatomicalSite", []), form_data.get("anatomicalSite", None)
     )
     remove_duplicate_concepts(
         concepts.get("mdrtbstatus", []), form_data.get("mdrStatus", None)
@@ -719,9 +718,8 @@ def create_update_form89(req, patientuuid, data, formid=None):
                                     "person": obs["person"]["uuid"],
                                     "obsDatetime": obs["obsDatetime"],
                                     "concept": obs["concept"]["uuid"],
-                                    "value": value
-                                    if not cu.is_date(value)
-                                    else cu.date_to_sql_format(value),
+                                    "value": value if cu.is_uuid(value)
+                                    else (cu.date_to_sql_format(value) if cu.is_date(value) else value)
                                 }
                             )
         except Exception:
@@ -832,7 +830,7 @@ def remove_form89_duplicates(concepts, form_data):
         clone_concepts.get("profession", []), form_data.get("profession", None)
     )
     remove_duplicate_concepts(
-        clone_concepts.get("siteoftbdisease", []), form_data.get("pulSite", None)
+        clone_concepts.get("anatomicalSite", []), form_data.get("anatomicalSite", None)
     )
     return clone_concepts
 
@@ -1250,38 +1248,6 @@ def create_update_tranfer_out_form(req, patientuuid, data, formid=None):
             return True
     except Exception as e:
         raise Exception(str(e))
-
-
-def get_patient_site_of_TB(req, patientuuid):
-    """
-    Retrieves the site of TB for a patient.
-
-    Parameters:
-        req: The request object.
-        patientuuid (str): The UUID of the patient.
-
-    Returns:
-        dict: A dictionary containing the UUID and name of the site of TB.
-    """
-    try:
-        status, response = ru.get(
-            req,
-            "encounter",
-            {
-                "patient": patientuuid,
-                "encounterType": EncounterType.TB03.value,
-                "v": "custom:(obs)",
-            },
-        )
-        site_of_tb = {}
-        if response and len(response["results"]) > 0:
-            for ob in response["results"][0]["obs"]:
-                if ob["concept"]["uuid"] == Concepts.ANATOMICAL_SITE_OF_TB.value:
-                    site_of_tb["uuid"] = ob["value"]["uuid"]
-                    site_of_tb["name"] = ob["value"]["display"]
-        return site_of_tb
-    except Exception as e:
-        raise Exception(e)
 
 
 def get_ae_form_with_symptoms(req, patientuuid):

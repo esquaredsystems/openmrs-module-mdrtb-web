@@ -176,6 +176,7 @@ def render_enroll_patient(req):
     context = {"title": title}
     if req.method == "POST":
         try:
+            # Some UUIDs should be sent as actual text values
             status, response = pu.create_patient(req, req.POST)
             if status:
                 return redirect("dotsprogramenroll", uuid=response["uuid"])
@@ -1202,17 +1203,14 @@ def render_form_89(req, uuid):
             Concepts.CIRCUMSTANCES_OF_DETECTION.value,
             Concepts.METHOD_OF_DETECTION.value,
             Concepts.ANATOMICAL_SITE_OF_TB.value,
+            Concepts.LOCATION_OF_EPTB.value,
             Concepts.PRESCRIBED_TREATMENT.value,
             Concepts.PLACE_OF_CENTRAL_COMMISSION.value,
         ]
 
         concepts = fu.get_form_concepts(form89_concepts, req)
 
-        site_of_tb = fu.get_patient_site_of_TB(req, uuid)
-
         context["concepts"] = concepts
-
-        context["site_of_TB"] = site_of_tb
 
         mu.add_url_to_breadcrumb(req, context["title"])
 
