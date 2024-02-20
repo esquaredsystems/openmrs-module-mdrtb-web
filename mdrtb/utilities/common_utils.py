@@ -3,6 +3,10 @@ from datetime import datetime, date
 from dateutil import parser
 import utilities.metadata_util as mu
 from bs4 import BeautifulSoup
+import re
+
+
+date_regex = re.compile(r'\b(?:\d{8}|\d{4}-\d{2}-\d{2}|\d{2}-\d{2}-\d{4}|\d{2}/\d{2}/\d{4}|\d{2}/\d{2}/\d{2})\b')
 
 
 def get_project_root() -> Path:
@@ -171,6 +175,13 @@ def date_to_sql_format(date):
         return date
 
 
+def is_uuid(string):
+    if string is str:
+        uuid_regex = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+        return uuid_regex.match(string)
+    return False
+
+
 def is_date(string, fuzzy=False):
     """
     Return whether the string can be interpreted as a date.
@@ -180,9 +191,9 @@ def is_date(string, fuzzy=False):
     """
     try:
         if type(string) == str:
-            parser.parse(string, fuzzy=fuzzy)
-            return True
-        return string
+            if date_regex.match(string):
+                parser.parse(string, fuzzy=fuzzy)
+                return True
     except ValueError:
         return False
 
