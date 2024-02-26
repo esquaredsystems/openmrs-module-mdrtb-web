@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
+from datetime import datetime
 import utilities.restapi_utils as ru
 import utilities.metadata_util as mu
 from django.core.cache import cache
@@ -177,7 +178,7 @@ def render_enroll_patient(req):
     if req.method == "POST":
         try:
             # Some UUIDs should be sent as actual text values
-            status, response = pu.create_patient(req, req.POST)
+            status, response = pu.save_patient(req, req.POST)
             if status:
                 return redirect("dotsprogramenroll", uuid=response["uuid"])
         except Exception as e:
@@ -200,18 +201,44 @@ def render_enroll_patient(req):
         )
 
 
+def render_edit_patient(req, uuid):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    title = mu.get_global_msgs("mdrtb.enrollNewPatient", locale=req.session["locale"])
+    context = {"title": title}
+    if req.method == "POST":
+        try:
+            status, response = pu.save_patient(req, req.POST, uuid)
+            if status:
+                return redirect("enrolledprograms", uuid=uuid)
+        except Exception as e:
+            log_and_show_error(e, req)
+    else:
+        privileges_required = [Privileges.ADD_PATIENTS]
+        context.update(check_privileges(req, privileges_required))
+        if not context["add_patients_privilege"]:
+            raise Exception("Privileges required: Add Patients")
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+        context["identifiertypes"] = mu.get_patient_identifier_types(req)
+        mu.add_url_to_breadcrumb(req, context["title"])
+        context["patient"] = pu.get_patient(req, uuid)
+        if context["patient"]["identifiers"]:
+            context["patient"]["dotsidentifier"] = context["patient"]["identifiers"][0]["identifier"]
+        return render(req, "app/tbregister/edit_patient.html", context=context)
+
+
 def render_enrolled_programs(req, uuid):
     privileges_required = [Privileges.VIEW_PATIENT_PROGRAMS]
     if not check_if_session_alive(req):
         return redirect("login")
     title = (
-            mu.get_global_msgs(
-                "Program.enrolled", locale=req.session["locale"], source="OpenMRS"
-            )
-            + " "
-            + mu.get_global_msgs(
-        "Program.header", locale=req.session["locale"], source="OpenMRS"
-    )
+        mu.get_global_msgs(
+            "Program.enrolled", locale=req.session["locale"], source="OpenMRS"
+        )
+        + " "
+        + mu.get_global_msgs(
+            "Program.header", locale=req.session["locale"], source="OpenMRS"
+        )
     )
     context = {
         "title": title,
@@ -238,7 +265,6 @@ def render_enrolled_programs(req, uuid):
         log_and_show_error(e, req)
     finally:
         return render(req, "app/tbregister/enrolled_programs.html", context=context)
-        # return redirect(req.session["redirect_url"])
 
 
 def render_enroll_in_dots_program(req, uuid):
@@ -499,14 +525,12 @@ def render_tb03_form(req, uuid):
 
             if response:
                 messages.success(req, "Form created successfully")
-
                 redirect_to = "/tbdashboard/patient/{}?program={}".format(
                     uuid,
                     req.session["current_patient_program_flow"]["current_program"][
                         "uuid"
                     ],
                 )
-
                 return redirect(redirect_to)
 
         except Exception as e:

@@ -22,6 +22,11 @@ urlpatterns = [
     path("report", views.index, name="report"),
     path("enrollpatient", views.render_enroll_patient, name="enrollPatient"),
     path(
+        "editpatient/<str:uuid>",
+        views.render_edit_patient,
+        name="editpatient",
+    ),
+    path(
         "patient/<str:uuid>/dotsprogramenroll",
         views.render_enroll_in_dots_program,
         name="dotsprogramenroll",

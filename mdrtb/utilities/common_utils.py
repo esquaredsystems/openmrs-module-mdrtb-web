@@ -156,7 +156,7 @@ def remove_obj_from_objarr(objs, uuid_to_remove, key=None):
     return None
 
 
-def date_to_sql_format(date):
+def date_to_sql_datetime(date):
     """
     Converts a date string in the format "YYYY-MM-DD" to the SQL datetime format "YYYY-MM-DD HH:MM:SS".
 

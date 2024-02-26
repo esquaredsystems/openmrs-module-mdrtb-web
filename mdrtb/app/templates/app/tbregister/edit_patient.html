@@ -1,0 +1,164 @@
+{% extends 'app/base/base.html' %}
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+{%block content%}
+
+{% if not add_patients_privilege %}
+  {% include 'app/components/authorization_error.html' %}
+{% else %}
+
+<form onsubmit="disableSubmit()" action="{% url 'editpatient' uuid=patient.uuid %}" method="post"
+  class="enroll-form mx-auto responsive">
+  {% csrf_token %}
+  <div class="enrollform-sections-container">
+
+    <h1 class="page-title">
+      {{'mdrtb.editPatient'|get_message:request.session.locale}}
+    </h1>
+    <div class="input-container">
+      {% if patient.dotsidentifier %}
+        <label class="input-label w-full required"
+          for="patientidentifiertype">{{'mdrtb.dotsIdentifier'|get_message:request.session.locale}}</label>
+        <input hidden required class="input form-control" type="text" value="{{'DOTS_IDENTIFIER' | get_constant }}"
+          name="patientidentifiertype" id="patientidentifiertype" />
+        <input disabled class="input form-control" type="text" name="patientidentifier" value="{{patient.dotsidentifier}}"/>
+      {% endif %}
+    </div>
+    <div class="enroll_form_bg">
+      <div class="enrollform-section">
+        <div class="input-container">
+          <label class="input-label w-full required"
+            for="givenname">{{'mdrtb.givenname'|get_message:request.session.locale}}</label>
+          <input required class="input form-control" type="text" id="givenname" name="givenname"
+            pattern="[^0-9!@#$%^&*()_+{}[\]:;<>,.?~\\/\-=|]+" title="Name cannont contain numbers"
+            value="{{patient.givenName}}"
+          />
+        </div>
+        <div class="input-container">
+          <label class="input-label w-full required"
+            for="familyname">{{'mdrtb.familyname'|get_message:request.session.locale}}</label>
+          <input required class="input form-control" type="text" id="familyname" name="familyname"
+            pattern="[^0-9!@#$%^&*()_+{}[\]:;<>,.?~\\/\-=|]+" title="Name cannont contain numbers"
+            value="{{patient.familyName}}"
+          />
+        </div>
+      </div>
+      <div class="enrollform-section">
+        <div class="input-container">
+          <label id="dob-label" class="input-label w-full required"
+            for="dob">{{'mdrtb.birthdate'|get_message:request.session.locale}}</label>
+          <input required class="disabled:pointer-events-none input" type="date" max="2100-12-31"
+            name="dob" id="dob" value="{{patient.dob}}"/>
+        </div>
+        <div class="input-container ">
+          <label id="age-label" class="input-label w-full required"
+            for="age">{{'mdrtb.age'|get_message:request.session.locale}}</label>
+          <input required class="input disabled:pointer-events-none" type="number" name="age"
+            id="age" min="1" value="{{patient.age}}"/>
+        </div>
+      </div>
+      <div class="enrollform-section">
+        <div class="input-container">
+          <label class="input-label required w-full">{{'mdrtb.gender'|get_message:request.session.locale}}</label>
+            <div class="radios-container">
+              <div class="radio-container">
+                <label for="Male">{{'mdrtb.male'|get_message:request.session.locale}}</label>
+                <input required class="radio-input" id="Male" name="gender" type="radio" value="M"
+                       {% if patient.gender == 'M' %} checked {% endif %}/>
+              </div>
+              <div class="radio-container">
+                <label for="Female">{{'mdrtb.female'|get_message:request.session.locale}}</label>
+                <input class="radio-input" required id="Female" name="gender" type="radio" value="F"
+                       {% if patient.gender == 'F' %} checked {% endif %}/>
+              </div>
+            </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="enroll_form_bg">
+      {% include 'app/components/locations.html' %}
+      <div class="input-container">
+        <label class="input-label w-1/6 required"
+          for="address">{{'mdrtb.address'|get_message:request.session.locale}}</label>
+        <input required class="input form-control" type="text" id="address" name="address"
+          value="{{patient.address1|default:''}}"
+        />
+      </div>
+      <div class="input-container">
+        <label class="input-label  w-1/6 opacity-0"
+          for="address2">{{'mdrtb.address'|get_message:request.session.locale}}</label>
+        <input class="input form-control" type="text" id="address2" name="address2"
+          value="{{patient.address2|default:''}}"
+        />
+      </div>
+    </div>
+
+    <div class="flex-center">
+      <button type="submit" id="submitBtn"
+        class="button-primary w-1/5">{{'mdrtb.save'|get_message:request.session.locale}}</button>
+      <a href="javascript:history.go(-1)" class="cancel-button">
+        {{'general.cancel'|get_message_openMRS:request.session.locale}} </a>
+    </div>
+  </div>
+</form>
+
+{% endif %}
+
+<script defer>
+  let date = new Date();
+  let maxDate = date.toISOString().substring(0, 10);
+  const disableSubmit = () => {
+    $('#submitBtn').prop('disabled', true)
+    $('#submitBtn').removeClass('button-primary')
+    $('#submitBtn').html(`
+      <lord-icon trigger="loop"
+          colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+      </lord-icon>`)
+  }
+  $('input[type="date"]').prop('max', maxDate)
+  $("#dob").change(function () {
+    if ($("#dob").val() != "") {
+      $("#age").prop("disabled", true);
+      $("#age-label").removeClass("required");
+      $("#age").prop("title", "You can either enter age or date of birth");
+    } else {
+      $("#age").prop("disabled", false);
+    }
+  });
+  $("#age").change(function () {
+    if ($("#age").val() != "") {
+      $("#dob").prop("disabled", true);
+      $("#dob-label").removeClass("required");
+    } else {
+      $("#dob").prop("disabled", false);
+    }
+  });
+  $("#voided").change(function () {
+    if ($("#voided").prop("checked")) {
+      $("#voided-container").removeClass("hidden");
+      $("#voided-container").addClass("flex");
+    } else {
+      $("#voided-container").addClass("hidden");
+      $("#voided-container").removeClass("flex");
+    }
+  });
+  $(window).on("load", function() {
+    // Set locations as per the data
+    const country = "{{ patient.country }}";
+    $("#country-select").val(country.trim());
+    const region = "{{ patient.stateProvince }}".trim();
+    const $regionSelect = $("#region-select");
+    $regionSelect.val(region);
+    $regionSelect.change();
+    const district = "{{ patient.countyDistrict }}";
+    const $districtSelect = $("#district-select");
+    $districtSelect.val(district);
+  });
+
+</script>
+
+{% endblock %}

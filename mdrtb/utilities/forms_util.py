@@ -141,7 +141,7 @@ def create_update_tb03(req, patientuuid, data, formid=None):
                                     "obsDatetime": obs["obsDatetime"],
                                     "concept": obs["concept"]["uuid"],
                                     "value": value if cu.is_uuid(value)
-                                    else (cu.date_to_sql_format(value) if cu.is_date(value) else value)
+                                    else (cu.date_to_sql_datetime(value) if cu.is_date(value) else value)
                                 }
                             )
 
@@ -176,7 +176,7 @@ def create_update_tb03(req, patientuuid, data, formid=None):
                         "concept": key,
                         "value": value
                         if not cu.is_date(value)
-                        else cu.date_to_sql_format(value),
+                        else cu.date_to_sql_datetime(value),
                     }
                 )
     try:
@@ -336,7 +336,7 @@ def create_update_tb03u(req, patientuuid, data, formid=None):
                                     "concept": obs["concept"]["uuid"],
                                     "value": value
                                     if not cu.is_date(value)
-                                    else cu.date_to_sql_format(value),
+                                    else cu.date_to_sql_datetime(value),
                                 }
                             )
         except Exception as e:
@@ -380,7 +380,7 @@ def create_update_tb03u(req, patientuuid, data, formid=None):
                         "concept": key,
                         "value": value
                         if not cu.is_date(value)
-                        else cu.date_to_sql_format(value),
+                        else cu.date_to_sql_datetime(value),
                     }
                 )
     try:
@@ -514,7 +514,7 @@ def create_update_adverse_event(req, patientuuid, data, formid=None):
                                     "concept": obs["concept"]["uuid"],
                                     "value": value
                                     if not cu.is_date(value)
-                                    else cu.date_to_sql_format(value),
+                                    else cu.date_to_sql_datetime(value),
                                 }
                             )
         except Exception:
@@ -551,7 +551,7 @@ def create_update_adverse_event(req, patientuuid, data, formid=None):
                         "concept": key,
                         "value": value
                         if not cu.is_date(value)
-                        else cu.date_to_sql_format(value),
+                        else cu.date_to_sql_datetime(value),
                     }
                 )
     try:
@@ -719,7 +719,7 @@ def create_update_form89(req, patientuuid, data, formid=None):
                                     "obsDatetime": obs["obsDatetime"],
                                     "concept": obs["concept"]["uuid"],
                                     "value": value if cu.is_uuid(value)
-                                    else (cu.date_to_sql_format(value) if cu.is_date(value) else value)
+                                    else (cu.date_to_sql_datetime(value) if cu.is_date(value) else value)
                                 }
                             )
         except Exception:
@@ -752,7 +752,7 @@ def create_update_form89(req, patientuuid, data, formid=None):
                         "concept": key,
                         "value": value
                         if not cu.is_date(value)
-                        else cu.date_to_sql_format(value),
+                        else cu.date_to_sql_datetime(value),
                     }
                 )
     try:
@@ -892,7 +892,7 @@ def create_update_regimen_form(req, patientuuid, data, formid=None):
                                     "concept": obs["concept"]["uuid"],
                                     "value": value
                                     if not cu.is_date(value)
-                                    else cu.date_to_sql_format(value),
+                                    else cu.date_to_sql_datetime(value),
                                 }
                             )
         except Exception as e:
@@ -929,7 +929,7 @@ def create_update_regimen_form(req, patientuuid, data, formid=None):
                         "concept": key,
                         "value": value
                         if not cu.is_date(value)
-                        else cu.date_to_sql_format(value),
+                        else cu.date_to_sql_datetime(value),
                     }
                 )
     try:
@@ -1076,7 +1076,7 @@ def create_update_drug_resistence_form(req, patientuuid, data, formid=None):
                                     "concept": obs["concept"]["uuid"],
                                     "value": value
                                     if not cu.is_date(value)
-                                    else cu.date_to_sql_format(value),
+                                    else cu.date_to_sql_datetime(value),
                                 }
                             )
         except Exception as e:
@@ -1111,7 +1111,7 @@ def create_update_drug_resistence_form(req, patientuuid, data, formid=None):
                         "concept": key,
                         "value": value
                         if not cu.is_date(value)
-                        else cu.date_to_sql_format(value),
+                        else cu.date_to_sql_datetime(value),
                     }
                 )
     try:

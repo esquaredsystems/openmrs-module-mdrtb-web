@@ -3,9 +3,11 @@ from utilities import restapi_utils as ru
 from utilities import metadata_util as mu
 from utilities import forms_util as fu
 from utilities import commonlab_util as cu
+from utilities import locations_util as lu
 from resources.enums.constants import Constants
 from resources.enums.mdrtbConcepts import Concepts
 from resources.enums.encounterType import EncounterType
+from datetime import datetime
 import logging
 
 logger = logging.getLogger("django")
@@ -31,9 +33,22 @@ def get_patient(req, uuid):
     if status:
         patient["uuid"] = uuid
         patient["name"] = patient_data["person"]["display"]
+        if patient_data["person"]["preferredName"]:
+            patient["givenName"] = patient_data["person"]["preferredName"]["givenName"]
+            patient["familyName"] = patient_data["person"]["preferredName"]["familyName"]
+            patient["middleName"] = patient_data["person"]["preferredName"]["middleName"]
         patient["age"] = patient_data["person"]["age"]
         patient["dob"] = patient_data["person"]["birthdate"]
+        dob_datetime = datetime.strptime(patient["dob"], '%Y-%m-%dT%H:%M:%S.%f%z')
+        patient["dob"] = dob_datetime.strftime('%Y-%m-%d')
         patient["gender"] = patient_data["person"]["gender"]
+        if patient_data["person"]["preferredAddress"]:
+            patient["address1"] = patient_data["person"]["preferredAddress"]["address1"]
+            patient["address2"] = patient_data["person"]["preferredAddress"]["address2"]
+            patient["cityVillage"] = patient_data["person"]["preferredAddress"]["cityVillage"]
+            patient["stateProvince"] = patient_data["person"]["preferredAddress"]["stateProvince"]
+            patient["countyDistrict"] = patient_data["person"]["preferredAddress"]["countyDistrict"]
+            patient["country"] = patient_data["person"]["preferredAddress"]["country"]
         patient["address"] = patient_data["person"]["preferredAddress"]["display"]
         patient["identifiers"] = patient_data["identifiers"]
         patient["auditInfo"] = patient_data["auditInfo"]
@@ -61,13 +76,12 @@ def get_patient_encounters(req, uuid):
         return None
 
 
-def create_patient(req, data):
+def save_patient(req, data, uuid=None):
     """
-    Creates a new patient with the provided data.
-
+    Creates or updates a new patient with the provided data.
     Parameters:
         req (Request): The request object.
-        data (dict): The data for creating the patient. It should contain the following fields:
+        data (dict): The data for creating or updating the patient:
             - patientidentifier (str): The patient's identifier.
             - patientidentifiertype (str): The type of the patient identifier.
             - district (str): The location of the patient (district or facility).
@@ -84,31 +98,26 @@ def create_patient(req, data):
             - causeofdeath (str, optional): The cause of the patient's death.
             - voided (bool, optional): Indicates if the patient is voided.
             - reasontovoid (str, optional): The reason for voiding the patient.
+        uuid (str, optional): The UUID of the patient to update (if provided).
 
     Returns:
-        tuple: A tuple containing the status (bool) indicating if the patient creation was successful and the response (dict)
-        containing the created patient information if successful, or an exception if an error occurred during the creation process.
+        tuple: A tuple containing the status (bool) indicating if the patient was successfully saved and the response (dict)
+        containing the created or updated patient information if successful, or an exception if an error occurred during the process.
     """
-
     patient_info = {
-        "identifiers": [
-            {
-                "identifier": data["patientidentifier"],
-                "identifierType": data["patientidentifiertype"],
-                "location": data["district"]
-                if "facility" not in data
-                else data["facility"],
-            }
-        ],
         "person": {
             "names": [
-                {"givenName": data["givenname"], "familyName": data["familyname"]}
+                {
+                    "givenName": data["givenname"], "familyName": data["familyname"]
+                }
             ],
             "gender": data["gender"],
             "addresses": [
                 {
                     "address1": data["address"],
+                    "address2": data["address2"],
                     "stateProvince": data["region"],
+                    "countyDistrict": data["district"],
                     "country": data["country"],
                 }
             ],
@@ -132,7 +141,17 @@ def create_patient(req, data):
         patient_info["person"]["reasonToVoid"] = data["reasontovoid"]
 
     try:
-        status, response = ru.post(req, "patient", patient_info)
+        if uuid:  # If UUID provided, it's an update
+            status, response = ru.post(req, f"patient/{uuid}", patient_info)
+        else:  # Otherwise, create a new record
+            patient_info["identifiers"] = [
+                {
+                    "identifier": data["patientidentifier"],
+                    "identifierType": data["patientidentifiertype"],
+                    "location": data["district"] if "facility" not in data else data["facility"],
+                }
+            ]
+            status, response = ru.post(req, "patient", patient_info)
         if status:
             location_enrolled_in = data.get(
                 "facility", data.get("district", data.get("region", None))

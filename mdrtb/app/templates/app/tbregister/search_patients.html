@@ -69,12 +69,11 @@
             if (data.error) {
               $('#search-results').html(
                 `
-      <div class="patient-notfound-box">
-        <h3>
-          Error finding patient
-          </h3>
-    </div>
-      `
+              <div class="patient-notfound-box">
+                <h3>
+                  Error finding patient
+                </h3>
+              </div>`
               )
             }
             else if (data.results.length === 0) {

@@ -142,9 +142,7 @@
 		{% endblock %}
 	</div>
 	<script>
-
 		let locationByUuids;
-
 		const getLocations = async () => {
 			await $.ajax(
 				{
@@ -164,8 +162,6 @@
 							})
 							$("#region-select").prop("disabled", false);
 							$("#region-select").prop("title", "");
-
-
 						}
 					},
 					error: (err) => { }
@@ -239,10 +235,6 @@
 				}
 			}
 		})
-
-
-
-
 		$('#district-select').change(selectedDistrict => {
 			clearFacilities()
 			insertchildren(selectedDistrict.target.value, '#facility-select', 'facility')
@@ -251,9 +243,6 @@
 			clearDistrictsAndFacilities()
 			insertchildren(selectedSubRegion.target.value, '#district-select', 'district')
 		})
-
-
-
 	</script>
 
 </body>

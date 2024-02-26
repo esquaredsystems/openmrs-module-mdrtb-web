@@ -30,7 +30,7 @@
                 <th class="rotate" rowspan="3">
                     <div><span>{{"mdrtb.tb03.tb03registration"|get_message:request.session.locale}}</span></div>
                 </th>
-                <th class="rotate" rowspan="3">
+                <th class="normal" rowspan="3">
                     <div><span>{{"mdrtb.tb03.fullName"|get_message:request.session.locale}}</span></div>
                 </th>
                 <th class="rotate" rowspan="3">
@@ -42,10 +42,10 @@
                 <th class="rotate" rowspan="3">
                     <div><span>{{"mdrtb.tb03.dateOfBirth"|get_message:request.session.locale}}</span></div>
                 </th>
-                <th class="rotate" rowspan="3">
+                <th class="normal" rowspan="3">
                     <div><span>{{"mdrtb.tb03.address"|get_message:request.session.locale}}</span></div>
                 </th>
-                <th class="" rowspan="3">
+                <th class="rotate" rowspan="3">
                     <div><span>{{"mdrtb.tb03.addressRegII"|get_message:request.session.locale}}</span></div>
                 </th>
                 <th class="rotate" rowspan="3">
@@ -225,12 +225,9 @@
                 <th class="normal" rowspan="2">
                     <div><span>{{"mdrtb.tb03.failure"|get_message:request.session.locale}}</span></div>
                 </th>
-
                 <th class="normal" rowspan="2">
                     <div><span>{{"mdrtb.tb03.ltfu"|get_message:request.session.locale}}</span></div>
                 </th>
-
-
             </tr>
 
             <tr>
@@ -240,10 +237,6 @@
                 <th class="normal" rowspan="1">II</th>
                 <th class="normal" rowspan="1">I</th>
                 <th class="normal" rowspan="1">II</th>
-
-
-
-
                 <th class="dst" rowspan="1">
                     <div>R</div>
                 </th>
@@ -299,7 +292,6 @@
                 <th class="normal">{{"mdrtb.tb03.yesNoDate"|get_message:request.session.locale}}</th>
                 <th class="normal">{{"mdrtb.tb03.resultPosNeg"|get_message:request.session.locale}}</th>
 
-
                 <th class="normal" colspan="2">{{"mdrtb.tb03.smearShort"|get_message:request.session.locale}}</th>
                 <th class="normal" colspan="2">{{"mdrtb.tb03.cultureShort"|get_message:request.session.locale}}</th>
                 <th class="normal" colspan="2">{{"mdrtb.tb03.smearShort"|get_message:request.session.locale}}</th>
@@ -348,9 +340,7 @@
                 <th class="normal">
                     <div><span>{{"mdrtb.tb03.ofOther"|get_message:request.session.locale}}</span></div>
                 </th>
-
             </tr>
-
 
             {% for row in patientSet %}
             <tr {% if forloop.counter|divisibleby:2 %} bgcolor="#D3D3D3" {% endif %}>
@@ -360,17 +350,15 @@
                 <td rowspan="1">{{ row.tb03uRegistrationDate }}</td>
                 <td rowspan="1">{{ row.dotsYear }}</td>
                 <td rowspan="1">{{ row.identifierDOTS }}</td>
-
-                <td rowspan="1">{{ row.patientName }}</td>
-
-
-
+                <td rowspan="1">{{ row.personName.familyName }}, {{ row.personName.givenName }}</td>
                 <td rowspan="1" align="center">{{ row.gender }}</td>
                 <td align="center" rowspan="1">{{row.ageAtTB03uRegistration }}</td>
                 <td rowspan="1">{{ row.dateOfBirth }}</td>
-                <td rowspan="1">{{ row.resedentialAddress }}</td>
+                <td>
+                    {{ row.personAddress.countyDistrict }}, {{ row.personAddress.stateProvince }}
+                    {{ row.personAddress.region }} {{ row.personAddress.address1 }}
+                </td>
                 <td rowspan="1">{{ row.reg2Number }}</td>
-
                 <td align="center" rowspan="1">{{ row.siteOfDisease }}</td>
                 {% for loop in '9'|get_range %}
                 <td align="center" rowspan="1">

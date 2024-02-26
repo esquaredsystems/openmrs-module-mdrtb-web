@@ -38,7 +38,7 @@ class TestRestApiUtil(TestCase):
                 )
                 self.assertEqual(response["uuid"], data["uuid"])
 
-    def test_create_patient(self):
+    def test_save_patient(self):
         patient_data = {
             "identifiers": [
                 {
