@@ -1706,6 +1706,12 @@ def render_tb03u_single_report(req):
                 for record in response["results"]
             ]
             context["report_date"] = util.get_date_time_now()
+            # Iterate over each patient dictionary in the context list
+            for patient in context["patientSet"]:
+                # remove spaces in drug names and convert to lower case
+                patient['dstResults'] = {key.replace(' ', '').lower(): value for key, value in
+                                         patient.get('dstResults', {}).items()}
+
             return render(req, "app/reporting/tb03u_single_report.html", context)
         return redirect("searchPatientsView")
     except Exception as e:
