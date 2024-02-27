@@ -385,24 +385,25 @@
 
                 <td>{{ row.dstCollectionDate}}</td>
                 <td rowspan="1">{{ row.dstResultDate}}</td>
-                <td rowspan="1" align="center">{{ row.dstR}}</td>
-                <td rowspan="1" align="center">{{ row.dstH }}</td>
-                <td rowspan="1" align="center">{{ row.dstE }}</td>
-                <td rowspan="1" align="center">{{ row.dstS }}</td>
-                <td rowspan="1" align="center">{{ row.dstZ }}</td>
-                <td rowspan="1" align="center">{{ row.dstKm }}</td>
-                <td rowspan="1" align="center">{{ row.dstAm }}</td>
-                <td rowspan="1" align="center">{{ row.dstCm }}</td>
-                <td rowspan="1" align="center">{{ row.dstOfx }}</td>
-                <td rowspan="1" align="center">{{ row.dstMfx }}</td>
-                <td rowspan="1" align="center">{{ row.dstPto }}</td>
-                <td rowspan="1" align="center">{{ row.dstCs }}</td>
-                <td rowspan="1" align="center">{{ row.dstPAS }}</td>
-                <td rowspan="1" align="center">{{ row.dstLzd }}</td>
-                <td rowspan="1" align="center">{{ row.dstCfz }}</td>
-                <td rowspan="1" align="center">{{ row.dstBdq}}</td>
-                <td rowspan="1" align="center">{{ row.dstDlm }}</td>
-                <td colspan="1" align="center">{{row.xpertMTBResult }} {{row.xpertRIFResult }} </td>
+                <td rowspan="1" align="center">{{ row.dstResults.rresistance}}</td>
+                <td rowspan="1" align="center">{{ row.dstResults.inhresistance }}</td>
+                <td rowspan="1" align="center">{{ row.dstResults.eresistance }}</td>
+                <td rowspan="1" align="center">{{ row.dstResults.sresistance }}</td>
+                <td rowspan="1" align="center">{{ row.dstResults.zresistance }}</td>
+                <td rowspan="1" align="center">{{ row.dstResults.kmresistance }}</td>
+                <td rowspan="1" align="center">{{ row.dstResults.amresistance }}</td>
+                <td rowspan="1" align="center">{{ row.dstResults.cmresistance }}</td>
+                <td rowspan="1" align="center">{{ row.dstResults.ofxresistance }}</td>
+                <td rowspan="1" align="center">{{ row.dstResults.moxresistance }}</td>
+                <td rowspan="1" align="center">{{ row.dstResults.ptoresistance }}</td>
+                <td rowspan="1" align="center">{{ row.dstResults.csresistance }}</td>
+                <td rowspan="1" align="center">{{ row.dstResults.pasresistance }}</td>
+                <td rowspan="1" align="center">{{ row.dstResults.lzdresistance }}</td>
+                <td rowspan="1" align="center">{{ row.dstResults.cfzresistance }}</td>
+                <td rowspan="1" align="center">{{ row.dstResults.bdqresistance }}</td>
+                <td rowspan="1" align="center">{{ row.dstResults.dlmresistance }}</td>
+
+                <td colspan="1" align="center">{{row.xpertMTBResult }} / {{row.xpertRIFResult }} </td>
                 <td>{{row.xpertTestDate }}</td>
                 <td>{{row.xpertTestNumber }}</td>
                 <td>{{row.xpertLab }}</td>
