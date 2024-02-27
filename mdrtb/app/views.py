@@ -145,8 +145,7 @@ def render_search_patients_view(req):
                 "general.search", locale=req.session["locale"], source="OpenMRS"
             )
             + " "
-            + mu.get_global_msgs(
-        "general.patient", locale=req.session["locale"], source="OpenMRS"
+            + mu.get_global_msgs("general.patient", locale=req.session["locale"], source="OpenMRS"
     )
     )
     context = {"title": title}

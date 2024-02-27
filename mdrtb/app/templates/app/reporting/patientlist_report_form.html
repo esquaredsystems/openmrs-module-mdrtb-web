@@ -5,7 +5,7 @@
 <div class="p-4 m-6 mx-auto w-1/2 flex flex-col justify-center">
   <h1 class="page-title">{{'mdrtb.patientLists'|get_message:request.session.locale}}</h1>
 
-  <form target="_blank" method="post" action="{% url 'patientlist' %}" class=" flex flex-col space-y-6  p-4">
+  <form target="_blank" method="post" action="{% url 'patientlist' %}" class=" flex flex-col space-y-4 p-4">
     {% csrf_token %}
     <div>
       {% include 'app/components/locations.html' %}
@@ -29,7 +29,7 @@
 
       <div class="flex items-center w-full space-x-4">
         <div class="space-x-2 flex items-center">
-          <label for="">Select</label>
+          <label>Select</label>
           <input checked type="radio" name="quarter" id="quarter" class="radio-input" value="">
         </div>
         {% for quarter in quarters %}
@@ -38,93 +38,89 @@
           <input required type="radio" name="quarter" id="quarter" class="radio-input" value="{{quarter}}">
         </div>
         {% endfor %}
-
       </div>
-
-
-
     </div>
 
-    <div class="p-4  flex flex-col justify-center space-y-4">
+    <div class="p-4 flex flex-col justify-center space-y-2">
       <div class="flex items-center space-x-4">
         <input required type="radio" class="radio-input" name="listname" value="allenrolled">
-        <label for="">{{'mdrtb.allCasesEnrolled'|get_message:request.session.locale}}</label>
+        <label>{{'mdrtb.allCasesEnrolled'|get_message:request.session.locale}}</label>
       </div>
       <div class="flex items-center space-x-4">
         <input required type="radio" class="radio-input" name="listname" value="dotsbyregistrationgroup">
-        <label for="">{{'mdrtb.dotsCasesByRegistrationGroup'|get_message:request.session.locale}}</label>
+        <label>{{'mdrtb.dotsCasesByRegistrationGroup'|get_message:request.session.locale}}</label>
       </div>
       <div class="flex items-center space-x-4">
         <input required type="radio" class="radio-input" name="listname" value="dotsbydrugresistance">
-        <label for="">{{'mdrtb.byDrugResistance'|get_message:request.session.locale}}</label>
+        <label>{{'mdrtb.byDrugResistance'|get_message:request.session.locale}}</label>
       </div>
       <div class="flex items-center space-x-4">
         <input required type="radio" class="radio-input" name="listname" value="dotsbyanatomicalsite">
-        <label for="">{{'mdrtb.dotsCasesByAnatomicalSite'|get_message:request.session.locale}}</label>
+        <label>{{'mdrtb.dotsCasesByAnatomicalSite'|get_message:request.session.locale}}</label>
       </div>
       <div class="flex items-center space-x-4">
         <input required type="radio" class="radio-input" name="listname"
           value="dotsbyregistrationgroupandbacteriologicalstatus">
-        <label for="">{{'dotsPulmonaryCasesByRegisrationGroupAndBacStatus'|get_message:request.session.locale}}</label>
+        <label>{{'dotsPulmonaryCasesByRegisrationGroupAndBacStatus'|get_message:request.session.locale}}</label>
       </div>
       <div class="flex items-center space-x-4">
         <input required type="radio" class="radio-input" name="listname" value="mdrxdrpatients">
-        <label for="">{{'mdrtb.drTbPatients'|get_message:request.session.locale}}</label>
+        <label>{{'mdrtb.drTbPatients'|get_message:request.session.locale}}</label>
       </div>
       <div class="flex items-center space-x-4">
         <input required type="radio" class="radio-input" name="listname" value="mdrsuccessfultreatmentoutcome">
-        <label for="">{{'mdrtb.drTbPatientsSuccessfulTreatment'|get_message:request.session.locale}}</label>
+        <label>{{'mdrtb.drTbPatientsSuccessfulTreatment'|get_message:request.session.locale}}</label>
       </div>
       <div class="flex items-center space-x-4">
         <input required type="radio" class="radio-input" name="listname" value="mdrxdrwithnotreatment">
-        <label for="">{{'mdrtb.drTbPatientsNoTreatment'|get_message:request.session.locale}}</label>
+        <label>{{'mdrtb.drTbPatientsNoTreatment'|get_message:request.session.locale}}</label>
       </div>
       <div class="flex items-center space-x-4">
         <input required type="radio" class="radio-input" name="listname" value="womenofchildbearingage">
-        <label for="">{{'mdrtb.womenOfChildbearingAge'|get_message:request.session.locale}}</label>
+        <label>{{'mdrtb.womenOfChildbearingAge'|get_message:request.session.locale}}</label>
       </div>
       <div class="flex items-center space-x-4">
         <input required type="radio" class="radio-input" name="listname" value="menofconscriptage">
-        <label for="">{{'mdrtb.menOfConscriptAge'|get_message:request.session.locale}}</label>
+        <label>{{'mdrtb.menOfConscriptAge'|get_message:request.session.locale}}</label>
       </div>
       <div class="flex items-center space-x-4">
         <input required type="radio" class="radio-input" name="listname" value="withconcomitantdisease">
-        <label for="">{{'mdrtb.withConcomitantDisease'|get_message:request.session.locale}}</label>
+        <label>{{'mdrtb.withConcomitantDisease'|get_message:request.session.locale}}</label>
       </div>
       <div class="flex items-center space-x-4">
         <input required type="radio" class="radio-input" name="listname" value="bydwelling">
-        <label for="">{{'mdrtb.byDwelling'|get_message:request.session.locale}}</label>
+        <label>{{'mdrtb.byDwelling'|get_message:request.session.locale}}</label>
       </div>
       <div class="flex items-center space-x-4">
         <input required type="radio" class="radio-input" name="listname" value="bysocprofstatus">
-        <label for="">{{'mdrtb.bySocProfStatus'|get_message:request.session.locale}}</label>
+        <label>{{'mdrtb.bySocProfStatus'|get_message:request.session.locale}}</label>
       </div>
       <div class="flex items-center space-x-4">
         <input required type="radio" class="radio-input" name="listname" value="bypopulationcategory">
-        <label for="">{{'mdrtb.byPopCategory'|get_message:request.session.locale}}</label>
+        <label>{{'mdrtb.byPopCategory'|get_message:request.session.locale}}</label>
       </div>
       <div class="flex items-center space-x-4">
         <input required type="radio" class="radio-input" name="listname" value="byplacesofdetection">
-        <label for="">{{'mdrtb.byPlaceOfDetection'|get_message:request.session.locale}}</label>
+        <label>{{'mdrtb.byPlaceOfDetection'|get_message:request.session.locale}}</label>
       </div>
       <div class="flex items-center space-x-4">
         <input required type="radio" class="radio-input" name="listname" value="bymethodofdetection">
-        <label for="">{{'mdrtb.byMethodOfDetection'|get_message:request.session.locale}}</label>
+        <label>{{'mdrtb.byMethodOfDetection'|get_message:request.session.locale}}</label>
       </div>
       <div class="flex items-center space-x-4">
         <input required type="radio" class="radio-input" name="listname" value="bycircumstancesofdetection">
-        <label for="">{{'mdrtb.byCircumstancesOfDetection'|get_message:request.session.locale}}</label>
+        <label>{{'mdrtb.byCircumstancesOfDetection'|get_message:request.session.locale}}</label>
       </div>
       <div class="flex items-center space-x-4">
         <input required type="radio" class="radio-input" name="listname" value="bypulmonarylocation">
-        <label for="">{{'mdrtb.byPulmonaryLocation'|get_message:request.session.locale}}</label>
+        <label>{{'mdrtb.byPulmonaryLocation'|get_message:request.session.locale}}</label>
       </div>
       <div class="flex items-center space-x-4">
         <input required type="radio" class="radio-input" name="listname" value="byextrapulmonarylocation">
-        <label for="">{{'mdrtb.byExtraPulmonaryLocation'|get_message:request.session.locale}}</label>
+        <label>{{'mdrtb.byExtraPulmonaryLocation'|get_message:request.session.locale}}</label>
       </div>
-
     </div>
+
     <div>
       <button id="submitBtn" class="button-primary w-1/5">
         {{'mdrtb.generate'|get_message:request.session.locale}}</button>
@@ -146,8 +142,6 @@
     }
   })
   $("input[name='quarter']").change((e) => {
-
-
     if (e.target.value != '') {
       $('#month').prop('disabled', true)
       $('#month').prop('title', 'Month cannot be selected with quarter')
@@ -160,15 +154,10 @@
     $('#submitBtn').prop('disabled', true)
     $('#submitBtn').removeClass('button-primary')
     $('#submitBtn').html(`
-        <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
-                colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
-            </lord-icon>
-
-        
-        `)
+      <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
+          colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+      </lord-icon>`)
   }
-
-
 </script>
 
 {% endblock %}

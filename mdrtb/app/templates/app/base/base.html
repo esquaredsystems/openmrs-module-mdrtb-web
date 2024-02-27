@@ -35,23 +35,19 @@
 	.responsive {
 		width: 100%;
 	}
-
 	@media screen and (min-width: 840px) {
 		.responsive {
 			width: 50%;
 		}
 	}
-
 	.required:after {
 		content: " *";
 		color: red;
 	}
-
 	input:-webkit-autofill,
 	input:-webkit-autofill:focus {
 		transition: background-color 600000s 0s, color 600000s 0s;
 	}
-
 	input[data-autocompleted] {
 		background-color: transparent !important;
 	}
@@ -115,7 +111,6 @@
 			$('.alert-danger').addClass('-left-40')
 			$('.alert-danger').remove()
 		}
-
 		$('.alert-er').each(() => {
 			setTimeout(() => {
 				$('.alert-er').removeClass('left-0')
@@ -124,18 +119,13 @@
 			}, 2000)
 			setTimeout(() => {
 				$('.alert-er').remove()
-
-
 			}, 2100)
 		})
-
-
 	</script>
+
 	{% endif %}
 	{% endfor %}
 	{% endif %}
-
-
 
 	<div class="scrollbar-hide">
 		{%block content%}
@@ -180,17 +170,14 @@
 		let clearSubregions = () => {
 			$('#subregion-container') && $('#subregion-container').addClass('hidden')
 			$("#subregion-select").html(`<option value="">Select</option>`)
-
 		}
 		const clearDistrictsAndFacilities = () => {
-
 			$('#district-select').prop('disabled', true)
 			$('#district-select').prop('required', false)
 			$("#district-select").html(`<option value="">Select</option>`)
 			$('#facility-select').prop('disabled', true)
 			$('#facility-select').prop('required', false)
 			$("#facility-select").html(`<option value="">Select</option>`)
-
 		}
 		const insertchildren = (selectedLocation, insertInto, level) => {
 			const selectedRegion = $('#region-select').val()
@@ -215,7 +202,6 @@
 			$('#facility-select').prop('disabled', true)
 			$('#facility-select').prop('required', false)
 			$("#facility-select").html(`<option value="">Select</option>`)
-
 		}
 		$('#region-select').change(region => {
 			clearDistrictsAndFacilities()
