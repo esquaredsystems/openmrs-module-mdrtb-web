@@ -43,19 +43,26 @@
         <table border="1" width="100%">
             <tr>
                 <td>
-                    {{"mdrtb.tb08u.nameOfFacility"|get_message:request.session.locale}} <u>&nbsp; {{ location.location}}
+                    {{"mdrtb.tb08u.nameOfFacility"|get_message:request.session.locale}} <u>&nbsp; {{location.location}}
                         &nbsp;</u>
-                    <br />
+                    <br>
                     {{"mdrtb.tb08u.regionCityDistrict"|get_message:request.session.locale}} <u> {{location.parent}}
-                    </u><br />
-                    {{"mdrtb.tb08u.tbCoordinatorName"|get_message:request.session.locale}}
-                    ____________________{{"mdrtb.tb08u.signature"|get_message:request.session.locale}}
-                    ____________<br />
+                    </u>
+                    <br>
+                    {{"mdrtb.tb08u.tbCoordinatorName"|get_message:request.session.locale}}____________________
+                    {{"mdrtb.tb08u.signature"|get_message:request.session.locale}}____________
+                    <br>
                 </td>
 
                 <td>
-                    {{"mdrtb.tb08u.tbCasesDetectedDuringQuarterYear"|get_message:request.session.locale}}
-                    {{request.GET.quarter}}-{{request.GET.year}}
+                    {% if request.GET.quarter %}
+                        {{"mdrtb.tb08u.tbCasesDetectedDuringQuarterYear"|get_message:request.session.locale}}
+                        {{ request.GET.quarter }}
+                    {% else %}
+                        {{"mdrtb.tb08u.tbCasesDetectedDuringMonthYear"|get_message:request.session.locale}}
+                        {{ request.GET.month }} - {{ request.GET.month2 }}
+                    {% endif %}
+                    /{{request.GET.year}}
                     <br />
                     {{"mdrtb.tb08u.dateOfReport"|get_message:request.session.locale}}
                     {{report_date|get_report_date}}
