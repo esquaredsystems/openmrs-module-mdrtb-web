@@ -50,7 +50,7 @@ class Constants(enum.Enum):
     COLLECTED = "COLLECTED"
     PROCESSED = "PROCESSED"
 
-    COUNTRY = "Точикистон (Таджикистан)"
+    COUNTRY = "Таджикистан (Точикистон)"
 
     # CLM
     COMMONLAB_LAB_REFERENCE_ATTRIBUTE_TYPE_CMN_TEST = (

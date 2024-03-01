@@ -27,8 +27,6 @@
 	<!--	<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />-->
 	<!--	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>-->
 
-
-
 </head>
 
 <style>
@@ -187,15 +185,12 @@
 					if (district.uuid === selectedLocation && district.children.length > 0) {
 						for (facility of district.children) {
 							$(insertInto).prop('disabled', false)
-
 							if (facility.level === level.toUpperCase()) {
 								$(insertInto).append(`<option value=${facility.uuid}>${facility.name}</option>`)
-
 							}
 						}
 					}
 				}
-
 			}
 		}
 		const clearFacilities = () => {
@@ -219,11 +214,28 @@
 						$('#subregion-select').append(`<option value=${district.uuid}>${district.name}</option>`)
 					}
 				}
+				$('#district-select').append(`<option value="*">Все (Ҳама)</option>`);
 			}
 		})
 		$('#district-select').change(selectedDistrict => {
-			clearFacilities()
-			insertchildren(selectedDistrict.target.value, '#facility-select', 'facility')
+			const districtUuid = selectedDistrict.target.value;
+			if (districtUuid === '*') {
+				// If "All" option is selected
+				clearFacilities(); // Clear existing facility options
+				const selectedRegion = $('#region-select').val();
+				const districts = locationByUuids[selectedRegion]['children'];
+				if (districts.length > 0) {
+					for (district of districts) {
+						if (district.level === 'district'.toUpperCase()) {
+							insertchildren(district.uuid, '#facility-select', 'facility');
+						}
+					}
+				}
+			} else {
+				clearFacilities();
+				// Insert facilities for the selected district
+				insertchildren(districtUuid, '#facility-select', 'facility');
+			}
 		})
 		$('#subregion-select').change(selectedSubRegion => {
 			clearDistrictsAndFacilities()
