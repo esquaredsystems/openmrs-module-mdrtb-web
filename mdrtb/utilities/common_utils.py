@@ -176,7 +176,7 @@ def date_to_sql_datetime(date):
 
 
 def is_uuid(string):
-    if string is str:
+    if isinstance(string, str):
         uuid_regex = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
         return uuid_regex.match(string)
     return False

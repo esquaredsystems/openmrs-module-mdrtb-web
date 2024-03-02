@@ -122,15 +122,13 @@
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.locationType'|get_message:request.session.locale}}</label>
             <select name="{{'LOCATION_TYPE' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
-              <option selected value="{{form.locationType.uuid}}">{{form.locationType.display}}</option>
+              {% if state == 'edit' and form.locationType %}
+                <option selected value="{{form.locationType.uuid}}">{{form.locationType.display}}</option>
               {% else %}
-
-              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.locationtype %}
-              <option value="{{concept.uuid}}">{{concept.name}}</option>
+                <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
@@ -138,16 +136,13 @@
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.profession'|get_message:request.session.locale}}</label>
             <select name="{{'PROFESSION' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
-              <option selected value="{{form.profession.uuid}}">{{form.profession.display}}</option>
+              {% if state == 'edit' and form.profession %}
+                <option selected value="{{form.profession.uuid}}">{{form.profession.display}}</option>
               {% else %}
-
-              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
-
               {% for concept in concepts.profession %}
-              <option value="{{concept.uuid}}">{{concept.name}}</option>
+                <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
@@ -157,27 +152,23 @@
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.populationCategory'|get_message:request.session.locale}}</label>
             <select id="populationCat" name="{{'POPULATION_CATEGORY' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
-              <option selected value="{{form.populationCategory.uuid}}">{{form.populationCategory.display}}</option>
+              {% if state == 'edit' and form.populationCategory %}
+                <option selected value="{{form.populationCategory.uuid}}">{{form.populationCategory.display}}</option>
               {% else %}
-
-              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
-
               {% for concept in concepts.populationcategory %}
-              <option value="{{concept.uuid}}">{{concept.name}}</option>
+                <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
           <div class="input-container">
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.countryOfOrigin'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.countryOfOrigin %}
             <input disabled id="originCountry" name="{{'COUNTRY_OF_ORIGIN' | get_concept }}" type="text"
               class="input form-control" value="{{form.countryOfOrigin}}" />
             {% else %}
-
             <input disabled id="originCountry" name="{{'COUNTRY_OF_ORIGIN' | get_concept }}" type="text"
               class="input form-control" />
             {% endif %}
@@ -190,16 +181,13 @@
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.placeOfDetection'|get_message:request.session.locale}}</label>
             <select name="{{'PLACE_OF_DETECTION' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
-              <option selected value="{{form.placeOfDetection.uuid}}">{{form.placeOfDetection.display}}</option>
+              {% if state == 'edit' and form.placeOfDetection %}
+                <option selected value="{{form.placeOfDetection.uuid}}">{{form.placeOfDetection.display}}</option>
               {% else %}
-
-              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
-
               {% for concept in concepts.placeofdetection %}
-              <option value="{{concept.uuid}}">{{concept.name}}</option>
+                <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
@@ -207,14 +195,11 @@
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.dateFirstSeekingHelp'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.dateFirstSeekingHelp | iso_to_normal_date }}"
+            <input value="{{form.dateFirstSeekingHelp|slice:':10' }}"
               name="{{'DATE_FIRST_SEEKING_HELP' | get_concept }}" type="date" class="input form-control" />
             {% else %}
-
-            <input name="{{'DATE_FIRST_SEEKING_HELP' | get_concept }}" type="date" class="input form-control" />
+              <input name="{{'DATE_FIRST_SEEKING_HELP' | get_concept }}" type="date" class="input form-control" />
             {% endif %}
-
-
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
@@ -222,15 +207,12 @@
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.circumstancesOfDetection'|get_message:request.session.locale}}</label>
             <select id="detection" name="{{'CIRCUMSTANCES_OF_DETECTION' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
-              <option selected value="{{form.circumstancesOfDetection.uuid}}">{{form.circumstancesOfDetection.display}}
+              {% if state == 'edit' and form.circumstancesOfDetection %}
+                <option selected value="{{form.circumstancesOfDetection.uuid}}">{{form.circumstancesOfDetection.display}}
               </option>
               {% else %}
-
-              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
-
               {% for concept in concepts.circumstancesofdetection %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
@@ -239,7 +221,7 @@
           <div class="input-container">
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.cityOfOrigin'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.cityOfOrigin %}
             <input value="{{form.cityOfOrigin}}" disabled id="originCity" name="{{'CITY_OF_ORIGIN' | get_concept }}"
               type="text" class="input form-control" />
             {% else %}
@@ -256,7 +238,7 @@
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.dateOfReturn'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input value="{{form.dateOfReturn | iso_to_normal_date }}" disabled id="returnDate"
+            <input value="{{form.dateOfReturn|slice:':10' }}" disabled id="returnDate"
               name="{{'DATE_OF_RETURN' | get_concept }}" type="date" class="input form-control">
             {% else %}
 
@@ -268,16 +250,13 @@
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.methodOfDetection'|get_message:request.session.locale}}</label>
             <select name="{{'METHOD_OF_DETECTION' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
-              <option selected value="{{form.methodOfDetection.uuid}}">{{form.methodOfDetection.display}}</option>
+              {% if state == 'edit' and form.methodOfDetection %}
+                <option selected value="{{form.methodOfDetection.uuid}}">{{form.methodOfDetection.display}}</option>
               {% else %}
-
-              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
-
               {% for concept in concepts.methodofdetection %}
-              <option value="{{concept.uuid}}">{{concept.name}}</option>
+                <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
@@ -286,7 +265,7 @@
           <div class="input-container">
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.otherMethodOfDetection'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.otherMethodOfDetection %}
             <input name="{{'OTHER_METHOD_OF_DETECTION' | get_concept }}" type="text" class="input form-control"
               value="{{form.otherMethodOfDetection}}" />
             {% else %}
@@ -298,16 +277,13 @@
             <label
               class="tb03-form-label w-full">{{'mdrtb.tb03.siteOfDisease'|get_message:request.session.locale}}</label>
             <select name="{{'ANATOMICAL_SITE_OF_TB' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
-              <option selected value="{{form.anatomicalSite.uuid}}">{{form.anatomicalSite.display}}</option>
+              {% if state == 'edit' and form.anatomicalSite %}
+                <option selected value="{{form.anatomicalSite.uuid}}">{{form.anatomicalSite.display}}</option>
               {% else %}
-
-              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
-
               {% for concept in concepts.siteoftbdisease %}
-              <option value="{{concept.uuid}}">{{concept.name}}</option>
+                <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
 
@@ -318,16 +294,13 @@
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.eptbLocation'|get_message:request.session.locale}}</label>
             <select name="{{'LOCATION_OF_EPTB' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
-              <option selected value="{{form.eptbSite.uuid}}">{{form.eptbSite.display}}</option>
+              {% if state == 'edit' and form.eptbSite %}
+                <option selected value="{{form.eptbSite.uuid}}">{{form.eptbSite.display}}</option>
               {% else %}
-
-              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
-
               {% for concept in concepts.locationofextrapulmonarytb %}
-              <option value="{{concept.uuid}}">{{concept.name}}</option>
+                <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
@@ -376,7 +349,7 @@
             {% if state == 'edit' %}
 
             <input type="date" class="input form-control" name="{{'DATE_OF_DECAY_SURVEY' | get_concept }}"
-              value="{{form.dateOfDecaySurvey | iso_to_normal_date }}">
+              value="{{form.dateOfDecaySurvey|slice:':10' }}">
             {% else %}
 
             <input type="date" class="input form-control" name="{{'DATE_OF_DECAY_SURVEY' | get_concept }}">
@@ -387,7 +360,7 @@
           <div class="input-container">
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.complication'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.complication %}
             <input value="{{form.complication}}" type="text" class="input form-control"
               name="{{'COMPLICATION' | get_concept }}">
             {% else %}
@@ -766,19 +739,17 @@
           <div class="input-container">
             <label class="tb03-form-label w-full">{{'mdrtb.form89.cmacDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input name="{{'CENTRAL_COMMISSION_DATE' | get_concept }}" value="{{form.cmacDate | iso_to_normal_date  }}"
+            <input name="{{'CENTRAL_COMMISSION_DATE' | get_concept }}" value="{{form.cmacDate|slice:':10' }}"
               type="date" class="input form-control" />
             {% else %}
-
             <input name="{{'CENTRAL_COMMISSION_DATE' | get_concept }}" type="date" class="input form-control" />
             {% endif %}
-
 
           </div>
           <div class="input-container">
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.cmacNumber'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.cmacNumber %}
             <input type="text" class="input form-control" value="{{form.cmacNumber}}"
               name="{{'CENTRAL_COMMISSION_NUMBER' | get_concept }}">
 
@@ -795,15 +766,13 @@
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.prescribedTreatment'|get_message:request.session.locale}}</label>
             <select name="{{'GENERAL_PRESCRIBED_TREATMENT' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-              <option selected value="{{form.prescribedTreatment.uuid}}">{{form.prescribedTreatment.display}}</option>
+              {% if state == 'edit' and form.prescribedTreatment %}
+                <option selected value="{{form.prescribedTreatment.uuid}}">{{form.prescribedTreatment.display}}</option>
               {% else %}
-              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
-
-
               {% for concept in concepts.prescribedtreatment %}
-              <option value="{{concept.uuid}}">{{concept.name}}</option>
+                <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
 
@@ -812,15 +781,13 @@
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.placeOfCommission'|get_message:request.session.locale}}</label>
             <select name="{{'PLACE_OF_CENTRAL_COMMISSION' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-              <option selected value="{{form.placeOfCommission.uuid}}">{{form.placeOfCommission.display}}</option>
+              {% if state == 'edit' and form.placeOfCommission %}
+                <option selected value="{{form.placeOfCommission.uuid}}">{{form.placeOfCommission.display}}</option>
               {% else %}
-              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
-
-
               {% for concept in concepts.cmacplace %}
-              <option value="{{concept.uuid}}">{{concept.name}}</option>
+                <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
@@ -829,29 +796,22 @@
           <div class="input-container">
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.nameOfDoctor'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
-
+            {% if state == 'edit' and form.nameOfDoctor %}
             <input type="text" value="{{form.nameOfDoctor}}" class="input form-control"
               name="{{'NAME_OF_DOCTOR' | get_concept }}" />
             {% else %}
-
             <input type="text" class="input form-control" name="{{'NAME_OF_DOCTOR' | get_concept }}" />
             {% endif %}
-
-
           </div>
           <div class="input-container">
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.form89Date'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-            <input type="date" value="{{form.form89Date |  iso_to_normal_date }}" class="input form-control"
+            <input type="date" value="{{form.form89Date|slice:':10' }}" class="input form-control"
               name="{{'FORM89_DATE' | get_concept }}">
             {% else %}
-
             <input type="date" class="input form-control" name="{{'FORM89_DATE' | get_concept }}">
             {% endif %}
-
-
           </div>
         </div>
 
@@ -871,14 +831,10 @@
     $('#submitBtn').prop('disabled', true)
     $('#submitBtn').removeClass('button-primary')
     $('#submitBtn').html(`
-        <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
-                colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
-            </lord-icon>
-
-        
-        `)
+      <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
+          colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+      </lord-icon>`)
   }
-
   let state = '{{state | escapejs}}'
   if (state === 'edit') {
     $('input').prop('disabled', true).prop('required', false)
@@ -893,7 +849,6 @@
     $('#originCity').prop('disabled', true)
     $('#returnDate').prop('disabled', true)
     $('select').prop('disabled', false)
-
     $('textarea').prop('disabled', false)
     $('#canceleditbtn').prop('hidden', false)
   })
@@ -903,8 +858,6 @@
     $('textarea').prop('disabled', true)
     $('#canceleditbtn').prop('hidden', true)
   })
-
-
   $('#populationCat').change((e) => {
     let val = e.target.value;
     if (val === "{{'FOREIGNER' | get_concept }}") {
@@ -913,7 +866,6 @@
       $('#originCountry').prop('disabled', true)
     }
   })
-
   $('#detection').change((e) => {
     let val = e.target.value;
     if (val === "{{'MIGRANT' | get_concept }}") {
@@ -924,7 +876,6 @@
       $('#returnDate').prop('disabled', true)
     }
   })
-
 
   let date = new Date();
   maxDate = date.toISOString().substring(0, 10);

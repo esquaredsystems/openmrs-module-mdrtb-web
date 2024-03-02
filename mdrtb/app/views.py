@@ -141,12 +141,11 @@ def render_search_patients_view(req):
     if not check_if_session_alive(req):
         return redirect("login")
     title = (
-            mu.get_global_msgs(
-                "general.search", locale=req.session["locale"], source="OpenMRS"
-            )
-            + " "
-            + mu.get_global_msgs("general.patient", locale=req.session["locale"], source="OpenMRS"
-    )
+        mu.get_global_msgs(
+            "general.search", locale=req.session["locale"], source="OpenMRS"
+        )
+        + " "
+        + mu.get_global_msgs("general.patient", locale=req.session["locale"], source="OpenMRS")
     )
     context = {"title": title}
     privileges_required = [
@@ -517,11 +516,9 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
 def render_tb03_form(req, uuid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     if req.method == "POST":
         try:
             response = fu.create_update_tb03(req, uuid, req.POST)
-
             if response:
                 messages.success(req, "Form created successfully")
                 redirect_to = "/tbdashboard/patient/{}?program={}".format(
@@ -531,14 +528,12 @@ def render_tb03_form(req, uuid):
                     ],
                 )
                 return redirect(redirect_to)
-
         except Exception as e:
             log_and_show_error(e, req)
             return redirect("tb03", uuid=uuid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
         tb03_concepts = [
             Concepts.TREATMENT_CENTER_FOR_IP.value,
             Concepts.TREATMENT_CENTER_FOR_CP.value,
@@ -550,7 +545,6 @@ def render_tb03_form(req, uuid):
             Concepts.CAUSE_OF_DEATH.value,
         ]
         title = mu.get_global_msgs("mdrtb.tb03", locale=req.session["locale"])
-
         concepts = fu.get_form_concepts(tb03_concepts, req)
         context = {
             "concepts": concepts,
@@ -560,7 +554,6 @@ def render_tb03_form(req, uuid):
             "identifiers": pu.get_patient_identifiers(req, uuid),
         }
         mu.add_url_to_breadcrumb(req, context["title"])
-
         return render(req, "app/tbregister/dots/tb03.html", context=context)
 
     except Exception as e:
@@ -615,25 +608,17 @@ def render_edit_tb03_form(req, uuid, formid):
             Concepts.TB_TREATMENT_OUTCOME.value,
             Concepts.CAUSE_OF_DEATH.value,
         ]
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         form = fu.get_tb03_by_uuid(req, formid)
-
         concepts = fu.get_form_concepts(tb03_concepts, req)
-
         fu.remove_tb03_duplicates(concepts, form)
-
         if form:
             context["form"] = form
-
             context["concepts"] = concepts
-
             return render(req, "app/tbregister/dots/tb03.html", context=context)
 
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect("edittb03", uuid=uuid, formid=formid)
 
 

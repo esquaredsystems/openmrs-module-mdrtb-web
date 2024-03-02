@@ -120,30 +120,37 @@ def create_update_tb03(req, patientuuid, data, formid=None):
                     "patientProgramUuid": patient_program_uuid,
                     "encounter": {"uuid": response["uuid"], "obs": []},
                 }
-            for obs in response["obs"]:
-                if obs["concept"]["uuid"] == Concepts.PATIENT_PROGRAM_ID.value:
-                    tb03["encounter"]["obs"].append(
-                        {
-                            "uuid": obs["uuid"],
-                            "person": obs["person"]["uuid"],
-                            "obsDatetime": obs["obsDatetime"],
-                            "concept": obs["concept"]["uuid"],
-                            "value": obs["value"],
+            program_obs = get_obs_from_encounter(response["obs"], Concepts.PATIENT_PROGRAM_ID.value)
+            tb03["encounter"]["obs"].append(
+                {
+                    "uuid": program_obs["uuid"],
+                    "person": program_obs["person"]["uuid"],
+                    "obsDatetime": program_obs["obsDatetime"],
+                    "concept": program_obs["concept"]["uuid"],
+                    "value": program_obs["value"],
+                }
+            )
+            for key, value in data.items():
+                if cu.is_uuid(key) and value:
+                    existing = get_obs_from_encounter(response["obs"], key)
+                    if existing:
+                        obs = {
+                            "uuid": existing["uuid"],
+                            "person": existing["person"]["uuid"],
+                            "obsDatetime": existing["obsDatetime"],
+                            "concept": existing["concept"]["uuid"],
+                            "value": value if cu.is_uuid(value)
+                            else (cu.date_to_sql_datetime(value) if cu.is_date(value) else value)
                         }
-                    )
-                for key, value in data.items():
-                    if value:
-                        if key == obs["concept"]["uuid"]:
-                            tb03["encounter"]["obs"].append(
-                                {
-                                    "uuid": obs["uuid"],
-                                    "person": obs["person"]["uuid"],
-                                    "obsDatetime": obs["obsDatetime"],
-                                    "concept": obs["concept"]["uuid"],
-                                    "value": value if cu.is_uuid(value)
-                                    else (cu.date_to_sql_datetime(value) if cu.is_date(value) else value)
-                                }
-                            )
+                    else:
+                        obs = {
+                            "person": patientuuid,
+                            "obsDatetime": current_date_time_iso,
+                            "concept": key,
+                            "value": value if not cu.is_date(value)
+                            else (cu.date_to_sql_datetime(value) if cu.is_date(value) else value)
+                        }
+                    tb03["encounter"]["obs"].append(obs)
 
         except Exception as e:
             raise Exception(e)
@@ -1277,3 +1284,10 @@ def get_ae_form_with_symptoms(req, patientuuid):
             return ae_forms_with_symptoms
     except Exception as e:
         raise Exception(e)
+
+
+def get_obs_from_encounter(obs_set, concept_uuid):
+    for obs in obs_set:
+        if concept_uuid == obs["concept"]["uuid"]:
+            return obs
+    return None
