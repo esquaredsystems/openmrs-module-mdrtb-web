@@ -109,9 +109,7 @@ def create_update_tb03(req, patientuuid, data, formid=None):
     encounter_type = EncounterType.TB03.value
     current_date_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     current_date_time_iso = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-    current_location = req.session["current_patient_program_flow"]["current_program"][
-        "location"
-    ]["uuid"]
+    current_location = req.session["current_patient_program_flow"]["current_program"]["location"]["uuid"]
     if formid:
         try:
             response = mu.get_encounter_by_uuid(req, formid)
@@ -310,9 +308,7 @@ def create_update_tb03u(req, patientuuid, data, formid=None):
     encounter_type = EncounterType.TB03u_MDR.value
     current_date_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     current_date_time_iso = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-    patient_default_location = req.session["current_patient_program_flow"][
-        "current_program"
-    ]["location"]["uuid"]
+    patient_default_location = req.session["current_patient_program_flow"]["current_program"]["location"]["uuid"]
     if formid:
         try:
             response = mu.get_encounter_by_uuid(req, formid)
@@ -321,31 +317,38 @@ def create_update_tb03u(req, patientuuid, data, formid=None):
                     "patientProgramUuid": patient_program_uuid,
                     "encounter": {"uuid": response["uuid"], "obs": []},
                 }
-            for obs in response["obs"]:
-                if obs["concept"]["uuid"] == Concepts.PATIENT_PROGRAM_ID.value:
-                    tb03u["encounter"]["obs"].append(
-                        {
-                            "uuid": obs["uuid"],
-                            "person": obs["person"]["uuid"],
-                            "obsDatetime": obs["obsDatetime"],
-                            "concept": obs["concept"]["uuid"],
-                            "value": obs["value"],
+            program_obs = get_obs_from_encounter(response["obs"], Concepts.PATIENT_PROGRAM_ID.value)
+            tb03u["encounter"]["obs"].append(
+                {
+                    "uuid": program_obs["uuid"],
+                    "person": program_obs["person"]["uuid"],
+                    "obsDatetime": program_obs["obsDatetime"],
+                    "concept": program_obs["concept"]["uuid"],
+                    "value": program_obs["value"],
+                }
+            )
+            for key, value in data.items():
+                if cu.is_uuid(key) and value:
+                    existing = get_obs_from_encounter(response["obs"], key)
+                    if existing:
+                        obs = {
+                            "uuid": existing["uuid"],
+                            "person": existing["person"]["uuid"],
+                            "obsDatetime": existing["obsDatetime"],
+                            "concept": existing["concept"]["uuid"],
+                            "value": value if cu.is_uuid(value)
+                            else (cu.date_to_sql_datetime(value) if cu.is_date(value) else value)
                         }
-                    )
-                for key, value in data.items():
-                    if value:
-                        if key == obs["concept"]["uuid"]:
-                            tb03u["encounter"]["obs"].append(
-                                {
-                                    "uuid": obs["uuid"],
-                                    "person": obs["person"]["uuid"],
-                                    "obsDatetime": obs["obsDatetime"],
-                                    "concept": obs["concept"]["uuid"],
-                                    "value": value
-                                    if not cu.is_date(value)
-                                    else cu.date_to_sql_datetime(value),
-                                }
-                            )
+                    else:
+                        obs = {
+                            "person": patientuuid,
+                            "obsDatetime": current_date_time_iso,
+                            "concept": key,
+                            "value": value if not cu.is_date(value)
+                            else (cu.date_to_sql_datetime(value) if cu.is_date(value) else value)
+                        }
+                    tb03u["encounter"]["obs"].append(obs)
+
         except Exception as e:
             raise Exception(str(e))
     else:
@@ -482,15 +485,11 @@ def create_update_adverse_event(req, patientuuid, data, formid=None):
 
     """
 
-    patient_program_uuid = req.session["current_patient_program_flow"][
-        "current_program"
-    ]["uuid"]
+    patient_program_uuid = req.session["current_patient_program_flow"]["current_program"]["uuid"]
     encounter_type = EncounterType.ADVERSE_EVENT.value
     current_date_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     current_date_time_iso = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-    patient_location = req.session["current_patient_program_flow"]["current_program"][
-        "location"
-    ]["uuid"]
+    patient_location = req.session["current_patient_program_flow"]["current_program"]["location"]["uuid"]
     if formid:
         try:
             response = mu.get_encounter_by_uuid(req, formid)
@@ -499,33 +498,40 @@ def create_update_adverse_event(req, patientuuid, data, formid=None):
                     "patientProgramUuid": patient_program_uuid,
                     "encounter": {"uuid": response["uuid"], "obs": []},
                 }
-            for obs in response["obs"]:
-                if obs["concept"]["uuid"] == Concepts.PATIENT_PROGRAM_ID.value:
-                    ae["encounter"]["obs"].append(
-                        {
-                            "uuid": obs["uuid"],
-                            "person": obs["person"]["uuid"],
-                            "obsDatetime": obs["obsDatetime"],
-                            "concept": obs["concept"]["uuid"],
-                            "value": obs["value"],
+            program_obs = get_obs_from_encounter(response["obs"], Concepts.PATIENT_PROGRAM_ID.value)
+            ae["encounter"]["obs"].append(
+                {
+                    "uuid": program_obs["uuid"],
+                    "person": program_obs["person"]["uuid"],
+                    "obsDatetime": program_obs["obsDatetime"],
+                    "concept": program_obs["concept"]["uuid"],
+                    "value": program_obs["value"],
+                }
+            )
+            for key, value in data.items():
+                if cu.is_uuid(key) and value:
+                    existing = get_obs_from_encounter(response["obs"], key)
+                    if existing:
+                        obs = {
+                            "uuid": existing["uuid"],
+                            "person": existing["person"]["uuid"],
+                            "obsDatetime": existing["obsDatetime"],
+                            "concept": existing["concept"]["uuid"],
+                            "value": value if cu.is_uuid(value)
+                            else (cu.date_to_sql_datetime(value) if cu.is_date(value) else value)
                         }
-                    )
-                for key, value in data.items():
-                    if value:
-                        if key == obs["concept"]["uuid"]:
-                            ae["encounter"]["obs"].append(
-                                {
-                                    "uuid": obs["uuid"],
-                                    "person": obs["person"]["uuid"],
-                                    "obsDatetime": obs["obsDatetime"],
-                                    "concept": obs["concept"]["uuid"],
-                                    "value": value
-                                    if not cu.is_date(value)
-                                    else cu.date_to_sql_datetime(value),
-                                }
-                            )
-        except Exception:
-            raise Exception
+                    else:
+                        obs = {
+                            "person": patientuuid,
+                            "obsDatetime": current_date_time_iso,
+                            "concept": key,
+                            "value": value if not cu.is_date(value)
+                            else (cu.date_to_sql_datetime(value) if cu.is_date(value) else value)
+                        }
+                    ae["encounter"]["obs"].append(obs)
+
+        except Exception as e:
+            raise Exception(e)
     else:
         ae = {
             "patientProgramUuid": patient_program_uuid,
@@ -877,33 +883,40 @@ def create_update_regimen_form(req, patientuuid, data, formid=None):
                     "patientProgramUuid": patient_program_uuid,
                     "encounter": {"uuid": response["uuid"], "obs": []},
                 }
-            for obs in response["obs"]:
-                if obs["concept"]["uuid"] == Concepts.PATIENT_PROGRAM_ID.value:
-                    regimen["encounter"]["obs"].append(
-                        {
-                            "uuid": obs["uuid"],
-                            "person": obs["person"]["uuid"],
-                            "obsDatetime": obs["obsDatetime"],
-                            "concept": obs["concept"]["uuid"],
-                            "value": obs["value"],
+            program_obs = get_obs_from_encounter(response["obs"], Concepts.PATIENT_PROGRAM_ID.value)
+            regimen["encounter"]["obs"].append(
+                {
+                    "uuid": program_obs["uuid"],
+                    "person": program_obs["person"]["uuid"],
+                    "obsDatetime": program_obs["obsDatetime"],
+                    "concept": program_obs["concept"]["uuid"],
+                    "value": program_obs["value"],
+                }
+            )
+            for key, value in data.items():
+                if cu.is_uuid(key) and value:
+                    existing = get_obs_from_encounter(response["obs"], key)
+                    if existing:
+                        obs = {
+                            "uuid": existing["uuid"],
+                            "person": existing["person"]["uuid"],
+                            "obsDatetime": existing["obsDatetime"],
+                            "concept": existing["concept"]["uuid"],
+                            "value": value if cu.is_uuid(value)
+                            else (cu.date_to_sql_datetime(value) if cu.is_date(value) else value)
                         }
-                    )
-                for key, value in data.items():
-                    if value:
-                        if key == obs["concept"]["uuid"]:
-                            regimen["encounter"]["obs"].append(
-                                {
-                                    "uuid": obs["uuid"],
-                                    "person": obs["person"]["uuid"],
-                                    "obsDatetime": obs["obsDatetime"],
-                                    "concept": obs["concept"]["uuid"],
-                                    "value": value
-                                    if not cu.is_date(value)
-                                    else cu.date_to_sql_datetime(value),
-                                }
-                            )
+                    else:
+                        obs = {
+                            "person": patientuuid,
+                            "obsDatetime": current_date_time_iso,
+                            "concept": key,
+                            "value": value if not cu.is_date(value)
+                            else (cu.date_to_sql_datetime(value) if cu.is_date(value) else value)
+                        }
+                    regimen["encounter"]["obs"].append(obs)
+
         except Exception as e:
-            raise Exception(str(e))
+            raise Exception(e)
     else:
         regimen = {
             "patientProgramUuid": patient_program_uuid,
@@ -941,9 +954,6 @@ def create_update_regimen_form(req, patientuuid, data, formid=None):
                 )
     try:
         url = f"mdrtb/regimen/{formid}" if formid else "mdrtb/regimen"
-        #
-        #
-        #
         status, _ = ru.post(req, url, regimen)
         if status:
             return True

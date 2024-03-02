@@ -67,7 +67,6 @@ def change_locale(req, locale):
         cache.clear()
         mu.get_all_concepts(req)
         lu.create_location_hierarchy(req)
-
         logged_in_user_uuid = req.session["logged_user"]["user"]["uuid"]
         user_properties = req.session["logged_user"]["user"]["userProperties"]
         user_properties["defaultLocale"] = locale
@@ -152,7 +151,6 @@ def render_search_patients_view(req):
         Privileges.GET_PATIENTS,
         Privileges.ADD_PATIENTS,
     ]
-
     try:
         if "breadcrumbs" in req.session:
             del req.session["breadcrumbs"]
@@ -531,7 +529,6 @@ def render_tb03_form(req, uuid):
         except Exception as e:
             log_and_show_error(e, req)
             return redirect("tb03", uuid=uuid)
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         tb03_concepts = [
@@ -555,32 +552,25 @@ def render_tb03_form(req, uuid):
         }
         mu.add_url_to_breadcrumb(req, context["title"])
         return render(req, "app/tbregister/dots/tb03.html", context=context)
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect("tb03", uuid=uuid)
 
 
 def render_edit_tb03_form(req, uuid, formid):
     privileges_required = [Privileges.DELETE_ENCOUNTERS]
-
     if not check_if_session_alive(req):
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         return redirect("login")
-
     if req.method == "POST":
         try:
             response = fu.create_update_tb03(req, uuid, req.POST, formid=formid)
-
             if response:
                 messages.success(req, "Form updated successfully")
                 return redirect(req.session["redirect_url"])
-
         except Exception as e:
             log_and_show_error(e, req)
             return redirect("edittb03", uuid=uuid, formid=formid)
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         title = (
@@ -595,9 +585,7 @@ def render_edit_tb03_form(req, uuid, formid):
             "current_patient_program_flow": req.session["current_patient_program_flow"],
             "identifiers": pu.get_patient_identifiers(req, uuid),
         }
-
         context.update(check_privileges(req, privileges_required))
-
         tb03_concepts = [
             Concepts.TREATMENT_CENTER_FOR_IP.value,
             Concepts.TREATMENT_CENTER_FOR_CP.value,
@@ -616,7 +604,6 @@ def render_edit_tb03_form(req, uuid, formid):
             context["form"] = form
             context["concepts"] = concepts
             return render(req, "app/tbregister/dots/tb03.html", context=context)
-
     except Exception as e:
         log_and_show_error(e, req)
         return redirect("edittb03", uuid=uuid, formid=formid)
@@ -626,15 +613,11 @@ def render_delete_tb03_form(req, formid):
     if formid:
         try:
             response = ru.delete(req, f"mdrtb/tb03/{formid}")
-
             ru.delete(req, f"encounter/{formid}")
-
             if response:
                 messages.warning(req, "Form deleted")
-
         except Exception as e:
             log_and_show_error(e, req)
-
         finally:
             return redirect(req.session["redirect_url"])
 
@@ -642,11 +625,9 @@ def render_delete_tb03_form(req, formid):
 def render_tb03u_form(req, uuid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     if req.method == "POST":
         try:
             response = fu.create_update_tb03u(req, uuid, req.POST)
-
             if response:
                 messages.success(req, "Form created successfully")
                 redirect_to = "/mdrtb/dashboard/patient/{}?program={}".format(
@@ -655,16 +636,13 @@ def render_tb03u_form(req, uuid):
                         "uuid"
                     ],
                 )
-
                 return redirect(redirect_to)
-
         except Exception as e:
             log_and_show_error(e, req)
             return redirect("tb03u", uuid=uuid)
 
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
         tb03u_concepts = [
             Concepts.ANATOMICAL_SITE_OF_TB.value,
             Concepts.MDR_STATUS.value,
@@ -676,7 +654,6 @@ def render_tb03u_form(req, uuid):
             Concepts.MDR_TB_TREATMENT_OUTCOME.value,
             Concepts.CAUSE_OF_DEATH.value,
         ]
-
         concepts = fu.get_form_concepts(tb03u_concepts, req)
         title = mu.get_global_msgs("mdrtb.tb03u", locale=req.session["locale"])
         context = {
@@ -691,32 +668,24 @@ def render_tb03u_form(req, uuid):
                 "NO": Concepts.NO.value,
             },
         }
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         return render(req, "app/tbregister/mdr/tb03u.html", context=context)
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect("tb03u", uuid=uuid)
 
 
 def render_edit_tb03u_form(req, uuid, formid):
     privileges_required = [Privileges.DELETE_ENCOUNTERS]
-
     if not check_if_session_alive(req):
         return redirect("login")
-
     if req.method == "POST":
         try:
             fu.create_update_tb03u(req, uuid, req.POST, formid=formid)
             return redirect(req.session["redirect_url"])
-
         except Exception as e:
             log_and_show_error(e, req)
             return redirect("edittb03u", uuid=uuid, formid=formid)
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         title = (
@@ -735,9 +704,7 @@ def render_edit_tb03u_form(req, uuid, formid):
                 "NO": Concepts.NO.value,
             },
         }
-
         context.update(check_privileges(req, privileges_required))
-
         tb03u_concepts = [
             Concepts.ANATOMICAL_SITE_OF_TB.value,
             Concepts.MDR_STATUS.value,
@@ -749,27 +716,17 @@ def render_edit_tb03u_form(req, uuid, formid):
             Concepts.MDR_TB_TREATMENT_OUTCOME.value,
             Concepts.CAUSE_OF_DEATH.value,
         ]
-
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
         form = fu.get_tb03u_by_uuid(req, formid)
-
         concepts = fu.get_form_concepts(tb03u_concepts, req)
-
         fu.remove_tb03u_duplicates(concepts, form)
-
         if form:
             context["form"] = form
-
             context["concepts"] = concepts
-
             mu.add_url_to_breadcrumb(req, context["title"])
-
             return render(req, "app/tbregister/mdr/tb03u.html", context=context)
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect("edittb03u", uuid=uuid, formid=formid)
 
 
@@ -777,12 +734,9 @@ def render_delete_tb03u_form(req, formid):
     if formid:
         try:
             ru.delete(req, f"mdrtb/tb03u/{formid}")
-
             ru.delete(req, f"encounter/{formid}")
-
         except Exception as e:
             log_and_show_error(e, req)
-
         finally:
             return redirect(req.session["redirect_url"], permanent=True)
 
@@ -790,19 +744,15 @@ def render_delete_tb03u_form(req, formid):
 def render_adverse_events_form(req, patientid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     if req.method == "POST":
         try:
             response = fu.create_update_adverse_event(req, patientid, req.POST)
-
             if response:
                 messages.success(req, "From created successfully")
                 return redirect(req.session["redirect_url"], permanent=True)
-
         except Exception as e:
             log_and_show_error(e, req)
             return redirect("adverseevents", patientid=patientid)
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         title = mu.get_global_msgs("mdrtb.pv.aeForm", locale=req.session["locale"])
@@ -815,7 +765,6 @@ def render_adverse_events_form(req, patientid):
                 "NO": Concepts.NO.value,
             },
         }
-
         adverse_event_concepts = [
             Concepts.ADVERSE_EVENT.value,
             Concepts.ADVERSE_EVENT_TYPE.value,
@@ -836,43 +785,31 @@ def render_adverse_events_form(req, patientid):
             Concepts.MEDDRA_CODE.value,
             Concepts.DRUG_RECHALLENGE.value,
         ]
-
         concepts = fu.get_form_concepts(adverse_event_concepts, req)
-
         context["concepts"] = concepts
-
         context["jsonconcepts"] = json.dumps(concepts)
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         return render(req, "app/tbregister/mdr/adverse_events.html", context=context)
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect("adverseevents", patientid=patientid)
 
 
 def render_edit_adverse_events_form(req, patientid, formid):
     privileges_required = [Privileges.DELETE_ENCOUNTERS]
-
     if not check_if_session_alive(req):
         return redirect("login")
-
     if req.method == "POST":
         try:
             response = fu.create_update_adverse_event(
                 req, patientid, req.POST, formid=formid
             )
-
             if response:
                 messages.success(req, "Form updated successfully")
                 return redirect(req.session["redirect_url"], permanent=True)
-
         except Exception as e:
             log_and_show_error(e, req)
             return redirect("editadverseevents", uuid=patientid, formid=formid)
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         title = (
@@ -892,9 +829,7 @@ def render_edit_adverse_events_form(req, patientid, formid):
                 "NO": Concepts.NO.value,
             },
         }
-
         context.update(check_privileges(req, privileges_required))
-
         adverse_event_concepts = [
             Concepts.ADVERSE_EVENT.value,
             Concepts.ADVERSE_EVENT_TYPE.value,
@@ -915,39 +850,29 @@ def render_edit_adverse_events_form(req, patientid, formid):
             Concepts.MEDDRA_CODE.value,
             Concepts.DRUG_RECHALLENGE.value,
         ]
-
         form = fu.get_ae_by_uuid(req, formid)
-
         concepts = fu.remove_ae_duplicates(
             fu.get_form_concepts(adverse_event_concepts, req), form
         )
-
         if form:
             context["form"] = form
-
             context["concepts"] = concepts
-
             mu.add_url_to_breadcrumb(req, context["title"])
             return render(
                 req, "app/tbregister/mdr/adverse_events.html", context=context
             )
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect("editadverseevents", uuid=patientid, formid=formid)
 
 
 def render_delete_adverse_events_form(req, formid):
     try:
         status, _ = ru.delete(req, f"mdrtb/adverseevents/{formid}")
-
         if status:
             messages.success(req, "Form deleted successfully")
-
     except Exception as e:
         log_and_show_error(e, req)
-
     finally:
         return redirect(req.session["redirect_url"], permanent=True)
 
@@ -955,22 +880,17 @@ def render_delete_adverse_events_form(req, formid):
 def render_drug_resistence_form(req, patientid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     if req.method == "POST":
         try:
             response = fu.create_update_drug_resistence_form(req, patientid, req.POST)
-
             if response:
                 messages.success(req, "Form created successfully")
                 return redirect(req.session["redirect_url"], permanent=True)
-
         except Exception as e:
             log_and_show_error(e, req)
             return redirect("drugresistanse", patientid=patientid)
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
         drug_resistance_concepts = [Concepts.DRUG_RESISTANCE_DURING_TREATMENT.value]
         title = mu.get_global_msgs("mdrtb.drdt", locale=req.session["locale"])
         context = {
@@ -978,11 +898,8 @@ def render_drug_resistence_form(req, patientid):
             "concepts": fu.get_form_concepts(drug_resistance_concepts, req),
             "patient_id": patientid,
         }
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         return render(req, "app/tbregister/mdr/drug_resistence.html", context=context)
-
     except Exception as e:
         log_and_show_error(e, req)
         return redirect("drugresistanse", uuid=patientid)
@@ -990,24 +907,19 @@ def render_drug_resistence_form(req, patientid):
 
 def render_edit_drug_resistence_form(req, patientid, formid):
     privileges_required = [Privileges.DELETE_ENCOUNTERS]
-
     if not check_if_session_alive(req):
         return redirect("login")
-
     if req.method == "POST":
         try:
             response = fu.create_update_drug_resistence_form(
                 req, patientid, req.POST, formid=formid
             )
-
             if response:
                 messages.success(req, "Form updated successfully")
                 return redirect(req.session["redirect_url"], permanent=True)
-
         except Exception as e:
             log_and_show_error(e, req)
             return redirect("editdrugresistanse", uuid=patientid, formid=formid)
-
     try:
         title = (
                 mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
@@ -1015,28 +927,18 @@ def render_edit_drug_resistence_form(req, patientid, formid):
                 + mu.get_global_msgs("mdrtb.drdt", locale=req.session["locale"])
         )
         context = {"title": title, "patient_id": patientid, "state": "edit"}
-
         context.update(check_privileges(req, privileges_required))
-
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
         drug_resistance_concepts = [Concepts.DRUG_RESISTANCE_DURING_TREATMENT.value]
-
         form = fu.get_drug_resistance_form_by_uuid(req, formid)
-
         concepts = fu.remove_drug_resistance_duplicates(
             fu.get_form_concepts(drug_resistance_concepts, req), form
         )
-
         if form:
             context["form"] = form
-
             context["concepts"] = concepts
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         return render(req, "app/tbregister/mdr/drug_resistence.html", context=context)
-
     except Exception as e:
         log_and_show_error(e, req)
         return redirect("editdrugresistanse", uuid=patientid, formid=formid)
@@ -1045,13 +947,10 @@ def render_edit_drug_resistence_form(req, patientid, formid):
 def render_delete_drug_resistence_form(req, formid):
     try:
         status, _ = ru.delete(req, f"mdrtb/drugresistance/{formid}")
-
         if status:
             messages.success(req, "Form deleted successfully")
-
     except Exception as e:
         log_and_show_error(e, req)
-
     finally:
         return redirect(req.session.get("redirect_url"), permanent=True)
 
@@ -1059,22 +958,17 @@ def render_delete_drug_resistence_form(req, formid):
 def render_regimen_form(req, patientid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     if req.method == "POST":
         try:
             response = fu.create_update_regimen_form(req, patientid, req.POST)
-
             if response:
                 messages.success(req, "Form created successfully")
                 return redirect(req.session["redirect_url"])
-
         except Exception as e:
             log_and_show_error(e, req)
             return redirect("regimen", uuid=patientid)
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
         concept_ids = [
             Concepts.PLACE_OF_CENTRAL_COMMISSION.value,
             Concepts.RESISTANCE_TYPE.value,
@@ -1087,11 +981,8 @@ def render_regimen_form(req, patientid):
             "concepts": fu.get_form_concepts(concept_ids, req),
             "current_patient_program_flow": req.session["current_patient_program_flow"],
         }
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         return render(req, "app/tbregister/mdr/regimen.html", context=context)
-
     except Exception as e:
         log_and_show_error(e, req)
         return redirect("regimen", uuid=patientid)
@@ -1099,34 +990,27 @@ def render_regimen_form(req, patientid):
 
 def render_edit_regimen_form(req, patientid, formid):
     privileges_required = [Privileges.DELETE_ENCOUNTERS]
-
     if not check_if_session_alive(req):
         return redirect("login")
-
     if req.method == "POST":
         try:
             response = fu.create_update_regimen_form(
                 req, patientid, req.POST, formid=formid
             )
-
             if response:
                 messages.success(req, "Form updated successfully")
                 return redirect(req.session["redirect_url"])
-
         except Exception as e:
             log_and_show_error(e, req)
             return redirect("editregimen", uuid=patientid, formid=formid)
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-
         concept_ids = [
             Concepts.PLACE_OF_CENTRAL_COMMISSION.value,
             Concepts.RESISTANCE_TYPE.value,
             Concepts.FUNDING_SOURCE.value,
             Concepts.SLD_REGIMEN_TYPE.value,
         ]
-
         form = fu.get_regimen_by_uuid(req, formid)
         title = (
                 mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
@@ -1141,19 +1025,13 @@ def render_edit_regimen_form(req, patientid, formid):
             "state": "edit",
             "current_patient_program_flow": req.session["current_patient_program_flow"],
         }
-
         context.update(check_privileges(req, privileges_required))
-
         if form:
             context["form"] = form
-
         else:
             raise Exception("Regimen form not found")
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         return render(req, "app/tbregister/mdr/regimen.html", context=context)
-
     except Exception as e:
         log_and_show_error(e, req)
         return redirect(req.session.get("redirect_url"))
@@ -1162,13 +1040,10 @@ def render_edit_regimen_form(req, patientid, formid):
 def render_delete_regimen_form(req, formid):
     try:
         status, _ = ru.delete(req, f"mdrtb/regimen/{formid}")
-
         if status:
             messages.success(req, "Form deleted successfully")
-
     except Exception as e:
         log_and_show_error(e, req)
-
     finally:
         return redirect(req.session.get("redirect_url"))
 
@@ -1176,19 +1051,15 @@ def render_delete_regimen_form(req, formid):
 def render_form_89(req, uuid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     if req.method == "POST":
         try:
             response = fu.create_update_form89(req, uuid, req.POST)
-
             if response:
                 messages.success(req, "Form created successfully")
                 return redirect(req.session["redirect_url"], permanent=True)
-
         except Exception as e:
             log_and_show_error(e, req)
             return redirect("form89", uuid=uuid)
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         title = mu.get_global_msgs("mdrtb.form89", locale=req.session["locale"])
@@ -1202,7 +1073,6 @@ def render_form_89(req, uuid):
                 "NO": Concepts.NO.value,
             },
         }
-
         form89_concepts = [
             Concepts.LOCATION_TYPE.value,
             Concepts.PROFESSION.value,
@@ -1215,40 +1085,28 @@ def render_form_89(req, uuid):
             Concepts.PRESCRIBED_TREATMENT.value,
             Concepts.PLACE_OF_CENTRAL_COMMISSION.value,
         ]
-
         concepts = fu.get_form_concepts(form89_concepts, req)
-
         context["concepts"] = concepts
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         return render(req, "app/tbregister/dots/form89.html", context=context)
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect("form89", uuid=uuid)
 
 
 def render_edit_form_89(req, uuid, formid):
     privileges_required = [Privileges.DELETE_ENCOUNTERS]
-
     if not check_if_session_alive(req):
         return redirect("login")
-
     if req.method == "POST":
         try:
             response = fu.create_update_form89(req, uuid, req.POST, formid=formid)
-
             if response:
                 messages.success(req, "Form updated successfully")
                 return redirect(req.session["redirect_url"])
-
         except Exception as e:
             log_and_show_error(e, req)
-
             return redirect("editform89", uuid=uuid, formid=formid)
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         title = (
@@ -1267,9 +1125,7 @@ def render_edit_form_89(req, uuid, formid):
                 "NO": Concepts.NO.value,
             },
         }
-
         context.update(check_privileges(req, privileges_required))
-
         form89_concepts = [
             Concepts.LOCATION_TYPE.value,
             Concepts.PROFESSION.value,
@@ -1281,35 +1137,25 @@ def render_edit_form_89(req, uuid, formid):
             Concepts.PRESCRIBED_TREATMENT.value,
             Concepts.PLACE_OF_CENTRAL_COMMISSION.value,
         ]
-
         form = fu.get_form89_by_uuid(req, formid)
-
         concepts = fu.remove_form89_duplicates(
             fu.get_form_concepts(form89_concepts, req), form
         )
-
         if form:
             context["form"] = form
-
             context["concepts"] = concepts
-
             mu.add_url_to_breadcrumb(req, context["title"])
-
             return render(req, "app/tbregister/dots/form89.html", context=context)
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect("editform89", uuid=uuid, formid=formid)
 
 
 def render_delete_form_89(req, formid):
     try:
         ru.delete(req, f"mdrtb/form89/{formid}")
-
     except Exception as e:
         log_and_show_error(e, req)
-
     finally:
         return redirect(req.session["redirect_url"])
 
@@ -1317,7 +1163,6 @@ def render_delete_form_89(req, formid):
 def render_user_profile(req):
     if not check_if_session_alive(req):
         return redirect("login")
-
     title = mu.get_global_msgs(
         "Navigation.options", locale=req.session["locale"], source="OpenMRS"
     )
@@ -1336,51 +1181,41 @@ def render_user_profile(req):
                 if "facility" not in req.POST
                 else req.POST["facility"]
             )
-
             user_properties["proficientLocales"] = (
                 req.POST["proficient_locales"]
                 if "proficient_locales" in req.POST
                 else ""
             )
             logged_in_user_uuid = req.session["logged_user"]["user"]["uuid"]
-
             _, _ = ru.post(
                 req,
                 f"user/{logged_in_user_uuid}",
                 {"userProperties": user_properties},
             )
-
             return redirect(req.session["redirect_url"])
         except Exception as e:
             log_and_show_error(e, req)
-
             return redirect(req.session["redirect_url"])
-
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER")
         user_properties = req.session["logged_user"]["user"]["userProperties"]
         default_locale = req.session["locale"]
-
         app_locales = ["en", "en_GB", "ru", "tj"]
         if default_locale in app_locales:
             app_locales.remove(default_locale)
-
         allowed_locales_openmrs = [
             locale.strip()
             for locale in mu.get_global_properties(req, "locale.allowed.list").split(
                 ","
             )
         ]
-
         status, person = ru.get(
             req,
             "person/{}".format(req.session["logged_user"]["user"]["person"]["uuid"]),
             {"v": "full"},
         )
-
         if status:
             context["person"] = person
-
         context["allowed_locales_openmrs"] = [
             {"name": Constants[locale.upper()].value, "value": locale}
             for locale in allowed_locales_openmrs
@@ -1399,66 +1234,50 @@ def render_user_profile(req):
                     req,
                     user_properties["defaultLocation"],
                 )
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         return render(req, "app/tbregister/user_profile.html", context=context)
-
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect(req.session["redirect_url"])
 
 
 def render_transferout_form(req, patientuuid):
     if not check_if_session_alive(req):
         return redirect("login")
-
     if req.method == "POST":
         try:
             response = fu.create_update_tranfer_out_form(req, patientuuid, req.POST)
-
             if response:
                 messages.success(req, "Form created successfully")
                 return redirect(req.session["redirect_url"])
-
         except Exception as e:
             log_and_show_error(e, req)
             return redirect("transferout", uuid=patientuuid)
-
     else:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         title = mu.get_global_msgs("mdrtb.transferOut", locale=req.session["locale"])
         context = {"title": title, "patientuuid": patientuuid}
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         return render(req, "app/tbregister/dots/transfer.html", context=context)
 
 
 def render_edit_transferout_form(req, patientuuid, formid):
     privileges_required = [Privileges.DELETE_ENCOUNTERS]
-
     if not check_if_session_alive(req):
         return redirect("login")
-
     if req.method == "POST":
         try:
             response = fu.create_update_tranfer_out_form(
                 req, patientuuid, req.POST, formid=formid
             )
-
             if response:
                 messages.success(req, "Form updated successfully")
                 return redirect(req.session["redirect_url"])
-
         except Exception as e:
             log_and_show_error(e, req)
             return redirect("edittransferout", uuid=patientuuid, formid=formid)
-
     try:
         form = fu.get_transfer_out_by_uuid(req, formid)
-
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         title = (
                 mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
@@ -1470,16 +1289,11 @@ def render_edit_transferout_form(req, patientuuid, formid):
             "patientuuid": patientuuid,
             "state": "edit",
         }
-
         context.update(check_privileges(req, privileges_required))
-
         mu.add_url_to_breadcrumb(req, context["title"])
-
         if form:
             context["form"] = form
-
         return render(req, "app/tbregister/dots/transfer.html", context=context)
-
     except Exception as e:
         log_and_show_error(e, req)
         return redirect("edittransferout", uuid=patientuuid, formid=formid)
@@ -1488,13 +1302,10 @@ def render_edit_transferout_form(req, patientuuid, formid):
 def render_delete_transferout_form(req, formid):
     try:
         response = ru.delete(req, f"mdrtb/transferout/{formid}")
-
         if response:
             messages.warning(req, "Form deleted")
-
     except Exception as e:
         log_and_show_error(e, req)
-
     finally:
         return redirect(req.session["redirect_url"])
 
@@ -1508,7 +1319,6 @@ def render_logout(req):
     except Exception as e:
         log_and_show_error(e, req)
         return redirect(req.session.get("redirect_url"))
-
 
 def log_and_show_error(error, req):
     messages.error(req, error)

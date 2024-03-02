@@ -54,7 +54,7 @@ class TestRestApiUtil(TestCase):
                     {
                         "address1": "Test Address",
                         "stateProvince": "82be00a0-894b-42aa-812f-428f23e9fd7a",
-                        "country": "Таджикистан",
+                        "country": "Таджикистан (Точикистон)",
                     }
                 ],
                 "age": "20",

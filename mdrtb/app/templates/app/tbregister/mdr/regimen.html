@@ -4,8 +4,6 @@
 {{title}}
 {% endblock %}
 
-
-
 {%block content%}
 
 <div>
@@ -41,8 +39,6 @@
               d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
           </svg>
         </a> {% endif %}
-
-
       </div>
       {% else %}
       <h1 class="text-[#2D9CDB] text-3xl font-bold">
@@ -72,51 +68,47 @@
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label w-full" for="date">{{'mdrtb.date'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
-            <input disabled name="encounterDateTime" value="{{form.encounter.encounterDatetime | iso_to_normal_date}}"
+            {% if state == 'edit' and form.encounter.encounterDatetime %}
+            <input disabled name="encounterDateTime" value="{{form.encounter.encounterDatetime|slice:':10'}}"
               type="date" class="input form-control">
             {% else %}
-            <input name="encounterDateTime" type="date" class="input form-control">
+              <input name="encounterDateTime" type="date" class="input form-control">
             {% endif %}
 
           </div>
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="cmacDate">{{'mdrtb.pv.cmacDate'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
-            <input value="{{form.councilDate | iso_to_normal_date }}"
+            {% if state == 'edit' and form.councilDate %}
+            <input value="{{form.councilDate|slice:':10'}}"
               name="{{'CENTRAL_COMMISSION_DATE' | get_concept }}" type="date" class="input form-control">
             {% else %}
             <input name="{{'CENTRAL_COMMISSION_DATE' | get_concept }}" type="date" class="input form-control">
             {% endif %}
-
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="cmacNumber">{{'mdrtb.form89.cmacNumber'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.cmacNumber %}
             <input value="{{form.cmacNumber}}" name="{{'CENTRAL_COMMISSION_NUMBER' | get_concept }}" type="text"
               class="input form-control">
             {% else %}
             <input name="{{'CENTRAL_COMMISSION_NUMBER' | get_concept }}" type="text" class="input form-control">
             {% endif %}
-
-
           </div>
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="placeOfCommission">{{'mdrtb.form89.placeOfCommission'|get_message:request.session.locale}}</label>
             <select name="{{'PLACE_OF_CENTRAL_COMMISSION' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-              <option selected value="{{form.placeOfCommission.uuid}}">{{form.placeOfCommission.display}}</option>
+              {% if state == 'edit' and form.placeOfCommission %}
+                <option selected value="{{form.placeOfCommission.uuid}}">{{form.placeOfCommission.display}}</option>
               {% else %}
-              <option selected value="">Select</option>
+                <option selected value="">Select</option>
               {% endif %}
-
               {% for concept in concepts.cmacplace %}
-              <option value="{{concept.uuid}}">{{concept.name}}</option>
+               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
@@ -126,16 +118,13 @@
             <label class="tb03-form-label w-full"
               for="resistanceType">{{'mdrtb.resistanceType'|get_message:request.session.locale}}</label>
             <select name="{{'RESISTANCE_TYPE' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-              <option selected value="{{form.resistanceType.uuid}}">
-                {{form.resistanceType.display}}</option>
+              {% if state == 'edit' and form.resistanceType %}
+               <option selected value="{{form.resistanceType.uuid}}">{{form.resistanceType.display}}</option>
               {% else %}
-              <option selected value="">Select</option>
+               <option selected value="">Select</option>
               {% endif %}
-
-
               {% for concept in concepts.resistancetype %}
-              <option value="{{concept.uuid}}">{{concept.name}}</option>
+                <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
@@ -143,15 +132,13 @@
             <label class="tb03-form-label w-full"
               for="fundingSource">{{'mdrtb.pv.fundingSource'|get_message:request.session.locale}}</label>
             <select name="{{'FUNDING_SOURCE' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-              <option selected value="{{form.fundingSource.uuid}}">
-                {{form.fundingSource.display}}</option>
+              {% if state == 'edit' and form.fundingSource %}
+               <option selected value="{{form.fundingSource.uuid}}">{{form.fundingSource.display}}</option>
               {% else %}
-              <option selected value="">Select</option>
+                <option selected value="">Select</option>
               {% endif %}
-
               {% for concept in concepts.fundingsource %}
-              <option value="{{concept.uuid}}">{{concept.name}}</option>
+                <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
@@ -161,31 +148,26 @@
             <label class="tb03-form-label w-full"
               for="sldRegimenType">{{'mdrtb.pv.sldRegimenType'|get_message:request.session.locale}}</label>
             <select name="{{'SLD_REGIMEN_TYPE' | get_concept }}" id="regimenType" class="input form-control">
-              {% if state == 'edit' %}
-              <option selected value="{{form.sldRegimen.uuid}}">
-                {{form.sldRegimen.display}}</option>
+              {% if state == 'edit' and form.sldRegimen %}
+                <option selected value="{{form.sldRegimen.uuid}}">{{form.sldRegimen.display}}</option>
               {% else %}
-              <option selected value="">Select</option>
+                <option selected value="">Select</option>
               {% endif %}
-
-
               {% for concept in concepts.sldregimentype %}
-              <option value="{{concept.uuid}}">{{concept.name}}</option>
+                <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="otherRegimen">{{'mdrtb.pv.otherRegimen'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.otherRegimen %}
             <input value="{{form.otherRegimen}}" name="{{'SLD_TREATMENT_REGIMEN' | get_concept }}" disabled
               id="otherRegimen" type="text" class="input form-control">
             {% else %}
             <input name="{{'SLD_TREATMENT_REGIMEN' | get_concept }}" disabled id="otherRegimen" type="text"
               class="input form-control">
             {% endif %}
-
-
 
           </div>
         </div>
@@ -194,32 +176,28 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="cmDose">{{'mdrtb.pv.cmDose'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.cmDose %}
             <input value="{{form.cmDose}}" name="{{'CM_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% else %}
             <input name="{{'CM_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
-
-
           </div>
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="mfxDose">{{'mdrtb.pv.mfxDose'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.mfxDose %}
             <input value="{{form.mfxDose}}" name="{{'MFX_DOSE' | get_concept }}" type="text"
               class="input form-control" />
             {% else %}
             <input name="{{'MFX_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
-
-
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="amDose">{{'mdrtb.pv.amDose'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.amDose %}
             <input value="{{form.amDose}}" name="{{'AM_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% else %}
             <input name="{{'AM_DOSE' | get_concept }}" type="text" class="input form-control" />
@@ -228,20 +206,18 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="ptoDose">{{'mdrtb.pv.ptoDose'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.ptoDose %}
             <input value="{{form.ptoDose}}" name="{{'PTO_DOSE' | get_concept }}" type="text" class="input form-control">
             {% else %}
             <input name="{{'PTO_DOSE' | get_concept }}" type="text" class="input form-control">
             {% endif %}
-
-
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="lfxDose">{{'mdrtb.pv.lfxDose'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.lfxDose %}
             <input value="{{form.lfxDose}}" name="{{'LFX_DOSE' | get_concept }}" type="text" class="input form-control">
             {% else %}
             <input name="{{'LFX_DOSE' | get_concept }}" type="text" class="input form-control">
@@ -251,7 +227,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="pasDose">{{'mdrtb.pv.pasDose'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.pasDose %}
             <input value="{{form.pasDose}}" name="{{'PAS_DOSE' | get_concept }}" type="text" class="input form-control">
             {% else %}
             <input name="{{'PAS_DOSE' | get_concept }}" type="text" class="input form-control">
@@ -263,7 +239,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="csDose">{{'mdrtb.pv.csDose'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.csDose %}
             <input value="{{form.csDose}}" name="{{'CS_DOSE' | get_concept }}" type="text" class="input form-control">
             {% else %}
             <input name="{{'CS_DOSE' | get_concept }}" type="text" class="input form-control">
@@ -273,7 +249,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="eDose">{{'mdrtb.pv.eDose'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.eDose %}
             <input value="{{form.eDose}}" name="{{'E_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% else %}
             <input name="{{'E_DOSE' | get_concept }}" type="text" class="input form-control" />
@@ -284,7 +260,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="zDose">{{'mdrtb.pv.zDose'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.zDose %}
             <input value="{{form.zDose}}" name="{{'Z_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% else %}
             <input name="{{'Z_DOSE' | get_concept }}" type="text" class="input form-control" />
@@ -293,7 +269,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="lzdDose">{{'mdrtb.pv.lzdDose'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.lzdDose %}
             <input value="{{form.lzdDose}}" name="{{'LZD_DOSE' | get_concept }}" type="text"
               class="input form-control" />
             {% else %}
@@ -301,12 +277,11 @@
             {% endif %}
           </div>
         </div>
-
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="hDose">{{'mdrtb.pv.hDose'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.hDose %}
             <input value="{{form.hDose}}" name="{{'H_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% else %}
             <input name="{{'H_DOSE' | get_concept }}" type="text" class="input form-control" />
@@ -315,7 +290,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="bdqDose">{{'mdrtb.pv.bdqDose'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.bdqDose %}
             <input value="{{form.bdqDose}}" name="{{'BDQ_DOSE' | get_concept }}" type="text"
               class="input form-control" />
             {% else %}
@@ -327,128 +302,112 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="cfzDose">{{'mdrtb.pv.cfzDose'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.cfzDose %}
             <input value="{{form.cfzDose}}" name="{{'CFZ_DOSE' | get_concept }}" type="text"
               class="input form-control" />
             {% else %}
             <input name="{{'CFZ_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
-
           </div>
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="impDose">{{'mdrtb.pv.impDose'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.impDose %}
             <input value="{{form.impDose}}" name="{{'IMP_DOSE' | get_concept }}" type="text"
               class="input form-control" />
             {% else %}
             <input name="{{'IMP_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
-
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="dlmDose">{{'mdrtb.pv.dlmDose'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.dlmDose %}
             <input value="{{form.dlmDose}}" name="{{'DLM_DOSE' | get_concept }}" type="text"
               class="input form-control" />
             {% else %}
             <input name="{{'DLM_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
-
           </div>
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="amxDose">{{'mdrtb.pv.amxDose'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.amxDose %}
             <input value="{{form.amxDose}}" name="{{'AMX_DOSE' | get_concept }}" type="text"
               class="input form-control" />
             {% else %}
             <input name="{{'AMX_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
-
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="hrzeDose">{{'mdrtb.pv.hrzeDose'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.hrzeDose %}
             <input value="{{form.hrzeDose}}" name="{{'HRZE_DOSE' | get_concept }}" type="text"
               class="input form-control" />
             {% else %}
             <input name="{{'HRZE_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
-
           </div>
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="hrDose">{{'mdrtb.pv.hrDose'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.hrDose %}
             <input value="{{form.hrDose}}" name="{{'HR_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% else %}
             <input name="{{'HR_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
-
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
-
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="sDose">{{'mdrtb.pv.sDose'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.sDose %}
             <input value="{{form.sDose}}" name="{{'S_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% else %}
             <input name="{{'S_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
-
           </div>
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="otherDrug1Name">{{'mdrtb.pv.otherDrug1Name'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.otherDrug1Name %}
             <input value="{{form.otherDrug1Name}}" name="{{'OTHER_DRUG_1_NAME' | get_concept }}" type="text"
               class="input form-control" />
             {% else %}
             <input name="{{'OTHER_DRUG_1_NAME' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
-
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
-
-
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="otherDrug1Dose">{{'mdrtb.pv.otherDrug1Dose'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.otherDrug1Dose %}
             <input value="{{form.otherDrug1Dose}}" name="{{'OTHER_DRUG_1_DOSE' | get_concept }}" type="text"
               class="input form-control" />
             {% else %}
             <input name="{{'OTHER_DRUG_1_DOSE' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
-
           </div>
           <div class="input-container">
-            <label style="width: 31%;" class="tb03-form-label"
+            <label style="width: 30%;" class="tb03-form-label"
               for="comments">{{'mdrtb.pv.comments'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
-
+            {% if state == 'edit' and form.comment %}
             <textarea name="{{'CLINICIAN_NOTES' | get_concept }}" class="input form-control" cols="10"
               rows="5">{{form.comment}}</textarea>
             {% else %}
             <textarea name="{{'CLINICIAN_NOTES' | get_concept }}" class="input form-control" cols="10"
               rows="5"></textarea>
             {% endif %}
-
           </div>
         </div>
         <div class="flex items-center justify-between space-x-6">
-
-
         </div>
         <div class="flex-center space-x-4 mt-4">
           <button type="submit" id="submitBtn" class="button-primary w-1/5">
@@ -457,7 +416,7 @@
           <a href="javascript:history.go(-1)" class="cancel-button">
             {{'general.cancel'|get_message_openMRS:request.session.locale}}
 
-            </button>
+          </a>
         </div>
 
       </div>
@@ -473,7 +432,7 @@
                 colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
             </lord-icon>
 
-        
+
         `)
     }
 
