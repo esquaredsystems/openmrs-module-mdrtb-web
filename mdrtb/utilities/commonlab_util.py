@@ -304,7 +304,7 @@ def get_attributes_of_labtest(req, lab_test_type):
     Retrieves the attributes of a lab test based on the provided UUID.
     Parameters:
         req: The request object.
-        uuid (str): The UUID of the lab test.
+        lab_test_type (str): The lab test type.
     Returns:
         list: A list of dictionaries representing the attributes of the lab test. Each dictionary contains detailed information about an attribute.
     Raises:

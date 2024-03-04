@@ -1,7 +1,6 @@
 from django.template.defaulttags import register
 from datetime import datetime
 from dateutil import parser
-import json
 from utilities import metadata_util as mu
 
 
