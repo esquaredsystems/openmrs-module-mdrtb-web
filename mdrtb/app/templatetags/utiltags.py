@@ -1,7 +1,7 @@
 from django.template.defaulttags import register
 from datetime import datetime
 from dateutil import parser
-from utilities import metadata_util as mu
+import re
 
 
 @register.filter
@@ -36,6 +36,21 @@ def iso_to_normal_date(date):
         return normal_date
     else:
         return None
+
+
+@register.filter
+def to_date(date_str):
+    if date_str:
+        yyyy_mm_dd_pattern = r'^\d{4}-\d{2}-\d{2}$'
+        dd_mm_yyyy_pattern = r'^\d{2}\.\d{2}.\d{4}$'
+        if re.match(yyyy_mm_dd_pattern, date_str):
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+        elif re.match(dd_mm_yyyy_pattern, date_str):
+            date_obj = datetime.strptime(date_str, '%d.%m.%Y').date()
+        else:
+            return None
+        return date_obj.strftime('%Y-%m-%d')
+    return None
 
 
 @register.filter
