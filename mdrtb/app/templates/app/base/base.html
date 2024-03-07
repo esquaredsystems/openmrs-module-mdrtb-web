@@ -214,13 +214,13 @@
 						$('#subregion-select').append(`<option value=${district.uuid}>${district.name}</option>`)
 					}
 				}
-				$('#district-select').append(`<option value="*">Все (Ҳама)</option>`);
 			}
 		})
 		$('#district-select').change(selectedDistrict => {
 			const districtUuid = selectedDistrict.target.value;
-			if (districtUuid === '*') {
-				// If "All" option is selected
+			const selectedRegion = $('#region-select').val();
+			// If "Dushanbe" region is selected
+			if (selectedRegion === '82be00a0-894b-42aa-812f-428f23e9fd7a' ) {
 				clearFacilities(); // Clear existing facility options
 				const selectedRegion = $('#region-select').val();
 				const districts = locationByUuids[selectedRegion]['children'];
