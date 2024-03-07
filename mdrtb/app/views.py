@@ -632,9 +632,7 @@ def render_tb03u_form(req, uuid):
                 messages.success(req, "Form created successfully")
                 redirect_to = "/mdrtb/dashboard/patient/{}?program={}".format(
                     uuid,
-                    req.session["current_patient_program_flow"]["current_program"][
-                        "uuid"
-                    ],
+                    req.session["current_patient_program_flow"]["current_program"]["uuid"],
                 )
                 return redirect(redirect_to)
         except Exception as e:
@@ -1132,6 +1130,7 @@ def render_edit_form_89(req, uuid, formid):
             Concepts.CIRCUMSTANCES_OF_DETECTION.value,
             Concepts.METHOD_OF_DETECTION.value,
             Concepts.ANATOMICAL_SITE_OF_TB.value,
+            Concepts.LOCATION_OF_EPTB.value,
             Concepts.PRESCRIBED_TREATMENT.value,
             Concepts.PLACE_OF_CENTRAL_COMMISSION.value,
         ]
@@ -2713,13 +2712,10 @@ def render_add_test_results(req, orderid):
     if not check_if_session_alive(req):
         return redirect("login")
     context = {
-        "title": mu.get_global_msgs(
-            "mdrtb.addTestResults", locale=req.session["locale"]
-        ),
+        "title": mu.get_global_msgs("mdrtb.addTestResults", locale=req.session["locale"]),
         "orderid": orderid,
     }
     if req.method == "POST":
-        state = req.POST["state"] if "state" in req.POST else None
         status, laborder = ru.get(req, f"commonlab/labtestorder/{orderid}", {})
         if status:
             body = {
@@ -2729,38 +2725,18 @@ def render_add_test_results(req, orderid):
                 "attributes": [],
             }
             for key, value in req.POST.items():
-                if key == "csrfmiddlewaretoken":
+                if key in ("csrfmiddlewaretoken", "state") or not value:
                     continue
-                if key == "state":
-                    continue
-                if value.strip():
-                    if state:
-                        for attribute in laborder["attributes"]:
-                            if attribute["attributeType"]["uuid"] == key:
-                                body["attributes"].append(
-                                    {
-                                        "uuid": attribute["uuid"],
-                                        "labTest": laborder["uuid"],
-                                        "attributeType": key,
-                                        "valueReference": value,
-                                    }
-                                )
-                            else:
-                                body["attributes"].append(
-                                    {
-                                        "labTest": laborder["uuid"],
-                                        "attributeType": key,
-                                        "valueReference": value,
-                                    }
-                                )
-                    else:
-                        body["attributes"].append(
-                            {
-                                "labTest": laborder["uuid"],
-                                "attributeType": key,
-                                "valueReference": value,
-                            }
-                        )
+                obj = {
+                    "labTest": laborder["uuid"],
+                    "attributeType": key,
+                    "valueReference": value,
+                }
+                if req.POST.get("state"):
+                    for attribute in laborder["attributes"]:
+                        if attribute["attributeType"]["uuid"] == key:
+                            obj["uuid"] = attribute["uuid"]
+                body["attributes"].append(obj)
             try:
                 status, response = ru.post(
                     req, f"commonlab/labtestorder/{orderid}", body
@@ -2783,30 +2759,36 @@ def render_add_test_results(req, orderid):
             {"v": "custom:(attributes,auditInfo,labReferenceNumber,labTestSamples)"},
         )
         if status:
-            context["audit_info_json"] = json.dumps(response["auditInfo"])
-            context["auditInfo"] = response["auditInfo"]
-            context["lab_reference"] = response["labReferenceNumber"]
+            context["labAuditInfo"] = response["auditInfo"]
+            context["labReferenceNumber"] = response["labReferenceNumber"]
             for sample in response["labTestSamples"]:
-                if (
-                        sample["status"] == Constants.ACCEPTED.value
-                        or sample["status"] == Constants.PROCESSED.value
-                ):
-                    context["sample"] = json.dumps(sample)
+                if sample["status"] in [Constants.ACCEPTED.value, Constants.PROCESSED.value]:
+                    context["labSample"] = sample
                     break
+
             if len(response["attributes"]) > 0:
                 context["state"] = "edit"
-                attributes = cu.get_labtest_attributes(
-                    req, orderid, representation="FULL"
-                )
-                if attributes:
-                    context["attributes"] = json.dumps(attributes)
+                attributes = cu.get_labtest_attributes(req, orderid, representation="FULL")
             else:
                 attributes = cu.get_custom_attribute_for_labresults(req, orderid)
-                context["attributes"] = json.dumps(attributes)
+            context["labAttributes"] = attributes
+            # Separate out common attributes from groups
+            common = []
+            grouped = {}
+            for attribute in attributes:
+                if attribute["attributeType"]["group"]:
+                    group = attribute["attributeType"]["group"]
+                    if group not in grouped:
+                        grouped[group] = []  # Initialize an empty list for the group if it doesn't exist
+                    grouped[group].append(attribute)
+                else:
+                    common.append(attribute)
+            context["labCommonAttributes"] = common
+            context["labGroupedAttributes"] = grouped
+            context["sample"] = context["labSample"]
             return render(req, "app/commonlab/addtestresults.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-
         return redirect("addtestresults", orderid=orderid)
 
 

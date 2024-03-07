@@ -1,573 +1,144 @@
-{% extends 'app/base/base.html' %} {% block title %} {{title}}
-{%endblock %} {% block content %}
+{% extends 'app/base/base.html' %}
+{% block title %} {{title}}
+{%endblock %}
 
+{% block content %}
 
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-
-<div class="mx-auto w-3/4">
+<div class="mx-auto w-3/5">
   <h1 class="primary-heading p-4">
     {{'commonlabtest.result.add'|get_message:request.session.locale}}
   </h1>
   <div class="bg-[#9e9e9e28] shadow-md px-4 flex items-center space-x-4 w-fit py-2">
     <span class="font-bold">{{'general.dateCreated'|get_message_openMRS:request.session.locale}} : </span><span
-      class="input-label w-fit">{{auditInfo.dateCreated | iso_to_normal_date }}</span>
+      class="input-label w-fit">{{ labAuditInfo.dateCreated|iso_to_normal_date }} {{ labAuditInfo.dateCreated|slice:'11:19' }}</span>
     <span class="font-bold"> {{'general.createdBy'|get_message_openMRS:request.session.locale}} : </span><span
-      class="input-label w-fit">{{auditInfo.creator.display}}</span>
-    <span class="font-bold"> {{'general.dateChanged'|get_message_openMRS:request.session.locale}} : </span><span
-      class="input-label w-fit">
-      {% if auditInfo.dateChanged is None %}
-      {{auditInfo.dateCreated | iso_to_normal_date }}
-      {% else %}
-      {{auditInfo.dateChanged | iso_to_normal_date }}
+      class="input-label w-fit">{{ labAuditInfo.creator.display }}</span>
+      {% if labAuditInfo.dateChanged %}
+        <span class="font-bold"> {{'general.dateChanged'|get_message_openMRS:request.session.locale}} : </span><span
+          class="input-label w-fit">
+        </span>
+        {{ labAuditInfo.dateCreated|iso_to_normal_date }} {{ labAuditInfo.dateCreated|slice:'11:19' }}
       {% endif %}
-    </span>
   </div>
+
   <form onsubmit="disableSubmit()" id="results-form" class="m-10 flex-column-center space-y-2"
     action="{% url 'addtestresults' orderid=orderid %}?patient={{request.GET.patient}}" method="post">
     {% csrf_token %}
-    <div class="flex-column-center space-y-2" id="attributes-container">
 
+    <!-- COMMON ATTRIBUTES -->
+    <div class="flex-column-center space-y-2" id="common">
+      {% for attribute in labCommonAttributes %}
+        <div class="input-container">
+          <label class="input-label" style="width: 60%;">{{ attribute.attributeType.name }}</label>
+          <div style="width: 40%;">
+            {% if attribute.attributeType.inputType == 'date' %}
+              <input type="{{ attribute.attributeType.inputType }}" class="input disabled:pointer-events-none"
+                 name="{{ attribute.attributeType.uuid }}" id="{{ attributeType.uuid }}" max="2100-12-31"
+                 {% if state == 'edit' %}value="{{ attribute.valueReference|to_date|slice:':10' }}" {% endif %}
+              />
+            {% elif attribute.attributeType.inputType == 'text' or attribute.attributeType.inputType == 'textarea' %}
+              <input type="{{ attribute.attributeType.inputType }}" class="input disabled:pointer-events-none"
+                 name="{{ attribute.attributeType.uuid }}" id="{{ attributeType.uuid }}"
+                 {% if state == 'edit' %}value="{{ attribute.valueReference.strip|safe|default:'' }}" {% endif %}
+              />
+            {% elif attribute.attributeType.inputType == 'checkbox' %}
+            <span>
+              <input type="{{ attribute.attributeType.inputType }}" class=""
+                   name="{{ attribute.attributeType.uuid }}" id="{{ attributeType.uuid }}"
+                   {% if state == 'edit' %}value="{{ attribute.valueReference|default:'' }}" {% endif %}
+              />
+              <label>{{ attribute.attributeType.name }}</label>
+            </span>
+            {% elif attribute.attributeType.inputType == 'select' %}
+              <select class="input form-control" name="{{ attribute.attributeType.uuid }}"
+                  id="attribute.attributeType.name">
+                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+                {% for answer in attribute.attributeType.answers %}
+                  {% if state == 'edit' and attribute.valueReference == answer.uuid %}
+                    <option selected value="{{answer.uuid}}">{{answer.display}}</option>
+                  {% else %}
+                    <option value="{{answer.uuid}}">{{answer.display}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
     </div>
 
-    <div id="results_accordions" class='flex flex-column-center space-y-2'>
+    <!-- GROUOPED ATTRIBUTES -->
+    <div class="flex-column-center space-y-2" id="grouped">
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        {% for group, attributes in labGroupedAttributes.items %}
+          <li class="nav-item">
+            <a class="btn btn-link mr-5" id="tab-{{ group }}" data-toggle="tab" href="#collapse{{ group }}" role="tab" aria-controls="collapse{{ group }}" aria-selected="true">{{ group }}</a>
+          </li>
+        {% endfor %}
+      </ul>
 
+      <!-- Tab panes -->
+      <div class="tab-content" id="myTabContent">
+        {% for group, attributes in labGroupedAttributes.items %}
+          <div class="tab-pane fade" id="collapse{{ group }}" role="tabpanel" aria-labelledby="tab-{{ group }}">
+            {% for attribute in attributes %}
+              <div class="input-container">
+                <label class="input-label" style="width: 60%;">{{ attribute.attributeType.name }}</label>
+                <div style="width: 40%;">
+                  {% if attribute.attributeType.inputType == 'date' %}
+                    <input type="{{ attribute.attributeType.inputType }}" class="input disabled:pointer-events-none"
+                           name="{{ attribute.attributeType.uuid }}" id="{{ attributeType.uuid }}" max="2100-12-31"
+                           {% if state == 'edit' %}value="{{ attribute.valueReference|to_date }}" {% endif %}/>
+                  {% elif attribute.attributeType.inputType == 'text' or attribute.attributeType.inputType == 'textarea' %}
+                    <input type="{{ attribute.attributeType.inputType }}" class="input disabled:pointer-events-none"
+                           name="{{ attribute.attributeType.uuid }}" id="{{ attributeType.uuid }}"
+                           {% if state == 'edit' %}value="{{ attribute.valueReference.strip|safe|default:'' }}" {% endif %}/>
+                  {% elif attribute.attributeType.inputType == 'checkbox' %}
+                    <span>
+                      <input type="{{ attribute.attributeType.inputType }}" class=""
+                             name="{{ attribute.attributeType.uuid }}" id="{{ attributeType.uuid }}"
+                             {% if state == 'edit' %}value="{{ attribute.valueReference|default:'' }}" {% endif %}/>
+                      <label>{{ attribute.attributeType.name }}</label>
+                    </span>
+                  {% elif attribute.attributeType.inputType == 'select' %}
+                    <select class="input form-control" name="{{ attribute.attributeType.uuid }}" id="attribute.attributeType.uuid">
+                      <option selected value="">{{ 'mdrtb.selectOption'|get_message:request.session.locale }}</option>
+                      {% for answer in attribute.attributeType.answers %}
+                        {% if state == 'edit' and attribute.valueReference == answer.uuid %}
+                          <option selected value="{{ answer.uuid }}">{{ answer.display }}</option>
+                        {% else %}
+                          <option value="{{ answer.uuid }}">{{ answer.display }}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
     </div>
+
+    <hr class="solid">
+
     <div class="input-container">
       <label class="input-label">Attachment</label>
-      <input type="file"
+      <input type="file" accept=".pdf, .doc, .docx"
         class="ml-4 w-full text-sm rounded-md leading-6 file:bg-gray-200 file:text-black file:font-semi-bold file:border-none file:px-4 file:py-1 file:mr-6 file:border-gray-200 border border-gray-300 cursor-pointer" />
+    </div>
+
+    <div class="flex-center space-x-3">
+        <button id="submitBtn" class="button-primary w-1/5">Submit</button>
+        <a class="cancel-button" href="javascript:history.go(-1)">Cancel</a>
     </div>
   </form>
 </div>
 <script>
-  let sample = JSON.parse("{{sample|escapejs}}");
-  console.log(sample)
-  let specimen_collection_date = "{{collection_date}}";
-  let auditInfo = JSON.parse("{{audit_info_json|escapejs}}")
-  let attributes = JSON.parse("{{attributes | escapejs}}");
-  let disabled_form_field = "rgb(209 213 219 / 1)"
-  console.log(attributes)
-
-  let state = "{{state}}"
-  if (state === 'edit') {
-    $('#results-form').append(`<input hidden type="text" name="state" value="update" />`)
-  }
-  let groups = [];
-  if (attributes.length <= 0) {
-    $("#results_accordions").html(
-      `
-               <div class="m-10 space-y-6 flex flex-col items-center justify-center">
-                <h3 class="font-bold text-3xl">NO ATTRIBUTES FOUND</h3>
-                <div class="flex items-center space-x-4">
-                  <h3>No Attributes found</a>
-               <a class="cancel-button" href="javascript:history.go(-1)">Go Back</a>
-                  </div>
-                </div>
-               `
-    );
-  }
-  if (state === 'edit') {
-    for (attribute of attributes) {
-      if (attribute.attributeType.group === null) {
-        if (attribute.attributeType.inputType === "checkbox") {
-          $("#attributes-container").append(
-            `<div class="input-container">
-            <label class="input-label" style="width:49%;">${attribute.attributeType.name}</label>
-            <input value=${attribute.valueReference ? attribute.valueReference : ""} class="" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} />
-            </div>
-          `
-          );
-        } else if (attribute.attributeType.inputType === "textarea") {
-          $("#attributes-container").append(
-            ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <textarea  class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid}>
-              ${attribute.valueReference ? attribute.valueReference.trim() : ""}</textarea>
-            </div>
-          `
-          );
-        } else if (attribute.attributeType.inputType === 'select') {
-          if (attribute.attributeType.answers.length <= 2) {
-            $("#attributes-container").append(
-              ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <div class="flex items-center justify-start space-x-4 w-full" id=${attribute.attributeType.uuid}>
-              <div class="flex-center space-x-2 w-full">
-                <label>Not selected</label>
-                ${attribute.valueReference ? `<input  name=${attribute.attributeType.uuid} type="radio" value=""
-                        class="radio-input" />` : `<input checked name=${attribute.attributeType.uuid} type="radio" value=""
-                        class="radio-input" />`}
-                
-                
-                </div>
-              
-              </div>
-            </div>
-          `
-            )
-            for (answer of attribute.attributeType.answers) {
-              $(`#${attribute.attributeType.uuid}`).append(
-                `<div class="flex-center space-x-2 w-full">
-                <label>${answer.display}</label>
-                ${attribute.valueReference === answer.uuid ? `<input checked name=${attribute.attributeType.uuid} type="radio" value=${answer.uuid}
-                        class="radio-input" />` : `<input name=${attribute.attributeType.uuid} type="radio" value=${answer.uuid}
-                        class="radio-input" />`}
-                
-                </div>`
-              )
-            }
-
-          } else {
-            $("#attributes-container").append(
-              ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <select id=${attribute.attributeType.uuid} name=${attribute.attributeType.uuid} class="input">
-              <option value="" selected>{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
-            </select>
-            </div>
-          `
-            );
-            for (answer of attribute.attributeType.answers) {
-              if (answer.uuid === attribute.valueReference) {
-
-                $(`#${attribute.attributeType.uuid}`).append(
-                  `<option selected value=${answer.uuid}>
-                    ${answer.display}  
-                  </option>`
-                )
-              } else {
-                $(`#${attribute.attributeType.uuid}`).append(
-                  `<option value=${answer.uuid}>
-                    ${answer.display}  
-                  </option>`
-                )
-              }
-            }
-          }
-        }
-
-        else {
-          if (attribute.valueReference) {
-            $("#attributes-container").append(
-              ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <input class="input" 
-            type=${attribute.attributeType.inputType} 
-            name=${attribute.attributeType.uuid} 
-            value=${attribute.valueReference}></input>
-            </div>
-          `
-            );
-          } else {
-            $("#attributes-container").append(
-              ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <input class="input" 
-            type=${attribute.attributeType.inputType} 
-            name=${attribute.attributeType.uuid}/>
-            </div>
-          `)
-          }
-
-        }
-      } else {
-        groups.push(attribute.attributeType.group);
-      }
-    }
-  } else {
-    for (attribute of attributes) {
-      if (attribute.attributeType.group === null) {
-        if (attribute.attributeType.inputType === "checkbox") {
-          $("#attributes-container").append(
-            ` <div class="input-container">
-              <label style="width:50%;" class="input-label w-1/2">${attribute.attributeType.name}</label>
-            <input type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} />
-            </div>
-          `
-          );
-        } else if (attribute.attributeType.inputType === "textarea") {
-          $("#attributes-container").append(
-            ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <textarea class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid}></textarea>
-            </div>
-          `
-          );
-        } else if (attribute.attributeType.inputType === 'select') {
-          if (attribute.attributeType.uuid === "{{'SPECIMEN_SOURCE' | get_constant }}"
-            || attribute.attributeType.uuid === "{{'TUBERCILOSIS_SAMPLE_SOURCE' | get_constant }}") {
-            $("#attributes-container").append(
-              ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <select style="background-color:${disabled_form_field};" id=${attribute.attributeType.uuid} name=${attribute.attributeType.uuid} class="input pointer-events-none">
-              <option value=${sample.specimenSite.uuid} selected>${sample.specimenSite.display}</option>
-            </select>
-          `
-            )
-          } else if (attribute.attributeType.answers.length <= 2) {
-            $("#attributes-container").append(
-              ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <div class="flex items-center justify-start space-x-4 w-full" id=${attribute.attributeType.uuid}>
-              <div class="flex-center space-x-2 w-full">
-                <label>Not selected</label>
-                <input checked name=${attribute.attributeType.uuid} type="radio" value=""
-                        class="radio-input" />
-                </div>
-              
-              </div>
-            </div>
-          `
-            )
-            let answers = attribute.attributeType.answers
-            answers.sort(function (a, b) {
-              return a.display.localeCompare(b.display);
-            });
-
-            for (answer of answers) {
-              $(`#${attribute.attributeType.uuid}`).append(
-                `<div class="flex-center space-x-2 w-full">
-                <label>${answer.display}</label>
-                <input name=${attribute.attributeType.uuid} type="radio" value=${answer.uuid}
-                        class="radio-input" />
-                </div>`
-              )
-            }
-
-          } else {
-
-            $("#attributes-container").append(
-              ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <select id=${attribute.attributeType.uuid} name=${attribute.attributeType.uuid} class="input">
-              <option value="" selected>{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
-            </select>
-            </div>
-          `
-            );
-            let answers = attribute.attributeType.answers
-            answers.sort(function (a, b) {
-              return a.display.localeCompare(b.display);
-            });
-            for (answer of answers) {
-              $(`#${attribute.attributeType.uuid}`).append(
-                `<option value=${answer.uuid}>
-                  ${answer.display}  
-                </option>`
-              )
-            }
-          }
-        }
-
-        else {
-          if (attribute.attributeType.name === "SPUTUM COLLECTION DATE") {
-            $(`#attributes-container`).append(
-              ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <input style="background-color:${disabled_form_field};" class="input pointer-events-none" type=text name=${attribute.attributeType.uuid} 
-            value=${sample.collectionDate.slice(0, 10).split("-").reverse().join(".")} /input >
-            </div>
-          `
-            );
-          } else if (attribute.attributeType.name === "LABORATORY INVESTIGATION NUMBER") {
-            $(`#attributes-container`).append(
-              ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <input style="background-color:${disabled_form_field};" class="input pointer-events-none" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} 
-            value={{lab_reference}} /input >
-            </div>
-          `
-            );
-          } else if (attribute.attributeType.name === "DATE OF REQUEST FOR LABORATORY INVESTIGATION"
-            || attribute.attributeType.name === "INVESTIGATION DATE") {
-            $(`#attributes-container`).append(
-              ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <input style="background-color:${disabled_form_field};" class="input pointer-events-none" type=text name=${attribute.attributeType.uuid} 
-            value=${auditInfo.dateCreated.slice(0, 10).split("-").reverse().join(".")} /input >
-            </div>
-          `
-            );
-          } else if (attribute.attributeType.name === "TUBERCULOSIS SPECIMEN ID") {
-            $(`#attributes-container`).append(
-              ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <input style="background-color:${disabled_form_field};" class="input pointer-events-none" type=text name=${attribute.attributeType.uuid} 
-            value=${sample.sampleIdentifier} /input >
-            </div>
-          `
-            );
-
-          }
-
-          else {
-
-            $("#attributes-container").append(
-              ` <div class="input-container">
-              <label class="input-label">${attribute.attributeType.name}</label>
-              <input class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} /input>
-              </div>
-            `
-            );
-          }
-        }
-      } else {
-        groups.push(attribute.attributeType.group);
-      }
-    }
-  }
-
-  let duplicatesRemovedGroups = [...new Set(groups)];
-  for (group of duplicatesRemovedGroups) {
-    let group_name = group.toLowerCase();
-    $("#results_accordions").append(
-      `
-    
-      <div id="${group_name}_accordian" class="rounded-t-lg border border-neutral-200 bg-white text-black">
-        <h2 id="${group_name}_heading" class="mb-0">
-          <button
-            class="group relative flex w-full items-center rounded-t-[15px] border-0 bg-white text-black px-4 py-2 text-left text-base  transition [overflow-anchor:none] hover:z-[2] focus:z-[3] focus:outline-none "
-            type="button" data-te-collapse-init data-te-target="#${group_name}_collapse" aria-expanded="false"
-            aria-controls="${group_name}_collapse">
-            ${group}
-            <span
-              class="ml-auto h-5 w-5 shrink-0 rotate-[-180deg] fill-[#336dec] transition-transform duration-200 ease-in-out group-[[data-te-collapse-collapsed]]:rotate-0 group-[[data-te-collapse-collapsed]]:fill-[#212529] motion-reduce:transition-none dark:fill-blue-300 dark:group-[[data-te-collapse-collapsed]]:fill-white">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                stroke="currentColor" class="h-6 w-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-              </svg>
-            </span>
-          </button>
-        </h2>
-        <div id="${group_name}_collapse" class="hidden" data-te-collapse-item aria-labelledby="${group_name}_heading"
-          data-te-parent="#results_accordions">
-          <div id="${group_name}_body" class="px-5 py-4 flex flex-col justify-center space-y-2">
-            
-          </div>
-        </div>
-
-
-
-
-    </div>
-
-
-
-
-
-    
-    
-    
-    
-    
-    `
-    );
-  }
-  if (state === 'edit') {
-    for (attribute of attributes) {
-      if (attribute.attributeType.group != null) {
-        if (attribute.attributeType.inputType === "checkbox") {
-          $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
-            ` <div class="input-container">
-            <label style="width:50%;" class="input-label w-1/2">${attribute.attributeType.name}</label>
-            <input value=${attribute.valueReference ? attribute.valueReference : false}style="background-color:blue;" class="" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} />
-            </div>
-          `
-          );
-        } else if (attribute.attributeType.inputType === "textarea") {
-          $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
-            ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <textarea class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid}>${attribute.valueReference ? attribute.valueReference : ""}</textarea>
-            </div>
-          `
-          );
-        } else if (attribute.attributeType.inputType === "select") {
-          if (attribute.attributeType.answers.length <= 2) {
-            $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
-              ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <div class="flex items-center justify-start space-x-4 w-full" id=${attribute.attributeType.uuid}>
-              <div class="flex-center space-x-2 w-full">
-                <label>Not selected</label>
-                ${attribute.valueReference ? `<input  name=${attribute.attributeType.uuid} type="radio" value=""
-                        class="radio-input" />` : `<input checked  name=${attribute.attributeType.uuid} type="radio" value=""
-                        class="radio-input" />`}
-                
-                
-                </div>
-              
-              </div>
-            </div>
-          `
-            )
-            let answers = attribute.attributeType.answers
-            answers.sort(function (a, b) {
-              return a.display.localeCompare(b.display);
-            });
-            for (answer of answers) {
-              $(`#${attribute.attributeType.uuid}`).append(
-                `<div class="flex-center space-x-2 w-full">
-                <label>${answer.display}</label>
-                ${attribute.valueReference === answer.uuid ? `<input checked name=${attribute.attributeType.uuid} type="radio" value=${answer.uuid}
-                        class="radio-input" />` : `<input name=${attribute.attributeType.uuid} type="radio" value=${answer.uuid}
-                        class="radio-input" />`}
-                
-                </div>`
-              )
-            }
-
-          } else {
-            $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
-              ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <select id=${attribute.attributeType.uuid} name=${attribute.attributeType.uuid} class="input">
-              <option value="" selected>{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
-            </select>
-            </div>
-          `
-            );
-            let answers = attribute.attributeType.answers
-            answers.sort(function (a, b) {
-              return a.display.localeCompare(b.display);
-            });
-            for (answer of answers) {
-              if (answer.uuid === attribute.valueReference) {
-
-                $(`#${attribute.attributeType.uuid}`).append(
-                  `<option selected value=${answer.uuid}>
-                    ${answer.display}  
-                  </option>`
-                )
-              } else {
-                $(`#${attribute.attributeType.uuid}`).append(
-                  `<option value=${answer.uuid}>
-                    ${answer.display}  
-                  </option>`
-                )
-              }
-            }
-          }
-
-
-        }
-
-        else {
-
-          $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
-            ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <input value=${attribute.valueReference ? attribute.valueReference : `''`} class="input form-control" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} />
-            </div>
-          `
-          );
-
-
-        }
-      }
-    }
-  } else {
-    for (attribute of attributes) {
-      if (attribute.attributeType.group != null) {
-        if (attribute.attributeType.inputType === "checkbox") {
-          $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
-            ` <div class="input-container">
-            <label style="width:50%;" class="input-label w-1/2">${attribute.attributeType.name}</label>
-            <input type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} />
-            </div>
-          `
-          );
-        } else if (attribute.attributeType.inputType === "textarea") {
-          $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
-            ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <textarea class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid}></textarea>
-            </div>
-          `
-          );
-        } else if (attribute.attributeType.inputType === "select") {
-          if (attribute.attributeType.answers.length <= 2) {
-            $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
-              ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <div class="flex items-center justify-start space-x-4 w-full" id=${attribute.attributeType.uuid}>
-              <div class="flex-center space-x-2 w-full">
-                <label>Not selected</label>
-                <input checked name=${attribute.attributeType.uuid} type="radio" value=""
-                        class="radio-input" />
-                </div>
-              
-              </div>
-            </div>
-          `
-            )
-            let answers = attribute.attributeType.answers
-            answers.sort(function (a, b) {
-              return a.display.localeCompare(b.display);
-            });
-            for (answer of answers) {
-              $(`#${attribute.attributeType.uuid}`).append(
-                `<div class="flex-center space-x-2 w-full">
-                <label>${answer.display}</label>
-                <input name=${attribute.attributeType.uuid} type="radio" value=${answer.uuid}
-                        class="radio-input" />
-                </div>`
-              )
-            }
-
-          } else {
-
-            $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
-              ` <div class="input-container">
-            <label class="input-label">${attribute.attributeType.name}</label>
-            <select id=${attribute.attributeType.uuid} name=${attribute.attributeType.uuid} class="input">
-              <option value="" selected>{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
-            </select>
-            </div>
-          `
-            );
-            let answers = attribute.attributeType.answers
-            answers.sort(function (a, b) {
-              return a.display.localeCompare(b.display);
-            });
-            for (answer of answers) {
-              $(`#${attribute.attributeType.uuid}`).append(
-                `<option value=${answer.uuid}>
-                  ${answer.display}  
-                </option>`
-              )
-            }
-          }
-
-        }
-
-        else {
-
-
-          $(`#${attribute.attributeType.group.toLowerCase()}_body`).append(
-            ` <div class="input-container">
-              <label class="input-label">${attribute.attributeType.name}</label>
-              <input class="input" type=${attribute.attributeType.inputType} name=${attribute.attributeType.uuid} /input>
-              </div>
-            `
-          );
-
-        }
-      }
-    }
-  }
-
-
-  if (attributes.length > 0) {
-    $("#results-form").append(
-      `
-        <div class="flex-center space-x-3">
-            <button id="submitBtn" class="button-primary w-1/5">Submit</button>
-            <a class="cancel-button" href="javascript:history.go(-1)">Cancel</a>
-        </div>
-        `
-    );
-  }
   let date = new Date();
   maxDate = date.toISOString().substring(0, 10);
   $('input[type="date"]').prop("max", maxDate)
@@ -576,12 +147,9 @@
     $('#submitBtn').prop('disabled', true)
     $('#submitBtn').removeClass('button-primary')
     $('#submitBtn').html(`
-        <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
-                colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
-            </lord-icon>
-
-        
-        `)
+      <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
+          colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+      </lord-icon>`)
   }
 </script>
 {% endblock %}
