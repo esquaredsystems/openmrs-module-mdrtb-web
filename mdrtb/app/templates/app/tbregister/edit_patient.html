@@ -147,18 +147,23 @@
     }
   });
   $(window).on("load", function() {
-    // Set locations as per the data
-    const country = "{{ patient.country }}";
-    $("#country-select").val(country.trim());
-    const region = "{{ patient.stateProvince }}".trim();
-    const $regionSelect = $("#region-select");
-    $regionSelect.val(region);
-    $regionSelect.change();
-    const district = "{{ patient.countyDistrict }}";
-    const $districtSelect = $("#district-select");
-    $districtSelect.val(district);
+      // Set locations as per the data
+      const country = "{{ patient.country }}";
+      setSelectValueByText("#country-select", country.trim());
+      const region = "{{ patient.stateProvince }}".trim();
+      setSelectValueByText("#region-select", region);
+      const district = "{{ patient.countyDistrict }}";
+      setSelectValueByText("#district-select", district);
   });
 
+  function setSelectValueByText(selectId, text) {
+      $(selectId + " option").each(function() {
+          if ($(this).text().trim() === text) {
+              $(selectId).val($(this).val());
+              return false; // Break the loop
+          }
+      });
+  }
 </script>
 
 {% endblock %}

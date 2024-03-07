@@ -123,6 +123,15 @@ def save_patient(req, data, uuid=None):
             ],
         },
     }
+    # Sanitize address
+    address = patient_info["person"]["addresses"][0]
+    for field in ["stateProvince", "countyDistrict", "cityVillage"]:
+        if field in address and u.is_uuid(address[field]):
+            address[field] = lu.get_location_by_uuid(req, address[field])["name"]
+    # Add subregion if applicable
+    if "subregion" in data:
+        address["cityVillage"] = lu.get_location_by_uuid(req, data["subregion"])["name"]
+    patient_info["person"]["addresses"][0] = address
     if "dob" in data:
         patient_info["person"]["birthdate"] = data["dob"]
         patient_info["person"]["birthdateEstimated"] = False

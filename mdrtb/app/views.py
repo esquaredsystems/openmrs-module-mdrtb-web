@@ -220,6 +220,7 @@ def render_edit_patient(req, uuid):
         context["patient"] = pu.get_patient(req, uuid)
         if context["patient"]["identifiers"]:
             context["patient"]["dotsidentifier"] = context["patient"]["identifiers"][0]["identifier"]
+
         return render(req, "app/tbregister/edit_patient.html", context=context)
 
 
