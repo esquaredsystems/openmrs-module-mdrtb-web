@@ -782,7 +782,6 @@ def render_adverse_events_form(req, patientid):
             Concepts.ADVERSE_EVENT_ACTION_4.value,
             Concepts.ADVERSE_EVENT_ACTION_5.value,
             Concepts.ADVERSE_EVENT_OUTCOME.value,
-            Concepts.MEDDRA_CODE.value,
             Concepts.DRUG_RECHALLENGE.value,
         ]
         concepts = fu.get_form_concepts(adverse_event_concepts, req)
@@ -847,7 +846,6 @@ def render_edit_adverse_events_form(req, patientid, formid):
             Concepts.ADVERSE_EVENT_ACTION_4.value,
             Concepts.ADVERSE_EVENT_ACTION_5.value,
             Concepts.ADVERSE_EVENT_OUTCOME.value,
-            Concepts.MEDDRA_CODE.value,
             Concepts.DRUG_RECHALLENGE.value,
         ]
         form = fu.get_ae_by_uuid(req, formid)

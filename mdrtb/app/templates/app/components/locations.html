@@ -2,14 +2,14 @@
 
 
 <div id="locations-container" class="flex flex-col space-y-4">
-    <div class="input-container">
+    <div class="input-container" id="country-container">
         <label class="input-label w-1/6"
             for="country-select">{{'Location.country'|get_message_openMRS:request.session.locale}}</label>
         <select class="input form-control" name="country" id="country-select">
             <option selected value="Таджикистан (Точикистон)">{{'COUNTRY'|get_constant}}</option>
         </select>
     </div>
-    <div class="input-container">
+    <div class="input-container" id="region-container">
         <label class="input-label w-1/6" for="region-select">{{'mdrtb.region'|get_message:request.session.locale}}</label>
         <select required class="input form-control" name="region" id="region-select">
             <option value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
@@ -21,14 +21,14 @@
             <option value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
         </select>
     </div>
-    <div class="input-container">
+    <div class="input-container" id="district-container">
         <label id="district-label" class="input-label w-1/6"
             for="district-select">{{'mdrtb.district'|get_message:request.session.locale}}</label>
         <select disabled class="input form-control" name="district" id="district-select">
             <option value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
         </select>
     </div>
-    <div class="input-container">
+    <div class="input-container" id="facility-container">
         <label id="facility-label" class="input-label w-1/6"
             for="facility-select">{{'mdrtb.facility'|get_message:request.session.locale}}</label>
         <select disabled class="input form-control" name="facility" id="facility-select">

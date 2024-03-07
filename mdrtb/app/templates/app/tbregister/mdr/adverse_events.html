@@ -4,8 +4,6 @@
 {{title}}
 {% endblock %}
 
-
-
 {%block content%}
 
 <div>
@@ -69,9 +67,9 @@
           <div class="input-container">
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.onsetDate'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.encounter.encounterDatetime %}
             <input disabled type="text" class="input form-control" name="encounterDateTime"
-              value="{{form.encounter.encounterDatetime | iso_to_normal_date }}">
+              value="{{form.encounter.encounterDatetime|slice:':10'}}">
             {% else %}
             <input type="date" class="input form-control" name="encounterDateTime">
             {% endif %}
@@ -80,14 +78,14 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.adverseEvent'|get_message:request.session.locale}}</label>
-            <select required name="{{'ADVERSE_EVENT' | get_concept }}" class="input form-control">
+            <select name="{{'ADVERSE_EVENT' | get_concept }}" class="input form-control">
               {% if state == 'edit' and form.advereEvent %}
                 <option selected value="{{form.advereEvent.uuid}}">{{form.advereEvent.display}}</option>
               {% else %}
                 <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.adverseevent %}
-                <option value="{{concept.uuid}}">{{concept.name}}</option>
+               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>
@@ -99,14 +97,14 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2 ">
                 <label for="yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.clinicalScreenDone.uuid == constants.YES %}
-                <input checked name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.clinicalScreenDone %}
+                  {% if form.clinicalScreenDone.uuid == constants.YES %}
+                  <input checked name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
@@ -115,14 +113,14 @@
               </div>
               <div class="flex-center space-x-2">
                 <label for="no">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.clinicalScreenDone.uuid == constants.NO %}
-                <input checked name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.clinicalScreenDone %}
+                  {% if form.clinicalScreenDone.uuid == constants.NO %}
+                  <input checked name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
@@ -136,14 +134,14 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.visualAcuityDone.uuid == constants.YES %}
-                <input checked name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.visualAcuityDone %}
+                  {% if form.visualAcuityDone.uuid == constants.YES %}
+                  <input checked name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
@@ -151,14 +149,14 @@
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.visualAcuityDone.uuid == constants.NO %}
-                <input checked name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.visualAcuityDone %}
+                  {% if form.visualAcuityDone.uuid == constants.NO %}
+                  <input checked name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
@@ -166,7 +164,6 @@
               </div>
             </div>
           </div>
-
 
         </div>
         <div class="adverse-event-form-row">
@@ -176,14 +173,14 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.simpleHearingTestDone.uuid == constants.YES %}
-                <input checked name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio"
-                  value="{{constants.YES}}" class="radio-input" />
-                {% else %}
-                <input name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.simpleHearingTestDone %}
+                  {% if form.simpleHearingTestDone.uuid == constants.YES %}
+                  <input checked name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio"
+                    value="{{constants.YES}}" class="radio-input" />
+                  {% else %}
+                  <input name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
@@ -191,20 +188,18 @@
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.simpleHearingTestDone.uuid == constants.NO %}
-                <input checked name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio"
-                  value="{{constants.NO}}" class="radio-input" />
+                {% if state == 'edit' and form.simpleHearingTestDone %}
+                  {% if form.simpleHearingTestDone.uuid == constants.NO %}
+                  <input checked name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio"
+                    value="{{constants.NO}}" class="radio-input" />
+                  {% else %}
+                  <input name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
-                {% else %}
-                <input name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% endif %}
-
-
               </div>
             </div>
           </div>
@@ -214,15 +209,14 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.audiogramDone.uuid == constants.YES %}
-                <input checked name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
-
+                {% if state == 'edit' and form.audiogramDone %}
+                  {% if form.audiogramDone.uuid == constants.YES %}
+                  <input checked name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
@@ -231,25 +225,21 @@
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.audiogramDone.uuid == constants.NO %}
-                <input checked name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                {% if state == 'edit' and form.audiogramDone %}
+                  {% if form.audiogramDone.uuid == constants.NO %}
+                  <input checked name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
-
-                {% else %}
-                <input name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% endif %}
-
               </div>
             </div>
           </div>
-
-
         </div>
         <div class="adverse-event-form-row">
           <div class="input-container space-x-14">
@@ -258,14 +248,14 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.neuroInvestigationDone.uuid == constants.YES %}
-                <input checked name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio"
-                  value="{{constants.YES}}" class="radio-input" />
-                {% else %}
-                <input name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.neuroInvestigationDone %}
+                  {% if form.neuroInvestigationDone.uuid == constants.YES %}
+                  <input checked name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio"
+                    value="{{constants.YES}}" class="radio-input" />
+                  {% else %}
+                  <input name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
@@ -274,14 +264,14 @@
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.neuroInvestigationDone.uuid == constants.NO %}
-                <input checked name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio"
-                  value="{{constants.NO}}" class="radio-input" />
-                {% else %}
-                <input name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.neuroInvestigationDone %}
+                  {% if form.neuroInvestigationDone.uuid == constants.NO %}
+                  <input checked name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio"
+                    value="{{constants.NO}}" class="radio-input" />
+                  {% else %}
+                  <input name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
@@ -292,46 +282,42 @@
           </div>
           <div class="input-container space-x-14">
             <label class="tb03-form-label w-full"
-              for="name">{{'mdrtb.pv.serumCreatnine'|get_message:request.session.locale}}</label>
+              for="name">{{'mdrtb.pv.serumCreatinine'|get_message:request.session.locale}}</label>
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.serumCreatinineDone.uuid == constants.YES %}
-                <input checked name="{{'CREATNINE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
+                {% if state == 'edit' and form.serumCreatinineDone %}
+                  {% if form.serumCreatinineDone.uuid == constants.YES %}
+                  <input checked name="{{'CREATININE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'CREATININE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
-                <input name="{{'CREATNINE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
-
-                {% else %}
-                <input name="{{'CREATNINE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                <input name="{{'CREATININE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
 
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.serumCreatinineDone.uuid == constants.NO %}
-                <input checked name="{{'CREATNINE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                {% if state == 'edit' and form.serumCreatinineDone %}
+                  {% if form.serumCreatinineDone.uuid == constants.NO %}
+                  <input checked name="{{'CREATININE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'CREATININE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
-                <input name="{{'CREATNINE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% endif %}
-
-                {% else %}
-                <input name="{{'CREATNINE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                <input name="{{'CREATININE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
 
               </div>
             </div>
           </div>
-
-
         </div>
 
         <div class="adverse-event-form-row">
@@ -341,14 +327,14 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.altDone.uuid == constants.YES %}
-                <input checked name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.altDone %}
+                  {% if form.altDone.uuid == constants.YES %}
+                  <input checked name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
@@ -357,13 +343,13 @@
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.altDone.uuid == constants.NO %}
-                <input checked name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.altDone %}
+                  {% if form.altDone.uuid == constants.NO %}
+                  <input checked name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
                 {% endif %}
@@ -377,14 +363,14 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.astDone.uuid == constants.YES %}
-                <input checked name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.astDone %}
+                  {% if form.astDone.uuid == constants.YES %}
+                  <input checked name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
@@ -393,23 +379,20 @@
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.astDone.uuid == constants.NO %}
-                <input checked name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.astDone %}
+                  {% if form.astDone.uuid == constants.NO %}
+                  <input checked name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
                 {% endif %}
               </div>
             </div>
           </div>
-
-
         </div>
-
         <div class="adverse-event-form-row">
           <div class="input-container space-x-14">
             <label class="tb03-form-label w-full"
@@ -417,14 +400,14 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.bilirubinDone.uuid == constants.YES %}
-                <input checked name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.bilirubinDone %}
+                  {% if form.bilirubinDone.uuid == constants.YES %}
+                  <input checked name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
@@ -432,15 +415,14 @@
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.bilirubinDone.uuid == constants.NO %}
-                <input checked name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% endif %}
-
+                {% if state == 'edit' and form.bilirubinDone %}
+                  {% if form.bilirubinDone.uuid == constants.NO %}
+                  <input checked name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
@@ -455,43 +437,37 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.alkalinePhosphateDone.uuid == constants.YES %}
-                <input checked name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio"
-                  value="{{constants.YES}}" class="radio-input" />
+                {% if state == 'edit' and form.alkalinePhosphateDone %}
+                  {% if form.alkalinePhosphateDone.uuid == constants.YES %}
+                  <input checked name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio"
+                    value="{{constants.YES}}" class="radio-input" />
+                  {% else %}
+                  <input name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
-                {% else %}
-                <input name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
-
-
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.alkalinePhosphateDone.uuid == constants.NO %}
-                <input checked name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio"
-                  value="{{constants.NO}}" class="radio-input" />
+                {% if state == 'edit' and form.alkalinePhosphateDone %}
+                  {% if form.alkalinePhosphateDone.uuid == constants.NO %}
+                  <input checked name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio"
+                    value="{{constants.NO}}" class="radio-input" />
+                  {% else %}
+                  <input name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
-                {% else %}
-                <input name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% endif %}
-
               </div>
             </div>
           </div>
-
-
         </div>
-
         <div class="adverse-event-form-row">
           <div class="input-container space-x-14">
             <label class="tb03-form-label w-full"
@@ -499,14 +475,14 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.ygtDone.uuid == constants.YES %}
-                <input checked name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.ygtDone %}
+                  {% if form.ygtDone.uuid == constants.YES %}
+                  <input checked name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
@@ -515,13 +491,13 @@
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.ygtDone.uuid == constants.NO %}
-                <input checked name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.ygtDone %}
+                  {% if form.ygtDone.uuid == constants.NO %}
+                  <input checked name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
                 {% endif %}
@@ -535,14 +511,14 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.ecgDone.uuid == constants.YES %}
-                <input checked name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.ecgDone %}
+                  {% if form.ecgDone.uuid == constants.YES %}
+                  <input checked name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
@@ -551,13 +527,13 @@
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.ecgDone.uuid == constants.NO %}
-                <input checked name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.ecgDone %}
+                  {% if form.ecgDone.uuid == constants.NO %}
+                  <input checked name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
                 {% endif %}
@@ -565,8 +541,6 @@
               </div>
             </div>
           </div>
-
-
         </div>
 
         <div class="adverse-event-form-row">
@@ -576,14 +550,14 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.lipaseDone.uuid == constants.YES %}
-                <input checked name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.lipaseDone %}
+                  {% if form.lipaseDone.uuid == constants.YES %}
+                  <input checked name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
@@ -592,14 +566,14 @@
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.lipaseDone.uuid == constants.NO %}
-                <input checked name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.lipaseDone %}
+                  {% if form.lipaseDone.uuid == constants.NO %}
+                  <input checked name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
@@ -614,14 +588,14 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.amylaseDone.uuid == constants.YES %}
-                <input checked name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.amylaseDone %}
+                  {% if form.amylaseDone.uuid == constants.YES %}
+                  <input checked name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
@@ -630,14 +604,14 @@
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.amylaseDone.uuid == constants.NO %}
-                <input checked name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.amylaseDone %}
+                  {% if form.amylaseDone.uuid == constants.NO %}
+                  <input checked name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
@@ -646,8 +620,6 @@
               </div>
             </div>
           </div>
-
-
         </div>
 
         <div class="adverse-event-form-row">
@@ -657,14 +629,14 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.potassiumDone.uuid == constants.YES %}
-                <input checked name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.potassiumDone %}
+                  {% if form.potassiumDone.uuid == constants.YES %}
+                  <input checked name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
@@ -673,19 +645,18 @@
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.potassiumDone.uuid == constants.NO %}
-                <input checked name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                {% if state == 'edit' and form.potassiumDone %}
+                  {% if form.potassiumDone.uuid == constants.NO %}
+                  <input checked name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
-                {% else %}
-                <input name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% endif %}
-
               </div>
             </div>
           </div>
@@ -695,42 +666,37 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.magnesiumDone.uuid == constants.YES %}
-                <input checked name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
+                {% if state == 'edit' and form.magnesiumDone %}
+                  {% if form.magnesiumDone.uuid == constants.YES %}
+                  <input checked name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
-                {% else %}
-                <input name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
-
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.magnesiumDone.uuid == constants.NO %}
-                <input checked name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                {% if state == 'edit' and form.magnesiumDone %}
+                  {% if form.magnesiumDone.uuid == constants.NO %}
+                  <input checked name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
-                {% else %}
-                <input name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% endif %}
-
               </div>
             </div>
           </div>
-
-
         </div>
-
         <div class="adverse-event-form-row">
           <div class="input-container space-x-14">
             <label class="tb03-form-label w-full"
@@ -738,35 +704,33 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.calciumDone.uuid == constants.YES %}
-                <input checked name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
+                {% if state == 'edit' and form.calciumDone %}
+                  {% if form.calciumDone.uuid == constants.YES %}
+                  <input checked name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
-                {% else %}
-                <input name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
-
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.calciumDone.uuid == constants.NO %}
-                <input checked name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                {% if state == 'edit' and form.calciumDone %}
+                  {% if form.calciumDone.uuid == constants.NO %}
+                  <input checked name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
-                {% else %}
-                <input name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% endif %}
-
               </div>
             </div>
           </div>
@@ -776,43 +740,37 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.albuminDone.uuid == constants.YES %}
-                <input checked name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
+                {% if state == 'edit' and form.albuminDone %}
+                  {% if form.albuminDone.uuid == constants.YES %}
+                  <input checked name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
-                {% else %}
-                <input name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
-
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.albuminDone.uuid == constants.NO %}
-                <input checked name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                {% if state == 'edit' and form.albuminDone %}
+                  {% if form.albuminDone.uuid == constants.NO %}
+                  <input checked name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
-                {% else %}
-                <input name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% endif %}
-
               </div>
             </div>
           </div>
-
-
         </div>
-
-
         <div class="adverse-event-form-row">
           <div class="input-container space-x-14">
             <label class="tb03-form-label w-full"
@@ -820,33 +778,31 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.cbcDone.uuid == constants.YES %}
-                <input checked name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
+                {% if state == 'edit' and form.cbcDone %}
+                  {% if form.cbcDone.uuid == constants.YES %}
+                  <input checked name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
-                {% else %}
-                <input name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
-
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.cbcDone.uuid == constants.NO %}
-                <input checked name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                {% if state == 'edit' and form.cbcDone %}
+                  {% if form.cbcDone.uuid == constants.NO %}
+                  <input checked name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
                 {% endif %}
-                {% else %}
-                <input name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
-                {% endif %}
-
               </div>
             </div>
           </div>
@@ -856,40 +812,36 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.bloodGlucoseDone.uuid == constants.YES %}
-                <input checked name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
+                {% if state == 'edit' and form.bloodGlucoseDone %}
+                  {% if form.bloodGlucoseDone.uuid == constants.YES %}
+                  <input checked name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
-                {% else %}
-                <input name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
-
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.bloodGlucoseDone.uuid == constants.NO %}
-                <input checked name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                {% if state == 'edit' and form.bloodGlucoseDone %}
+                  {% if form.bloodGlucoseDone.uuid == constants.NO %}
+                  <input checked name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
-                {% else %}
-                <input name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% endif %}
-
               </div>
             </div>
           </div>
-
-
         </div>
         <div class="adverse-event-form-row">
           <div class="input-container space-x-14">
@@ -898,35 +850,33 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.thyroidTestDone.uuid == constants.YES %}
-                <input checked name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
+                {% if state == 'edit' and form.thyroidTestDone %}
+                  {% if form.thyroidTestDone.uuid == constants.YES %}
+                  <input checked name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
-                {% else %}
-                <input name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
-
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.thyroidTestDone.uuid == constants.NO %}
-                <input checked name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                {% if state == 'edit' and form.thyroidTestDone %}
+                  {% if form.thyroidTestDone.uuid == constants.NO %}
+                  <input checked name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
-                {% else %}
-                <input name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% endif %}
-
               </div>
             </div>
           </div>
@@ -936,67 +886,57 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.otherTestDone.uuid == constants.YES %}
-                <input checked name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
+                {% if state == 'edit' and form.otherTestDone %}
+                  {% if form.otherTestDone.uuid == constants.YES %}
+                  <input checked name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
-                {% else %}
-                <input name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
-
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.otherTestDone.uuid == constants.NO %}
-                <input checked name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                {% if state == 'edit' and form.otherTestDone %}
+                  {% if form.otherTestDone.uuid == constants.NO %}
+                  <input checked name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
-                {% else %}
-                <input name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% endif %}
-
               </div>
             </div>
           </div>
-
-
         </div>
-
-
         <div class="adverse-event-form-row">
           <div class="input-container">
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.treatmentRegimenAtOnset'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.treatmentRegimenAtOnset %}
             <input value="{{form.treatmentRegimenAtOnset}}" name="{{'ADVERSE_EVENT_REGIMEN' | get_concept }}"
               type="text" class="input form-control">
             {% else %}
             <input name="{{'ADVERSE_EVENT_REGIMEN' | get_concept }}" type="text" class="input form-control">
             {% endif %}
-
           </div>
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.suspectedDrug'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
-
+            {% if state == 'edit' and form.suspectedDrug %}
             <input value="{{form.suspectedDrug}}" name="{{'SUSPECTED_DRUG' | get_concept }}" type="text"
               class="input form-control">
             {% else %}
-
             <input name="{{'SUSPECTED_DRUG' | get_concept }}" type="text" class="input form-control">
             {% endif %}
-
           </div>
         </div>
         <div class="adverse-event-form-row">
@@ -1004,14 +944,11 @@
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.typeOfEvent'|get_message:request.session.locale}}</label>
             <select id="eventType" name="{{'ADVERSE_EVENT_TYPE' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
+              {% if state == 'edit' and form.typeOfEvent %}
               <option selected value="{{form.typeOfEvent.uuid}}">{{form.typeOfEvent.display}}</option>
               {% else %}
-
               <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
-
               {% for concept in concepts.adverseeventtype %}
               <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
@@ -1021,11 +958,9 @@
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.typeOfSAE'|get_message:request.session.locale}}</label>
             <select disabled id="saeType" name="{{'SAE_TYPE' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
+              {% if state == 'edit' and form.typeOfSAE %}
               <option selected value="{{form.typeOfSAE.uuid}}">{{form.typeOfSAE.display}}</option>
               {% else %}
-
               <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.saetype %}
@@ -1040,12 +975,10 @@
               {{'mdrtb.pv.typeOfSpecialEvent'|get_message:request.session.locale}}</label>
             <select disabled id="specialType" name="{{'SPECIAL_INTEREST_EVENT_TYPE' | get_concept }}"
               class="input form-control">
-              {% if state == 'edit' %}
-
+              {% if state == 'edit' and form.typeOfSpecialEvent %}
               <option selected value="{{form.typeOfSpecialEvent.uuid}}">
                 {{form.typeOfSpecialEvent.display}}</option>
               {% else %}
-
               <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.specialinteresteventtype %}
@@ -1059,33 +992,30 @@
             <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.requiresAncillaryDrugs.uuid == constants.YES %}
-                <input checked name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio"
-                  value="{{constants.YES}}" class="radio-input" />
+                {% if state == 'edit' and form.requiresAncillaryDrugs %}
+                  {% if form.requiresAncillaryDrugs.uuid == constants.YES %}
+                  <input checked name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio"
+                    value="{{constants.YES}}" class="radio-input" />
+                  {% else %}
+                  <input name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
                 {% endif %}
-                {% else %}
-                <input name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-
-                {% endif %}
-
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.requiresAncillaryDrugs.uuid == constants.NO %}
-                <input checked name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio"
-                  value="{{constants.NO}}" class="radio-input" />
+                {% if state == 'edit' and form.requiresAncillaryDrugs %}
+                  {% if form.requiresAncillaryDrugs.uuid == constants.NO %}
+                  <input checked name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio"
+                    value="{{constants.NO}}" class="radio-input" />
+                  {% else %}
+                  <input name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
-                <input name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% endif %}
-                {% else %}
-
                 <input name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
@@ -1101,14 +1031,14 @@
             <div style="margin-left: 1rem;" class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label for="Yes">{{'mdrtb.yes'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.requiresDoseChange.uuid == constants.YES %}
-                <input checked name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% else %}
-                <input name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.YES}}"
-                  class="radio-input" />
-                {% endif %}
+                {% if state == 'edit' and form.requiresDoseChange %}
+                  {% if form.requiresDoseChange.uuid == constants.YES %}
+                  <input checked name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.YES}}"
                   class="radio-input" />
@@ -1116,35 +1046,30 @@
               </div>
               <div class="flex-center space-x-2">
                 <label for="No">{{'mdrtb.no'|get_message:request.session.locale}}</label>
-                {% if state == 'edit' %}
-                {% if form.requiresDoseChange.uuid == constants.NO %}
-                <input checked name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
+                {% if state == 'edit' and form.requiresDoseChange %}
+                  {% if form.requiresDoseChange.uuid == constants.NO %}
+                  <input checked name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
                 {% else %}
                 <input name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.NO}}"
                   class="radio-input" />
                 {% endif %}
-                {% else %}
-                <input name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.NO}}"
-                  class="radio-input" />
-                {% endif %}
-
-
               </div>
             </div>
           </div>
-
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.yellowCardDate'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
-            <input value="{{form.yellowCardDate | iso_to_normal_date }}" name="{{'YELLOW_CARD_DATE' | get_concept }}"
+            {% if state == 'edit' and form.yellowCardDate %}
+            <input value="{{form.yellowCardDate|slice:':10'}}" name="{{'YELLOW_CARD_DATE' | get_concept }}"
               type="date" class="input form-control">
             {% else %}
-
             <input name="{{'YELLOW_CARD_DATE' | get_concept }}" type="date" class="input form-control">
             {% endif %}
-
           </div>
         </div>
         <div class="adverse-event-form-row">
@@ -1152,11 +1077,9 @@
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.causalityDrug1'|get_message:request.session.locale}}</label>
             <select name="{{'CAUSALITY_DRUG_1' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
+              {% if state == 'edit' and form.casualityDrug %}
               <option selected value="{{form.casualityDrug.uuid}}">{{form.casualityDrug.display}}</option>
               {% else %}
-
               <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>s
               {% endif %}
               {% for concept in concepts.causalitydrug1 %}
@@ -1168,12 +1091,10 @@
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.causalityAssessmentResult1'|get_message:request.session.locale}}</label>
             <select name="{{'CAUSALITY_ASSESSMENT_RESULT_1' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
+              {% if state == 'edit' and form.casualityAssessmentResult %}
               <option selected value="{{form.casualityAssessmentResult.uuid}}">
                 {{form.casualityAssessmentResult.display}}</option>
               {% else %}
-
               <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.causalityassessmentresult1 %}
@@ -1187,12 +1108,10 @@
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.causalityDrug2'|get_message:request.session.locale}}</label>
             <select name="{{'CAUSALITY_DRUG_2' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
+              {% if state == 'edit' and form.casualityDrug2 %}
               <option selected value="{{form.casualityDrug2.uuid}}">
                 {{form.casualityDrug2.display}}</option>
               {% else %}
-
               <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.causalitydrug2 %}
@@ -1204,12 +1123,10 @@
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.causalityAssessmentResult2'|get_message:request.session.locale}}</label>
             <select name="{{'CAUSALITY_ASSESSMENT_RESULT_2' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
+              {% if state == 'edit' and form.casualityAssessmentResult2 %}
               <option selected value="{{form.casualityAssessmentResult2.uuid}}">
                 {{form.casualityAssessmentResult2.display}}</option>
               {% else %}
-
               <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.causalityassessmentresult2 %}
@@ -1223,11 +1140,9 @@
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.causalityDrug3'|get_message:request.session.locale}}</label>
             <select name="{{'CAUSALITY_DRUG_3' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
+              {% if state == 'edit' and form.casualityDrug3 %}
               <option selected value="{{form.casualityDrug3.uuid}}">{{form.casualityDrug3.display}}</option>
               {% else %}
-
               <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.causalitydrug3 %}
@@ -1239,12 +1154,10 @@
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.causalityAssessmentResult3'|get_message:request.session.locale}}</label>
             <select name="{{'CAUSALITY_ASSESSMENT_RESULT_3' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
+              {% if state == 'edit' and form.casualityAssessmentResult3 %}
               <option selected value="{{form.casualityAssessmentResult3.uuid}}">
                 {{form.casualityAssessmentResult3.display}}</option>
               {% else %}
-
               <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.causalityassessmentresult3 %}
@@ -1258,11 +1171,9 @@
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.actionTaken'|get_message:request.session.locale}}</label>
             <select name="{{'ADVERSE_EVENT_ACTION' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
+              {% if state == 'edit' and form.actionTaken %}
               <option selected value="{{form.actionTaken.uuid}}">{{form.actionTaken.display}}</option>
               {% else %}
-
               <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.adverseeventaction %}
@@ -1275,11 +1186,9 @@
               for="name">{{'mdrtb.pv.actionTaken'|get_message:request.session.locale}}
               2</label>
             <select name="{{'ADVERSE_EVENT_ACTION_2' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
+              {% if state == 'edit' and form.actionTaken2 %}
               <option selected value="{{form.actionTaken2.uuid}}">{{form.actionTaken2.display}}</option>
               {% else %}
-
               <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.adverseeventaction2 %}
@@ -1293,11 +1202,9 @@
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.actionTaken'|get_message:request.session.locale}} 3</label>
             <select name="{{'ADVERSE_EVENT_ACTION_3' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
+              {% if state == 'edit' and form.actionTaken3 %}
               <option selected value="{{form.actionTaken3.uuid}}">{{form.actionTaken3.display}}</option>
               {% else %}
-
               <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.adverseeventaction3 %}
@@ -1310,11 +1217,9 @@
               for="name">{{'mdrtb.pv.actionTaken'|get_message:request.session.locale}}
               4</label>
             <select name="{{'ADVERSE_EVENT_ACTION_4' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
+              {% if state == 'edit' and form.actionTaken4 %}
               <option selected value="{{form.actionTaken4.uuid}}">{{form.actionTaken4.display}}</option>
               {% else %}
-
               <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.adverseeventaction4 %}
@@ -1328,11 +1233,9 @@
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.actionTaken'|get_message:request.session.locale}} 5</label>
             <select name="{{'ADVERSE_EVENT_ACTION_5' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
+              {% if state == 'edit' and form.actionTaken5 %}
               <option selected value="{{form.actionTaken5.uuid}}">{{form.actionTaken5.display}}</option>
               {% else %}
-
               <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.adverseeventaction5 %}
@@ -1344,11 +1247,9 @@
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.actionOutcome'|get_message:request.session.locale}}</label>
             <select id="actionOutcome" name="{{'ADVERSE_EVENT_OUTCOME' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
+              {% if state == 'edit' and form.actionOutcome %}
               <option selected value="{{form.actionOutcome.uuid}}">{{form.actionOutcome.display}}</option>
               {% else %}
-
               <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.adverseeventoutcome %}
@@ -1361,43 +1262,21 @@
           <div class="input-container">
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.outcomeDate'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
-            <input id="outcomeDate" value="{{form.outcomeDate | iso_to_normal_date}}"
+            {% if state == 'edit' and form.outcomeDate %}
+            <input id="outcomeDate" value="{{form.outcomeDate|slice:':10'}}"
               name="{{'ADVERSE_EVENT_OUTCOME_DATE' | get_concept }}" type="date" class="input form-control">
             {% else %}
-
             <input id="outcomeDate" name="{{'ADVERSE_EVENT_OUTCOME_DATE' | get_concept }}" type="date"
               class="input form-control">
             {% endif %}
-
           </div>
-          <div class="input-container">
-            <label class="tb03-form-label w-full"
-              for="name">{{'mdrtb.pv.meddraCode'|get_message:request.session.locale}}</label>
-            <select name="{{'MEDDRA_CODE' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
-              <option selected value="{{form.meddraCode.uuid}}">{{form.meddraCode.display}}</option>
-              {% else %}
-
-              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
-              {% endif %}
-              {% for concept in concepts.meddracode %}
-              <option value="{{concept.uuid}}">{{concept.name}}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-        <div class="adverse-event-form-row">
           <div class="input-container">
             <label class="tb03-form-label w-full" for="name">
               {{'mdrtb.pv.drugRechallenge'|get_message:request.session.locale}}</label>
             <select name="{{'DRUG_RECHALLENGE' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-
+              {% if state == 'edit' and form.drugRechallenge %}
               <option selected value="{{form.drugRechallenge.uuid}}">{{form.drugRechallenge.display}}</option>
               {% else %}
-
               <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.drugrechallenge %}
@@ -1405,35 +1284,25 @@
               {% endfor %}
             </select>
           </div>
-          <div class="input-container">
-            <label class="tb03-form-label w-full" for="name">
+        </div>
+        <div>
+            <label class="tb03-form-label w-full">
               {{'mdrtb.pv.register.comments'|get_message:request.session.locale}}</label>
-            {% if state == 'edit' %}
+            {% if state == 'edit' and form.clinicianNotes %}
             <textarea name="{{'CLINICIAN_NOTES' | get_concept }}"
               class="input form-control">{{form.clinicianNotes}}</textarea>
             {% else %}
-
             <textarea name="{{'CLINICIAN_NOTES' | get_concept }}" class="input form-control"></textarea>
             {% endif %}
-
-          </div>
-
         </div>
-
-
-
-
-
         <div class="flex-center">
           <button type="submit" id="submitBtn" class="button-primary w-1/5">
             {{'general.save'|get_message_openMRS:request.session.locale}}
           </button>
           <a href="javascript:history.go(-1)" class="cancel-button">
             {{'general.cancel'|get_message_openMRS:request.session.locale}}
-
           </a>
         </div>
-
       </div>
     </div>
   </form>
@@ -1444,13 +1313,9 @@
       $('#submitBtn').removeClass('button-primary')
       $('#submitBtn').html(`
         <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
-                colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
-            </lord-icon>
-
-        
-        `)
+            colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+        </lord-icon>`)
     }
-
     $('#eventType').change((e) => {
       let eventType = e.target.value
       if (eventType === "{{'SERIOUS' | get_concept }}") {
@@ -1465,7 +1330,6 @@
           $('#saeType').prop('disabled', true)
         }
     })
-
     $('#actionOutcome').change((e) => {
       let outcome = e.target.value
       let outcomeDate = $('#outcomeDate')
@@ -1479,7 +1343,6 @@
         outcomeDate.prop('disabled', false)
       }
     })
-
     let state = '{{state | escapejs}}'
     if (state === 'edit') {
       $('input').prop('disabled', true).prop('required', false)
@@ -1517,7 +1380,5 @@
     $('input[type="date"]').prop("max", maxDate)
   </script>
 </div>
-
-
 
 {% endblock %}
