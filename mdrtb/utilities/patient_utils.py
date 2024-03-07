@@ -351,7 +351,7 @@ def get_programs(req, uuid=None, params=None):
     programs = []
     if status:
         for program in response["results"]:
-            if program["retired"] == False:
+            if not program["retired"]:
                 programs.append(program)
         return programs
     else:

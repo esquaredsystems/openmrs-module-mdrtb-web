@@ -345,18 +345,17 @@
       for (workFlow of program.allWorkflows) {
         if (!workFlow.retired) {
           $('#states').append(
-            ` <div class="input-container mt-3">
-        <label class="font-bold normal-case text-sm text-[#9E9E9E] w-2/5 "
-          >${workFlow.concept.display}</label
-        >
-        <select class="input w-3/5 form-control" name=${workFlow.uuid} id=${workFlow.uuid}>
-          <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option></select>
-      </div>
-                  `
-          )
+          `
+          <div class="input-container mt-3">
+              <label class="font-bold normal-case text-sm text-[#9E9E9E] w-2/5 ">${workFlow.concept.display}</label>
+              <select class="input w-3/5 form-control" name=${workFlow.uuid} id=${workFlow.uuid}>
+                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option
+              </select>
+          </div>`)
+          // Sort the states array by concept.display
+          workFlow.states.sort((a, b) => a.concept.display.localeCompare(b.concept.display));
           workFlow.states.forEach(item => {
             if (item.retired === false) {
-
               $(`#${workFlow.uuid}`).append(
                 `<option value=${item.uuid}>${item.concept.display}</option>`
               )
@@ -368,9 +367,6 @@
     let date = new Date();
     let maxDate = date.toISOString().substring(0, 10);
     $('input[type=date]').prop('max', maxDate)
-
-
-
 
   </script>
 </div>

@@ -17,8 +17,6 @@
         stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white bg-red-700 cursor-pointer">
         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
       </svg>
-
-
     </div>
     <div class="m-4">
       <div id="resultsbox" class="grid grid-cols-1 space-y-4 h-min w-full bg-gray-200 p-4 rounded-md shadow-md">
@@ -27,11 +25,8 @@
           <p>Group Name</p>
           <p>Result</p>
         </div>
-
-
       </div>
-
-
+    </div>
   </section>
 
   {% include 'app/components/patient_banner.html' %}
@@ -112,7 +107,6 @@
       {% endif %}
       {% endif %}
 
-
       {% endfor %}
 
       <div class="space-x-3">
@@ -120,11 +114,11 @@
           class="tb03-form-label">{{program.dateCompleted | iso_to_normal_date}}</span>
       </div>
       <div class="space-x-3">
-
         <span class="font-bold">
           {{'Program.program'|get_message_openMRS:request.session.locale}}
           {{'mdrtb.outcome'|get_message:request.session.locale}}: </span><span
-          class="tb03-form-label">{{program.outcome}}</span>
+          class="tb03-form-label">{{program.outcome}}
+        </span>
       </div>
 
     </div>
@@ -472,7 +466,6 @@
           groupHasAttributes[attribute.attributeType.group] = true
         }
         groups.push(attribute.attributeType.group)
-
       }
     }
     console.log(groupHasAttributes)
@@ -483,23 +476,18 @@
     for (group of duplicatesRemovedGroups) {
       if (groupHasAttributes[group]) {
         $(`#${uuid}groups`).append(
-          `<div class="w-full bg-white p-2">
-                        <h1 class="font-bold text-lg text-center">${group}</h1>
-                        <div id="${uuid}${group.toLowerCase()}"
-                          class="grid grid-cols-2 place-items-center justify-items-center  p-2">
-                          <div class="border p-2 border-gray-200 font-bold w-full">{{'ConceptProposal.obs'|get_message_openMRS:request.session.locale}}</div>
-                          <div class="border p-2 border-gray-200 font-bold w-full">{{'general.value'|get_message_openMRS:request.session.locale}}</div>
-
-
-                        </div>
-                      </div>`
+          `
+          <div class="w-full bg-white p-2">
+            <h1 class="font-bold text-lg text-center">${group}</h1>
+            <div id="${uuid}${group.toLowerCase()}"
+              class="grid grid-cols-2 place-items-center justify-items-center  p-2">
+              <div class="border p-2 border-gray-200 font-bold w-full">{{'ConceptProposal.obs'|get_message_openMRS:request.session.locale}}</div>
+              <div class="border p-2 border-gray-200 font-bold w-full">{{'general.value'|get_message_openMRS:request.session.locale}}</div>
+            </div>
+          </div>
+          `
         )
       }
-
-
-
-
-
     }
     for (attribute of attributes) {
       if (attribute.attributeType.group === null) {
@@ -508,39 +496,33 @@
             for (answer of attribute.attributeType.answers) {
               if (answer.uuid === attribute.valueReference) {
                 $(`#${uuid}common`).append(
-                  `
-          <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
-          <div class="border w-full h-full p-2 border-gray-200">${answer.display}</div>
- 
-          `
+                `
+                <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+                <div class="border w-full h-full p-2 border-gray-200">${answer.display}</div>
+                `
                 )
                 break;
               }
-
             }
           }
         } else if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.BooleanDatatype") {
           $(`#${uuid}common`).append(
-            `<div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
-            <div class="border w-full h-full p-2 border-gray-200">${attribute.valueReference === 'on' ? 'True' : 'False'}</div>`
+            `
+            <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+            <div class="border w-full h-full p-2 border-gray-200">${attribute.valueReference === 'on' ? 'True' : 'False'}</div>
+            `
           )
         }
-
-
         else {
           if (attribute.valueReference != null && attribute.valueReference.length > 0) {
             $(`#${uuid}common`).append(
               `
-          <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
-          <div class="border w-full p-2 h-full border-gray-200">${attribute.valueReference}</div>
- 
-          `
+              <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+              <div class="border w-full p-2 h-full border-gray-200">${attribute.valueReference}</div>
+              `
             )
           }
-
         }
-
-
       } else {
         if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.ConceptDatatype") {
           if (attribute.valueReference) {
@@ -548,28 +530,23 @@
               if (answer.uuid === attribute.valueReference) {
                 $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
                   `
-          <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
-          <div class="border w-full h-full p-2 border-gray-200">${answer.display}</div>
- 
-          `
+                  <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+                  <div class="border w-full h-full p-2 border-gray-200">${answer.display}</div>
+                  `
                 )
                 break;
               }
-
             }
           }
-
         } else {
           if (attribute.valueReference != null && attribute.valueReference.length > 0) {
             $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
               `
-          <div class="border w-full h-full p-2 border-gray-200 ">${attribute.attributeType.name}</div>
-          <div class="border w-full h-full p-2 border-gray-200">${attribute.valueReference}</div>
-
-          `
+              <div class="border w-full h-full p-2 border-gray-200 ">${attribute.attributeType.name}</div>
+              <div class="border w-full h-full p-2 border-gray-200">${attribute.valueReference}</div>
+              `
             )
           }
-
         }
       }
     }
@@ -578,35 +555,22 @@
     if ($(`#${uuid}common`).children().length <= 2) {
       $(`#${uuid}common`).parent().remove();
     }
-
     $(`#${uuid}groups`).children().each((index, child) => {
       if ($(child).children(1).children(1).length <= 2) {
         $(child).parent().html(
-          `
-        <div class="w-full bg-white p-2"><h1 class="font-bold text-lg text-center">{{'commonlabtest.result.notFound'|get_message:request.session.locale}}</h1></div>
-        `
-        );
+        `<div class="w-full bg-white p-2"><h1 class="font-bold text-lg text-center">{{'commonlabtest.result.notFound'|get_message:request.session.locale}}</h1></div>`);
       }
     });
-
     if ($(`#${uuid}groups`).children().length === 0) {
       $(`#${uuid}groups`).append(
-        `
-        <div class="w-full bg-white p-2"><h1 class="font-bold text-lg text-center">No results found</h1></div>
-        `
-      )
-
+        `<div class="w-full bg-white p-2"><h1 class="font-bold text-lg text-center">No results found</h1></div>`)
     }
-
     if ($(`#${uuid}groups`).children().length === 1) {
       $(`#${uuid}groups`).removeClass('grid-cols-2').addClass('grid-cols-1')
     } else {
       $(`#${uuid}groups`).removeClass('grid-cols-1').addClass('grid-cols-2')
     }
-
-
   }
-
 
 </script>
 

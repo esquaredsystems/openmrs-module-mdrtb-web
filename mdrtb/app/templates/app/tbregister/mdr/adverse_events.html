@@ -80,15 +80,14 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="name">{{'mdrtb.pv.adverseEvent'|get_message:request.session.locale}}</label>
-            <select name="{{'ADVERSE_EVENT' | get_concept }}" class="input form-control">
-              {% if state == 'edit' %}
-              <option selected value="{{form.advereEvent.uuid}}">{{form.advereEvent.display}}</option>
+            <select required name="{{'ADVERSE_EVENT' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.advereEvent %}
+                <option selected value="{{form.advereEvent.uuid}}">{{form.advereEvent.display}}</option>
               {% else %}
-              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
-
               {% for concept in concepts.adverseevent %}
-              <option value="{{concept.uuid}}">{{concept.name}}</option>
+                <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
           </div>

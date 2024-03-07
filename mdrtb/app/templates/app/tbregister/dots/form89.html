@@ -5,7 +5,6 @@
 
 
 {%block content%}
-
 <div>
   <form onsubmit="disableSubmit()" action="{% if state == 'edit' %}
     {% url 'editform89' uuid=uuid formid=form.uuid %}{% else %}{% url 'form89' uuid=uuid %} {% endif %}" method="post"
@@ -347,27 +346,22 @@
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.dateOfDecaySurvey'|get_message:request.session.locale}}</label>
             {% if state == 'edit' %}
-
-            <input type="date" class="input form-control" name="{{'DATE_OF_DECAY_SURVEY' | get_concept }}"
-              value="{{form.dateOfDecaySurvey|slice:':10' }}">
+              <input type="date" class="input form-control" name="{{'DATE_OF_DECAY_SURVEY' | get_concept }}"
+                value="{{form.dateOfDecaySurvey|slice:':10' }}">
             {% else %}
-
-            <input type="date" class="input form-control" name="{{'DATE_OF_DECAY_SURVEY' | get_concept }}">
+              <input type="date" class="input form-control" name="{{'DATE_OF_DECAY_SURVEY' | get_concept }}">
             {% endif %}
-
 
           </div>
           <div class="input-container">
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.complication'|get_message:request.session.locale}}</label>
             {% if state == 'edit' and form.complication %}
-            <input value="{{form.complication}}" type="text" class="input form-control"
-              name="{{'COMPLICATION' | get_concept }}">
+              <input value="{{form.complication}}" type="text" class="input form-control"
+                name="{{'COMPLICATION' | get_concept }}">
             {% else %}
-
-            <input type="text" class="input form-control" name="{{'COMPLICATION' | get_concept }}">
+              <input type="text" class="input form-control" name="{{'COMPLICATION' | get_concept }}">
             {% endif %}
-
 
           </div>
         </div>
@@ -542,7 +536,6 @@
                   <input name="{{'MENTAL_DISORDER' | get_concept }}" type="radio" class="radio-input"
                     value="{{constants.YES}}" />
                   {% endif %}
-
 
                 </div>
                 <div class="flex-center space-x-2">
