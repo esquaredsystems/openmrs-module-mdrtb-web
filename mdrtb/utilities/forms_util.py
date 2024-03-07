@@ -301,7 +301,7 @@ def create_update_tb03u(req, patientuuid, data, formid=None):
             status, _ = ru.post(req, url, tb03u)
         else:
             keys_to_ignore = ["csrfmiddlewaretoken", "country", "region", "district", "facility"]
-            tb03u = create_new_form(req, data, EncounterType.TB03.value, patientuuid, keys_to_ignore)
+            tb03u = create_new_form(req, data, EncounterType.TB03u_MDR.value, patientuuid, keys_to_ignore)
             # Set the location to be the district
             current_location = tb03u["encounter"]["location"]
             tb03u["encounter"]["location"] = data.get("facility", data.get("district", current_location))
@@ -515,7 +515,9 @@ def create_update_regimen_form(req, patientuuid, data, formid=None):
             url = f"mdrtb/regimen/{formid}"
             status, _ = ru.post(req, url, regimen)
         else:
-            keys_to_ignore = ["csrfmiddlewaretoken"]
+            keys_to_ignore = ["csrfmiddlewaretoken", "encounterDatetime"]
+            # Remove keys with empty values
+            data = {key: value for key, value in data.items() if value != ''}
             regimen = create_new_form(req, data, EncounterType.PV_REGIMEN.value, patientuuid, keys_to_ignore)
             url = "mdrtb/regimen"
             status, _ = ru.post(req, url, regimen)
