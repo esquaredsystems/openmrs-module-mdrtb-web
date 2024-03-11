@@ -355,8 +355,8 @@
                 <td align="center" rowspan="1">{{row.ageAtTB03uRegistration }}</td>
                 <td rowspan="1">{{ row.dateOfBirth }}</td>
                 <td>
-                    {{ row.personAddress.countyDistrict }}, {{ row.personAddress.stateProvince }}
-                    {{ row.personAddress.region }} {{ row.personAddress.address1 }}
+                    {{ row.personAddress.countyDistrict }} {{ row.personAddress.cityVillage|default:'' }}, {{ row.personAddress.stateProvince }}
+                    {{ row.personAddress.address1|default:'' }} {{ row.personAddress.address2|default:'' }}
                 </td>
                 <td rowspan="1">{{ row.reg2Number }}</td>
                 <td align="center" rowspan="1">{{ row.siteOfDisease }}</td>
@@ -403,8 +403,6 @@
                 <td align="center">{{row.hainRIFResult }}</td>
                 <td>{{row.hainLab }}</td>
 
-
-
                 <td align="center">{{row.hain2TestDate }} </td>
 
                 <td>{{row.hain2TestNumber }}</td>
@@ -412,9 +410,6 @@
                 <td align="center">{{row.hain2InjResult }}</td>
                 <td align="center">{{row.hain2FqResult }}</td>
                 <td>{{row.hain2Lab }}</td>
-
-
-
 
                 <td rowspan="1">{{row.drugResistance }}</td>
                 <td rowspan="1">{{ row.diagnosticMethod}}</td>

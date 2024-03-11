@@ -452,10 +452,10 @@
                 <td align="center">{{ row.gender }}</td>
                 <td align="center">{{ row.ageAtTB03Registration }}</td>
                 <td>{{ row.dateOfBirth }}</td>
-                <td>{{ row.personAddress.stateProvince }}</td>
+                <td>{{ row.personAddress.stateProvince }} {{ row.personAddress.cityVillage|default:'' }}</td>
                 <td>{{ row.personAddress.countyDistrict }}</td>
-                <td>{{ row.personAddress.region }}</td>
-                <td>{{ row.personAddress.address1 }}</td>
+                <td>{{ row.tb03Facility }}</td>
+                <td>{{ row.personAddress.address1|default:'' }} {{ row.personAddress.address2|default:'' }}</td>
                 <td>{{ row.intensivePhaseFacility }}</td>
                 <td>{{ row.continuationPhaseFacility }}</td>
                 <td>{{ row.treatmentRegimen }}</td>

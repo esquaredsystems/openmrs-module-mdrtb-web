@@ -142,10 +142,10 @@
                 <td align="center">{{ row.gender }}</td>
                 <td align="center">{{row.ageAtTB03Registration }}</td>
                 <td>{{ row.dateOfBirth }}</td>
-                <td>{{ row.personAddress.stateProvince }}</td>
+                <td>{{ row.personAddress.stateProvince }} {{ row.personAddress.cityVillage|default:'' }}</td>
                 <td>{{ row.personAddress.countyDistrict }}</td>
-                <td>{{ row.personAddress.region }}</td>
-                <td>{{ row.personAddress.address1 }}</td>
+                <td>{{ row.tb03Facility }}</td>
+                <td>{{ row.personAddress.address1|default:'' }} {{ row.personAddress.address2|default:'' }}</td>
                 <td>{{ row.pregnant.display }}</td>
                 <td>{{ row.locationType.display }}</td>
                 <td>{{ row.profession.display }}</td>
@@ -205,8 +205,10 @@
                 <td>{{row.prescribedTreatment.display }} </td>
                 <td>{{row.placeOfCommission.display }} </td>
                 <td>{{row.nameOfDoctor }} </td>
-                <td><a
-                        href="{{ pageContext.request.contextPath }}/module/mdrtb/form/form89.form?patientProgramId={{ row.form89.patientProgramId }}&encounterId={{ row.form89.encounter.id }}">{{"mdrtb.view"|get_message:request.session.locale}}</a>
+                <td>
+                    <a target="_blank" href="{{ pageContext.request.contextPath }}/patient/{{ row.patientUuid }}/enrolledprograms">
+                        {{"mdrtb.view"|get_message:request.session.locale}}
+                    </a>
                 </td>
             </tr>
             {% endfor %}
