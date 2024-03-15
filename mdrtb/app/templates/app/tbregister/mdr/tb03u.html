@@ -308,8 +308,8 @@
           </div>
           <div class="input-container">
             <label class="tb03-form-label  w-full"
-              for="name">{{'mdrtb.hivStatus'|get_message:request.session.locale}}</label>
-            <select name="{{'RESULT_OF_HIV_TEST' | get_concept }}" class="input form-control">
+              for="hivstatus">{{'mdrtb.hivStatus'|get_message:request.session.locale}}</label>
+            <select name="{{'RESULT_OF_HIV_TEST' | get_concept }}" class="input form-control" id="hivstatus">
               {% if state == 'edit' and form.hivStatus %}
                <option selected value="{{form.hivStatus.uuid}}">{{form.hivStatus.display}}</option>
               {% else %}
@@ -322,37 +322,42 @@
           </div>
           <div class="input-container">
             <label class="tb03-form-label  w-full"
-              for="name">{{'mdrtb.tb03.hivTestDate'|get_message:request.session.locale}}</label>
+              for="hivTestDate">{{'mdrtb.tb03.hivTestDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' and form.hivTestDate %}
             <input name="{{'DATE_OF_HIV_TEST' | get_concept }}" value="{{form.hivTestDate|slice:':10'}}"
-              type="date" class="input form-control">
+                   id="hivTestDate" type="date" class="input form-control">
             {% else %}
-            <input name="{{'DATE_OF_HIV_TEST' | get_concept }}" type="date" class="input form-control">
+            <input name="{{'DATE_OF_HIV_TEST' | get_concept }}" id="hivTestDate"
+                   type="date" class="input form-control" >
             {% endif %}
           </div>
           <div class="input-container">
             <label class="tb03-form-label  w-full"
-              for="name">{{'mdrtb.tb03.artStartDate'|get_message:request.session.locale}}</label>
+              for="artDate">{{'mdrtb.tb03.artStartDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' and form.artStartDate %}
-            <input name="{{'DATE_OF_ART_TREATMENT_START' | get_concept }}" type="date" class="input form-control"
+            <input name="{{'DATE_OF_ART_TREATMENT_START' | get_concept }}" id="artDate"
+                   type="date" class="input form-control"
               value="{{form.artStartDate|slice:':10'}}" />
             {% else %}
-            <input name="{{'DATE_OF_ART_TREATMENT_START' | get_concept }}" type="date" class="input form-control" />
+            <input name="{{'DATE_OF_ART_TREATMENT_START' | get_concept }}" id="artDate"
+                   type="date" class="input form-control" />
             {% endif %}
           </div>
           <div class="input-container">
             <label class="tb03-form-label  w-full"
-              for="name">{{'mdrtb.tb03.pctStartDate'|get_message:request.session.locale}}</label>
+              for="pctDate">{{'mdrtb.tb03.pctStartDate'|get_message:request.session.locale}}</label>
             {% if state == 'edit' and form.pctStartDate %}
-            <input name="{{'DATE_OF_PCT_TREATMENT_START' | get_concept }}" type="date" class="input form-control"
+            <input name="{{'DATE_OF_PCT_TREATMENT_START' | get_concept }}" id="pctDate"
+                   type="date" class="input form-control"
               value="{{form.pctStartDate|slice:':10'}}" />
             {% else %}
-            <input name="{{'DATE_OF_PCT_TREATMENT_START' | get_concept }}" type="date" class="input form-control" />
+            <input name="{{'DATE_OF_PCT_TREATMENT_START' | get_concept }}" id="pctDate"
+                   type="date" class="input form-control" />
             {% endif %}
           </div>
           <div class="input-container">
             <label class="tb03-form-label  w-full"
-              for="name">{{'mdrtb.tb03.treatmentOutcome'|get_message:request.session.locale}}</label>
+              for="outcome-select">{{'mdrtb.tb03.treatmentOutcome'|get_message:request.session.locale}}</label>
             <select id="outcome-select" name="{{'MDR_TB_TREATMENT_OUTCOME' | get_concept }}" class="input form-control">
               {% if state == 'edit' and form.treatmentOutcome %}
                 <option selected value="{{form.treatmentOutcome.uuid}}">{{form.treatmentOutcome.display}}</option>
@@ -366,10 +371,10 @@
           </div>
           <div class="input-container">
             <label class="tb03-form-label  w-full"
-              for="name">{{'mdrtb.tb03.treatmentOutcomeDateOnly'|get_message:request.session.locale}}</label>
+              for="treatmentOutcomeDate">{{'mdrtb.tb03.treatmentOutcomeDateOnly'|get_message:request.session.locale}}</label>
             {% if state == 'edit' and form.treatmentOutcomeDate %}
-            <input name="{{'TREATMENT_OUTCOME_DATE' | get_concept }}" type="date" class="input form-control"
-              value="{{form.treatmentOutcomeDate|slice:':10'}}" />
+            <input name="{{'TREATMENT_OUTCOME_DATE' | get_concept }}" id="treatmentOutcomeDate"
+                   type="date" class="input form-control" value="{{form.treatmentOutcomeDate|slice:':10'}}" />
             {% else %}
             <input name="{{'TREATMENT_OUTCOME_DATE' | get_concept }}" type="date" class="input form-control" />
             {% endif %}
@@ -475,11 +480,10 @@
     $('#submitBtn').prop('disabled', true)
     $('#submitBtn').removeClass('button-primary')
     $('#submitBtn').html(`
-        <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
-            colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
-        </lord-icon>`)
+      <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
+          colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+      </lord-icon>`)
   }
-
   let state = "{{state}}";
   if (state === 'edit') {
     $('input').prop('disabled', true).prop('', false)
@@ -487,7 +491,6 @@
     $('select').prop('disabled', true).prop('', false)
     $('textarea').prop('disabled', true).prop('', false)
     $('#canceleditbtn').prop('hidden', true)
-
   }
   $('#editbtn').click(function () {
     $('input').prop('disabled', false)
@@ -495,27 +498,33 @@
     $('textarea').prop('disabled', false)
     $('#canceleditbtn').prop('hidden', false)
     $("#location").prop('disabled', true)
-  })
+    $('#artDate').prop('disabled', true)
+    $('#pctDate').prop('disabled', true)
+  });
   $('#canceleditbtn').click(function () {
     $('input').prop('disabled', true)
     $('select').prop('disabled', true)
     $('textarea').prop('disabled', true)
     $('#canceleditbtn').prop('hidden', true)
-  })
-
+  });
   $('#outcome-select').change((e) => {
     let selected = e.target.value
     if (selected === "{{'DIED' | get_concept}}") {
       $('#cause-of-death').prop('required', true).prop('disabled', false);
       $('#date-of-death').prop('required', true).prop('disabled', false);
       $('#other-cause-of-death').prop('required', true).prop('disabled', false);
-
     } else {
       $('#cause-of-death').prop('required', false).prop('disabled', true);
       $('#date-of-death').prop('required', false).prop('disabled', true);
       $('#other-cause-of-death').prop('required', false).prop('disabled', true);
     }
-  })
+  });
+  $('#hivStatus').change(function() {
+    let positive = "{{ 'POSITIVE' | get_concept }}";
+    let hivValue = $('#hivStatus').val();
+    $('#artDate').prop('disabled', (hivValue != positive))
+    $('#pctDate').prop('disabled', (hivValue != positive))
+  });
 
   let date = new Date();
   maxDate = date.toISOString().substring(0, 10);
