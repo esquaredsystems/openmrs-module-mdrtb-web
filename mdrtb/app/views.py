@@ -1079,6 +1079,7 @@ def render_form_89(req, uuid):
             Concepts.METHOD_OF_DETECTION.value,
             Concepts.ANATOMICAL_SITE_OF_TB.value,
             Concepts.LOCATION_OF_EPTB.value,
+            Concepts.LOCATION_OF_PTB.value,
             Concepts.PRESCRIBED_TREATMENT.value,
             Concepts.PLACE_OF_CENTRAL_COMMISSION.value,
         ]
@@ -2415,6 +2416,10 @@ def render_add_lab_test(req, uuid):
         "patient": uuid,
     }
     if req.method == "POST":
+        # TODO: Create a new Sputum encounter if the option is chosen
+        # create = req.POST.get("createencounter")
+        # if create:
+        #     status, response = ru.post(req, "commonlab/labtestorder", {})
         try:
             body = {
                 "labTestType": req.POST["testType"],
@@ -2576,6 +2581,8 @@ def render_managetestsamples(req, orderid):
     mu.add_url_to_breadcrumb(req, context["title"])
     if status:
         context["samples"] = response["labTestSamples"]
+    # TODO: Pull a list of site codes from location attributes
+    # context["sitecodes"] = []
     return render(req, "app/commonlab/managetestsamples.html", context=context)
 
 

@@ -226,9 +226,7 @@
             {% else %}
             <input disabled id="originCity" name="{{'CITY_OF_ORIGIN' | get_concept }}" type="text"
               class="input form-control" />
-
             {% endif %}
-
 
           </div>
         </div>
@@ -273,9 +271,8 @@
             {% endif %}
           </div>
           <div class="input-container">
-            <label
-              class="tb03-form-label w-full">{{'mdrtb.tb03.siteOfDisease'|get_message:request.session.locale}}</label>
-            <select name="{{'ANATOMICAL_SITE_OF_TB' | get_concept }}" class="input form-control">
+            <label class="tb03-form-label w-full">{{'mdrtb.tb03.siteOfDisease'|get_message:request.session.locale}}</label>
+            <select name="{{'ANATOMICAL_SITE_OF_TB' | get_concept }}" class="input form-control" id="siteOfDisease">
               {% if state == 'edit' and form.anatomicalSite %}
                 <option selected value="{{form.anatomicalSite.uuid}}">{{form.anatomicalSite.display}}</option>
               {% else %}
@@ -292,7 +289,19 @@
           <div class="input-container">
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.eptbLocation'|get_message:request.session.locale}}</label>
-            <select name="{{'LOCATION_OF_EPTB' | get_concept }}" class="input form-control">
+            <select disabled name="{{'LOCATION_OF_PTB' | get_concept }}"
+                    class="input form-control" id="ptbLocation">
+              {% if state == 'edit' and form.ptbSite %}
+                <option selected value="{{form.ptbSite.uuid}}">{{form.ptbSite.display}}</option>
+              {% else %}
+                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+              {% endif %}
+              {% for concept in concepts.locationofpulmonarytb %}
+                <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+            <select disabled hidden="true" name="{{'LOCATION_OF_EPTB' | get_concept }}"
+                    class="input form-control" id="eptbLocation">
               {% if state == 'edit' and form.eptbSite %}
                 <option selected value="{{form.eptbSite.uuid}}">{{form.eptbSite.display}}</option>
               {% else %}
@@ -552,7 +561,6 @@
                   <input name="{{'MENTAL_DISORDER' | get_concept }}" type="radio" class="radio-input"
                     value="{{constants.NO}}" />
                   {% endif %}
-
 
                 </div>
               </div>
@@ -867,6 +875,20 @@
     } else {
       $('#originCity').prop('disabled', true)
       $('#returnDate').prop('disabled', true)
+    }
+  })
+  $('#siteOfDisease').change((e) => {
+    let val = e.target.value;
+    if (val === "31b6002c-0370-102d-b0e3-001ec94a0cc1") {
+      $('#ptbLocation').prop('disabled', false)
+      $('#eptbLocation').prop('disabled', true)
+      $('#ptbLocation').prop('hidden', false)
+      $('#eptbLocation').prop('hidden', true)
+    } else {
+      $('#ptbLocation').prop('disabled', true)
+      $('#eptbLocation').prop('disabled', false)
+      $('#ptbLocation').prop('hidden', true)
+      $('#eptbLocation').prop('hidden', false)
     }
   })
 
