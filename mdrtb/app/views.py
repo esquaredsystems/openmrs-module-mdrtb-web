@@ -1132,6 +1132,7 @@ def render_edit_form_89(req, uuid, formid):
             Concepts.CIRCUMSTANCES_OF_DETECTION.value,
             Concepts.METHOD_OF_DETECTION.value,
             Concepts.ANATOMICAL_SITE_OF_TB.value,
+            Concepts.LOCATION_OF_PTB.value,
             Concepts.LOCATION_OF_EPTB.value,
             Concepts.PRESCRIBED_TREATMENT.value,
             Concepts.PLACE_OF_CENTRAL_COMMISSION.value,

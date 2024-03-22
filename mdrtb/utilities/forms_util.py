@@ -418,7 +418,7 @@ def get_form89_by_uuid(req, uuid):
         dict or None: A dict of TB03 form if exists , None otherwise.
     """
     try:
-        status, response = ru.get(req, f"mdrtb/form89/{uuid}", {"v": "full"})
+        status, response = ru.get(req, f"mdrtb/form89/{uuid}", {})
         if status:
             return response
         else:

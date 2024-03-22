@@ -291,8 +291,8 @@
               class="tb03-form-label w-full">{{'mdrtb.form89.eptbLocation'|get_message:request.session.locale}}</label>
             <select disabled name="{{'LOCATION_OF_PTB' | get_concept }}"
                     class="input form-control" id="ptbLocation">
-              {% if state == 'edit' and form.ptbSite %}
-                <option selected value="{{form.ptbSite.uuid}}">{{form.ptbSite.display}}</option>
+              {% if state == 'edit' and form.ptbLocation %}
+                <option selected value="{{form.ptbLocation.uuid}}">{{form.ptbLocation.display}}</option>
               {% else %}
                 <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
@@ -302,8 +302,8 @@
             </select>
             <select disabled hidden="true" name="{{'LOCATION_OF_EPTB' | get_concept }}"
                     class="input form-control" id="eptbLocation">
-              {% if state == 'edit' and form.eptbSite %}
-                <option selected value="{{form.eptbSite.uuid}}">{{form.eptbSite.display}}</option>
+              {% if state == 'edit' and form.eptbLocation %}
+                <option selected value="{{form.eptbLocation.uuid}}">{{form.eptbLocation.display}}</option>
               {% else %}
                 <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
