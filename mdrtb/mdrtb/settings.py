@@ -48,7 +48,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-CORS_ALLOWED_ORIGINS = ["http://46.20.206.173:38080"]
+CORS_ALLOWED_ORIGINS = ["http://46.20.206.173:38080", "http://127.0.0.1:8080"]
 
 ROOT_URLCONF = "mdrtb.urls"
 
@@ -144,8 +144,8 @@ INTERNAL_IPS = [
 
 
 # CHANGE THIS
-
-REST_API_BASE_URL = "http://46.20.206.173:38080/openmrs/ws/rest/v1/"
+REST_API_BASE_URL = "http://127.0.0.1:8080/openmrs/ws/rest/v1/"
+#REST_API_BASE_URL = "http://46.20.206.173:38080/openmrs/ws/rest/v1/"
 
 mimetypes.add_type("text/css", ".css", True)
 mimetypes.add_type("text/html", ".html", True)
