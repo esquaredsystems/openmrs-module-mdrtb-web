@@ -45,6 +45,45 @@ def get_locations(req, uuid=None):
         raise Exception(str(e))
 
 
+def get_location_site_codes(req):
+    """
+    Retrieves the locations.
+    Parameters:
+        req: The request object.
+    Returns:
+        dict or list: If a specific UUID is provided, returns a dictionary containing the details of the location.
+                      If no UUID is provided, returns a list of non-retired locations.
+    """
+    try:
+        status, locations = ru.get(
+            req,
+            "location",
+            {
+                "v": "custom:(uuid,name,attributes)",
+                "limit": 500,
+            },
+        )
+        if not status:
+            return None
+        site_codes = []
+        for location in locations["results"]:
+            site_code = None
+            for attribute in location["attributes"]:
+                if attribute["attributeType"]["display"] == "SITE_CODE":
+                    site_code = attribute["value"]
+                    break
+            if not site_code:
+                continue
+            site_codes.append({
+                "name": location["name"],
+                "sitecode": site_code
+            })
+        sorted_site_codes = sorted(site_codes, key=lambda x: x["sitecode"])
+        return sorted_site_codes
+    except Exception as e:
+        raise Exception(str(e))
+
+
 def get_location_by_uuid(req, uuid):
     return get_locations(req, uuid=uuid)
 

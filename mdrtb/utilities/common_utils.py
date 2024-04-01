@@ -67,19 +67,19 @@ def calculate_age(dob):
         return None
 
 
-def iso_to_normal(date):
+def iso_to_normal(date, tajik=True):
     """
     Converts an ISO format date to a normal format.
-
     Parameters:
     - date (str): The ISO format date string.
-
     Returns:
     - str: The date string in normal format.
-
     """
     try:
-        normal = date[: date.find("T")].replace("-", ".")
+        if tajik:
+            normal = date[: date.find("T")].replace("-", ".")
+        else:
+            normal = date.replace("T", " ")[:19]
         return normal
     except Exception:
         return None
@@ -148,6 +148,8 @@ def remove_obj_from_objarr(objs, uuid_to_remove, key=None):
                    If the object is not found, returns None.
 
     """
+    if not uuid_to_remove:
+        return objs
     for item in objs[:]:
         if key and key in item and item[key] == uuid_to_remove:
             objs.remove(item)

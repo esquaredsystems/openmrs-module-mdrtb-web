@@ -16,6 +16,8 @@ from django.contrib import messages
 from resources.enums.mdrtbConcepts import Concepts
 from resources.enums.privileges import Privileges
 from resources.enums.constants import Constants
+from resources.enums.encounterType import EncounterType
+from mdrtb.settings import REST_API_BASE_URL
 
 logger = logging.getLogger("django")
 
@@ -2582,8 +2584,7 @@ def render_managetestsamples(req, orderid):
     mu.add_url_to_breadcrumb(req, context["title"])
     if status:
         context["samples"] = response["labTestSamples"]
-    # TODO: Pull a list of site codes from location attributes
-    # context["sitecodes"] = []
+    context["sitecodes"] = lu.get_location_site_codes(req)
     return render(req, "app/commonlab/managetestsamples.html", context=context)
 
 
@@ -2820,6 +2821,126 @@ def check_if_sample_exists(req, orderid):
     except Exception:
         log_and_show_error("Error fetching Samples", req)
         return sample_accepted
+
+
+def submit_order_to_lab(req, orderid):
+    if req.method == "POST":
+        try:
+            fields = ("custom:(uuid,labTestType,labReferenceNumber,"
+                      "order:(uuid,patient:(uuid),orderer,"
+                      "encounter:(uuid,encounterDatetime,encounterType)))")
+            status, order = ru.get(req,
+                f"commonlab/labtestorder/{orderid}",
+                {"v": fields})
+            accepted_sample = req.POST.get("accepted_sample")
+            if status:
+                patient_uuid = order["order"]["patient"]["uuid"]
+                patient = pu.get_patient(req, patient_uuid)
+                status, sample = ru.get(
+                    req, f"commonlab/labtestsample/{accepted_sample}", {"v": "full"}
+                )
+
+            ngendercode = 1 if patient["gender"] == 'M' else 2
+            sexternalorderid = order["labReferenceNumber"]
+            sexternalsampleid = sample["sampleIdentifier"]
+            sfirstname = patient["givenName"]
+            slastname = patient["familyName"]
+            sdob = patient["dob"]
+            sdistrictname = patient["countyDistrict"]
+            scountryname = Constants.COUNTRY.value
+            scityname = patient["cityVillage"] if patient["cityVillage"] else ""
+            dcollectiondate = util.iso_to_normal(sample["collectionDate"], False)
+            ssubmitterfirstname = order["order"]["orderer"]["identifier"]
+            sinstitutionname = "NTP"
+            ssitecode = req.POST.get("site_code")
+            sordertestcomment = sample["comments"]
+
+            # Select the identifier based on the Encounter type selected:
+                # For Suspect, select Suspect ID
+                # For TB03 or Form89, select DOTS ID
+                # Otherwise select MDR-TB ID
+            encounter_type = order["order"]["encounter"]["encounterType"]["uuid"]
+            match encounter_type:
+                case EncounterType.TB03.value | EncounterType.FROM_89.value:
+                    identifier_type = Constants.DOTS_IDENTIFIER.value
+                case EncounterType.TB03u_MDR.value | EncounterType.ADVERSE_EVENT.value | EncounterType.RESISTANCE_DURING_TREATMENT.value:
+                    identifier_type = Constants.MDR_IDENTIFIER.value
+                case _:
+                    identifier_type = Constants.SUSPECT_ID.value
+            for identifier in patient["identifiers"]:
+                if identifier["identifierType"]["uuid"] == identifier_type:
+                    spatientrefid = identifier["identifier"]
+            # If no identifier was chosen, then pick the first one
+            if not spatientrefid:
+                spatientrefid = patient["identifiers"][0]
+
+            sposttemplate = ""
+            try:
+                obj = {
+                        "order": order["order"]["uuid"],
+                        "labReferenceNumber": sexternalorderid,
+                        "labTestType": Constants.COMMON_TEST.value,
+                        "attributes": [
+                            {
+                                "labTest": orderid,
+                                "attributeType": "001aaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+                                "valueReference": dcollectiondate
+                            },
+                            {
+                                "labTest": orderid,
+                                "attributeType": "013aaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+                                "valueReference": sexternalsampleid
+                            },
+                        ]
+                    }
+                sposttemplate = json.dumps(obj)
+            except:
+                pass
+
+            data = {
+                "externalorder": {
+                    "ngendercode": ngendercode,
+                    "sexternalorderid": sexternalorderid,
+                    "sexternalsampleid": sexternalsampleid,
+                    "sfirstname": sfirstname,
+                    "slastname": slastname,
+                    "sdob": sdob,
+                    "spatientrefid": spatientrefid,
+                    "sdistrictname": sdistrictname,
+                    "scountryname": scountryname,
+                    "scityname": scityname if scityname else "",
+                    "dcollectiondate": dcollectiondate,
+                    "ssubmitterfirstname": ssubmitterfirstname if ssubmitterfirstname else "",
+                    "sinstitutionname": sinstitutionname,
+                    "ssitecode": ssitecode,
+                    "sordertestcomment": sordertestcomment if sordertestcomment else "",
+                    "extras": {
+                        "spostlink": f"{REST_API_BASE_URL}commonlab/labtestorder/{orderid}",
+                        "sorder": order["order"]["uuid"],
+                        "spatient": order["order"]["patient"]["uuid"],
+                        "slabtesttype": Constants.COMMON_TEST.value,
+                        "slabtest": orderid,
+                        "sposttemplate": sposttemplate
+                    }
+                }
+            }
+            # Try with all the extra attribute attached
+            try:
+                status = ru.post_lab_order(data=data)
+            except:
+                # In case of exception, try without
+                data["externalorder"].pop("extras", None)  # Remove the 'extras' attribute
+                status = ru.post_lab_order(data=data)
+            if status == 201 or status == 200:
+                message = mu.get_global_msgs("qualis.message.success", locale=req.session["locale"])
+            else:
+                message = mu.get_global_msgs("qualis.message.error", locale=req.session["locale"])
+            messages.success(req, f"{message}")
+        except Exception as ex:
+            message = mu.get_global_msgs("qualis.message.duplicate", locale=req.session["locale"])
+            error_message = f"Error! {ex}: {message}"
+            log_and_show_error(error_message, req)
+    return redirect("managetestsamples", orderid=orderid)
 
 #######################
 # CommonLab Views END #

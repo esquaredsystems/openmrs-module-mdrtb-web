@@ -30,7 +30,10 @@ def get_commonlab_concepts_by_type(req, type):
     if concept:
         for answer in concept["answers"]:
             concepts.append({"name": answer["display"], "uuid": answer["uuid"]})
-    return concepts
+
+    # Sort concepts by name
+    sorted_concepts = sorted(concepts, key=lambda x: x["name"])
+    return sorted_concepts
 
 
 def get_commonlab_test_groups():
@@ -283,9 +286,7 @@ def get_custom_lab_order(full_order):
                 "uuid": order["encounter"]["uuid"],
                 "name": order["encounter"]["display"],
             },
-            "instructions": ""
-            if order["instructions"] == None
-            else order["instructions"],
+            "instructions": "" if order["instructions"] is None else order["instructions"],
         },
         "labtesttype": {
             "uuid": full_order["labTestType"]["uuid"],

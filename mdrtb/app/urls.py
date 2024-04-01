@@ -258,6 +258,11 @@ urlpatterns = [
         name="changesamplestatus",
     ),
     path(
+        "commonlab/order/<str:orderid>/submittolab",
+        views.submit_order_to_lab,
+        name="submittolab",
+    ),
+    path(
         "commonlab/order/<str:orderid>/addtestresults",
         views.render_add_test_results,
         name="addtestresults",

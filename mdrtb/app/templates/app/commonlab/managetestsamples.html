@@ -44,47 +44,47 @@
               <thead>
                 <tr class="">
                   <th
-                    class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
+                    class="px-2 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
                     {{'commonlabtest.specimenType'|get_message:request.session.locale}}
                   </th>
                   <th
-                    class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
+                    class="px-2 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
                     {{'commonlabtest.labtestsample.collectionDate'|get_message:request.session.locale}}
                   </th>
                   <th
-                    class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
+                    class="px-2 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
                     {{'commonlabtest.status'|get_message:request.session.locale}}
                   </th>
                   <th
-                    class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
-                    Actions
+                    class="px-2 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
+                    {{'mdrtb.action'|get_message:request.session.locale}}
                   </th>
                   <th
                     class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
-                    Accept / Reject
+                    {{'commonlabtest.status'|get_message:request.session.locale}}
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {% for sample in samples %}
                 <tr>
-                  <td class="px-5 pt-3 border-b border-gray-200 w-min  text-sm">
+                  <td class="px-2 pt-3 border-b border-gray-200 w-min  text-sm">
                     <p class="text-gray-900 whitespace-no-wrap">
                       {{sample.specimenType.display}} ({{sample.sampleIdentifier}})
                     </p>
                   </td>
-                  <td class=" px-5 pt-3 border-b border-gray-200 w-min text-sm">
+                  <td class=" px-2 pt-3 border-b border-gray-200 w-min text-sm">
                     <p class="text-gray-900 whitespace-no-wrap">
                       {{sample.collectionDate |iso_to_normal_date}}
                     </p>
                   </td>
-                  <td class="px-5 pt-3 border-b border-gray-200 w-min text-sm">
+                  <td class="px-2 pt-3 border-b border-gray-200 w-min text-sm">
                     <p
                       class="whitespace-no-wrap {% if sample.status == 'ACCEPTED' %}text-green-600{% elif sample.status == 'REJECTED' %}text-red-600{% else %}text-gray-900{% endif %}">
                       {{sample.status}}
                     </p>
                   </td>
-                  <td class="px-5 py-3 border-b w-min border-gray-200 bg-white text-sm">
+                  <td class="px-2 py-3 border-b w-min border-gray-200 bg-white text-sm">
                     <div class="flex space-x-4">
 
                       <a href="{% url 'edittestsample' orderid=orderid sampleid=sample.uuid %}">
@@ -103,9 +103,7 @@
                       {% csrf_token %}
                       <input type="submit" value="Accept" name="status"
                         class="p-2 w-full rounded-md font-bold cursor-pointer text-white button-primary">
-
                       <input type="submit" value="Reject" name="status" class="cancel-button">
-
                     </form>
                   </td>
                   {% else %}
@@ -130,5 +128,49 @@
       </div>
     </div>
   </section>
+
+  <hr class="horizontal-divider">
+
+  <!-- Integration with LIMS -->
+  {% if samples %}
+    <section class="mx-auto responsive_table">
+      <form method="post" action="{% url 'submittolab' orderid=orderid %}" class="flex-center justify-center space-x-2">
+          {% csrf_token %}
+          <table>
+              <thead>
+                  <tr>
+                      <th>{{'commonlabtest.specimenType'|get_message:request.session.locale}}</th>
+                      <th>{{'mdrtb.site'|get_message:request.session.locale}}</th>
+                      <th></th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr>
+                      <td>
+                          <select name="accepted_sample" class="input form-control" style="">
+                              {% for sample in samples %}
+                              {% if sample.status == 'ACCEPTED' %}
+                              <option value="{{ sample.uuid }}">{{sample.specimenType.display}} ({{sample.sampleIdentifier}})</option>
+                              {% endif %}
+                              {% endfor %}
+                          </select>
+                      </td>
+                      <td>
+                          <select name="site_code" class="input form-control" style="">
+                              {% for sitecode in sitecodes %}
+                              <option value="{{ sitecode.sitecode }}">{{ sitecode.sitecode }} | {{ sitecode.name }}</option>
+                              {% endfor %}
+                          </select>
+                      </td>
+                      <td>
+                          <input type="submit" value="{{'mdrtb.submitOrderToLab'|get_message:request.session.locale}}" class="button-primary">
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+      </form>
+    </section>
+  {% endif %}
 </div>
+
 {% endblock %}
