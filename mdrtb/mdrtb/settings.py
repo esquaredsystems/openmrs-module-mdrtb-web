@@ -2,6 +2,7 @@ from pathlib import Path
 import mimetypes
 import os
 import dotenv
+import base64
 
 
 dotenv.load_dotenv()
@@ -48,7 +49,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-CORS_ALLOWED_ORIGINS = ["http://46.20.206.173:38080", "http://127.0.0.1:8080"]
+CORS_ALLOWED_ORIGINS = ["http://46.20.206.173:38080", "http://46.20.206.172:8083", "http://127.0.0.1:8080"]
 
 ROOT_URLCONF = "mdrtb.urls"
 
@@ -144,8 +145,10 @@ INTERNAL_IPS = [
 
 
 # CHANGE THIS
-REST_API_BASE_URL = "http://127.0.0.1:8080/openmrs/ws/rest/v1/"
 #REST_API_BASE_URL = "http://46.20.206.173:38080/openmrs/ws/rest/v1/"
+REST_API_BASE_URL = "http://127.0.0.1:8080/openmrs/ws/rest/v1/"
+QUALIS_API_BASE_URL = "http://46.20.206.172:8083/QuaLIS/"
+QUALIS_API_CREDENTAILS = "username:password"
 
 mimetypes.add_type("text/css", ".css", True)
 mimetypes.add_type("text/html", ".html", True)

@@ -64,13 +64,13 @@ class Constants(enum.Enum):
     )
 
     SPECIMEN_SOURCE = "5baeba18-9bf1-95ad-9a51-f56f59403436"
-    TUBERCILOSIS_SAMPLE_SOURCE = "1b5310d2-6dce-dd56-05f5-a24fa5abd9f2"
+    TUBERCILOSIS_SAMPLE_SOURCE = "007aaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
     DATE_OF_REQUEST_FOR_LABORATORY_INVESTIGATION = (
         "ce49756b-929b-3920-f1a1-3fd205440576"
     )
-    COMMON_TEST = "4e81d04f-bdc0-11ed-9c1c-00155d694c4d"
-    DST_LJ = "55e9c046-bdc0-11ed-9c1c-00155d694c4d"
-    DST_MGIT = "53c20f1b-bdc0-11ed-9c1c-00155d694c4d"
+    COMMON_TEST = "05aaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+    DST_MGIT = "07aaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+    DST_LJ = "08aaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
 
     # Concept name types
     FULLY_SPECIFIED = "FULLY_SPECIFIED"
