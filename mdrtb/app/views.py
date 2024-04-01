@@ -2860,13 +2860,12 @@ def submit_order_to_lab(req, orderid):
                 # For TB03 or Form89, select DOTS ID
                 # Otherwise select MDR-TB ID
             encounter_type = order["order"]["encounter"]["encounterType"]["uuid"]
-            match encounter_type:
-                case EncounterType.TB03.value | EncounterType.FROM_89.value:
-                    identifier_type = Constants.DOTS_IDENTIFIER.value
-                case EncounterType.TB03u_MDR.value | EncounterType.ADVERSE_EVENT.value | EncounterType.RESISTANCE_DURING_TREATMENT.value:
-                    identifier_type = Constants.MDR_IDENTIFIER.value
-                case _:
-                    identifier_type = Constants.SUSPECT_ID.value
+            if encounter_type == EncounterType.TB03.value or encounter_type == EncounterType.FROM_89.value:
+                identifier_type = Constants.DOTS_IDENTIFIER.value
+            elif encounter_type in (EncounterType.TB03u_MDR.value, EncounterType.ADVERSE_EVENT.value, EncounterType.RESISTANCE_DURING_TREATMENT.value):
+                identifier_type = Constants.MDR_IDENTIFIER.value
+            else:
+                identifier_type = Constants.SUSPECT_ID.value
             for identifier in patient["identifiers"]:
                 if identifier["identifierType"]["uuid"] == identifier_type:
                     spatientrefid = identifier["identifier"]
