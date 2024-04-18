@@ -2403,6 +2403,9 @@ def render_managetestorders(req, uuid):
                 order.update({"sample_accepted": sample_accepted})
             context["orders"] = response["results"]
             context["json_orders"] = json.dumps(response["results"])
+        patient = pu.get_patient(req, uuid)
+        if patient:
+            context["patientdata"] = patient
         return render(req, "app/commonlab/managetestorders.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
@@ -2418,6 +2421,9 @@ def render_add_lab_test(req, uuid):
         ),
         "patient": uuid,
     }
+    patient = pu.get_patient(req, uuid)
+    if patient:
+        context["patientdata"] = patient
     if req.method == "POST":
         # TODO: Create a new Sputum encounter if the option is chosen
         # create = req.POST.get("createencounter")
@@ -2488,6 +2494,9 @@ def render_edit_lab_test(req, patientid, orderid):
         "orderid": orderid,
         "patientid": patientid,
     }
+    patient = pu.get_patient(req, patientid)
+    if patient:
+        context["patientdata"] = patient
     try:
         if req.method == "POST":
             body = {
@@ -2578,12 +2587,16 @@ def render_managetestsamples(req, orderid):
         "orderid": orderid,
     }
     status, response = ru.get(
-        req, f"commonlab/labtestorder/{orderid}", {"v": "custom:(labTestSamples)"}
+        req, f"commonlab/labtestorder/{orderid}", {"v": "custom:(labTestSamples,order:(uuid,patient:(uuid))"}
     )
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
     mu.add_url_to_breadcrumb(req, context["title"])
     if status:
         context["samples"] = response["labTestSamples"]
+        patientid = response["order"]["patient"]["uuid"]
+        patient = pu.get_patient(req, patientid)
+        if patient:
+            context["patientdata"] = patient
     context["sitecodes"] = lu.get_location_site_codes(req)
     return render(req, "app/commonlab/managetestsamples.html", context=context)
 
