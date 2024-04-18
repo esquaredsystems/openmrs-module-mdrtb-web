@@ -5,8 +5,22 @@
 {{title}}
 {% endblock %}
 
-
 {% block content %}
+
+<div class="patient-banner-container mt-4">
+    <div class="patient-info-container">
+        <div class="font-bold">
+            <div>{{patientdata.name}}</div>
+            <div>{{patientdata.age}} yrs ({{patientdata.dob | iso_to_normal_date}})</div>
+        </div>
+    </div>
+    <div class="space-y-2 flex flex-col justify-center font-bold text-base">
+        {% for identifier in patientdata.identifiers %}
+        <span>{{identifier.identifierType.display}}: {{identifier.identifier}}</span>
+        {% endfor %}
+    </div>
+</div>
+
 <div class="m-4">
     {% include 'app/components/breadcrumbs.html'%}
 </div>
