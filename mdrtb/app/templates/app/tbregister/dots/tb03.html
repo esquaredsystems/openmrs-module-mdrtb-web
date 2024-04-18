@@ -292,12 +292,15 @@
               for="treatmentOutcome">{{'mdrtb.tb03.treatmentOutcome'|get_message:request.session.locale}}</label>
             <select id="treatmentOutcome" class="input form-control" name="{{'TB_TREATMENT_OUTCOME' | get_concept }}">
               {% if state == 'edit' and form.treatmentOutcome %}
-              <option selected value="{{form.treatmentOutcome.uuid}}">{{form.treatmentOutcome.display}}</option>
+                <option selected value="{{form.treatmentOutcome.uuid}}">{{form.treatmentOutcome.display}}</option>
               {% else %}
-              <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
               {% endif %}
               {% for concept in concepts.tuberculosistreatmentoutcome %}
-              <option value="{{concept.uuid}}">{{concept.name}}</option>
+                <!-- Issue EET-155 The Patient transferred out option is excluded from TB03 form -->
+                {% if concept.uuid != '31b6b986-0370-102d-b0e3-001ec94a0cc1' %}
+                  <option value="{{concept.uuid}}">{{concept.name}}</option>
+                {% endif %}
               {% endfor %}
             </select>
           </div>
