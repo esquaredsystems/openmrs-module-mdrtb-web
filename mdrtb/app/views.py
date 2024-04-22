@@ -1066,6 +1066,7 @@ def render_form_89(req, uuid):
             "title": title,
             "uuid": uuid,
             "current_patient_program_flow": req.session["current_patient_program_flow"],
+            "patient": req.session["current_patient_program_flow"]["current_patient"],
             "identifiers": pu.get_patient_identifiers(req, uuid),
             "constants": {
                 "YES": Concepts.YES.value,
@@ -1074,6 +1075,7 @@ def render_form_89(req, uuid):
         }
         form89_concepts = [
             Concepts.LOCATION_TYPE.value,
+            Concepts.PREGNANT.value,
             Concepts.PROFESSION.value,
             Concepts.POPULATION_CATEGORY.value,
             Concepts.PLACE_OF_DETECTION.value,
@@ -1087,6 +1089,10 @@ def render_form_89(req, uuid):
         ]
         concepts = fu.get_form_concepts(form89_concepts, req)
         context["concepts"] = concepts
+        # Attach TB03 form to autopopulate data if one exists
+        tb03s = fu.get_patient_tb03_forms(req, uuid)
+        if tb03s:
+            context["tb03"] = tb03s[0]
         mu.add_url_to_breadcrumb(req, context["title"])
         return render(req, "app/tbregister/dots/form89.html", context=context)
     except Exception as e:
@@ -1119,6 +1125,7 @@ def render_edit_form_89(req, uuid, formid):
             "state": "edit",
             "uuid": uuid,
             "current_patient_program_flow": req.session["current_patient_program_flow"],
+            "patient": req.session["current_patient_program_flow"]["current_patient"],
             "identifiers": pu.get_patient_identifiers(req, uuid),
             "constants": {
                 "YES": Concepts.YES.value,
@@ -1128,6 +1135,7 @@ def render_edit_form_89(req, uuid, formid):
         context.update(check_privileges(req, privileges_required))
         form89_concepts = [
             Concepts.LOCATION_TYPE.value,
+            Concepts.PREGNANT.value,
             Concepts.PROFESSION.value,
             Concepts.POPULATION_CATEGORY.value,
             Concepts.PLACE_OF_DETECTION.value,

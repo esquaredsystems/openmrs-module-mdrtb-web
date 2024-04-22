@@ -272,15 +272,18 @@
           </div>
           <div class="input-container">
             <label class="tb03-form-label w-full">{{'mdrtb.tb03.siteOfDisease'|get_message:request.session.locale}}</label>
-            <select name="{{'ANATOMICAL_SITE_OF_TB' | get_concept }}" class="input form-control" id="siteOfDisease">
-              {% if state == 'edit' and form.anatomicalSite %}
+            <!-- Issue: Autopopulate from TB03 form -->
+            <select disabled name="{{'ANATOMICAL_SITE_OF_TB' | get_concept }}" class="input form-control" id="siteOfDisease">
+              {% if form.anatomicalSite %}
                 <option selected value="{{form.anatomicalSite.uuid}}">{{form.anatomicalSite.display}}</option>
-              {% else %}
-                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+              {% elif tb03.anatomicalSite %}
+                <option selected value="{{form.tb03.anatomicalSite.uuid}}">{{tb03.anatomicalSite.display}}</option>
               {% endif %}
+              <!--
               {% for concept in concepts.siteoftbdisease %}
                 <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
+              -->
             </select>
 
           </div>
@@ -289,7 +292,7 @@
           <div class="input-container">
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.eptbLocation'|get_message:request.session.locale}}</label>
-            <select disabled name="{{'LOCATION_OF_PTB' | get_concept }}"
+            <select name="{{'LOCATION_OF_PTB' | get_concept }}"
                     class="input form-control" id="ptbLocation">
               {% if state == 'edit' and form.ptbLocation %}
                 <option selected value="{{form.ptbLocation.uuid}}">{{form.ptbLocation.display}}</option>
@@ -300,7 +303,7 @@
                 <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>
-            <select disabled hidden="true" name="{{'LOCATION_OF_EPTB' | get_concept }}"
+            <select hidden="true" name="{{'LOCATION_OF_EPTB' | get_concept }}"
                     class="input form-control" id="eptbLocation">
               {% if state == 'edit' and form.eptbLocation %}
                 <option selected value="{{form.eptbLocation.uuid}}">{{form.eptbLocation.display}}</option>
@@ -375,6 +378,30 @@
           </div>
         </div>
 
+        <!-- Issue: Add pregnancy option for eligible female patients -->
+        <div class="flex items-center justify-between space-x-6">
+        {% if form.isChildbearingAge %}
+          <div class="input-container">
+            <label class="tb03-form-label w-full">{{'mdrtb.pregnant'|get_message:request.session.locale}}</label>
+            <select class="input form-control" id="pregnant">
+              {% if form.pregnant %}
+                {% if form.pregnant.uuid == constants.YES %}
+                  <option selected value="{{ constants.YES }}">{{'mdrtb.yes'|get_message:request.session.locale}}</option>
+                  <option value="{{ constants.NO }}">{{'mdrtb.no'|get_message:request.session.locale}}</option>
+                {% elif form.pregnant.uuid == constants.NO %}
+                  <option value="{{ constants.YES }}">{{'mdrtb.yes'|get_message:request.session.locale}}</option>
+                  <option selected value="{{ constants.NO }}">{{'mdrtb.no'|get_message:request.session.locale}}</option>
+                {% endif %}
+              {% else %}
+                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+                <option value="{{ constants.YES }}">{{'mdrtb.yes'|get_message:request.session.locale}}</option>
+                <option value="{{ constants.NO }}">{{'mdrtb.no'|get_message:request.session.locale}}</option>
+              {% endif %}
+            </select>
+          </div>
+          <div class="input-container"></div>
+        {% endif %}
+        </div>
         <div class="bg-[#9e9e9e28] shadow-md p-4 my-4 flex flex-col justify-center space-y-6">
           <h2 class="text-[#2D9CDB] text-2xl font-bold">
             {{'mdrtb.form89.comorbidities'|get_message:request.session.locale}}
@@ -714,10 +741,8 @@
                   <input disabled checked name="{{'ICD20' | get_concept }}" type="radio" class="radio-input"
                     value="{{constants.NO}}" />
                   {% endif %}
-
                 </div>
               </div>
-
 
             </div>
             <div class="input-container">
@@ -727,11 +752,8 @@
               <input class="input form-control" type="text" value="{{form.otherDisease}}"
                 name="{{'OTHER_DISEASE' | get_concept }}">
               {% else %}
-
               <input class="input form-control" type="text" name="{{'OTHER_DISEASE' | get_concept }}">
               {% endif %}
-
-
             </div>
           </div>
 
@@ -877,9 +899,11 @@
       $('#returnDate').prop('disabled', true)
     }
   })
+
   $('#siteOfDisease').change((e) => {
     let val = e.target.value;
-    if (val === "31b6002c-0370-102d-b0e3-001ec94a0cc1") {
+    let pulmonary = "{{ 'PULMONARY_TB' | get_concept }}";
+    if (val === pulmonary) {
       $('#ptbLocation').prop('disabled', false)
       $('#eptbLocation').prop('disabled', true)
       $('#ptbLocation').prop('hidden', false)
@@ -890,7 +914,7 @@
       $('#ptbLocation').prop('hidden', true)
       $('#eptbLocation').prop('hidden', false)
     }
-  })
+  });
 
   let date = new Date();
   maxDate = date.toISOString().substring(0, 10);
