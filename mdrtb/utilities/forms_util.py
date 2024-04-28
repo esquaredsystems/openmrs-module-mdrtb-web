@@ -734,3 +734,32 @@ def get_obs_from_encounter(obs_set, concept_uuid):
         if concept_uuid == obs["concept"]["uuid"]:
             return obs
     return None
+
+
+def create_specimen_encounter(req, data, patient_uuid):
+    form_date_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    form_date_time_iso = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+    patient_location = req.session["current_patient_program_flow"]["current_program"]["location"]["uuid"]
+    encounter = {
+        "patient": patient_uuid,
+        "encounterType": EncounterType.SPECIMEN_COLLECTION.value,
+        "encounterDatetime": data.get("encounterDatetime", form_date_time),
+        "location": data.get(
+            "facility", data.get("district", patient_location)
+        ),
+        "obs": [
+            {
+                "person": patient_uuid,
+                "obsDatetime": form_date_time_iso,
+                "concept": Concepts.SPECIMEN_ID.value,
+                "value": data.get("specimen_id")
+            }
+        ],
+    }
+    try:
+        url = "mdrtb/encounter"
+        # status, _ = ru.post(req, url, encounter)
+        # if status:
+        #     return True
+    except Exception as e:
+        raise Exception(str(e))

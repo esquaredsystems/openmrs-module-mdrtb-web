@@ -51,55 +51,43 @@
       } else if (searchQuery.length >= Number(minSearchCharacters)) {
         $('#search-results').html("")
         $('#search-results').append(`
-
-          <div class="loader-box">
-  <lord-icon
-      src="https://cdn.lordicon.com/xjovhxra.json"
-      trigger="loop"
-      colors="primary:#121331,secondary:#2d9cdb"
-      style="width:50px;height:50px">
-  </lord-icon>
-            </div>
-
-`)
+        <div class="loader-box">
+          <lord-icon
+              src="https://cdn.lordicon.com/xjovhxra.json"
+              trigger="loop"
+              colors="primary:#121331,secondary:#2d9cdb"
+              style="width:50px;height:50px">
+          </lord-icon>
+          </div>`)
         $.ajax({
           url: "{% url 'search'%}?q=" + `${searchQuery}`,
           method: 'GET',
           success: function (data) {
             if (data.error) {
               $('#search-results').html(
-                `
-              <div class="patient-notfound-box">
-                <h3>
-                  Error finding patient
-                </h3>
-              </div>`
-              )
+                `<div class="patient-notfound-box">
+                  <h3>
+                    Error finding patient
+                  </h3>
+                </div>`)
             }
             else if (data.results.length === 0) {
-
               $('#search-results').html("")
               $('#search-results').append(
-                `
-      <div class="patient-notfound-box">
-        <h3 class="text-xl">
-          Could not find any patient according to your search 
-          
-          </h3>
-    </div>
-      `
-              )
+                `<div class="patient-notfound-box">
+                  <h3 class="text-xl">
+                    Could not find any patient according to your search
+                  </h3>
+              </div>`)
             } else {
               $('#search-results').html("")
-
               $('#search-results').append(
                 `<div class="search-result-items font-bold">
-      <p>{{'mdrtb.Identifier'|get_message:request.session.locale}}</p>
-      <p class="col-span-2">{{'mdrtb.givenname'|get_message:request.session.locale}}</p>
-      <p>{{'mdrtb.age'|get_message:request.session.locale}}</p>
-      <p>{{'mdrtb.gender'|get_message:request.session.locale}}</p>
-    </div>`
-              )
+                  <p>{{'mdrtb.Identifier'|get_message:request.session.locale}}</p>
+                  <p class="col-span-2">{{'mdrtb.givenname'|get_message:request.session.locale}}</p>
+                  <p>{{'mdrtb.age'|get_message:request.session.locale}}</p>
+                  <p>{{'mdrtb.gender'|get_message:request.session.locale}}</p>
+                </div>`)
               for (i = 0; i < data.results.length; i++) {
                 const path = `patient/${data.results[i].uuid}/enrolledprograms`
                 let identifierToShow = data.results[i].identifiers[0].identifier;
@@ -109,25 +97,18 @@
                   }
                 }
                 $('#search-results').append(
-                  `
-        <a class="no-underline text-black" href="${path}">
-          <div class="search-result-items hover:bg-gray-800 hover:text-white transition-colors duration-200">
-        <p class="">${identifierToShow}</p>
-        <p class="text-wrap col-span-2">${data.results[i].person.display}</p>
-        <p>${data.results[i].person.age}</p>
-        <p>${data.results[i].person.gender}</p>
-    </div></a>
-          
-          `
-                )
+                  `<a class="no-underline text-black" href="${path}">
+                    <div class="search-result-items hover:bg-gray-800 hover:text-white transition-colors duration-200">
+                      <p class="">${identifierToShow}</p>
+                      <p class="text-wrap col-span-2">${data.results[i].person.display}</p>
+                      <p>${data.results[i].person.age}</p>
+                      <p>${data.results[i].person.gender}</p>
+                  </div>
+                  </a>`)
               }
             }
-
           }
-
-
         })
-
         $('#search-results').removeClass('hidden')
         $('#search-results').addClass('flex')
       }
@@ -135,10 +116,8 @@
 
     function debounce(func, delay) {
       let timerId;
-
       return function (...args) {
         clearTimeout(timerId);
-
         timerId = setTimeout(() => {
           func.apply(this, args);
         }, delay);

@@ -2433,10 +2433,31 @@ def render_add_lab_test(req, uuid):
     if patient:
         context["patientdata"] = patient
     if req.method == "POST":
-        # TODO: Create a new Sputum encounter if the option is chosen
-        # create = req.POST.get("createencounter")
-        # if create:
-        #     status, response = ru.post(req, "commonlab/labtestorder", {})
+        create = req.POST.get("createencounter")
+        if create:
+            status, response = ru.post(req, "encounter", {})
+            enc_body = {
+              "encounterDatetime": "2015-02-24T06:08:25.000+0000",
+              "patient": uuid,
+              "encounterType": EncounterType.SPECIMEN_COLLECTION.value,
+              "encounterProviders": [
+                {
+                  "provider": "bb1a7781-7896-40be-aaca-7d1b41d843a6",
+                  "encounterRole": "a0b03050-c99b-11e0-9572-0800200c9a66"
+                }
+              ],
+              [
+                  {
+                      "person": "070f0120-0283-4858-885d-a20d967729cf",
+                      "concept": "5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                      "obsDatetime": "2019-11-14T07:37:31.000+0000",
+                      "value": 70
+                  }
+              ]
+            }
+            encounter = None
+        else:
+            encounter = req.POST["encounter"]
         try:
             body = {
                 "labTestType": req.POST["testType"],
@@ -2446,7 +2467,7 @@ def render_add_lab_test(req, uuid):
                     "concept": cu.get_reference_concept_of_labtesttype(
                         req, req.POST["testType"]
                     ),
-                    "encounter": req.POST["encounter"],
+                    "encounter": encounter,
                     "type": "order",
                     "instructions": None
                     if "instructions" not in req.POST
