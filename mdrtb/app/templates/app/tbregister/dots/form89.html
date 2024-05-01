@@ -375,6 +375,30 @@
           </div>
         </div>
 
+        <!-- Issue: Add pregnancy option for eligible female patients -->
+        <div class="flex items-center justify-between space-x-6">
+        {% if form.isChildbearingAge or isEligibleForPregnancy %}
+          <div class="input-container">
+            <label class="tb03-form-label w-full">{{'mdrtb.pregnant'|get_message:request.session.locale}}</label>
+            <select class="input form-control" id="pregnant">
+              {% if form.pregnant %}
+                {% if form.pregnant.uuid == constants.YES %}
+                  <option selected value="{{ constants.YES }}">{{'mdrtb.yes'|get_message:request.session.locale}}</option>
+                  <option value="{{ constants.NO }}">{{'mdrtb.no'|get_message:request.session.locale}}</option>
+                {% elif form.pregnant.uuid == constants.NO %}
+                  <option value="{{ constants.YES }}">{{'mdrtb.yes'|get_message:request.session.locale}}</option>
+                  <option selected value="{{ constants.NO }}">{{'mdrtb.no'|get_message:request.session.locale}}</option>
+                {% endif %}
+              {% else %}
+                <option selected value="">{{'mdrtb.selectOption'|get_message:request.session.locale}}</option>
+                <option value="{{ constants.YES }}">{{'mdrtb.yes'|get_message:request.session.locale}}</option>
+                <option value="{{ constants.NO }}">{{'mdrtb.no'|get_message:request.session.locale}}</option>
+              {% endif %}
+            </select>
+          </div>
+          <div class="input-container"></div>
+        {% endif %}
+        </div>
         <div class="bg-[#9e9e9e28] shadow-md p-4 my-4 flex flex-col justify-center space-y-6">
           <h2 class="text-[#2D9CDB] text-2xl font-bold">
             {{'mdrtb.form89.comorbidities'|get_message:request.session.locale}}
