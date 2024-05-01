@@ -153,10 +153,14 @@ def save_patient(req, data, uuid=None):
         if uuid:  # If UUID provided, it's an update
             status, response = ru.post(req, f"patient/{uuid}", patient_info)
         else:  # Otherwise, create a new record
+            identifier_type = Constants.DOTS_IDENTIFIER.value
+            # See if the patient is a Suspect or not
+            if data["suspect"] and data["suspect"] == 'on':
+                identifier_type = Constants.SUSPECT_IDENTIFIER.value
             patient_info["identifiers"] = [
                 {
                     "identifier": data["patientidentifier"],
-                    "identifierType": data["patientidentifiertype"],
+                    "identifierType": identifier_type,
                     "location": data["district"] if "facility" not in data else data["facility"],
                 }
             ]

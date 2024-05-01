@@ -344,6 +344,28 @@ def get_encounter_by_uuid(req, uuid):
         return None
 
 
+def get_provider(req, username):
+    """
+    Retrieves provider information based on the provided username (provider identifier).
+
+    Parameters:
+        req (object): Request object representing the current request.
+        username (str): The username of the user to retrieve information for.
+
+    Returns:
+        dict: User information as a dictionary.
+
+    Raises:
+        Exception: If the request to retrieve user information fails.
+    """
+
+    status, response = ru.get(req, "provider", {"q": username, "v": "full"})
+    if status:
+        return response
+    else:
+        raise Exception("Cant find provider")
+
+
 def add_url_to_breadcrumb(req, name, query_params=None):
     """
     Adds a URL to the breadcrumb trail in the user's session.

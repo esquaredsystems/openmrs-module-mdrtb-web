@@ -375,4 +375,4 @@ def string_to_html(html_string):
 
 
 def get_date_time_now():
-    return  datetime.now().isoformat()
+    return datetime.now().isoformat()

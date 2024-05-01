@@ -18,7 +18,7 @@ class Constants(enum.Enum):
 
     # Patient Identifiers
     OPENMRS_IDENTIFIER = "8d793bee-c2cc-11de-8d13-0010c6dffd0f"
-    SUSPECT_ID = "f3ea5e6d-8b40-4e34-b97d-56577480bfe9"
+    SUSPECT_IDENTIFIER = "f3ea5e6d-8b40-4e34-b97d-56577480bfe9"
     DOTS_IDENTIFIER = "8d79403a-c2cc-11de-8d13-0010c6dffd0f"
     MDR_IDENTIFIER = "5c4c9795-2a7a-4757-8585-fba3a7cafa90"
 
@@ -75,3 +75,6 @@ class Constants(enum.Enum):
     # Concept name types
     FULLY_SPECIFIED = "FULLY_SPECIFIED"
     SHORT = "SHORT"
+
+    # Encounter role Unknown
+    ENCOUNTER_ROLE_UNKNOWN = "a0b03050-c99b-11e0-9572-0800200c9a66"

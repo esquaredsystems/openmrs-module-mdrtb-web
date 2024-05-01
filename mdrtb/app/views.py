@@ -2434,28 +2434,31 @@ def render_add_lab_test(req, uuid):
         context["patientdata"] = patient
     if req.method == "POST":
         create = req.POST.get("createencounter")
+        encounter = None
         if create:
-            status, response = ru.post(req, "encounter", {})
-            enc_body = {
-              "encounterDatetime": "2015-02-24T06:08:25.000+0000",
-              "patient": uuid,
+            encounter_datetime = util.iso_to_normal(util.get_date_time_now(), tajik=False)
+            encounter_body = {
+              "encounterDatetime": encounter_datetime,
               "encounterType": EncounterType.SPECIMEN_COLLECTION.value,
+              "patient": uuid,
               "encounterProviders": [
                 {
-                  "provider": "bb1a7781-7896-40be-aaca-7d1b41d843a6",
-                  "encounterRole": "a0b03050-c99b-11e0-9572-0800200c9a66"
+                  "provider": req.session["logged_user"]["currentProvider"]["uuid"],
+                  "encounterRole": Constants.ENCOUNTER_ROLE_UNKNOWN.value
                 }
               ],
-              [
+              "obs": [
                   {
-                      "person": "070f0120-0283-4858-885d-a20d967729cf",
-                      "concept": "5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-                      "obsDatetime": "2019-11-14T07:37:31.000+0000",
-                      "value": 70
+                      "person": uuid,
+                      "concept": Concepts.MONTH_OF_TREATMENT.value,
+                      "obsDatetime": encounter_datetime,
+                      "value": 0
                   }
               ]
             }
-            encounter = None
+            status, response = ru.post(req, "encounter", encounter_body)
+            if status:
+                encounter = response["uuid"]
         else:
             encounter = req.POST["encounter"]
         try:
@@ -2907,7 +2910,7 @@ def submit_order_to_lab(req, orderid):
             elif encounter_type in (EncounterType.TB03u_MDR.value, EncounterType.ADVERSE_EVENT.value, EncounterType.RESISTANCE_DURING_TREATMENT.value):
                 identifier_type = Constants.MDR_IDENTIFIER.value
             else:
-                identifier_type = Constants.SUSPECT_ID.value
+                identifier_type = Constants.SUSPECT_IDENTIFIER.value
             for identifier in patient["identifiers"]:
                 if identifier["identifierType"]["uuid"] == identifier_type:
                     spatientrefid = identifier["identifier"]
