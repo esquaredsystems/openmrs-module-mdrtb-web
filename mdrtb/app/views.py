@@ -1094,6 +1094,8 @@ def render_form_89(req, uuid):
         if tb03s:
             context["tb03"] = tb03s[0]
         mu.add_url_to_breadcrumb(req, context["title"])
+        patient = context["patient"]
+        context["isEligibleForPregnancy"] = patient["age"] >= 15 and patient["age"] <= 49 and patient["gender"] == 'F'
         return render(req, "app/tbregister/dots/form89.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)

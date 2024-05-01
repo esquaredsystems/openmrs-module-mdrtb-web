@@ -380,7 +380,7 @@
 
         <!-- Issue: Add pregnancy option for eligible female patients -->
         <div class="flex items-center justify-between space-x-6">
-        {% if form.isChildbearingAge %}
+        {% if form.isChildbearingAge or isEligibleForPregnancy %}
           <div class="input-container">
             <label class="tb03-form-label w-full">{{'mdrtb.pregnant'|get_message:request.session.locale}}</label>
             <select class="input form-control" id="pregnant">
