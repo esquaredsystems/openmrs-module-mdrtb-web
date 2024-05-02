@@ -8,13 +8,10 @@
   .program-responsive {
     width: 100%;
   }
-
-
   @media screen and (min-width: 840px) {
     .program-responsive {
       width: 75%;
     }
-
   }
 </style>
 
@@ -29,16 +26,11 @@
       stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white bg-red-700 cursor-pointer">
       <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
     </svg>
-
-
   </div>
   <div class="m-4">
     <div id="modal-body" class="flex-column-center space-y-2 h-min w-fit bg-gray-200 p-4 rounded-md shadow-md">
-
-
     </div>
-
-
+  </div>
 </section>
 
 <div class="p-2 flex-column-center space-y-3">
@@ -57,10 +49,7 @@
             <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
               {{'Program.enrolled'|get_message_openMRS:request.session.locale}}
               {{'Program.header'|get_message_openMRS:request.session.locale}}
-
             </h2>
-
-
           </div>
 
         </div>
@@ -97,15 +86,6 @@
                     class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
                     {{'mdrtb.patientDashboard'|get_message:request.session.locale}}
                   </th>
-
-
-
-
-
-
-
-
-
 
                 </tr>
               </thead>
@@ -326,7 +306,6 @@
           groupHasAttributes[attribute.attributeType.group] = true
         }
         groups.push(attribute.attributeType.group)
-
       }
     }
     console.log(groupHasAttributes)
@@ -338,22 +317,15 @@
       if (groupHasAttributes[group]) {
         $(`#${uuid}groups`).append(
           `<div class="w-full bg-white p-2">
-                        <h1 class="font-bold text-lg text-center">${group}</h1>
-                        <div id="${uuid}${group.toLowerCase()}"
-                          class="grid grid-cols-2 place-items-center justify-items-center  p-2">
-                          <div class="border p-2 border-gray-200 font-bold w-full">{{'ConceptProposal.obs'|get_message_openMRS:request.session.locale}}</div>
-                          <div class="border p-2 border-gray-200 font-bold w-full">{{'general.value'|get_message_openMRS:request.session.locale}}</div>
-
-
-                        </div>
-                      </div>`
+            <h1 class="font-bold text-lg text-center">${group}</h1>
+            <div id="${uuid}${group.toLowerCase()}"
+              class="grid grid-cols-2 place-items-center justify-items-center  p-2">
+              <div class="border p-2 border-gray-200 font-bold w-full">{{'ConceptProposal.obs'|get_message_openMRS:request.session.locale}}</div>
+              <div class="border p-2 border-gray-200 font-bold w-full">{{'general.value'|get_message_openMRS:request.session.locale}}</div>
+            </div>
+          </div>`
         )
       }
-
-
-
-
-
     }
     for (attribute of attributes) {
       if (attribute.attributeType.group === null) {
@@ -361,16 +333,11 @@
           if (attribute.valueReference) {
             for (answer of attribute.attributeType.answers) {
               if (answer.uuid === attribute.valueReference) {
-                $(`#${uuid}common`).append(
-                  `
-          <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
-          <div class="border w-full p-2 border-gray-200">${answer.display}</div>
- 
-          `
-                )
+                $(`#${uuid}common`).append(`
+                <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+                <div class="border w-full p-2 border-gray-200">${answer.display}</div>`)
                 break;
               }
-
             }
           }
         } else if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.BooleanDatatype") {
@@ -379,51 +346,31 @@
             <div class="border w-full p-2 border-gray-200">${attribute.valueReference === 'on' ? 'True' : 'False'}</div>`
           )
         }
-
-
         else {
           if (attribute.valueReference != null && attribute.valueReference.length > 0) {
-            $(`#${uuid}common`).append(
-              `
-          <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
-          <div class="border w-full p-2 h-full border-gray-200">${attribute.valueReference}</div>
- 
-          `
-            )
+            $(`#${uuid}common`).append(`
+            <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+            <div class="border w-full p-2 h-full border-gray-200">${attribute.valueReference}</div>`)
           }
-
         }
-
-
       } else {
         if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.ConceptDatatype") {
           if (attribute.valueReference) {
             for (answer of attribute.attributeType.answers) {
               if (answer.uuid === attribute.valueReference) {
-                $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
-                  `
-          <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
-          <div class="border w-full p-2 border-gray-200">${answer.display}</div>
- 
-          `
-                )
+                $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(`
+                <div class="border w-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+                <div class="border w-full p-2 border-gray-200">${answer.display}</div>`)
                 break;
               }
-
             }
           }
-
         } else {
           if (attribute.valueReference != null && attribute.valueReference.length > 0) {
-            $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
-              `
-          <div class="border w-full p-2 border-gray-200 ">${attribute.attributeType.name}</div>
-          <div class="border w-full p-2 border-gray-200">${attribute.valueReference}</div>
-
-          `
-            )
+            $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(`
+            <div class="border w-full p-2 border-gray-200 ">${attribute.attributeType.name}</div>
+            <div class="border w-full p-2 border-gray-200">${attribute.valueReference}</div>`)
           }
-
         }
       }
     }
@@ -432,8 +379,6 @@
     if ($(`#${uuid}common`).children().length <= 2) {
       $(`#${uuid}common`).parent().remove();
     }
-
-
 
     $(`#${uuid}groups`).children().each((index, child) => {
       if ($(child).children(1).children(1).length <= 2) {
@@ -451,18 +396,13 @@
         <div class="w-full bg-white p-2"><h1 class="font-bold text-lg text-center">No results found</h1></div>
         `
       )
-
     }
-
     if ($(`#${uuid}groups`).children().length === 1) {
       $(`#${uuid}groups`).removeClass('grid-cols-2').addClass('grid-cols-1')
     } else {
       $(`#${uuid}groups`).removeClass('grid-cols-1').addClass('grid-cols-2')
     }
-
-
   }
-
 
 </script>
 
@@ -479,27 +419,21 @@
     if (jsonStates.length > 0) {
       for (state of jsonStates) {
         if (state) {
-          $('#modal-body').append(
-            ` <div class="flex-center space-x-6">
-          <label class="input-label w-fit text-lg flex-wrap">${state.concept} : </label>
-          ${state.answer != null ?
-              `<span class="text-md font-bold">${state.answer.concept.name}
-              ${state.answer.start_date != null ?
-                `
-              ( {{'general.since'|get_message_openMRS:request.session.locale}} ${state.answer.start_date.substring(0, 10)} )
-              `
-                : ''
+          $('#modal-body').append(`
+          <div class="flex-center space-x-6">
+            <label class="input-label w-fit text-lg flex-wrap">${state.concept} : </label>
+            ${state.answer != null ?
+                `<span class="text-md font-bold">${state.answer.concept.name}
+                ${state.answer.start_date != null ?
+                `( {{'general.since'|get_message_openMRS:request.session.locale}} ${state.answer.start_date.substring(0, 10)} )
+                ` : ''
+                }
+                </span>`
+                : '<span class="text-md font-bold">None</span>'
               }
-              
-              
-              </span>`
-              : '<span class="text-md font-bold">None</span>'
-            }
-          
-        </div>`
+          </div>`
           )
         }
-
       }
     } else {
       $('#modalBody').append(
@@ -508,9 +442,6 @@
         </div>`
       )
     }
-
-
-
   }
   function closeModal() {
     $('#modal').addClass('opacity-0')

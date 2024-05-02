@@ -311,6 +311,10 @@
     $(document).ready(() => {
       for (workFlow of program.allWorkflows) {
         if (!workFlow.retired) {
+          // Issue ???: The HOSPITALIZATION workflow is deprecated
+          if (workFlow.uuid == 'b865acdb-70d8-4540-aa1c-14f2eedb337f') {
+            continue;
+          }
           $('#states').append(
           `<div class="input-container mt-3">
             <label class="font-bold normal-case text-sm text-[#9E9E9E] w-2/5 ">${workFlow.concept.display}</label>
