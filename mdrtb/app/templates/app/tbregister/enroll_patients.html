@@ -59,9 +59,9 @@
           <div class="input-container">
             <input id="suspect" type="checkbox" class="border-none shadow-sm cursor-pointer" name="suspect" />
             <label class="input-label"
-              for="deceased">{{'mdrtb.suspect'|get_message:request.session.locale}}</label>
+              for="suspect">{{'mdrtb.suspect'|get_message:request.session.locale}}</label>
           </div>
-          <input required class="input form-control" type="text" name="patientidentifier" />
+          <input required class="input form-control" type="text" name="patientidentifier" id="patientidentifier" />
         </div>
         <div class="input-container">
           <label class="input-label required w-full">{{'mdrtb.gender'|get_message:request.session.locale}}</label>
@@ -128,6 +128,18 @@
 <script defer>
   let date = new Date();
   let maxDate = date.toISOString().substring(0, 10);
+
+  const getCurrentTimestamp = () => {
+    const date = new Date();
+    const year = date.getFullYear().toString().substr(-2); // Get last 2 digits of year
+    const month = ('0' + (date.getMonth() + 1)).slice(-2); // Add leading zero if needed
+    const day = ('0' + date.getDate()).slice(-2); // Add leading zero if needed
+    const hours = ('0' + date.getHours()).slice(-2); // Add leading zero if needed
+    const minutes = ('0' + date.getMinutes()).slice(-2); // Add leading zero if needed
+    const seconds = ('0' + date.getSeconds()).slice(-2); // Add leading zero if needed
+    return `${year}${month}${day}${hours}${minutes}${seconds}`;
+  };
+
   const disableSubmit = () => {
     $('#submitBtn').prop('disabled', true)
     $('#submitBtn').removeClass('button-primary')
@@ -136,7 +148,6 @@
           colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
       </lord-icon>`)
   }
-
   $('input[type="date"]').prop('max', maxDate)
   $("#dob").change(function () {
     if ($("#dob").val() != "") {
@@ -171,6 +182,14 @@
     } else {
       $("#voided-container").addClass("hidden");
       $("#voided-container").removeClass("flex");
+    }
+  });
+  $('#suspect').change(function () {
+    if ($(this).is(':checked')) {
+      // Set patientidentifier field to current timestamp in yyMMddhhmmss format and make it read-only
+      $('#patientidentifier').val(getCurrentTimestamp()).prop('readonly', true);
+    } else {
+      $('#patientidentifier').val('').prop('readonly', false);
     }
   });
 </script>

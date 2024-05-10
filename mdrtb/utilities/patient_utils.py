@@ -285,7 +285,7 @@ def enroll_patient_in_program(req, patientid, data):
             patient_identifier = {
                 "identifier": data["identifier"],
                 "identifierType": data["identifierType"],
-                "location": data.get("facility", data.get("district", None)),
+                "location": data.get("facility", data.get("district", data.get("location"))),
             }
 
             ru.post(req, f"patient/{patientid}/identifier", patient_identifier)
