@@ -71,7 +71,7 @@
                   <div class="flex">
                     <div class="ml-3">
                       <p class="text-gray-900 whitespace-no-wrap">
-                        {{order.labTestType.name}}
+                        {{order.labTestType.referenceConcept.display}}
                       </p>
                     </div>
                   </div>
@@ -138,11 +138,12 @@
                   <div class="hidden" id="collapse{{forloop.counter}}" data-te-collapse-item
                     aria-labelledby="heading{{forloop.counter}}" data-te-parent="#accordion{{forloop.counter}}">
                     <div class="flex items-center space-x-2 mt-4">
-                      <h2 class="font-bold text-lg">Tests Results</h2>
+                      <h2 class="font-bold text-lg">
+                        {{'commonlabtest.result.edit'|get_message:request.session.locale}}</h2>
                       {% if order.sample_accepted %}
                       <a class="cancel-button text-sm"
-                        href="{% url 'addtestresults' orderid=order.uuid %}?patient={{patient}}">Add/Edit Test
-                        Results</a>
+                        href="{% url 'addtestresults' orderid=order.uuid %}?patient={{patient}}">
+                        {{'commonlabtest.result.edit'|get_message:request.session.locale}}</a>
                       {% else %}
                       <div class="text-sm">
                         Atleast one sample needs to be accepted to enter test results.

@@ -95,15 +95,13 @@
         <div class="input-container">
             <label class="input-label" for="">
                 {{'commonlabtest.testType'|get_message:request.session.locale}}
-
             </label>
             {% if state == 'edit' %}
             <select name="testType" id="test-select" class="input form-control">
                 <option selected value="{{laborder.labtesttype.uuid}}">{{laborder.labtesttype.name}}</option>
             </select>
             {% else %}
-            <select disabled name="testType" id="test-select" class="input form-control">
-            </select>
+                <select disabled name="testType" id="test-select" class="input form-control"></select>
             {% endif %}
 
         </div>
@@ -237,6 +235,10 @@
         } else {
             $('#encounter').prop('disabled', false);
         }
+    });
+
+    $(document).ready(function() {
+        setTestTypes();
     });
     
 </script>

@@ -213,7 +213,9 @@
           <tbody>
             {% for lab_result in lab_results %}
             <tr>
-              <td class="px-5 py-4 border-b border-gray-200 w-fit  text-sm">{{lab_result.labTestType.name}}</td>
+              <td class="px-5 py-4 border-b border-gray-200 w-fit  text-sm">
+                {{lab_result.labTestType.referenceConcept.display}}
+              </td>
               <td class="px-5 py-4 border-b border-gray-200 w-fit  text-sm">
                 {{lab_result.order.encounter.display|get_encounter_name}}
               </td>

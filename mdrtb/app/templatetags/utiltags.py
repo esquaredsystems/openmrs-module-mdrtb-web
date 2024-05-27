@@ -15,7 +15,7 @@ def get_specimem_identifier(placeholder):
     date_time_now = str(datetime.now())
     date_time_short = date_time_now[:23]
     labref = "".join(filter(str.isalnum, date_time_short))
-    return labref[2 : len(labref)]
+    return labref[2: len(labref)]
 
 
 @register.filter
@@ -23,7 +23,7 @@ def get_lab_reference_num(placeholder):
     date_time_now = str(datetime.now())
     date_time_short = date_time_now[:23]
     labref = "".join(filter(str.isalnum, date_time_short))
-    return labref[2 : len(labref) - 2]
+    return labref[2: len(labref) - 2]
 
 
 @register.filter
@@ -91,6 +91,7 @@ def string_to_date(string):
     year = date.year
     date_arr = [formatted_day, formatted_month, str(year)]
     return ".".join(date_arr)
+
 
 @register.filter
 def get_report_date(date):

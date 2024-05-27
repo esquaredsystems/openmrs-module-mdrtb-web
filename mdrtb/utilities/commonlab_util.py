@@ -662,8 +662,13 @@ def get_lab_test_orders_for_dashboard(req, patientuuid):
         },
     )
     if lab_results_status:
+        status, response = ru.get(req, "commonlab/labtesttype", {"v": "full"})
         for lab_result in lab_results_response["results"]:
             attributes = get_labtest_attributes(req, lab_result["uuid"])
             lab_result.update({"attributes": attributes})
+            if response:
+                for ltt in response["results"]:
+                    if ltt["uuid"] == lab_result["labTestType"]["uuid"]:
+                        lab_result.update({"labTestType": ltt})
         lab_results = lab_results_response["results"]
     return lab_results

@@ -2404,9 +2404,14 @@ def render_managetestorders(req, uuid):
             },
         )
         if status:
+            _, lab_test_types = ru.get(req, "commonlab/labtesttype", {"v": "full"})
             for lab_result in response["results"]:
                 attributes = cu.get_labtest_attributes(req, lab_result["uuid"])
                 lab_result.update({"attributes": attributes})
+                if lab_test_types:
+                    for ltt in lab_test_types["results"]:
+                        if ltt["uuid"] == lab_result["labTestType"]["uuid"]:
+                            lab_result.update({"labTestType": ltt})
             orders = response["results"]
             for order in orders:
                 sample_accepted = check_if_sample_exists(req, order["uuid"])
