@@ -40,10 +40,10 @@
       </div>
       {% else %}
       <div class="input-container">
-        <label class="input-label w-1/6 required"
-          for="identifier">{{'mdrtb.dotsIdentifier'|get_message:request.session.locale}}</label>
-        <input required class="input form-control" type="text" name="identifier" id="identifier" />
-        <input hidden type="text" name="identifierType" id="identifierType" value="{{'DOTS_IDENTIFIER'|get_constant }}">
+          <label class="input-label w-1/6 required" for="identifier">{{ 'mdrtb.dotsIdentifier'|get_message:request.session.locale }}</label>
+          <input required class="input form-control" type="text" name="identifier" id="identifier"
+                 {% if dotsidentifier %} value="{{ dotsidentifier.identifier }}" disabled {% endif %}/>
+          <input hidden type="text" name="identifierType" id="identifierType" value="{{ 'DOTS_IDENTIFIER'|get_constant }}">
       </div>
       <div hidden class="input-container">
         <label

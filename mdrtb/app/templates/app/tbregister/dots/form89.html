@@ -65,7 +65,7 @@
               {{'mdrtb.tb03.gender'|get_message:request.session.locale}}:
             </span>
             <span class="tb03-form-label w-full">
-              {{current_patient_program_flow.current_patient.gender}}
+              {{'mdrtb.gender.'|add:current_patient_program_flow.current_patient.gender|get_message:request.session.locale}}
             </span>
           </div>
           <div class="space-x-3">

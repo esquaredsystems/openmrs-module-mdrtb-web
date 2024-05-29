@@ -304,6 +304,10 @@ def render_enroll_in_dots_program(req, uuid):
         if program:
             context["jsonprogram"] = json.dumps(program)
             mu.add_url_to_breadcrumb(req, context["title"])
+            # Check for a DOTS identifier to auto-fill
+            patient_identifiers = pu.get_patient_identifiers(req, uuid)
+            if patient_identifiers.get("dots"):
+                context["dotsidentifier"] = patient_identifiers["dots"]
             return render(
                 req, "app/tbregister/dots/enroll_in_dots.html", context=context
             )
@@ -347,6 +351,10 @@ def render_enroll_patient_in_mdrtb(req, uuid):
             raise Exception("Privileges required: Add patient programs")
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         program = pu.get_program_by_uuid(req, Constants.MDRTB_PROGRAM.value)
+        tb03s = fu.get_patient_tb03_forms(req, uuid)
+        # Fetch the last TB03 form filled
+        if tb03s:
+            context["tb03"] = tb03s[-1]
         if program:
             context["jsonprogram"] = json.dumps(program)
         else:
@@ -489,6 +497,9 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
         ) = pu.get_patient_dashboard_info(
             req, uuid, program, is_mdrtb=mdrtb is not None, get_lab_data=True
         )
+        # Remove Hospitalization Workflow
+        if program_info.get("states"):
+            program_info["states"] = [item for item in program_info["states"] if item['concept'] != 'Hospitalization Workflow']
         req.session["current_patient_program_flow"] = {
             "current_patient": patient,
             "current_program": program_info,

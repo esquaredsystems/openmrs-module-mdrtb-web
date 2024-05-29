@@ -37,7 +37,12 @@
   {% if patient_dashboard_view_overview_section_privilege %}
   <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
     <div class="flex items-center space-x-4">
-      <h2 class="text-[#2D9CDB] text-3xl font-bold">{{program.program.name}}
+      <h2 class="text-[#2D9CDB] text-3xl font-bold">
+        {% if program.program.name|lower == 'dots program' %}
+            {{'mdrtb.program.dots'|get_message:request.session.locale}}
+        {% else %}
+            {{'mdrtb.program.mdrtb'|get_message:request.session.locale}}
+        {% endif %}
       </h2>
     </div>
     <div class="ml-4 grid grid-cols-2 gap-3">
@@ -50,61 +55,60 @@
           class="tb03-form-label">{{program.location.name}}</span>
       </div>
       {% for state in program.states %}
-      {% if not mdrtb %}
-      {% if state.uuid == "TB_TREATMENT_OUTCOME"|get_concept %}
-      {% if treatment_outcome %}
-      <div class="space-x-3">
-        <span class="font-bold">{{state.concept}}: </span>
-        <span class="tb03-form-label">{{treatment_outcome}}</span>
-      </div>
+        {% if not mdrtb %}
+          {% if state.uuid == "TB_TREATMENT_OUTCOME"|get_concept %}
+            {% if treatment_outcome %}
+              <div class="space-x-3">
+                <span class="font-bold">{{state.concept}}: </span>
+                <span class="tb03-form-label">{{treatment_outcome}}</span>
+              </div>
+            {% else %}
+              <div class="space-x-3">
+                <span class="font-bold">{{state.concept}}: </span>
+                {% if state.answer.concept %}
+                  <span class="tb03-form-label">{{state.answer.concept.name}}</span>
+                {% else %}
+                  <span class="tb03-form-label">None</span>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% else %}
+            <div class="space-x-3">
+              <span class="font-bold">{{state.concept}}: </span>
+              {% if state.answer.concept %}
+                <span class="tb03-form-label">{{state.answer.concept.name}}</span>
+              {% else %}
+                <span class="tb03-form-label">None</span>
+              {% endif %}
+            </div>
+          {% endif %}
       {% else %}
-      <div class="space-x-3">
-        <span class="font-bold">{{state.concept}}: </span>
-        {% if state.answer.concept %}
-        <span class="tb03-form-label">{{state.answer.concept.name}}</span>
+        {% if state.uuid == "MDR_TB_TREATMENT_OUTCOME"|get_concept %}
+          {% if treatment_outcome %}
+            <div class="space-x-3">
+              <span class="font-bold">{{state.concept}}: </span>
+              <span class="tb03-form-label">{{treatment_outcome}}</span>
+            </div>
+          {% else %}
+            <div class="space-x-3">
+              <span class="font-bold">{{state.concept}}: </span>
+              {% if state.answer.concept %}
+                  <span class="tb03-form-label">{{state.answer.concept.name}}</span>
+              {% else %}
+                  <span class="tb03-form-label">None</span>
+              {% endif %}
+            </div>
+          {% endif %}
         {% else %}
-        <span class="tb03-form-label">None</span>
+          <div class="space-x-3">
+            <span class="font-bold">{{state.concept}}: </span>
+            {% if state.answer.concept %}
+              <span class="tb03-form-label">{{state.answer.concept.name}}</span>
+            {% else %}
+              <span class="tb03-form-label">None</span>
+            {% endif %}
+          </div>
         {% endif %}
-      </div>
-      {% endif %}
-
-      {% else %}
-      <div class="space-x-3">
-        <span class="font-bold">{{state.concept}}: </span>
-        {% if state.answer.concept %}
-        <span class="tb03-form-label">{{state.answer.concept.name}}</span>
-        {% else %}
-        <span class="tb03-form-label">None</span>
-        {% endif %}
-      </div>
-      {% endif %}
-      {% else %}
-      {% if state.uuid == "MDR_TB_TREATMENT_OUTCOME"|get_concept %}
-      {% if treatment_outcome %}
-      <div class="space-x-3">
-        <span class="font-bold">{{state.concept}}: </span>
-        <span class="tb03-form-label">{{treatment_outcome}}</span>
-      </div>
-      {% else %}
-      <div class="space-x-3">
-        <span class="font-bold">{{state.concept}}: </span>
-        {% if state.answer.concept %}
-        <span class="tb03-form-label">{{state.answer.concept.name}}</span>
-        {% else %}
-        <span class="tb03-form-label">None</span>
-        {% endif %}
-      </div>
-      {% endif %}
-      {% else %}
-      <div class="space-x-3">
-        <span class="font-bold">{{state.concept}}: </span>
-        {% if state.answer.concept %}
-        <span class="tb03-form-label">{{state.answer.concept.name}}</span>
-        {% else %}
-        <span class="tb03-form-label">None</span>
-        {% endif %}
-      </div>
-      {% endif %}
       {% endif %}
 
       {% endfor %}

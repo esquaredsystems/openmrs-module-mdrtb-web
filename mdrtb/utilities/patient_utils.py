@@ -155,7 +155,7 @@ def save_patient(req, data, uuid=None):
         else:  # Otherwise, create a new record
             identifier_type = Constants.DOTS_IDENTIFIER.value
             # See if the patient is a Suspect or not
-            if data["suspect"] and data["suspect"] == 'on':
+            if data.get("suspect") == 'on':
                 identifier_type = Constants.SUSPECT_IDENTIFIER.value
             patient_info["identifiers"] = [
                 {

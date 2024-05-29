@@ -69,8 +69,6 @@
                 {% endif %}
             </div>
 
-
-
             {% if state == 'edit' %}
             <div class="flex-column-center space-y-2">
                 <div id="prefilledlocation" class="input-container">
@@ -86,8 +84,9 @@
 
                     </label>
 
+
                     <input class="input form-control" type="text" name="location" id="location"
-                        value="{{enrolled_program.location.name}}" />
+                        value="{% if tb03 %}{{ tb03.encounter.location.name }}{% else %}{{ enrolled_program.location.name }}{% endif %}" />
                     <div hidden id="locations" class="flex-column-center space-y-4">
                         {% include 'app/components/locations.html' %}
                     </div>
@@ -96,6 +95,10 @@
 
             </div>
             {% else %}
+            <div class="input-container">
+                <label class="input-label w-1/6">{{'mdrtb.tb03.location'|get_message:request.session.locale}}</label>
+                <label>{{tb03.encounter.location.name}} {{tb03.encounter.location.parentLocation.display}}</label>
+            </div>
             {% include 'app/components/locations.html' %}
             {% endif %}
 
@@ -232,7 +235,6 @@
             }
         })
         let program = JSON.parse("{{jsonprogram|escapejs}}")
-        console.log(program)
         $(document).ready(() => {
             for (workFlow of program.allWorkflows) {
                 if (!workFlow.retired) {
