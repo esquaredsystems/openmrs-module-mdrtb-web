@@ -134,5 +134,7 @@ resources/*.pdf
 
 #npm
 node_modules
-
 .vscode
+
+#MacOS
+.DS_Store
