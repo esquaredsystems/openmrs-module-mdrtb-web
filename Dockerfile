@@ -22,6 +22,9 @@ RUN pip install --upgrade pip \
 # Copy the rest of the project files
 COPY . /app
 
+# Ensure log directory exists before Django initializes logging
+RUN mkdir -p /app/logs
+
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
