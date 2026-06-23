@@ -1,0 +1,1384 @@
+﻿{% extends 'app/base/base.html' %}
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+{%block content%}
+
+<div>
+  <form onsubmit="disableSubmit()"
+    action="{% if state == 'edit' %}{% url 'editadverseevents' patientid=patient_id formid=form.uuid %}{% else %}{% url 'adverseevents' patientid=patient_id %}{% endif %}"
+    method="post" class="flex flex-col">
+    {% csrf_token %}
+    <div class="m-16 flex flex-col justify-center space-y-8">
+      {% include 'app/components/breadcrumbs.html'%}
+
+      {% if state == 'edit' %}
+      <div id="form-info" class="flex-center space-x-4">
+        <h1 class="text-[#2D9CDB] text-3xl font-bold">
+          {{'mdrtb.edit'|get_message:locale|default:"en"}}
+          {{'mdrtb.pv.aeForm'|get_message:locale|default:"en"}}
+        </h1>
+        <button type="button" id="editbtn">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+          </svg>
+
+        </button>
+        <button hidden type="button" id="canceleditbtn" class="cancel-button">Cancel</button>
+        {% if delete_encounters_privilege %}
+        <a href="{% url 'deleteadverseevents' formid=form.uuid %}" type="button" id="deletetb03">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+          </svg>
+        </a>
+        {% endif %}
+
+      </div>
+      {% else %}
+      <h1 class="text-[#2D9CDB] text-3xl font-bold">
+        {{'mdrtb.pv.aeForm'|get_message:locale|default:"en"}}
+      </h1>
+      {% endif %}
+      <div class="adverse-event-form-readonly">
+        <div class="flex items-center space-x-12">
+          <div class="space-x-3">
+            <span class="font-bold">
+              {{'mdrtb.location'|get_message:locale|default:"en"}}:
+            </span>
+            <span class="tb03-form-label w-full">
+              {% if state == 'edit' %}
+              {{form.encounter.location.name}}
+              {% else %}
+              {{current_patient_program_flow.current_program.location.name}}
+              {% endif %}
+
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="adverse-event-form">
+        <div class="adverse-event-form-row">
+          <div class="input-container">
+            <label class="tb03-form-label w-full" for="name">
+              {{'mdrtb.pv.onsetDate'|get_message:locale|default:"en"}}</label>
+            {% if state == 'edit' and form.encounter.encounterDatetime %}
+            <input disabled type="text" class="input form-control" name="encounterDateTime"
+              value="{{form.encounter.encounterDatetime|slice:':10'}}">
+            {% else %}
+            <input type="date" class="input form-control" name="encounterDateTime">
+            {% endif %}
+
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.adverseEvent'|get_message:locale|default:"en"}}</label>
+            <select name="{{'ADVERSE_EVENT' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.advereEvent %}
+                <option selected value="{{form.advereEvent.uuid}}">{{form.advereEvent.display}}</option>
+              {% else %}
+                <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              {% endif %}
+              {% for concept in concepts.adverseevent %}
+               <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="adverse-event-form-row">
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.clinicalScreen'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2 ">
+                <label for="yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.clinicalScreenDone %}
+                  {% if form.clinicalScreenDone.uuid == constants.YES %}
+                  <input checked name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="no">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.clinicalScreenDone %}
+                  {% if form.clinicalScreenDone.uuid == constants.NO %}
+                  <input checked name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'CLINICAL_SCREEN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.visualAcuity'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.visualAcuityDone %}
+                  {% if form.visualAcuityDone.uuid == constants.YES %}
+                  <input checked name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.visualAcuityDone %}
+                  {% if form.visualAcuityDone.uuid == constants.NO %}
+                  <input checked name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'VISUAL_ACUITY_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="adverse-event-form-row">
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.hearingTest'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.simpleHearingTestDone %}
+                  {% if form.simpleHearingTestDone.uuid == constants.YES %}
+                  <input checked name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio"
+                    value="{{constants.YES}}" class="radio-input" />
+                  {% else %}
+                  <input name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.simpleHearingTestDone %}
+                  {% if form.simpleHearingTestDone.uuid == constants.NO %}
+                  <input checked name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio"
+                    value="{{constants.NO}}" class="radio-input" />
+                  {% else %}
+                  <input name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'SIMPLE_HEARING_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.audiogram'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.audiogramDone %}
+                  {% if form.audiogramDone.uuid == constants.YES %}
+                  <input checked name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.audiogramDone %}
+                  {% if form.audiogramDone.uuid == constants.NO %}
+                  <input checked name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'AUDIOGRAM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="adverse-event-form-row">
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.neuroInvestigations'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.neuroInvestigationDone %}
+                  {% if form.neuroInvestigationDone.uuid == constants.YES %}
+                  <input checked name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio"
+                    value="{{constants.YES}}" class="radio-input" />
+                  {% else %}
+                  <input name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.neuroInvestigationDone %}
+                  {% if form.neuroInvestigationDone.uuid == constants.NO %}
+                  <input checked name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio"
+                    value="{{constants.NO}}" class="radio-input" />
+                  {% else %}
+                  <input name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'NEURO_INVESTIGATION_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                  class="radio-input" />
+                {% endif %}
+
+              </div>
+            </div>
+          </div>
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.serumCreatinine'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.serumCreatinineDone %}
+                  {% if form.serumCreatinineDone.uuid == constants.YES %}
+                  <input checked name="{{'CREATININE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'CREATININE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'CREATININE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.serumCreatinineDone %}
+                  {% if form.serumCreatinineDone.uuid == constants.NO %}
+                  <input checked name="{{'CREATININE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'CREATININE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'CREATININE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                  class="radio-input" />
+                {% endif %}
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="adverse-event-form-row">
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.alt'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.altDone %}
+                  {% if form.altDone.uuid == constants.YES %}
+                  <input checked name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.altDone %}
+                  {% if form.altDone.uuid == constants.NO %}
+                  <input checked name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'ALT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
+                {% endif %}
+
+              </div>
+            </div>
+          </div>
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.ast'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.astDone %}
+                  {% if form.astDone.uuid == constants.YES %}
+                  <input checked name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.astDone %}
+                  {% if form.astDone.uuid == constants.NO %}
+                  <input checked name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'AST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="adverse-event-form-row">
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.bilirubin'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.bilirubinDone %}
+                  {% if form.bilirubinDone.uuid == constants.YES %}
+                  <input checked name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.bilirubinDone %}
+                  {% if form.bilirubinDone.uuid == constants.NO %}
+                  <input checked name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'BILIRUBIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                  class="radio-input" />
+                {% endif %}
+
+              </div>
+            </div>
+          </div>
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.alkalinePhosphatase'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.alkalinePhosphateDone %}
+                  {% if form.alkalinePhosphateDone.uuid == constants.YES %}
+                  <input checked name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio"
+                    value="{{constants.YES}}" class="radio-input" />
+                  {% else %}
+                  <input name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.alkalinePhosphateDone %}
+                  {% if form.alkalinePhosphateDone.uuid == constants.NO %}
+                  <input checked name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio"
+                    value="{{constants.NO}}" class="radio-input" />
+                  {% else %}
+                  <input name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'ALKALINE_PHOSPHATASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="adverse-event-form-row">
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.ygt'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.ygtDone %}
+                  {% if form.ygtDone.uuid == constants.YES %}
+                  <input checked name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.ygtDone %}
+                  {% if form.ygtDone.uuid == constants.NO %}
+                  <input checked name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'YGT_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
+                {% endif %}
+
+              </div>
+            </div>
+          </div>
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.ecg'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.ecgDone %}
+                  {% if form.ecgDone.uuid == constants.YES %}
+                  <input checked name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.ecgDone %}
+                  {% if form.ecgDone.uuid == constants.NO %}
+                  <input checked name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'ECG_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
+                {% endif %}
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="adverse-event-form-row">
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.lipase'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.lipaseDone %}
+                  {% if form.lipaseDone.uuid == constants.YES %}
+                  <input checked name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.lipaseDone %}
+                  {% if form.lipaseDone.uuid == constants.NO %}
+                  <input checked name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'LIPASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                  class="radio-input" />
+                {% endif %}
+
+              </div>
+            </div>
+          </div>
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.amylase'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.amylaseDone %}
+                  {% if form.amylaseDone.uuid == constants.YES %}
+                  <input checked name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.amylaseDone %}
+                  {% if form.amylaseDone.uuid == constants.NO %}
+                  <input checked name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'AMYLASE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                  class="radio-input" />
+                {% endif %}
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="adverse-event-form-row">
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.potassium'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.potassiumDone %}
+                  {% if form.potassiumDone.uuid == constants.YES %}
+                  <input checked name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.potassiumDone %}
+                  {% if form.potassiumDone.uuid == constants.NO %}
+                  <input checked name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'POTASSIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.magnesium'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.magnesiumDone %}
+                  {% if form.magnesiumDone.uuid == constants.YES %}
+                  <input checked name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.magnesiumDone %}
+                  {% if form.magnesiumDone.uuid == constants.NO %}
+                  <input checked name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'MAGNESIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="adverse-event-form-row">
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.calcium'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.calciumDone %}
+                  {% if form.calciumDone.uuid == constants.YES %}
+                  <input checked name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.calciumDone %}
+                  {% if form.calciumDone.uuid == constants.NO %}
+                  <input checked name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'CALCIUM_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.albumin'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.albuminDone %}
+                  {% if form.albuminDone.uuid == constants.YES %}
+                  <input checked name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.albuminDone %}
+                  {% if form.albuminDone.uuid == constants.NO %}
+                  <input checked name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'ALBUMIN_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="adverse-event-form-row">
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.cbc'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.cbcDone %}
+                  {% if form.cbcDone.uuid == constants.YES %}
+                  <input checked name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.cbcDone %}
+                  {% if form.cbcDone.uuid == constants.NO %}
+                  <input checked name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'CBC_DONE' | get_concept }}" type="radio" value="{{constants.NO}}" class="radio-input" />
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.bloodGlucose'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.bloodGlucoseDone %}
+                  {% if form.bloodGlucoseDone.uuid == constants.YES %}
+                  <input checked name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.bloodGlucoseDone %}
+                  {% if form.bloodGlucoseDone.uuid == constants.NO %}
+                  <input checked name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'BLOOD_GLUCOSE_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="adverse-event-form-row">
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.thyroidTest'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.thyroidTestDone %}
+                  {% if form.thyroidTestDone.uuid == constants.YES %}
+                  <input checked name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.thyroidTestDone %}
+                  {% if form.thyroidTestDone.uuid == constants.NO %}
+                  <input checked name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'THYROID_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.other'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.otherTestDone %}
+                  {% if form.otherTestDone.uuid == constants.YES %}
+                  <input checked name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.otherTestDone %}
+                  {% if form.otherTestDone.uuid == constants.NO %}
+                  <input checked name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'OTHER_TEST_DONE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="adverse-event-form-row">
+          <div class="input-container">
+            <label class="tb03-form-label w-full" for="name">
+              {{'mdrtb.pv.treatmentRegimenAtOnset'|get_message:locale|default:"en"}}</label>
+            {% if state == 'edit' and form.treatmentRegimenAtOnset %}
+            <input value="{{form.treatmentRegimenAtOnset}}" name="{{'ADVERSE_EVENT_REGIMEN' | get_concept }}"
+              type="text" class="input form-control">
+            {% else %}
+            <input name="{{'ADVERSE_EVENT_REGIMEN' | get_concept }}" type="text" class="input form-control">
+            {% endif %}
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.suspectedDrug'|get_message:locale|default:"en"}}</label>
+            {% if state == 'edit' and form.suspectedDrug %}
+            <input value="{{form.suspectedDrug}}" name="{{'SUSPECTED_DRUG' | get_concept }}" type="text"
+              class="input form-control">
+            {% else %}
+            <input name="{{'SUSPECTED_DRUG' | get_concept }}" type="text" class="input form-control">
+            {% endif %}
+          </div>
+        </div>
+        <div class="adverse-event-form-row">
+          <div class="input-container">
+            <label class="tb03-form-label w-full" for="name">
+              {{'mdrtb.pv.typeOfEvent'|get_message:locale|default:"en"}}</label>
+            <select id="eventType" name="{{'ADVERSE_EVENT_TYPE' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.typeOfEvent %}
+              <option selected value="{{form.typeOfEvent.uuid}}">{{form.typeOfEvent.display}}</option>
+              {% else %}
+              <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              {% endif %}
+              {% for concept in concepts.adverseeventtype %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.typeOfSAE'|get_message:locale|default:"en"}}</label>
+            <select disabled id="saeType" name="{{'SAE_TYPE' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.typeOfSAE %}
+              <option selected value="{{form.typeOfSAE.uuid}}">{{form.typeOfSAE.display}}</option>
+              {% else %}
+              <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              {% endif %}
+              {% for concept in concepts.saetype %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="adverse-event-form-row">
+          <div class="input-container">
+            <label class="tb03-form-label w-full" for="name">
+              {{'mdrtb.pv.typeOfSpecialEvent'|get_message:locale|default:"en"}}</label>
+            <select disabled id="specialType" name="{{'SPECIAL_INTEREST_EVENT_TYPE' | get_concept }}"
+              class="input form-control">
+              {% if state == 'edit' and form.typeOfSpecialEvent %}
+              <option selected value="{{form.typeOfSpecialEvent.uuid}}">
+                {{form.typeOfSpecialEvent.display}}</option>
+              {% else %}
+              <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              {% endif %}
+              {% for concept in concepts.specialinteresteventtype %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.requiresAncillaryDrugs'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: -0.5rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.requiresAncillaryDrugs %}
+                  {% if form.requiresAncillaryDrugs.uuid == constants.YES %}
+                  <input checked name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio"
+                    value="{{constants.YES}}" class="radio-input" />
+                  {% else %}
+                  <input name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.requiresAncillaryDrugs %}
+                  {% if form.requiresAncillaryDrugs.uuid == constants.NO %}
+                  <input checked name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio"
+                    value="{{constants.NO}}" class="radio-input" />
+                  {% else %}
+                  <input name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'REQUIRES_ANCILLARY_DRUGS' | get_concept }}" type="radio" value="{{constants.NO}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="adverse-event-form-row">
+          <div class="input-container space-x-14">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.requiresDoseChange'|get_message:locale|default:"en"}}</label>
+            <div style="margin-left: 1rem;" class="flex-center space-x-4 w-full">
+              <div class="flex-center space-x-2">
+                <label for="Yes">{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.requiresDoseChange %}
+                  {% if form.requiresDoseChange.uuid == constants.YES %}
+                  <input checked name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.YES}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+              <div class="flex-center space-x-2">
+                <label for="No">{{'mdrtb.no'|get_message:locale|default:"en"}}</label>
+                {% if state == 'edit' and form.requiresDoseChange %}
+                  {% if form.requiresDoseChange.uuid == constants.NO %}
+                  <input checked name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% else %}
+                  <input name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                    class="radio-input" />
+                  {% endif %}
+                {% else %}
+                <input name="{{'REQUIRES_DOSE_CHANGE' | get_concept }}" type="radio" value="{{constants.NO}}"
+                  class="radio-input" />
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.yellowCardDate'|get_message:locale|default:"en"}}</label>
+            {% if state == 'edit' and form.yellowCardDate %}
+            <input value="{{form.yellowCardDate|slice:':10'}}" name="{{'YELLOW_CARD_DATE' | get_concept }}"
+              type="date" class="input form-control">
+            {% else %}
+            <input name="{{'YELLOW_CARD_DATE' | get_concept }}" type="date" class="input form-control">
+            {% endif %}
+          </div>
+        </div>
+        <div class="adverse-event-form-row">
+          <div class="input-container">
+            <label class="tb03-form-label w-full" for="name">
+              {{'mdrtb.pv.causalityDrug1'|get_message:locale|default:"en"}}</label>
+            <select name="{{'CAUSALITY_DRUG_1' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.casualityDrug %}
+              <option selected value="{{form.casualityDrug.uuid}}">{{form.casualityDrug.display}}</option>
+              {% else %}
+              <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>s
+              {% endif %}
+              {% for concept in concepts.causalitydrug1 %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.causalityAssessmentResult1'|get_message:locale|default:"en"}}</label>
+            <select name="{{'CAUSALITY_ASSESSMENT_RESULT_1' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.casualityAssessmentResult %}
+              <option selected value="{{form.casualityAssessmentResult.uuid}}">
+                {{form.casualityAssessmentResult.display}}</option>
+              {% else %}
+              <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              {% endif %}
+              {% for concept in concepts.causalityassessmentresult1 %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="adverse-event-form-row">
+          <div class="input-container">
+            <label class="tb03-form-label w-full" for="name">
+              {{'mdrtb.pv.causalityDrug2'|get_message:locale|default:"en"}}</label>
+            <select name="{{'CAUSALITY_DRUG_2' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.casualityDrug2 %}
+              <option selected value="{{form.casualityDrug2.uuid}}">
+                {{form.casualityDrug2.display}}</option>
+              {% else %}
+              <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              {% endif %}
+              {% for concept in concepts.causalitydrug2 %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.causalityAssessmentResult2'|get_message:locale|default:"en"}}</label>
+            <select name="{{'CAUSALITY_ASSESSMENT_RESULT_2' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.casualityAssessmentResult2 %}
+              <option selected value="{{form.casualityAssessmentResult2.uuid}}">
+                {{form.casualityAssessmentResult2.display}}</option>
+              {% else %}
+              <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              {% endif %}
+              {% for concept in concepts.causalityassessmentresult2 %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="adverse-event-form-row">
+          <div class="input-container">
+            <label class="tb03-form-label w-full" for="name">
+              {{'mdrtb.pv.causalityDrug3'|get_message:locale|default:"en"}}</label>
+            <select name="{{'CAUSALITY_DRUG_3' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.casualityDrug3 %}
+              <option selected value="{{form.casualityDrug3.uuid}}">{{form.casualityDrug3.display}}</option>
+              {% else %}
+              <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              {% endif %}
+              {% for concept in concepts.causalitydrug3 %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.causalityAssessmentResult3'|get_message:locale|default:"en"}}</label>
+            <select name="{{'CAUSALITY_ASSESSMENT_RESULT_3' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.casualityAssessmentResult3 %}
+              <option selected value="{{form.casualityAssessmentResult3.uuid}}">
+                {{form.casualityAssessmentResult3.display}}</option>
+              {% else %}
+              <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              {% endif %}
+              {% for concept in concepts.causalityassessmentresult3 %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="adverse-event-form-row">
+          <div class="input-container">
+            <label class="tb03-form-label w-full" for="name">
+              {{'mdrtb.pv.actionTaken'|get_message:locale|default:"en"}}</label>
+            <select name="{{'ADVERSE_EVENT_ACTION' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.actionTaken %}
+              <option selected value="{{form.actionTaken.uuid}}">{{form.actionTaken.display}}</option>
+              {% else %}
+              <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              {% endif %}
+              {% for concept in concepts.adverseeventaction %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.actionTaken'|get_message:locale|default:"en"}}
+              2</label>
+            <select name="{{'ADVERSE_EVENT_ACTION_2' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.actionTaken2 %}
+              <option selected value="{{form.actionTaken2.uuid}}">{{form.actionTaken2.display}}</option>
+              {% else %}
+              <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              {% endif %}
+              {% for concept in concepts.adverseeventaction2 %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="adverse-event-form-row">
+          <div class="input-container">
+            <label class="tb03-form-label w-full" for="name">
+              {{'mdrtb.pv.actionTaken'|get_message:locale|default:"en"}} 3</label>
+            <select name="{{'ADVERSE_EVENT_ACTION_3' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.actionTaken3 %}
+              <option selected value="{{form.actionTaken3.uuid}}">{{form.actionTaken3.display}}</option>
+              {% else %}
+              <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              {% endif %}
+              {% for concept in concepts.adverseeventaction3 %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.actionTaken'|get_message:locale|default:"en"}}
+              4</label>
+            <select name="{{'ADVERSE_EVENT_ACTION_4' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.actionTaken4 %}
+              <option selected value="{{form.actionTaken4.uuid}}">{{form.actionTaken4.display}}</option>
+              {% else %}
+              <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              {% endif %}
+              {% for concept in concepts.adverseeventaction4 %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="adverse-event-form-row">
+          <div class="input-container">
+            <label class="tb03-form-label w-full" for="name">
+              {{'mdrtb.pv.actionTaken'|get_message:locale|default:"en"}} 5</label>
+            <select name="{{'ADVERSE_EVENT_ACTION_5' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.actionTaken5 %}
+              <option selected value="{{form.actionTaken5.uuid}}">{{form.actionTaken5.display}}</option>
+              {% else %}
+              <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              {% endif %}
+              {% for concept in concepts.adverseeventaction5 %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full"
+              for="name">{{'mdrtb.pv.actionOutcome'|get_message:locale|default:"en"}}</label>
+            <select id="actionOutcome" name="{{'ADVERSE_EVENT_OUTCOME' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.actionOutcome %}
+              <option selected value="{{form.actionOutcome.uuid}}">{{form.actionOutcome.display}}</option>
+              {% else %}
+              <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              {% endif %}
+              {% for concept in concepts.adverseeventoutcome %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="adverse-event-form-row">
+          <div class="input-container">
+            <label class="tb03-form-label w-full" for="name">
+              {{'mdrtb.pv.outcomeDate'|get_message:locale|default:"en"}}</label>
+            {% if state == 'edit' and form.outcomeDate %}
+            <input id="outcomeDate" value="{{form.outcomeDate|slice:':10'}}"
+              name="{{'ADVERSE_EVENT_OUTCOME_DATE' | get_concept }}" type="date" class="input form-control">
+            {% else %}
+            <input id="outcomeDate" name="{{'ADVERSE_EVENT_OUTCOME_DATE' | get_concept }}" type="date"
+              class="input form-control">
+            {% endif %}
+          </div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full" for="name">
+              {{'mdrtb.pv.drugRechallenge'|get_message:locale|default:"en"}}</label>
+            <select name="{{'DRUG_RECHALLENGE' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.drugRechallenge %}
+              <option selected value="{{form.drugRechallenge.uuid}}">{{form.drugRechallenge.display}}</option>
+              {% else %}
+              <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              {% endif %}
+              {% for concept in concepts.drugrechallenge %}
+              <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div>
+            <label class="tb03-form-label w-full">
+              {{'mdrtb.pv.register.comments'|get_message:locale|default:"en"}}</label>
+            {% if state == 'edit' and form.clinicianNotes %}
+            <textarea name="{{'CLINICIAN_NOTES' | get_concept }}"
+              class="input form-control">{{form.clinicianNotes}}</textarea>
+            {% else %}
+            <textarea name="{{'CLINICIAN_NOTES' | get_concept }}" class="input form-control"></textarea>
+            {% endif %}
+        </div>
+        <div class="flex-center">
+          <button type="submit" id="submitBtn" class="button-primary w-1/5">
+            {{'general.save'|get_message_openMRS:locale|default:"en"}}
+          </button>
+          <a href="javascript:history.go(-1)" class="cancel-button">
+            {{'general.cancel'|get_message_openMRS:locale|default:"en"}}
+          </a>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <script>
+    const disableSubmit = () => {
+      $('#submitBtn').prop('disabled', true)
+      $('#submitBtn').removeClass('button-primary')
+      $('#submitBtn').html(`
+        <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
+            colors="primary:#000,secondary:#08a88a" style="width:50px;height:50px">
+        </lord-icon>`)
+    }
+    $('#eventType').change((e) => {
+      let eventType = e.target.value
+      if (eventType === "{{'SERIOUS' | get_concept }}") {
+        $('#saeType').prop('disabled', false)
+        $('#specialType').prop('disabled', true)
+      } else
+        if (eventType === "{{'OF_SPECIAL_INTEREST' | get_concept }}") {
+          $('#specialType').prop('disabled', false)
+          $('#saeType').prop('disabled', true)
+        } else {
+          $('#specialType').prop('disabled', true)
+          $('#saeType').prop('disabled', true)
+        }
+    })
+    $('#actionOutcome').change((e) => {
+      let outcome = e.target.value
+      let outcomeDate = $('#outcomeDate')
+      if (outcome === "{{'NOT_RESOLVED' | get_concept }}") {
+        outcomeDate.val("")
+        outcomeDate.prop('disabled', true)
+      } else if (outcome === "{{'RESOLVING' | get_concept }}") {
+        outcomeDate.val("")
+        outcomeDate.prop('disabled', true)
+      } else {
+        outcomeDate.prop('disabled', false)
+      }
+    })
+    let state = '{{state | escapejs}}'
+    if (state === 'edit') {
+      $('input').prop('disabled', true).prop('required', false)
+      $('input[name=csrfmiddlewaretoken]').prop('disabled', false)
+      $('select').prop('disabled', true).prop('required', false)
+      $('textarea').prop('disabled', true).prop('required', false)
+      $('#canceleditbtn').prop('hidden', true)
+    }
+    $('#editbtn').click(function () {
+      $('input').prop('disabled', false)
+      $('select').prop('disabled', false)
+      $('textarea').prop('disabled', false)
+      $('#canceleditbtn').prop('hidden', false)
+      if ($('#eventType').val() === "{{'SERIOUS' | get_concept }}") {
+        $('#saeType').prop('disabled', false)
+        $('#specialType').prop('disabled', true)
+      } else if ($('#eventType').val() === "{{'OF_SPECIAL_INTEREST' | get_concept }}") {
+        $('#specialType').prop('disabled', false)
+        $('#saeType').prop('disabled', true)
+      } else {
+        $('#specialType').prop('disabled', true)
+        $('#saeType').prop('disabled', true)
+      }
+    })
+    $('#canceleditbtn').click(function () {
+      $('input').prop('disabled', true)
+      $('input[name=csrfmiddlewaretoken]').prop('disabled', false)
+      $('select').prop('disabled', true)
+      $('textarea').prop('disabled', true)
+      $('#canceleditbtn').prop('hidden', true)
+    })
+
+    let date = new Date();
+    maxDate = date.toISOString().substring(0, 10);
+    $('input[type="date"]').prop("max", maxDate)
+  </script>
+</div>
+
+{% endblock %}

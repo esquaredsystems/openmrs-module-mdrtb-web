@@ -11,9 +11,6 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Memcached (optional if needed)
-RUN apt-get update && apt-get install -y memcached
-
 # Copy only the requirements first to leverage Docker cache
 COPY requirements.txt .
 
@@ -34,5 +31,4 @@ RUN python manage.py collectstatic --noinput
 # Expose port 8000 for Gunicorn
 EXPOSE 8000
 
-# Start Memcached and Gunicorn using JSON format for CMD
-CMD ["bash", "-c", "service memcached start && gunicorn --workers 2 --bind 0.0.0.0:8000 mdrtb.wsgi:application"]
+CMD ["gunicorn", "--workers", "2", "--bind", "0.0.0.0:8000", "mdrtb.wsgi:application"]

@@ -1,0 +1,234 @@
+﻿{% extends 'app/base/report_base.html' %}
+
+{% block content %}
+
+<div>
+    <style>
+        td {
+            width: fit-content;
+        }
+        th {
+            width: fit-content;
+        }
+        table {
+            width: fit-content;
+        }
+    </style>
+
+    <div id="f89">
+        {% if locale == 'tj' %}
+        <style>
+            html * {
+                font-family: Times New Roman Tj !important;
+            }
+        </style>
+        {% endif %}
+        <table border="1" cellspacing="0">
+            <tr>
+                <th class="normal" rowspan="2">
+                    <div><span>{{"mdrtb.tb03.tb03RegistrationNumber"|get_message:locale|default:"en"}}</span></div>
+                </th>
+                <th class="normal" rowspan="2">
+                    <div><span>{{"mdrtb.form89.form89Date"|get_message:locale|default:"en"}}</span></div>
+                </th>
+                <th class="normal" rowspan="2">{{"mdrtb.tb03.name"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">
+                    <div><span>{{"mdrtb.gender"|get_message:locale|default:"en"}}</span></div>
+                </th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.ageAtRegistration"|get_message:locale|default:"en"}}
+                </th>
+                <th class="normal" rowspan="2">{{"mdrtb.tb03.dateOfBirth"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.oblast"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.district"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.facility"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.tb03.address"|get_message:locale|default:"en"}}</th>
+
+                <th class="normal" rowspan="2">
+                    <div><span>{{"mdrtb.pregnant"|get_message:locale|default:"en"}}</span></div>
+                </th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.locationType"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">
+                    <div><span>{{"mdrtb.form89.profession"|get_message:locale|default:"en"}}</span></div>
+                </th>
+                <th class="normal" rowspan="2" rowspan="2">
+                    {{"mdrtb.form89.populationCategory"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.countryOfOrigin"|get_message:locale|default:"en"}}
+                </th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.placeOfDetection"|get_message:locale|default:"en"}}
+                </th>
+                <th class="normal" rowspan="2">
+                    {{"mdrtb.form89.dateFirstSeekingHelp"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">
+                    {{"mdrtb.form89.circumstancesOfDetection"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.cityOfOrigin"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.dateOfReturn"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.methodOfDetection"|get_message:locale|default:"en"}}
+                </th>
+                <th class="normal" rowspan="2">
+                    {{"mdrtb.form89.otherMethodOfDetection"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.tb03.siteOfDisease"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.eptbSite"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.eptbLocation"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.ptbSite"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.presenceOfDecay"|get_message:locale|default:"en"}}
+                </th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.dateOfDecaySurvey"|get_message:locale|default:"en"}}
+                </th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.complication"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1" colspan="4">{{"mdrtb.smear"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1" colspan="4">{{"mdrtb.tb03.genexpert"|get_message:locale|default:"en"}}
+                </th>
+                <th class="normal" rowspan="1" colspan="6">{{"mdrtb.hain"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1" colspan="6">{{"mdrtb.hain2"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1" colspan="10">
+                    {{"mdrtb.form89.comorbidities"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.cmacDate"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.cmacNumber"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.prescribedTreatment"|get_message:locale|default:"en"}}
+                </th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.placeOfCommission"|get_message:locale|default:"en"}}
+                </th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.nameOfDoctor"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">&nbsp;</th>
+
+            </tr>
+            <tr>
+                <th class="normal" rowspan="1">{{"mdrtb.result"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.date"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.lab"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.tb03.testNumber"|get_message:locale|default:"en"}}</th>
+
+                <th class="normal" rowspan="1">{{"mdrtb.tb03.xpertResult"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.date"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.lab"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.tb03.testNumber"|get_message:locale|default:"en"}}</th>
+
+                <th class="normal" rowspan="1">{{"mdrtb.tb03.hainCultureResult"|get_message:locale|default:"en"}}
+                </th>
+                <th rowspan="1">{{"mdrtb.tb03.hResult"|get_message:locale|default:"en"}}</th>
+                <th rowspan="1">{{"mdrtb.tb03.rResult"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.date"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.lab"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.tb03.testNumber"|get_message:locale|default:"en"}}</th>
+
+                <th class="normal" rowspan="1">{{"mdrtb.tb03.hainCultureResult"|get_message:locale|default:"en"}}
+                </th>
+                <th class="normal" rowspan="1">{{"mdrtb.tb03.iResult"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.tb03.fResult"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.date"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.lab"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.tb03.testNumber"|get_message:locale|default:"en"}}</th>
+
+                <th class="normal" rowspan="1">{{"mdrtb.form89.diabetes"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.form89.cnsdl"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.form89.htHeartDisease"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.form89.ulcer"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.form89.mentalDisorder"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.form89.ibc20"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.form89.cancer"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.form89.hepatitis"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.form89.kidneyDisease"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="1">{{"mdrtb.form89.otherDisease"|get_message:locale|default:"en"}}</th>
+
+            </tr>
+
+            {% for row in patientSet %}
+            <tr {% if forloop.counter|divisibleby:2 %} bgcolor="#D3D3D3" {% endif %}>
+                <td>
+                    <div><span>{{ row.identifier }}</span></div>
+                </td>
+                <td>{{ row.tb03RegistrationDate }}</td>
+                <td>{{ row.personName.familyName }}, {{ row.personName.givenName }}</td>
+                <td align="center">{{ row.gender }}</td>
+                <td align="center">{{row.ageAtTB03Registration }}</td>
+                <td>{{ row.dateOfBirth }}</td>
+                <td>{{ row.personAddress.stateProvince }} {{ row.personAddress.cityVillage|default:'' }}</td>
+                <td>{{ row.personAddress.countyDistrict }}</td>
+                <td>{{ row.tb03Facility }}</td>
+                <td>{{ row.personAddress.address1|default:'' }} {{ row.personAddress.address2|default:'' }}</td>
+                <td>{{ row.pregnant.display }}</td>
+                <td>{{ row.locationType.display }}</td>
+                <td>{{ row.profession.display }}</td>
+                <td>{{ row.populationCategory.display }}</td>
+                <td>{{ row.countryOfOrigin }}</td>
+                <td>{{ row.placeOfDetection.display }}</td>
+                <td>{{ row.dateFirstSeekingHelp }}</td>
+                <td>{{ row.circumstancesOfDetection.display }}</td>
+                <td>{{ row.cityOfOrigin }}</td>
+                <td>{{ row.dateOfReturn }}</td>
+                <td>{{ row.methodOfDetection.display }}</td>
+                <td>{{ row.otherMethodOfDetection }}</td>
+                <td>{{ row.anatomicalSite.display }}</td>
+                <td>{{ row.eptbSite.display }}</td>
+                <td>{{ row.eptbLocation.display }}</td>
+                <td>{{ row.ptbLocation.display }}</td>
+                <td>{{ row.presenceOfDecay.display }}</td>
+                <td>{{ row.dateOfDecaySurvey }}</td>
+                <td>{{ row.complication }}</td>
+
+                <td align="center">{{row.diagnosticSmearResult }}</td>
+                <td>{{row.diagnosticSmearDate }}</td>
+                <td>{{row.diagnosticSmearLab }}</td>
+                <td>{{row.diagnosticSmearTestNumber }}</td>
+
+                <td align="center">{{row.xpertMTBResult }} </td>
+                <td>{{row.xpertTestDate }}</td>
+                <td>{{row.xpertLab }}</td>
+                <td>{{row.xpertTestNumber }}</td>
+
+                <td align="center">{{row.hainMTBResult }}</td>
+                <td align="center">{{row.hainINHResult }}</td>
+                <td align="center">{{row.hainRIFResult }}</td>
+                <td align="center">{{row.hainTestDate }} </td>
+                <td>{{row.hainLab }}</td>
+                <td>{{row.hainTestNumber }}</td>
+
+                <td align="center">{{row.hain2MTBResult }}</td>
+                <td align="center">{{row.hain2InjResult }}</td>
+                <td align="center">{{row.hain2FqResult }}</td>
+                <td align="center">{{row.hain2TestDate }} </td>
+                <td>{{row.hain2Lab }}</td>
+                <td>{{row.hain2TestNumber }}</td>
+
+                <td>{{ row.diabetes.display }}</td>
+                <td>{{ row.cnsdl.display }}</td>
+                <td>{{ row.htHeartDisease.display }}</td>
+                <td>{{ row.ulcer.display }}</td>
+                <td>{{ row.mentalDisorder.display }}</td>
+                <td>{{ row.ibc20.display }}</td>
+                <td>{{ row.cancer.display }}</td>
+                <td>{{ row.hepatitis.display }}</td>
+                <td>{{ row.kidneyDisease.display }}</td>
+                <td>{{ row.otherDisease }}</td>
+                <td>{{row.cmacDate }} </td>
+                <td>{{row.cmacNumber }} </td>
+                <td>{{row.prescribedTreatment.display }} </td>
+                <td>{{row.placeOfCommission.display }} </td>
+                <td>{{row.nameOfDoctor }} </td>
+                <td>
+                    <a target="_blank" href="{{ pageContext.request.contextPath }}/patient/{{ row.patientUuid }}/enrolledprograms">
+                        {{"mdrtb.view"|get_message:locale|default:"en"}}
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        {% if locale == 'tj' %}</font>{% endif %}
+    </div>
+    <input id="exportButton" type="button" onclick="tableToExcel('f89', 'Form89')"
+           value="{{'mdrtb.exportToExcelBtn'|get_message:locale|default:"en"}}" />
+    <input id="printButton" type="button" onclick="printForm()"
+           value="{{'mdrtb.print'|get_message:locale|default:"en"}}" />
+    <button id="saveButton" onclick="saveHtml('f89', 'Form89', 'DOTSTB')">{{'mdrtb.save'|get_message:locale|default:"en"}}</button>
+    <a href="/" type="button" id="back" name="back">{{'mdrtb.back'|get_message:locale|default:"en"}}</a>
+    <script>
+        if ("{{ reportStatus }}" === "true") {
+            document.getElementById("saveButton").disabled = true;
+        } else {
+            document.getElementById("saveButton").disabled = false;
+        }
+    </script>
+
+</div>
+{% endblock %}

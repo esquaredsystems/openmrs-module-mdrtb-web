@@ -1,0 +1,581 @@
+﻿{% extends 'app/base/base.html' %}
+
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+
+{%block content%}
+
+<div class="flex flex-col space-y-6 m-6 relative">
+  <section hidden id="modal"
+    class="flex flex-col justify-center transition-opacity ease-in-out duration-500 opacity-0 backdrop-blur-3xl inset-0 z-50 shadow-2xl  m-10  bg-white w-3/5 mx-auto p-8 absolute top-0 left-0 right-0 bottom-0 h-min">
+    <div class="flex items-center justify-between ">
+      <h3 id="modal-testType" class="text-3xl">Lab Results</h3>
+      <svg id="close-modal" onclick="closeModal()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+        stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white bg-red-700 cursor-pointer">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </div>
+    <div class="m-4">
+      <div id="resultsbox" class="grid grid-cols-1 space-y-4 h-min w-full bg-gray-200 p-4 rounded-md shadow-md">
+        <div class="search-result-items font-bold w-full">
+          <p class="col-span-2">Name</p>
+          <p>Group Name</p>
+          <p>Result</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% include 'app/components/patient_banner.html' %}
+  <div class="m-4">
+    {% include 'app/components/breadcrumbs.html'%}
+  </div>
+
+  {% if patient_dashboard_view_overview_section_privilege %}
+  <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
+    <div class="flex items-center space-x-4">
+      <h2 class="text-[#2D9CDB] text-3xl font-bold">
+        {% if program.program.name|lower == 'dots program' %}
+            {{'mdrtb.program.dots'|get_message:locale|default:"en"}}
+        {% else %}
+            {{'mdrtb.program.mdrtb'|get_message:locale|default:"en"}}
+        {% endif %}
+      </h2>
+    </div>
+    <div class="ml-4 grid grid-cols-2 gap-3">
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.enrollment.date'|get_message:locale|default:"en"}}: </span><span
+          class="tb03-form-label">{{program.dateEnrolled | iso_to_normal_date}}</span>
+      </div>
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.enrollment.location'|get_message:locale|default:"en"}}: </span><span
+          class="tb03-form-label">{{program.location.name}}</span>
+      </div>
+      {% for state in program.states %}
+        {% if not mdrtb %}
+          {% if state.uuid == "TB_TREATMENT_OUTCOME"|get_concept %}
+            {% if treatment_outcome %}
+              <div class="space-x-3">
+                <span class="font-bold">{{state.concept}}: </span>
+                <span class="tb03-form-label">{{treatment_outcome}}</span>
+              </div>
+            {% else %}
+              <div class="space-x-3">
+                <span class="font-bold">{{state.concept}}: </span>
+                {% if state.answer.concept %}
+                  <span class="tb03-form-label">{{state.answer.concept.name}}</span>
+                {% else %}
+                  <span class="tb03-form-label">None</span>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% else %}
+            <div class="space-x-3">
+              <span class="font-bold">{{state.concept}}: </span>
+              {% if state.answer.concept %}
+                <span class="tb03-form-label">{{state.answer.concept.name}}</span>
+              {% else %}
+                <span class="tb03-form-label">None</span>
+              {% endif %}
+            </div>
+          {% endif %}
+      {% else %}
+        {% if state.uuid == "MDR_TB_TREATMENT_OUTCOME"|get_concept %}
+          {% if treatment_outcome %}
+            <div class="space-x-3">
+              <span class="font-bold">{{state.concept}}: </span>
+              <span class="tb03-form-label">{{treatment_outcome}}</span>
+            </div>
+          {% else %}
+            <div class="space-x-3">
+              <span class="font-bold">{{state.concept}}: </span>
+              {% if state.answer.concept %}
+                  <span class="tb03-form-label">{{state.answer.concept.name}}</span>
+              {% else %}
+                  <span class="tb03-form-label">None</span>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% else %}
+          <div class="space-x-3">
+            <span class="font-bold">{{state.concept}}: </span>
+            {% if state.answer.concept %}
+              <span class="tb03-form-label">{{state.answer.concept.name}}</span>
+            {% else %}
+              <span class="tb03-form-label">None</span>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endif %}
+
+      {% endfor %}
+
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.completionDate'|get_message:locale|default:"en"}}: </span><span
+          class="tb03-form-label">{{program.dateCompleted | iso_to_normal_date}}</span>
+      </div>
+      <div class="space-x-3">
+        <span class="font-bold">
+          {{'Program.program'|get_message_openMRS:locale|default:"en"}}
+          {{'mdrtb.outcome'|get_message:locale|default:"en"}}: </span><span
+          class="tb03-form-label">{{program.outcome}}
+        </span>
+      </div>
+
+    </div>
+    <div class="ml-4 flex items-center space-x-4">
+      {% if not mdrtb %}
+      {% if not mdrEnrolled %}
+      <a href="{% url 'mdrtbprogramenroll' uuid=uuid %}" class="font-bold underline text-[#044062]">
+        {{'mdrtb.enrollment.enrollMdrtb'|get_message:locale|default:"en"}}
+      </a>
+      {% endif %}
+      {% endif %}
+
+      {% if not transfer_out %}
+      <a href="{% url 'transferout' patientuuid=uuid %}" class="font-bold underline text-[#044062]">
+        {{'mdrtb.transferOut'|get_message:locale|default:"en"}}
+      </a>
+      {% else %}
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.transferOut'|get_message:locale|default:"en"}}: </span>
+        <span class="tb03-form-label underline">
+          <a href="{% url 'edittransferout' patientuuid=uuid formid=transfer_out.uuid %}">
+            {{transfer_out.encounterDatetime | iso_to_normal_date}}
+            {{'mdrtb.at'|get_message:locale|default:"en"}}
+            {{transfer_out.location.name}}
+          </a>
+        </span>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+  {% endif %}
+  {% if patient_dashboard_view_forms_section_privilege %}
+  {% if view_encounters_privilege %}
+  <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
+    <div class="flex items-center space-x-2">
+      <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.forms'|get_message:locale|default:"en"}}
+      </h2>
+      {% if add_encounters_privilege %}
+      <div class="relative" data-te-dropdown-ref>
+        {% if not mdrtb %}
+        {% if not forms.tb03s or not forms.form89s %}
+        <button
+          class="cancel-button flex items-center space-x-2 rounded px-6 pt-2.5 pb-2 text-sm font-bold transition duration-150 ease-in-out"
+          type="button" id="dropdownDotsReports" data-te-dropdown-toggle-ref aria-expanded="false">
+          {{'mdrtb.add'|get_message:locale|default:"en"}} {{'mdrtb.new'|get_message:locale|default:"en"}}
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="ml-2 w-3 h-3 text-black">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+          </svg>
+        </button>
+        {% endif %}
+        {% else %}
+        <button
+          class="cancel-button flex items-center space-x-2 rounded px-6 pt-2.5 pb-2 text-sm font-bold transition duration-150 ease-in-out"
+          type="button" id="dropdownDotsReports" data-te-dropdown-toggle-ref aria-expanded="false">
+          {{'mdrtb.add'|get_message:locale|default:"en"}} {{'mdrtb.new'|get_message:locale|default:"en"}}
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="ml-2 w-3 h-3 text-black">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+          </svg>
+        </button>
+        {% endif %}
+        {% if not mdrtb %}
+        <ul class="tw-dropdown-item-list" aria-labelledby="formsdropdown" data-te-dropdown-menu-ref>
+          {% if not forms.tb03s %}
+          <li data-te-dropdown-item-ref>
+            <a class="tw-dropdown-item"
+              href="{% url 'tb03' uuid=uuid %}">{{'mdrtb.tb03'|get_message:locale|default:"en"}}</a>
+          </li>
+          {% endif %}
+          {% if not forms.form89s %}
+          <li data-te-dropdown-item-ref>
+            <a class="tw-dropdown-item"
+              href="{% url 'form89' uuid=uuid %}">{{'mdrtb.form89'|get_message:locale|default:"en"}}</a>
+          </li>
+          {% endif %}
+
+        </ul>
+        {% else %}
+        <ul class="tw-dropdown-item-list" aria-labelledby="formsdropdown" data-te-dropdown-menu-ref>
+          {% if not forms.tb03us %}
+          <li data-te-dropdown-item-ref>
+            <a class="tw-dropdown-item" href="{% url 'tb03u' uuid=uuid  %}">
+              {{'mdrtb.tb03u'|get_message:locale|default:"en"}}</a>
+          </li>
+          {% endif %}
+
+          <li data-te-dropdown-item-ref>
+            <a class="tw-dropdown-item" href="{% url 'drugresistanse' patientid=uuid  %}">
+              {{'mdrtb.drdt'|get_message:locale|default:"en"}}</a>
+          </li>
+
+
+
+        </ul>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+    {% if not mdrtb %}
+    <div class="ml-4 grid grid-cols-2 gap-3">
+      {% for tb03 in forms.tb03s %}
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.tb03'|get_message:locale|default:"en"}}: </span><a
+          class="tb03-form-label underline" href="{% if edit_encounters_privilege %}
+          {% url 'edittb03' uuid=uuid formid=tb03.uuid %}
+          {% else %} # {% endif %}">
+          {{tb03.encounterDatetime | iso_to_normal_date}}
+          {{'mdrtb.at'|get_message:locale|default:"en"}}
+          {{tb03.location.name}}</a>
+      </div>
+      {% endfor %}
+      {% for form89 in forms.form89s %}
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.form89'|get_message:locale|default:"en"}}: </span><a
+          class="tb03-form-label underline"
+          href="{% if edit_encounters_privilege %}{% url 'editform89' uuid=uuid formid=form89.uuid %}{% else %} # {% endif %}">
+          {{form89.encounterDatetime | iso_to_normal_date}}
+          {{'mdrtb.at'|get_message:locale|default:"en"}}
+          {{form89.location.name}}</a>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="ml-4 grid grid-cols-2 gap-3">
+      {% for tb03u in forms.tb03us %}
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.tb03u'|get_message:locale|default:"en"}}: </span><a
+          class="tb03-form-label underline"
+          href="{% if edit_encounters_privilege %}{% url 'edittb03u' uuid=uuid formid=tb03u.uuid %}{% else %} # {% endif %}">
+          {{tb03u.encounterDatetime | iso_to_normal_date}}
+          {{'mdrtb.at'|get_message:locale|default:"en"}}
+          {{tb03u.location.name}}</a>
+      </div>
+      {% endfor %}
+      {% for drug_res in forms.drug_resistance_forms %}
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.drdt'|get_message:locale|default:"en"}}: </span><a
+          class="tb03-form-label underline"
+          href="{% if edit_encounters_privilege %}{% url 'editdrugresistanse' patientid=uuid formid=drug_res.uuid %}{% else %} # {% endif %}">
+          {{drug_res.encounterDatetime | iso_to_normal_date}}
+          {{'mdrtb.at'|get_message:locale|default:"en"}}
+          {{drug_res.location.name}}</a>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+  {% endif %}
+  {% if view_commonlabtest_results_privilege %}
+  <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
+    <div class="flex items-center justify-between space-x-4">
+      <div class="flex-center space-x-2">
+        <h2 class="text-[#2D9CDB] text-3xl font-bold">
+          {{'mdrtb.lab'|get_message:locale|default:"en"}}
+          {{'Order.header'|get_message_openMRS:locale|default:"en"}}
+        </h2>
+        <a href="{% url 'managetestorders' uuid=uuid %}" class="cancel-button">
+          {{'general.view'|get_message_openMRS:locale|default:"en"}}
+          {{'mdrtb.all'|get_message:locale|default:"en"}}
+          {{'Order.header'|get_message_openMRS:locale|default:"en"}}
+        </a>
+        <a href="{% url 'addlabtest' uuid=uuid %}" class="cancel-button text-sm">
+          {{'general.add'|get_message_openMRS:locale|default:"en"}}
+          {{'general.new'|get_message_openMRS:locale|default:"en"}}
+        </a>
+      </div>
+
+    </div>
+    <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
+      <div class="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
+        <table class="min-w-full leading-normal">
+          <thead>
+            <tr>
+              <th
+                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                {{'commonlabtest.labTestType'|get_message:locale|default:"en"}}
+              </th>
+              <th
+                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                {{'ConceptProposal.encounter'|get_message_openMRS:locale|default:"en"}}
+              </th>
+              <th
+                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                {{'commonlabtest.order.labReferenceNo'|get_message:locale|default:"en"}}
+              </th>
+
+              <th
+                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                {{'ActiveLists.actions'|get_message_openMRS:locale|default:"en"}}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for lab_result in lab_results %}
+            <tr>
+              <td class="px-5 border-b border-gray-200 bg-white text-sm">{{lab_result.labTestType.name}}</td>
+              <td class="px-5 border-b border-gray-200 bg-white text-sm">
+                {{lab_result.order.encounter.display|get_encounter_name}}
+              </td>
+              <td class="px-5 border-b border-gray-200 bg-white text-sm">
+                {{lab_result.labReferenceNumber}}
+
+              </td>
+              <td id="accordion{{forloop.counter}}" class="px-5 py-5 border-b w-1/5 border-gray-200 bg-white text-sm">
+                <div class="flex space-x-4">
+                  <div onclick="showResults(this,'{{lab_result.uuid}}')" id="heading{{forloop.counter}}"
+                    data-attributes="{{lab_result.attributes}}" data-te-collapse-init
+                    data-te-target="#collapse{{forloop.counter}}" aria-expanded="false"
+                    aria-controls="collapse{{forloop.counter}}">
+                    <svg id="detail-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                      stroke-width="1.5" stroke="currentColor" class="w-5 h-5 hover:text-blue-500 cursor-pointer">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                  <a href="{% url 'editlabtest' orderid=lab_result.uuid patientid=uuid %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                    </svg>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="4" class="px-4 text-black w-full">
+                <div class="hidden" id="collapse{{forloop.counter}}" data-te-collapse-item
+                  aria-labelledby="heading{{forloop.counter}}" data-te-parent="#accordion{{forloop.counter}}">
+                  <div>
+                    <div id="{{lab_result.uuid}}groups" class="py-4 w-full grid grid-cols-2 gap-2">
+                      <div class="w-full bg-white p-2">
+                        <h1 class="font-bold text-lg text-center">Common</h1>
+                        <div id="{{lab_result.uuid}}common"
+                          class="grid grid-cols-2 place-items-center justify-items-center p-2 w-full">
+                          <div class="border p-2 border-gray-200 font-bold w-full">
+                            {{'ConceptProposal.obs'|get_message_openMRS:locale|default:"en"}}</div>
+                          <div class="border p-2 border-gray-200 font-bold w-full">
+                            {{'general.value'|get_message_openMRS:locale|default:"en"}}</div>
+
+
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+  {% endif %}
+  {% if mdrtb %}
+  {% if view_encounters_privilege %}
+  <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
+    <div class="flex items-center space-x-4">
+      <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.pv.regimens'|get_message:locale|default:"en"}}
+      </h2>
+      {% if add_encounters_privilege %}
+      <a href="{% url 'regimen' patientid=uuid %}" class="text-[#044062] font-bold underline p-2">
+        {{'mdrtb.add'|get_message:locale|default:"en"}} {{'mdrtb.new'|get_message:locale|default:"en"}}
+      </a>
+      {% endif %}
+    </div>
+    <div class="ml-4 grid grid-cols-2 gap-3">
+      {% for regimen in forms.regimens %}
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.pv.regimen'|get_message:locale|default:"en"}}: </span><a
+          class="tb03-form-label underline"
+          href="{% if edit_encounters_privilege %}{% url 'editregimen' patientid=uuid formid=regimen.uuid %}{% else %} # {% endif %}">
+          {{regimen.encounterDatetime | iso_to_normal_date}}
+          {{'mdrtb.at'|get_message:locale|default:"en"}}
+          {{regimen.location.name}}</a>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+  <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4 mb-6">
+    <div class="flex-column-center space-y-4">
+      <div class="flex items-center space-x-4">
+        <h2 class="text-[#2D9CDB] text-3xl font-bold">{{'mdrtb.pv.pv'|get_message:locale|default:"en"}}
+        </h2>
+        {% if add_encounters_privilege %}
+        <a href="{% url 'adverseevents' patientid=uuid %}" class="text-[#044062] font-bold underline p-2">
+          {{'mdrtb.add'|get_message:locale|default:"en"}} {{'mdrtb.new'|get_message:locale|default:"en"}}
+        </a>
+        {% endif %}
+      </div>
+      <div class="ml-4 grid grid-cols-2 gap-3">
+        {% for ae in forms.aes %}
+        <div class="space-x-3">
+          <span class="font-bold">
+            {{ae.symptom}}
+            {{'mdrtb.pv.aeForm'|get_message:locale|default:"en"}}: </span><a class="tb03-form-label underline"
+            href="{% if edit_encounters_privilege %}{% url 'editadverseevents' patientid=uuid formid=ae.form.uuid %}{% else %} # {% endif %}">
+            {{ae.form.encounterDatetime | iso_to_normal_date}}
+            {{'mdrtb.at'|get_message:locale|default:"en"}}
+            {{ae.form.location}}</a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+  {% endif %}
+  {% endif %}
+
+</div>
+
+<script>
+  let itemsAppended = {}
+  const stringToJson = (string) => {
+    if (string.length === 0) {
+      return [];
+    }
+    console.log(string.length);
+    return JSON.parse(
+      string.replace(/'/g, '"')
+        .replace(/None/g, 'null')
+        .replace(/True/g, 'true')
+        .replace(/False/g, 'false'))
+  }
+  const showResults = (element, uuid) => {
+    if (itemsAppended[uuid]) {
+      return;
+    }
+    let attributes = stringToJson($(element).data('attributes'))
+    console.log(attributes)
+    let groups = []
+    let groupHasAttributes = {}
+    for (attribute of attributes) {
+      if (attribute.attributeType.group != null) {
+        if (attribute.valueReference) {
+          groupHasAttributes[attribute.attributeType.group] = true
+        }
+        groups.push(attribute.attributeType.group)
+      }
+    }
+    console.log(groupHasAttributes)
+    let duplicatesRemovedGroups = [...new Set(groups)];
+    if (duplicatesRemovedGroups.length === 0) {
+      $(`#${uuid}groups`).removeClass('grid-cols-2').addClass('grid-cols-1')
+    }
+    for (group of duplicatesRemovedGroups) {
+      if (groupHasAttributes[group]) {
+        $(`#${uuid}groups`).append(
+          `
+          <div class="w-full bg-white p-2">
+            <h1 class="font-bold text-lg text-center">${group}</h1>
+            <div id="${uuid}${group.toLowerCase()}"
+              class="grid grid-cols-2 place-items-center justify-items-center  p-2">
+              <div class="border p-2 border-gray-200 font-bold w-full">{{'ConceptProposal.obs'|get_message_openMRS:locale|default:"en"}}</div>
+              <div class="border p-2 border-gray-200 font-bold w-full">{{'general.value'|get_message_openMRS:locale|default:"en"}}</div>
+            </div>
+          </div>
+          `
+        )
+      }
+    }
+    for (attribute of attributes) {
+      if (attribute.attributeType.group === null) {
+        if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.ConceptDatatype") {
+          if (attribute.valueReference) {
+            for (answer of attribute.attributeType.answers) {
+              if (answer.uuid === attribute.valueReference) {
+                $(`#${uuid}common`).append(
+                `
+                <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+                <div class="border w-full h-full p-2 border-gray-200">${answer.display}</div>
+                `
+                )
+                break;
+              }
+            }
+          }
+        } else if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.BooleanDatatype") {
+          $(`#${uuid}common`).append(
+            `
+            <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+            <div class="border w-full h-full p-2 border-gray-200">${attribute.valueReference === 'on' ? 'True' : 'False'}</div>
+            `
+          )
+        }
+        else {
+          if (attribute.valueReference != null && attribute.valueReference.length > 0) {
+            $(`#${uuid}common`).append(
+              `
+              <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+              <div class="border w-full p-2 h-full border-gray-200">${attribute.valueReference}</div>
+              `
+            )
+          }
+        }
+      } else {
+        if (attribute.attributeType.datatype === "org.openmrs.customdatatype.datatype.ConceptDatatype") {
+          if (attribute.valueReference) {
+            for (answer of attribute.attributeType.answers) {
+              if (answer.uuid === attribute.valueReference) {
+                $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
+                  `
+                  <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
+                  <div class="border w-full h-full p-2 border-gray-200">${answer.display}</div>
+                  `
+                )
+                break;
+              }
+            }
+          }
+        } else {
+          if (attribute.valueReference != null && attribute.valueReference.length > 0) {
+            $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
+              `
+              <div class="border w-full h-full p-2 border-gray-200 ">${attribute.attributeType.name}</div>
+              <div class="border w-full h-full p-2 border-gray-200">${attribute.valueReference}</div>
+              `
+            )
+          }
+        }
+      }
+    }
+    itemsAppended[uuid] = true;
+
+    if ($(`#${uuid}common`).children().length <= 2) {
+      $(`#${uuid}common`).parent().remove();
+    }
+    $(`#${uuid}groups`).children().each((index, child) => {
+      if ($(child).children(1).children(1).length <= 2) {
+        $(child).parent().html(
+        `<div class="w-full bg-white p-2"><h1 class="font-bold text-lg text-center">{{'commonlabtest.result.notFound'|get_message:locale|default:"en"}}</h1></div>`);
+      }
+    });
+    if ($(`#${uuid}groups`).children().length === 0) {
+      $(`#${uuid}groups`).append(
+        `<div class="w-full bg-white p-2"><h1 class="font-bold text-lg text-center">No results found</h1></div>`)
+    }
+    if ($(`#${uuid}groups`).children().length === 1) {
+      $(`#${uuid}groups`).removeClass('grid-cols-2').addClass('grid-cols-1')
+    } else {
+      $(`#${uuid}groups`).removeClass('grid-cols-1').addClass('grid-cols-2')
+    }
+  }
+
+</script>
+
+{% endblock %}

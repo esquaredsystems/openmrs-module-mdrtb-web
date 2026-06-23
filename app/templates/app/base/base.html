@@ -1,0 +1,249 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>{% block title %}{{title}}{% endblock %}</title>
+	<link rel="icon" type="image/png" href="{% static 'app/imgs/cropped-OpenMRS-App-Logo-192x192.png' %}">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" href="{% static 'app/css/styles.css' %}">
+	<link rel="stylesheet" href="{% static 'app/css/bootstrap.min.css' %}">
+	<link rel="stylesheet" href="{% static 'app/css/select2.min.css' %}">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+	<script type="text/javascript" src="{% static 'app/js/index.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'app/js/jquery.js' %}"></script>
+	<script type="text/javascript" src="{% static 'app/js/export_to_excel.full.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'app/js/lordicon.js' %}"></script>
+	<script type="text/javascript" src="{% static 'app/js/select2.min.js' %}"></script>
+
+	<!--	<link rel="icon" type="image/png"-->
+	<!--		href="https://openmrs.org/wp-content/uploads/2021/07/cropped-OpenMRS-App-Logo-192x192.png">-->
+	<!--	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet">-->
+	<!--	<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.1.js"></script>-->
+	<!--	<script src="https://cdn.lordicon.com/lordicon.js"></script>-->
+	<!--	<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />-->
+	<!--	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>-->
+
+</head>
+
+<style>
+	.responsive {
+		width: 100%;
+	}
+	@media screen and (min-width: 840px) {
+		.responsive {
+			width: 50%;
+		}
+	}
+	.required:after {
+		content: " *";
+		color: red;
+	}
+	input:-webkit-autofill,
+	input:-webkit-autofill:focus {
+		transition: background-color 600000s 0s, color 600000s 0s;
+	}
+	input[data-autocompleted] {
+		background-color: transparent !important;
+	}
+</style>
+
+<body>
+	{% include 'app/components/header.html' %}
+	{% if messages %}
+	{% for message in messages %}
+	{% if message.tags %}
+
+	<div class="left-0 animate-bounce transition-all duration-200 flex justify-center items-center space-x-2
+		alert 
+		{% if message.tags == 'error' %}
+        alert-danger 
+        {% elif message.tags == 'success' %}
+        alert-success  alert-er
+        {% elif message.tags == 'warning' %}
+        alert-warning  alert-er
+        {% elif message.tags == 'info' %}
+        alert-info  alert-er
+        {% endif %} 
+		m-4 w-fit space-x-4 ">
+		<div>
+			{% if message.tags == 'error' %}
+			<svg onclick="closeError()" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+				class="w-6 h-6 cursor-pointer">
+				<path fill-rule="evenodd"
+					d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z"
+					clip-rule="evenodd" />
+			</svg>
+
+			{% elif message.tags == 'success' %}
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+				<path fill-rule="evenodd"
+					d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z"
+					clip-rule="evenodd" />
+			</svg>
+			{% elif message.tags == 'warning' %}
+			<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" viewBox="0 0 16 16" role="img"
+				aria-label="Warning:">
+				<path
+					d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+			</svg>
+			{% elif message.tags == 'info' %}
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+				<path fill-rule="evenodd"
+					d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z"
+					clip-rule="evenodd" />
+			</svg>
+
+			{% endif %}
+		</div>
+
+		<div>{{message}}</div>
+
+	</div>
+	<script>
+		function closeError() {
+			$('.alert-danger').removeClass('left-0')
+			$('.alert-danger').addClass('-left-40')
+			$('.alert-danger').remove()
+		}
+		$('.alert-er').each(() => {
+			setTimeout(() => {
+				$('.alert-er').removeClass('left-0')
+				$('.alert-er').addClass('-left-40')
+
+			}, 2000)
+			setTimeout(() => {
+				$('.alert-er').remove()
+			}, 2100)
+		})
+	</script>
+
+	{% endif %}
+	{% endfor %}
+	{% endif %}
+
+	<div class="scrollbar-hide">
+		{%block content%}
+		{% endblock %}
+	</div>
+	<script>
+		let locationByUuids;
+		const getLocations = async () => {
+			await $.ajax(
+				{
+					url: "{% url 'locations' %}",
+					method: 'GET',
+					success: (locations) => {
+						if (locations) {
+							locationByUuids = locations.reduce((acc, location) => {
+								acc[location.uuid] = location;
+								return acc;
+							}, {});
+
+							locations.forEach(location => {
+								if (location.level === "region".toUpperCase()) {
+									$('#region-select').append(`<option value=${location.uuid}>${location.name}</option>`)
+								}
+							})
+							$("#region-select").prop("disabled", false);
+							$("#region-select").prop("title", "");
+						}
+					},
+					error: (err) => { }
+				}
+			)
+		}
+		if ($("#locations-container").length > 0) {
+			try {
+				$("#region-select").prop("disabled", true);
+				$("#region-select").prop("title", "Fetching Locations");
+				getLocations()
+			} catch (error) {
+				console.log(error)
+			}
+		}
+		let clearSubregions = () => {
+			$('#subregion-container') && $('#subregion-container').addClass('hidden')
+			$("#subregion-select").html(`<option value="">Select</option>`)
+		}
+		const clearDistrictsAndFacilities = () => {
+			$('#district-select').prop('disabled', true)
+			$('#district-select').prop('required', false)
+			$("#district-select").html(`<option value="">Select</option>`)
+			$('#facility-select').prop('disabled', true)
+			$('#facility-select').prop('required', false)
+			$("#facility-select").html(`<option value="">Select</option>`)
+		}
+		const insertchildren = (selectedLocation, insertInto, level) => {
+			const selectedRegion = $('#region-select').val()
+			const districts = locationByUuids[selectedRegion]['children'].length > 0 ? locationByUuids[selectedRegion]['children'] : []
+			if (districts.length > 0) {
+				for (district of districts) {
+					if (district.uuid === selectedLocation && district.children.length > 0) {
+						for (facility of district.children) {
+							$(insertInto).prop('disabled', false)
+							if (facility.level === level.toUpperCase()) {
+								$(insertInto).append(`<option value=${facility.uuid}>${facility.name}</option>`)
+							}
+						}
+					}
+				}
+			}
+		}
+		const clearFacilities = () => {
+			$('#facility-select').prop('disabled', true)
+			$('#facility-select').prop('required', false)
+			$("#facility-select").html(`<option value="">Select</option>`)
+		}
+		$('#region-select').change(region => {
+			clearDistrictsAndFacilities()
+			clearSubregions()
+			const children = locationByUuids[region.target.value]['children']
+			if (children.length > 0) {
+				for (district of children) {
+					if (district.level === 'district'.toUpperCase()) {
+						$('#district-select').prop('disabled', false)
+						$('#district-select').append(`<option value=${district.uuid}>${district.name}</option>`)
+					}
+					if (district.level === 'subregion'.toUpperCase()) {
+						$('#subregion-container').removeClass('hidden')
+						$('#subregion-select').prop('disabled', false)
+						$('#subregion-select').append(`<option value=${district.uuid}>${district.name}</option>`)
+					}
+				}
+			}
+		})
+		$('#district-select').change(selectedDistrict => {
+			const districtUuid = selectedDistrict.target.value;
+			const selectedRegion = $('#region-select').val();
+			// If "Dushanbe" region is selected
+			if (selectedRegion === '82be00a0-894b-42aa-812f-428f23e9fd7a' ) {
+				clearFacilities(); // Clear existing facility options
+				const selectedRegion = $('#region-select').val();
+				const districts = locationByUuids[selectedRegion]['children'];
+				if (districts.length > 0) {
+					for (district of districts) {
+						if (district.level === 'district'.toUpperCase()) {
+							insertchildren(district.uuid, '#facility-select', 'facility');
+						}
+					}
+				}
+			} else {
+				clearFacilities();
+				// Insert facilities for the selected district
+				insertchildren(districtUuid, '#facility-select', 'facility');
+			}
+		})
+		$('#subregion-select').change(selectedSubRegion => {
+			clearDistrictsAndFacilities()
+			insertchildren(selectedSubRegion.target.value, '#district-select', 'district')
+		})
+	</script>
+
+</body>
+
+
+</html>

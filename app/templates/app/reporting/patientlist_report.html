@@ -1,0 +1,36 @@
+﻿{% extends 'app/base/report_base.html' %}
+
+{% block content %}
+
+
+<div>
+    <div style="font-size: 0.75rem;">
+
+        <p class="text-xl"><b>Year:</b> {{year}}</p>
+        <p class="text-xl"><b>Location:</b> {{location}}</p>
+        {% if month %}
+        <p><b>Month:</b> {{month}}</p>
+        {% elif quarter %}
+        <p><b>Quarter:</b> {{quarter}}</p>
+        {% endif %}
+        <p><b>List:</b> {{listname}}</p>
+    </div>
+    <div id="patientlist">{{ string_data|safe }}</div>
+
+    <input id="exportButton" type="button" onclick="tableToExcel('patientlist', 'Patient List')"
+           value="{{'mdrtb.exportToExcelBtn'|get_message:locale|default:"en"}}" />
+    <input id="printButton" type="button" onclick="printForm()"
+           value="{{'mdrtb.print'|get_message:locale|default:"en"}}" />
+    <button id="saveButton" onclick="saveHtml('patientlist', 'Patient List', 'DOTSTB')">{{'mdrtb.save'|get_message:locale|default:"en"}}</button>
+    <a href="/" type="button" id="back" name="back">{{'mdrtb.back'|get_message:locale|default:"en"}}</a>
+    <script>
+        if ("{{ reportStatus }}" === "true") {
+            document.getElementById("saveButton").disabled = true;
+        } else {
+            document.getElementById("saveButton").disabled = false;
+        }
+    </script>
+
+</div>
+
+{% endblock %}
