@@ -22,13 +22,10 @@ RUN pip install --upgrade pip \
 # Copy the rest of the project files
 COPY . /app
 
-# Change working directory to where manage.py is located
-WORKDIR /app/mdrtb
-
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
 # Expose port 8000 for Gunicorn
 EXPOSE 8000
 
-CMD ["gunicorn", "--workers", "2", "--bind", "0.0.0.0:8000", "mdrtb.wsgi:application"]
+CMD ["gunicorn", "--workers", "2", "--bind", "0.0.0.0:8000", "settings.wsgi:application"]
