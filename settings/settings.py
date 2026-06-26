@@ -157,6 +157,7 @@ REST_API_BASE_URL = "http://46.20.206.173:38080/openmrs/ws/rest/v1/"
 # REST_API_BASE_URL = os.getenv("REST_API_BASE_URL", "http://127.0.0.1:8080/openmrs/ws/rest/v1/")
 QUALIS_API_BASE_URL = "http://46.20.206.172:8083/QuaLIS/"
 QUALIS_API_CREDENTAILS = "username:password"
+REST_TIMEOUT = 30
 
 mimetypes.add_type("text/css", ".css", True)
 mimetypes.add_type("text/html", ".html", True)

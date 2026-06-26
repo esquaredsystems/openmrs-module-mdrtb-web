@@ -3,3 +3,6 @@ bind = "127.0.0.1:8000"
 workers = 3
 chdir = "/opt/python/mdrtb"
 module = "mdrtb.wsgi:application"
+timeout = 60
+max_requests = 1000
+max_requests_jitter = 100

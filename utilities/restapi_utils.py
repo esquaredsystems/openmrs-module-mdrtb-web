@@ -10,6 +10,7 @@ from utilities import metadata_util as mu
 from utilities import locations_util as lu
 from settings.settings import REST_API_BASE_URL
 from settings.settings import QUALIS_API_BASE_URL
+from settings.settings import REST_TIMEOUT
 from django.contrib import messages
 from django.core.cache import cache
 from utilities.exceptions import handle_rest_exceptions
@@ -39,10 +40,10 @@ def initiate_session(req, username, password):
     ).decode("ascii")
     url = REST_API_BASE_URL + "session"
     headers = {"Authorization": f"Basic {encoded_credentials}"}
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers, timeout=REST_TIMEOUT)
     if response.status_code == 200:
         if response.json()["authenticated"]:
-            logger.info("User Authenticated")
+            logger.debug("User Authenticated")
             req.session["session_id"] = response.json()["sessionId"]
             if "user" in response.json():
                 req.session["logged_user"] = response.json()
@@ -116,16 +117,17 @@ def get(req, endpoint, parameters):
         url=REST_API_BASE_URL + endpoint,
         headers=get_auth_headers(req),
         params=parameters,
+        timeout=REST_TIMEOUT,
     )
-    logger.info(f"'Making GET call to /{endpoint}'")
+    logger.debug(f"'Making GET call to /{endpoint}'")
     if response.status_code == 401:
         session_expired_msg = mu.get_global_msgs("require.login", source="OpenMRS")
         messages.info(req, session_expired_msg)
-        logger.info("Session expired")
+        logger.debug("Session expired")
         clear_session(req)
         raise Exception(session_expired_msg)
     response.raise_for_status()
-    logger.info(
+    logger.debug(
         f"GET Request successful to /{endpoint}, status: {response.status_code}"
     )
     return True, response.json()
@@ -148,17 +150,20 @@ def post(req, endpoint, data):
         post(request, "users", {"name": "John Doe", "email": "john@example.com"})
     """
     response = requests.post(
-        url=REST_API_BASE_URL + endpoint, headers=get_auth_headers(req), json=data
+        url=REST_API_BASE_URL + endpoint,
+        headers=get_auth_headers(req),
+        json=data,
+        timeout=REST_TIMEOUT,
     )
-    logger.info(f"'Making POST call to /{endpoint}'")
+    logger.debug(f"'Making POST call to /{endpoint}'")
     response.raise_for_status()
     if response.ok:
         data = response.json()
-        logger.info(f"POST Request successful, status: {response.status_code}")
+        logger.debug(f"POST Request successful, status: {response.status_code}")
         return True, data
     if response.status_code == 401:
         clear_session(req)
-    logger.info(f"'POST Request failed to /{endpoint}, status: {response.status_code}'")
+    logger.debug(f"'POST Request failed to /{endpoint}, status: {response.status_code}'")
     if "error" in response.json():
         logger.error(response.json(), exc_info=True)
         short_error_message = response.json()["error"]["message"]
@@ -189,11 +194,13 @@ def delete(req, endpoint):
          delete(request, "users/1")
     """
     response = requests.delete(
-        url=REST_API_BASE_URL + endpoint, headers=get_auth_headers(req)
+        url=REST_API_BASE_URL + endpoint,
+        headers=get_auth_headers(req),
+        timeout=REST_TIMEOUT,
     )
-    logger.info(f"'Making DELETE call to /{endpoint}'")
+    logger.debug(f"'Making DELETE call to /{endpoint}'")
     response.raise_for_status()
-    logger.info(
+    logger.debug(
         f"'DEL Request successful to /{endpoint}, status: {response.status_code}'"
     )
     return True, response
@@ -240,18 +247,18 @@ def post_lab_order(data):
     # Set the headers including Authorization with Basic Authentication
     headers = {"Authorization": f"Basic {encoded_credentials}"}
     # Make a POST request to send Lab order data to QuaLIS
-    logger.info(f"Making POST call to {url}")
-    response = requests.post(url=url, headers={}, json=data)
+    logger.debug(f"Making POST call to {url}")
+    response = requests.post(url=url, headers={}, json=data, timeout=REST_TIMEOUT)
     # Check for any errors
     response.raise_for_status()
     # If the response is successful, parse and return the response data
     if response.ok:
         # data = response.json()
-        logger.info(f"POST Request successful, status: {response.status_code}")
+        logger.debug(f"POST Request successful, status: {response.status_code}")
         return response.status_code
 
     # Log and handle errors in the response JSON
-    logger.info(f"POST Request failed to {url}, status: {response.status_code}")
+    logger.debug(f"POST Request failed to {url}, status: {response.status_code}")
     if "error" in response.json():
         logger.error(response.json(), exc_info=True)
         short_error_message = response.json()["error"]["message"]

@@ -52,7 +52,7 @@ def get_locations(req):
         try:
             locations = lu.create_location_hierarchy(req)
             if locations:
-                logger.info("Locations fetched successfully")
+                logger.debug("Locations fetched successfully")
                 return JsonResponse(locations, safe=False)
         except Exception as e:
             log_and_show_error(e, req)
@@ -101,7 +101,7 @@ def get_concepts(req, uuid=None):
 def render_login(req):
     if check_if_session_alive(req):
         redirect_page = req.session.get("redirect_url")
-        logger.info("Redirecting from login page")
+        logger.debug("Redirecting from login page")
         return redirect(redirect_page if redirect_page else "searchPatientsView")
     context = {"title": mu.get_global_msgs("auth.login", locale="ru", source="OpenMRS")}
     if req.method == "POST":

@@ -89,7 +89,7 @@ def get_all_concepts(req):
     if compressed_concepts:
         return pickle.loads(zlib.decompress(compressed_concepts))
     try:
-        logger.info(f"Fetching concepts in {req.session['locale']}")
+        logger.debug(f"Fetching concepts in {req.session['locale']}")
         status, response = ru.get(
             req,
             "concept",
