@@ -14,12 +14,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "y^ie20@y6-(23i!+m(-&*w6&#&j()5pe4k$klp6*p&95-d*x$%"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = ["*"]
+LOCAL_IP_ADDRESS = os.getenv("LOCAL_IP_ADDRESS", "127.0.0.1")
+
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
 
 # Application definition
@@ -49,7 +51,7 @@ MIDDLEWARE = [
     "app.middleware.SessionCheckMiddleware",
 ]
 
-CORS_ALLOWED_ORIGINS = ["http://46.20.206.173:38080", "http://127.0.0.1:8080"]
+CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
 
 ROOT_URLCONF = "settings.urls"
 
@@ -79,7 +81,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": os.getenv("REDIS_LOCATION", "redis://127.0.0.1:6379/1"),
+        "LOCATION": f"redis://{LOCAL_IP_ADDRESS}:6379/1",
     }
 }
 
@@ -139,16 +141,12 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
+INTERNAL_IPS = [LOCAL_IP_ADDRESS]
 
 
-# CHANGE THIS
-REST_API_BASE_URL = "http://46.20.206.173:38080/openmrs/ws/rest/v1/"
-# REST_API_BASE_URL = os.getenv("REST_API_BASE_URL", "http://127.0.0.1:8080/openmrs/ws/rest/v1/")
-QUALIS_API_BASE_URL = "http://46.20.206.172:8083/QuaLIS/"
-QUALIS_API_CREDENTAILS = "username:password"
+REST_API_BASE_URL = os.getenv("REST_API_BASE_URL", f"http://{LOCAL_IP_ADDRESS}:8080/openmrs/ws/rest/v1/")
+QUALIS_API_BASE_URL = os.getenv("QUALIS_API_BASE_URL", "http://46.20.206.172:8083/QuaLIS/")
+QUALIS_API_CREDENTAILS = os.getenv("QUALIS_API_CREDENTAILS", "username:password")
 REST_TIMEOUT = 30
 
 mimetypes.add_type("text/css", ".css", True)

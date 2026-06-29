@@ -9,7 +9,7 @@ import base64
 from utilities import metadata_util as mu
 from utilities import locations_util as lu
 from settings.settings import REST_API_BASE_URL
-from settings.settings import QUALIS_API_BASE_URL
+from settings.settings import QUALIS_API_BASE_URL, QUALIS_API_CREDENTAILS
 from settings.settings import REST_TIMEOUT
 from django.contrib import messages
 from django.core.cache import cache
@@ -243,7 +243,7 @@ def post_lab_order(data):
     # Construct the URL for the QuaLIS API endpoint
     url = QUALIS_API_BASE_URL + "externalorder/createExternalOrderOpenMrs"
     # Encode the credentials for Basic Authentication
-    encoded_credentials = base64.b64encode("username:password".encode("ascii")).decode("ascii")
+    encoded_credentials = base64.b64encode(QUALIS_API_CREDENTAILS.encode("ascii")).decode("ascii")
     # Set the headers including Authorization with Basic Authentication
     headers = {"Authorization": f"Basic {encoded_credentials}"}
     # Make a POST request to send Lab order data to QuaLIS
