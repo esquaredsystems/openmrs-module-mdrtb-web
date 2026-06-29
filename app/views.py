@@ -3008,3 +3008,26 @@ def submit_order_to_lab(req, orderid):
 #######################
 # CommonLab Views END #
 #######################
+
+
+
+##########################
+# Test-only Views (DEBUG) #
+##########################
+
+import time as _time
+from django.conf import settings as _settings
+from django.http import HttpResponse as _HttpResponse, HttpResponseForbidden as _HttpResponseForbidden
+
+
+def slow_response(request):
+    """Sleeps for ?seconds=N then returns 200. Only active when DEBUG=True."""
+    if not _settings.DEBUG:
+        return _HttpResponseForbidden("Not available in production")
+    try:
+        seconds = int(request.GET.get("seconds", 5))
+    except (ValueError, TypeError):
+        seconds = 5
+    seconds = max(0, min(seconds, 120))
+    _time.sleep(seconds)
+    return _HttpResponse(f"slept:{seconds}")

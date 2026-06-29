@@ -29,3 +29,5 @@ urllib3==2.2.3
 whitenoise
 django-cors-headers==4.2.0
 bs4
+pytest
+pytest-xdist

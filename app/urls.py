@@ -274,3 +274,9 @@ urlpatterns = [
     ),
     path("logout", views.render_logout, name="logout"),
 ]
+
+from django.conf import settings
+if settings.DEBUG:
+    urlpatterns += [
+        path("test/slow", views.slow_response, name="slowresponse"),
+    ]
