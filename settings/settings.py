@@ -82,7 +82,16 @@ CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
         "LOCATION": f"redis://{LOCAL_IP_ADDRESS}:6379/1",
-    }
+    },
+    # Holds OpenMRS reference data (concepts, locations, lab test attribute types).
+    # Kept on a separate Redis DB from "default" so clearing/flushing it can never
+    # touch session data, and vice versa. It's shared across all users and survives
+    # login/logout since none of it is session- or user-specific.
+    "metadata": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": f"redis://{LOCAL_IP_ADDRESS}:6379/2",
+        "TIMEOUT": 60 * 60,
+    },
 }
 
 

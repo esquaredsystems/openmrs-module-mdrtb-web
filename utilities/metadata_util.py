@@ -3,7 +3,7 @@ from utilities import common_utils as u
 from utilities import restapi_utils as ru
 from utilities import commonlab_util as clu
 from resources.enums.constants import Constants
-from django.core.cache import cache
+from django.core.cache import caches
 from django.utils.safestring import SafeString as ss
 from urllib.parse import urlencode
 import logging
@@ -13,6 +13,7 @@ from datetime import datetime
 
 
 logger = logging.getLogger("django")
+metadata_cache = caches["metadata"]
 
 # os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 # django.setup()
@@ -84,34 +85,48 @@ def get_global_msgs(message_code, locale=None, default=None, source=None):
         raise Exception("Please provide a valid message code")
 
 
+def _concepts_cache_key(locale):
+    return f"concepts_{locale}"
+
+
+def _get_cached_concepts(locale):
+    compressed_concepts = metadata_cache.get(_concepts_cache_key(locale))
+    if not compressed_concepts:
+        return None
+    return pickle.loads(zlib.decompress(compressed_concepts))
+
+
+def _set_cached_concepts(locale, concepts):
+    metadata_cache.set(_concepts_cache_key(locale), zlib.compress(pickle.dumps(concepts)))
+
+
 def get_all_concepts(req):
-    compressed_concepts = cache.get("concepts", [])
-    if compressed_concepts:
-        return pickle.loads(zlib.decompress(compressed_concepts))
+    locale = req.session["locale"]
+    if _get_cached_concepts(locale) is not None:
+        return
     try:
-        logger.debug(f"Fetching concepts in {req.session['locale']}")
+        logger.debug(f"Fetching concepts in {locale}")
         status, response = ru.get(
             req,
             "concept",
             {
                 "v": "custom:(uuid,display,name:(display,uuid,locale,conceptNameType),names:(display,name,uuid,locale,conceptNameType),answers:(uuid,display,name:(display,uuid,locale,conceptNameType),names:(display,uuid,locale,conceptNameType)))",
-                "lang": req.session["locale"],
+                "lang": locale,
             },
         )
 
         if status:
-            seralized_concepts = pickle.dumps(response["results"])
-            compressed_concepts = zlib.compress(seralized_concepts)
-            cache.set("concepts", compressed_concepts, timeout=None)
+            _set_cached_concepts(locale, response["results"])
     except Exception:
         pass
 
 
-def get_concept_from_cache(uuid=None, name=None):
+def get_concept_from_cache(locale, uuid=None, name=None):
     """
     Retrieves a concept from the cache based on the provided UUID.
 
     Parameters:
+    - locale (str): The locale whose cached concept list should be searched.
     - uuid (str): The UUID of the concept to retrieve.
 
     Returns:
@@ -120,15 +135,16 @@ def get_concept_from_cache(uuid=None, name=None):
              If the concept is not found, the boolean value is False and an empty dictionary is returned.
 
     Example:
-        get_concept_from_cache("abc123")
+        get_concept_from_cache("ru", "abc123")
     (True, {"uuid": "abc123", "name": "Concept Name", ...})
     """
-    concepts = pickle.loads(zlib.decompress(cache.get("concepts", [])))
+    concepts = _get_cached_concepts(locale) or []
     if name:
         for concept in concepts:
             for concept_name in concept["names"]:
                 if concept_name["locale"] == "en" and concept_name["name"] == name:
                     return bool(concept), concept
+        return False, {}
     concept = next((c for c in concepts if c["uuid"] == uuid), {})
     return bool(concept), concept
 
@@ -151,18 +167,18 @@ def get_concept(req, uuid, lang=None):
     >>> get_concept(request, "abc123")
     {"uuid": "abc123", "name": "Concept Name", ...}
     """
-
-    found, concept = get_concept_from_cache(uuid=uuid)
+    locale = req.session["locale"]
+    found, concept = get_concept_from_cache(locale, uuid=uuid)
     if found:
         return concept
     try:
         status, response = ru.get(
-            req, f"concept/{uuid}", {"lang": req.session["locale"], "v": "full"}
+            req, f"concept/{uuid}", {"lang": locale, "v": "full"}
         )
         if status:
-            concepts = cache.get("concepts", [])
+            concepts = _get_cached_concepts(locale) or []
             concepts.append(response)
-            cache.set("concepts", concepts, timeout=None)
+            _set_cached_concepts(locale, concepts)
             return response
     except Exception as e:
         raise Exception(str(e))
@@ -170,24 +186,20 @@ def get_concept(req, uuid, lang=None):
 
 def get_concept_by_search(req, query):
     try:
-        found, concept = get_concept_from_cache(uuid=None, name=query)
+        locale = req.session["locale"]
+        found, concept = get_concept_from_cache(locale, uuid=None, name=query)
         if found:
             return concept
         status, response = ru.get(
-            req, "concept", {"lang": req.session["locale"], "v": "full", "q": query}
+            req, "concept", {"lang": locale, "v": "full", "q": query}
         )
         if status:
-            compressed_concepts = cache.get("concepts", [])
-            if compressed_concepts:
-                concepts = pickle.loads(zlib.decompress(compressed_concepts))
-            else:
-                concepts = compressed_concepts
+            concepts = _get_cached_concepts(locale) or []
             for concept in response["results"]:
                 for name in concept["names"]:
                     if name["locale"] == "en" and name["name"] == query:
                         concepts.append(concept)
-                        zlib.compress(pickle.dumps(concepts))
-                        cache.set("concepts", concepts, timeout=None)
+                        _set_cached_concepts(locale, concepts)
                         return concept
 
     except Exception as e:
@@ -294,9 +306,7 @@ def get_global_properties(req, key):
         Exception: If the global property cannot be found or an error occurs.
     """
     try:
-        status, response = ru.get(
-            req, "systemsetting", {"q": key, "v": "custom:(value)"}
-        )
+        status, response = ru.get(req, "systemsetting", {"q": key, "v": "full"})
         if status:
             return response["results"][0]["value"]
     except Exception as e:

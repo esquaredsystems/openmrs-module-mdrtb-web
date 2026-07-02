@@ -3,7 +3,6 @@ from django.http import JsonResponse
 from datetime import datetime
 import utilities.restapi_utils as ru
 import utilities.metadata_util as mu
-from django.core.cache import cache
 import utilities.commonlab_util as cu
 import utilities.patient_utils as pu
 import utilities.forms_util as fu
@@ -66,7 +65,6 @@ def change_locale(req, locale):
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
     try:
         req.session["locale"] = locale
-        cache.clear()
         mu.get_all_concepts(req)
         lu.create_location_hierarchy(req)
         logged_in_user_uuid = req.session["logged_user"]["user"]["uuid"]
@@ -160,8 +158,7 @@ def render_search_patients_view(req):
             del req.session["breadcrumbs"]
         if "current_patient_program_flow" in req.session:
             del req.session["current_patient_program_flow"]
-        min_search_characters = mu.get_global_properties(req, "minSearchCharacters")
-        context["minSearchCharacters"] = min_search_characters
+        context["minSearchCharacters"] = mu.get_global_properties(req, "minSearchCharacters")
     except Exception as e:
         context["minSearchCharacters"] = 2
         log_and_show_error(e, req)
@@ -1194,7 +1191,6 @@ def render_user_profile(req):
         try:
             user_properties = req.session["logged_user"]["user"]["userProperties"]
             req.session["locale"] = req.POST["locale"]
-            cache.delete("concepts")
             mu.get_all_concepts(req)
             user_properties["defaultLocale"] = (
                 req.POST["locale"] if "locale" in req.POST else ""
@@ -1335,14 +1331,12 @@ def render_delete_transferout_form(req, formid):
 
 def render_logout(req):
     try:
-        status, _ = ru.delete(req, "session")
-        if status:
-            ru.clear_session(req)
-            return redirect("login")
+        ru.delete(req, "session")
     except Exception as e:
         log_and_show_error(e, req)
-    redirect_url = req.session.get("redirect_url") or "login"
-    return redirect(redirect_url)
+    finally:
+        ru.clear_session(req)
+    return redirect("login")
 
 def log_and_show_error(error, req):
     messages.error(req, error)

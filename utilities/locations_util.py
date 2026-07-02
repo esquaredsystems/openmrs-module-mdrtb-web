@@ -1,8 +1,10 @@
 import utilities.restapi_utils as ru
-from django.core.cache import cache
+from django.core.cache import caches
 from datetime import datetime
 from django.shortcuts import redirect
 from resources.enums.constants import Constants
+
+metadata_cache = caches["metadata"]
 
 
 def get_locations(req, uuid=None):
@@ -119,7 +121,7 @@ def create_location_hierarchy(req):
     Returns:
         list: The hierarchical structure of locations.
     """
-    locations = cache.get("locations")
+    locations = metadata_cache.get("locations")
     if locations:
         return locations
     locations = get_locations(req)
@@ -171,7 +173,7 @@ def create_location_hierarchy(req):
                     else [],
                 }
             )
-    cache.set("locations", location_hierarchy, timeout=None)
+    metadata_cache.set("locations", location_hierarchy)
     return location_hierarchy
 
 

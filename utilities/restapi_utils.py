@@ -12,7 +12,6 @@ from settings.settings import REST_API_BASE_URL
 from settings.settings import QUALIS_API_BASE_URL, QUALIS_API_CREDENTAILS
 from settings.settings import REST_TIMEOUT
 from django.contrib import messages
-from django.core.cache import cache
 from utilities.exceptions import handle_rest_exceptions
 from urllib.parse import urlencode
 import logging
@@ -52,7 +51,10 @@ def initiate_session(req, username, password):
                 "defaultLocale", "ru"
             )
             mu.get_all_concepts(req)
-            lu.create_location_hierarchy(req)
+            try:
+                lu.create_location_hierarchy(req)
+            except Exception:
+                pass
             # mu.get_all_attribute_types(req)
             return True
         else:
@@ -72,10 +74,6 @@ def clear_session(req):
     try:
         if req.path == "/logout":
             redirect_url = "/"
-            try:
-                cache.clear()
-            except Exception as cache_error:
-                logger.warning(f"Could not clear cache: {cache_error}")
         else:
             query_params = req.session.get("redirect_query_params", {})
             redirect_url = (

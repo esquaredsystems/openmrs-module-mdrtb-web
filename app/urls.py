@@ -1,7 +1,13 @@
 from django.urls import path
+from django.templatetags.static import static
+from django.views.generic.base import RedirectView
 from . import views
 
 urlpatterns = [
+    path(
+        "favicon.ico",
+        RedirectView.as_view(url=static("app/imgs/cropped-logo.png"), permanent=True,), name="favicon",
+    ),
     path("login", views.render_login, name="login"),
     path("", views.render_search_patients_view, name="searchPatientsView"),
     path("locations", views.get_locations, name="locations"),
