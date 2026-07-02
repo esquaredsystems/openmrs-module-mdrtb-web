@@ -147,7 +147,7 @@ INTERNAL_IPS = [LOCAL_IP_ADDRESS]
 REST_API_BASE_URL = os.getenv("REST_API_BASE_URL", f"http://{LOCAL_IP_ADDRESS}:8080/openmrs/ws/rest/v1/")
 QUALIS_API_BASE_URL = os.getenv("QUALIS_API_BASE_URL", "http://46.20.206.172:8083/QuaLIS/")
 QUALIS_API_CREDENTAILS = os.getenv("QUALIS_API_CREDENTAILS", "username:password")
-REST_TIMEOUT = 30
+REST_TIMEOUT = int(os.getenv("REST_TIMEOUT", 120))
 
 mimetypes.add_type("text/css", ".css", True)
 mimetypes.add_type("text/html", ".html", True)
