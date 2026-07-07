@@ -1,0 +1,115 @@
+{% extends 'app/base/base.html' %}
+
+{% block content %}
+<div class="mx-auto w-2/4">
+    <h2 class="page-title">{{ title }}</h2>
+
+    <div id="queue-status-card"
+        style="max-width: 32rem; margin: 1rem auto; padding: 1.5rem; border: 1px solid #ddd; border-radius: 8px;">
+
+        <div id="queue-spinner" class="flex-center">
+            <lord-icon src="https://cdn.lordicon.com/dpinvufc.json" trigger="loop"
+                colors="primary:#000,secondary:#08a88a" style="width:60px;height:60px">
+            </lord-icon>
+        </div>
+
+        <p id="queue-message" style="font-weight: 600;">
+            {{ 'mdrtb.reportQueued'|get_message:locale|default:"en" }}
+        </p>
+        <p id="queue-position-label">{{ initial_position_text }}</p>
+        <p style="color: #a15c00;">
+            {{ 'mdrtb.reportQueueKeepTabOpen'|get_message:locale|default:"en" }}
+        </p>
+        <p id="queue-error" style="color: #b00020; display: none;"></p>
+
+        <div class="flex-center space-x-4 mt-4">
+            <button id="viewReportBtn" class="button-primary w-1/3" disabled>
+                {{ 'mdrtb.viewReport'|get_message:locale|default:"en" }}
+            </button>
+            <a href="/" class="cancel-button">
+                {{ 'general.cancel'|get_message_openMRS:locale|default:"en" }}
+            </a>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    (function () {
+        const jobId = "{{ job_id }}";
+        const statusUrl = "{% url 'reportqueuestatus' job_id=job_id %}";
+        const viewUrl = "{% url 'reportqueueview' job_id=job_id %}";
+        const POLL_INTERVAL_MS = 2000;
+
+        const positionTemplate = "{{ 'mdrtb.reportQueuePosition'|get_message:locale|default:'en' }}";
+
+        const messageEl = document.getElementById('queue-message');
+        const positionEl = document.getElementById('queue-position-label');
+        const errorEl = document.getElementById('queue-error');
+        const viewBtn = document.getElementById('viewReportBtn');
+        const spinnerEl = document.getElementById('queue-spinner');
+
+        let pollTimer = null;
+
+        const stopPolling = () => {
+            if (pollTimer) {
+                clearInterval(pollTimer);
+                pollTimer = null;
+            }
+        };
+
+        const formatPosition = (position, maxConcurrent) => {
+            return positionTemplate.replace('{0}', position).replace('{1}', maxConcurrent);
+        };
+
+        const renderStatus = (data) => {
+            if (data.status === 'queued') {
+                messageEl.textContent = "{{ 'mdrtb.reportQueued'|get_message:locale|default:'en' }}";
+                positionEl.textContent = data.position > 0 ? formatPosition(data.position, data.max_concurrent) : '';
+            } else if (data.status === 'running') {
+                messageEl.textContent = "{{ 'mdrtb.reportGenerating'|get_message:locale|default:'en' }}";
+                positionEl.textContent = '';
+            } else if (data.status === 'ready') {
+                messageEl.textContent = "{{ 'mdrtb.reportReady'|get_message:locale|default:'en' }}";
+                positionEl.textContent = '';
+                spinnerEl.style.display = 'none';
+                viewBtn.disabled = false;
+                stopPolling();
+            } else if (data.status === 'timeout') {
+                messageEl.textContent = "{{ 'mdrtb.reportTimeout'|get_message:locale|default:'en' }}";
+                positionEl.textContent = '';
+                spinnerEl.style.display = 'none';
+                stopPolling();
+            } else if (data.status === 'error') {
+                messageEl.textContent = "{{ 'mdrtb.reportFailed'|get_message:locale|default:'en' }}";
+                positionEl.textContent = '';
+                spinnerEl.style.display = 'none';
+                if (data.error) {
+                    errorEl.textContent = data.error;
+                    errorEl.style.display = 'block';
+                }
+                stopPolling();
+            }
+        };
+
+        const poll = () => {
+            fetch(statusUrl, { credentials: 'same-origin' })
+                .then((res) => {
+                    if (!res.ok) throw new Error('status check failed');
+                    return res.json();
+                })
+                .then(renderStatus)
+                .catch(() => {
+                    stopPolling();
+                    messageEl.textContent = "{{ 'mdrtb.reportLostConnection'|get_message:locale|default:'en' }}";
+                });
+        };
+
+        viewBtn.addEventListener('click', () => {
+            window.location.href = viewUrl;
+        });
+
+        poll();
+        pollTimer = setInterval(poll, POLL_INTERVAL_MS);
+    })();
+</script>
+{% endblock %}

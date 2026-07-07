@@ -158,6 +158,19 @@ QUALIS_API_BASE_URL = os.getenv("QUALIS_API_BASE_URL", "http://46.20.206.172:808
 QUALIS_API_CREDENTAILS = os.getenv("QUALIS_API_CREDENTAILS", "username:password")
 REST_TIMEOUT = int(os.getenv("REST_TIMEOUT", 120))
 
+# Report generation queue.
+# Reports/patient lists are heavy synchronous calls to the OpenMRS REST API. Generating
+# too many at once ties up every gunicorn worker and the whole site starts returning 500s.
+# These settings bound how many can be generated at the same time; everything past that
+# limit waits in a Redis-backed FIFO queue (see utilities/report_queue.py).
+MAX_CONCURRENT_REPORTS = int(os.getenv("MAX_CONCURRENT_REPORTS", 4))
+# How long (seconds) a single report is allowed to run before it's considered stalled/timed out.
+REPORT_QUEUE_JOB_TIMEOUT = int(os.getenv("REPORT_QUEUE_JOB_TIMEOUT", REST_TIMEOUT + 60))
+# How long (seconds) a finished report stays available for the "View Report" button.
+REPORT_QUEUE_RESULT_TTL = int(os.getenv("REPORT_QUEUE_RESULT_TTL", 1800))
+REPORT_QUEUE_REDIS_URL = os.getenv("REPORT_QUEUE_REDIS_URL", f"redis://{LOCAL_IP_ADDRESS}:6379/3")
+REPORT_QUEUE_KEY_PREFIX = os.getenv("REPORT_QUEUE_KEY_PREFIX", "reportqueue")
+
 mimetypes.add_type("text/css", ".css", True)
 mimetypes.add_type("text/html", ".html", True)
 mimetypes.add_type("text/javascript", ".js", True)

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from datetime import datetime
 import utilities.restapi_utils as ru
 import utilities.metadata_util as mu
@@ -8,6 +8,7 @@ import utilities.patient_utils as pu
 import utilities.forms_util as fu
 import utilities.common_utils as util
 import utilities.locations_util as lu
+import utilities.report_queue as rq
 import json
 import datetime
 import logging
@@ -1384,6 +1385,69 @@ def render_report_form(req, target):
     return render(req, "app/reporting/report_form_base.html", context)
 
 
+#############################
+# Report Queue Views START  #
+#############################
+# Every heavy report/patient-list "results" endpoint is routed through report_queue_entry instead of running directly. 
+# This bounds how many reports can be generated at the same time (settings.MAX_CONCURRENT_REPORTS) via utilities/report_queue.py.
+def report_queue_entry(req, view_key, query_params=None, title=None):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    locale = req.session.get("locale", "ru")
+    if title is None:
+        title = util.get_report_name(view_key, locale)
+    if query_params is None:
+        query_params = req.GET.dict()
+    try:
+        job_id = rq.enqueue(req, view_key, query_params, title)
+        initial_status = rq.get_status(job_id)
+    except Exception as e:
+        log_and_show_error(e, req)
+        return redirect("/")
+    initial_position_text = ""
+    if initial_status and initial_status.get("position", 0) > 0:
+        initial_position_text = mu.get_global_msgs(
+            "mdrtb.reportQueuePosition", locale=locale
+        ).format(initial_status["position"], initial_status["max_concurrent"])
+    context = {
+        "title": title,
+        "job_id": job_id,
+        "initial_status": initial_status,
+        "initial_position_text": initial_position_text,
+    }
+    return render(req, "app/reporting/report_queue_status.html", context)
+
+
+def report_queue_status(req, job_id):
+    if not check_if_session_alive(req):
+        return JsonResponse({"status": "unauthenticated"}, status=401)
+    data = rq.get_status(job_id, requesting_session_key=req.session.session_key)
+    if data is None:
+        return JsonResponse({"status": "not_found"}, status=404)
+    return JsonResponse(data)
+
+
+def report_queue_view(req, job_id):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    html = rq.get_result(job_id, requesting_session_key=req.session.session_key)
+    if html is None:
+        messages.info(
+            req,
+            mu.get_global_msgs(
+                "mdrtb.reportNotAvailable",
+                locale=req.session.get("locale", "ru"),
+                default="This report is no longer available. Please generate it again.",
+            ),
+        )
+        return redirect("/")
+    html = rq.refresh_csrf_token(req, html)
+    return HttpResponse(html)
+###########################
+# Report Queue Views END  #
+###########################
+
+
 def render_patient_list(req):
     if not check_if_session_alive(req):
         return redirect("login")
@@ -1393,39 +1457,58 @@ def render_patient_list(req):
         "quarters": util.get_quarters(),
         "title": title,
     }
+    if req.method == "POST":
+        month = req.POST.get("month")
+        quarter = req.POST.get("quarter")
+        keys_to_check = ["facility", "district", "region"]
+        location = None
+        for key in keys_to_check:
+            value = req.POST.get(key)
+            if value and len(value) > 0:
+                location = value
+                break
+        year = req.POST.get("year")
+        listname = req.POST.get("listname")
+        query_params = {"year": year, "listname": listname, "location": location}
+        if month:
+            query_params["month"] = month
+        elif quarter:
+            query_params["quarter"] = quarter
+        return report_queue_entry(req, "patientlist", query_params=query_params, title=title)
+    return render(req, "app/reporting/patientlist_report_form.html", context=context)
+
+
+def render_patient_list_result(req):
+    """
+    GET-based counterpart of render_patient_list's POST branch above, used as
+    the report queue's worker function (see rq.register_view("patientlist", ...)
+    below) since jobs are dispatched by re-invoking the view with its params
+    as a query string rather than a form POST.
+    """
+    context = {"title": mu.get_global_msgs("mdrtb.patientLists", locale=req.session["locale"])}
     try:
-        if req.method == "POST":
-            month = req.POST.get("month")
-            quarter = req.POST.get("quarter")
-            keys_to_check = ["facility", "district", "region"]
-            location = None
-            for key in keys_to_check:
-                value = req.POST.get(key)
-                if value and len(value) > 0:
-                    location = value
-                    break
-            year = req.POST.get("year")
-            listname = req.POST.get("listname")
-            params = {"year": year, "listname": listname, "location": location}
-            if month:
-                params["month"] = month
-                context["month"] = month
-            elif quarter:
-                params["quarter"] = quarter
-                context["quarter"] = quarter
-            status, response = ru.get(req, "mdrtb/patientlist", params)
-            if status:
-                context["year"] = year
-                context["listname"] = util.get_patient_list_options(listname)
-                context["location"] = lu.get_location_by_uuid(req, location)["name"]
-                context["string_data"] = response["results"][0]["stringData"]
-                return render(
-                    req, "app/reporting/patientlist_report.html", context=context
-                )
+        year = req.GET.get("year")
+        listname = req.GET.get("listname")
+        location = req.GET.get("location")
+        month = req.GET.get("month")
+        quarter = req.GET.get("quarter")
+        params = {"year": year, "listname": listname, "location": location}
+        if month:
+            params["month"] = month
+            context["month"] = month
+        elif quarter:
+            params["quarter"] = quarter
+            context["quarter"] = quarter
+        status, response = ru.get(req, "mdrtb/patientlist", params)
+        if status:
+            context["year"] = year
+            context["listname"] = util.get_patient_list_options(listname)
+            context["location"] = lu.get_location_by_uuid(req, location)["name"]
+            context["string_data"] = response["results"][0]["stringData"]
+            return render(req, "app/reporting/patientlist_report.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("/")
-    return render(req, "app/reporting/patientlist_report_form.html", context=context)
+    return redirect("/")
 
 
 def render_tb03_report(req):
@@ -1988,6 +2071,31 @@ def render_quaterly_summary_ae_report(req):
     except Exception as e:
         log_and_show_error(e, req)
         return redirect(req.session["redirect_url"])
+
+
+# Report queue worker registry: maps each report's URL key to the view
+# function that generates it. Used by utilities/report_queue.py to run the
+# job once a concurrency slot is available (see report_queue_entry above).
+for _view_key, _view_func in {
+    "tb03results": render_tb03_report,
+    "tb03singleresults": render_tb03_single_report,
+    "tb03usingleresults": render_tb03u_single_report,
+    "missingtb03results": render_missing_tb03_report,
+    "missingtb03uresults": render_missing_tb03u_report,
+    "form8results": render_form8_report,
+    "tb07results": render_tb07_report,
+    "tb03uresults": render_tb03u_report,
+    "form89results": render_form89_report,
+    "tb08results": render_tb08_report,
+    "tb08uresults": render_tb08u_report,
+    "tb07uresults": render_tb07u_report,
+    "dotsdqresults": render_dotsdq_report,
+    "mdrdqresults": render_mdrdq_report,
+    "adverseeventsregister": render_adverse_events_register_report,
+    "quarterlyae": render_quaterly_summary_ae_report,
+    "patientlist": render_patient_list_result,
+}.items():
+    rq.register_view(_view_key, _view_func)
 
 
 def render_closed_reports(req, type):
