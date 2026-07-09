@@ -2,7 +2,7 @@
 # Django 4.1.1 frontend — communicates with OpenMRS via REST only, NO direct DB access.
 # Shared facts (domain model, concept/encounter-type/identifier UUIDs, topology): ../.agents/graph.md
 # Usage + notation legend + maintenance rules: ../.agents/instructions.md
-# Last updated: 2026-07-02
+# Last updated: 2026-07-10 (theme + administration stubs)
 
 ## § MODULE LAYOUT
 ```
@@ -127,6 +127,10 @@ GET/POST /commonlab/order/<oid>/addtestresults             → render_add_test_r
 POST     /commonlab/order/<oid>/submittolab                → submit_order_to_lab              → QuaLIS LIMS POST
 GET      /commonlab/fetchattributes                        → fetch_attributes                 # JSON
 GET      /commonlab/order/<oid>/gettestsamples             → check_if_sample_exists           # JSON
+# Administration (stub pages; menu items disabled in components/nav.html — no "admin/" prefix, that's Django admin)
+GET      /administration/locations                         → render_manage_locations          # stub
+GET      /administration/translations                      → render_manage_translations       # stub
+GET      /administration/defaults                          → render_set_defaults              # stub
 # Config/Metadata endpoints
 GET      /profile                                          → render_user_profile
 GET      /locations                                        → get_locations                    # JSON
@@ -218,6 +222,26 @@ TIME_ZONE             = "Asia/Dushanbe"
 REDIS_LOCATION        = env("REDIS_LOCATION", default="redis://127.0.0.1:6379/1")
 CORS_ALLOWED_ORIGINS  = ["http://46.20.206.173:38080","http://127.0.0.1:8080"]
 DEBUG                 = True   # change for prod
+```
+
+## § UI THEME / STYLE MIGRATION (Tailwind → Bootstrap, plan: style_migration_plan.txt)
+```
+Load order (base.html): styles.css (Tailwind build) → bootstrap.min.css → select2.min.css → theme.css (wins)
+theme.css  app/static/app/css/theme.css   # clinical-white minimalist layer: white bg, 1px borders,
+                                          # brand blue #2D9CDB accent, 150ms transitions, CSS vars --brand-*
+Migrated pages (no Tailwind classes):  login.html, search_patients.html, components/header.html, components/nav.html
+  header.html   → .header-link (hover pill)
+  nav.html      → .app-menubar (left-aligned full-width menubar, included by search_patients.html + admin stubs)
+                  Administration dropdown: items disabled (Bootstrap .disabled) until pages implemented
+                  NOTE 2026-07-10: a "global menubar in base.html + report_base.html" attempt was REVERTED
+                  by user request (design regression). Menu persistence on report pages remains an open issue.
+  admin stubs   → app/templates/app/admin/{manage_locations,manage_translations,set_defaults}.html (.admin-stub-page)
+  new msg keys  → mdrtb.manageTranslations, mdrtb.setDefaults, mdrtb.underConstruction (en/ru/tj)
+  search page   → .patient-search-* / .patient-result-* classes (defined in theme.css only)
+                  JS toggles .is-open on #search-results (no more Tailwind hidden/flex)
+NOT migrated: enrolled_programs.html still uses styles.css classes (search-page-container etc.) — do not
+              remove styles.css or its classes until all pages migrated.
+Prod static: Dockerfile runs collectstatic; repo static/ (STATIC_ROOT) may be stale in dev.
 ```
 
 ## § LOCALIZATION

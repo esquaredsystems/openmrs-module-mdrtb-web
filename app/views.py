@@ -3009,6 +3009,34 @@ def submit_order_to_lab(req, orderid):
 # Test-only Views (DEBUG) #
 ##########################
 
+# --- Administration stub pages (menu items disabled in nav.html for now) ---
+
+
+def render_manage_locations(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    title = mu.get_global_msgs(
+        "Location.manage", locale=req.session["locale"], source="OpenMRS"
+    )
+    return render(req, "app/admin/manage_locations.html", context={"title": title})
+
+
+def render_manage_translations(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    title = mu.get_global_msgs(
+        "mdrtb.manageTranslations", locale=req.session["locale"]
+    )
+    return render(req, "app/admin/manage_translations.html", context={"title": title})
+
+
+def render_set_defaults(req):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    title = mu.get_global_msgs("mdrtb.setDefaults", locale=req.session["locale"])
+    return render(req, "app/admin/set_defaults.html", context={"title": title})
+
+
 import time as _time
 from django.conf import settings as _settings
 from django.http import HttpResponse as _HttpResponse, HttpResponseForbidden as _HttpResponseForbidden

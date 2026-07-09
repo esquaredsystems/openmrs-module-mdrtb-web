@@ -1,0 +1,14 @@
+{% extends 'app/base/base.html' %}
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+
+{%block content%}
+{% include 'app/components/nav.html' %}
+<div class="admin-stub-page">
+  <h1>{{title}}</h1>
+  <p>{{'mdrtb.underConstruction'|get_message:locale|default:"en"}}</p>
+</div>
+{% endblock %}

@@ -1,0 +1,421 @@
+/*
+ * Clinical-white minimalist theme. Loaded last (after styles.css, bootstrap.min.css,
+ * select2.min.css) so it can restyle without editing compiled CSS.
+ * Design rules: one background colour (white), 1px borders instead of grey boxes,
+ * brand blue #2D9CDB as the only accent, 150ms transitions everywhere.
+ */
+
+:root {
+  --brand-primary: #2D9CDB;
+  --brand-primary-rgb: 45, 156, 219;
+  --brand-primary-hover: #2686bd;
+  --brand-primary-active: #1f70a1;
+  --brand-primary-tint: rgba(45, 156, 219, 0.08);
+  --brand-primary-tint-strong: rgba(45, 156, 219, 0.18);
+  --brand-secondary: #044062;
+  --brand-border: #e2e8ee;
+  --brand-text: #1f2d3a;
+  --brand-text-muted: #64748b;
+  --brand-radius: 0.5rem;
+  --brand-shadow: 0 2px 8px rgba(4, 64, 98, 0.06);
+  --brand-shadow-strong: 0 8px 24px rgba(4, 64, 98, 0.10);
+  --brand-transition: 150ms ease-in-out;
+
+  /* Bootstrap re-theme: root-level tokens */
+  --bs-primary: var(--brand-primary);
+  --bs-primary-rgb: var(--brand-primary-rgb);
+  --bs-link-color: var(--brand-primary);
+  --bs-link-color-rgb: var(--brand-primary-rgb);
+  --bs-link-hover-color: var(--brand-primary-active);
+  --bs-focus-ring-color: rgba(45, 156, 219, 0.25);
+}
+
+/* ---------- Base document ---------- */
+
+body {
+  background-color: #fff;
+  color: var(--brand-text);
+  line-height: 1.55;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--brand-secondary);
+  font-weight: 700;
+}
+
+a {
+  text-decoration: none;
+  transition: color var(--brand-transition);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+::selection {
+  background-color: var(--brand-primary-tint-strong);
+}
+
+/* Entry animation for page content */
+@keyframes theme-fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+main {
+  animation: theme-fade-up 240ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main { animation: none; }
+  * { transition-duration: 0.01ms !important; }
+}
+
+/* ---------- Bootstrap component re-theme ---------- */
+
+.btn-primary {
+  --bs-btn-bg: var(--brand-primary);
+  --bs-btn-border-color: var(--brand-primary);
+  --bs-btn-hover-bg: var(--brand-primary-hover);
+  --bs-btn-hover-border-color: var(--brand-primary-hover);
+  --bs-btn-active-bg: var(--brand-primary-active);
+  --bs-btn-active-border-color: var(--brand-primary-active);
+  --bs-btn-focus-shadow-rgb: var(--brand-primary-rgb);
+  --bs-btn-disabled-bg: var(--brand-primary);
+  --bs-btn-disabled-border-color: var(--brand-primary);
+}
+
+.btn {
+  transition: background-color var(--brand-transition),
+              border-color var(--brand-transition),
+              box-shadow var(--brand-transition),
+              color var(--brand-transition);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 0.25rem var(--brand-primary-tint-strong);
+}
+
+.dropdown-menu {
+  --bs-dropdown-link-active-bg: var(--brand-primary);
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  box-shadow: var(--brand-shadow-strong);
+  padding: 0.35rem;
+  animation: theme-fade-up 160ms ease-out;
+}
+
+.dropdown-item {
+  border-radius: calc(var(--brand-radius) - 0.2rem);
+  transition: background-color var(--brand-transition), color var(--brand-transition);
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: var(--brand-primary-tint);
+  color: var(--brand-primary-active);
+}
+
+/* ---------- Header ---------- */
+
+.base-header,
+header {
+  background-color: #fff;
+  border-bottom: 1px solid var(--brand-border);
+  box-shadow: none;
+}
+
+header img {
+  transition: opacity var(--brand-transition);
+}
+
+header a:hover img {
+  opacity: 0.75;
+}
+
+/* Header links: quiet by default, tinted pill on hover */
+.header-link {
+  color: var(--brand-secondary) !important;
+  font-weight: 600;
+  padding: 0.4rem 0.7rem;
+  border-radius: calc(var(--brand-radius) - 0.15rem);
+  transition: background-color var(--brand-transition), color var(--brand-transition);
+}
+
+.header-link:hover,
+.header-link:focus {
+  background-color: var(--brand-primary-tint);
+  color: var(--brand-primary-active) !important;
+  text-decoration: none;
+}
+
+header .dropdown-toggle {
+  transition: background-color var(--brand-transition), color var(--brand-transition);
+  border-radius: calc(var(--brand-radius) - 0.15rem);
+}
+
+header .dropdown-toggle:hover {
+  background-color: var(--brand-primary-tint);
+  color: var(--brand-primary-active) !important;
+}
+
+/* ---------- Menubar (nav.html) ---------- */
+
+.app-menubar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  width: 100%;
+  padding: 0.25rem 1rem;
+  background-color: #fff;
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.app-menubar .dropdown-toggle {
+  color: var(--brand-secondary);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: calc(var(--brand-radius) - 0.15rem);
+  transition: background-color var(--brand-transition), color var(--brand-transition);
+}
+
+.app-menubar .dropdown-toggle:hover,
+.app-menubar .dropdown-toggle:focus,
+.app-menubar .show > .dropdown-toggle,
+.app-menubar .dropdown-toggle.show {
+  background-color: var(--brand-primary-tint);
+  color: var(--brand-primary-active);
+}
+
+/* ---------- Patient search page ---------- */
+
+.patient-search-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5rem 1rem 2rem;
+}
+
+.patient-search-panel {
+  width: 100%;
+  max-width: 44rem;
+}
+
+.patient-search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #fff;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  padding: 0.65rem 0.9rem;
+  transition: border-color var(--brand-transition), box-shadow var(--brand-transition);
+}
+
+.patient-search-box:focus-within {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 0.25rem var(--brand-primary-tint-strong);
+}
+
+.patient-search-box input {
+  flex: 1;
+  border: none !important;
+  outline: none;
+  padding: 0;
+  background: transparent;
+  font-size: 1.05rem;
+  color: var(--brand-text);
+  box-shadow: none !important;
+}
+
+.patient-search-box input::placeholder {
+  color: var(--brand-text-muted);
+}
+
+.patient-search-box .search-icon {
+  display: flex;
+  align-items: center;
+  color: var(--brand-text-muted);
+  cursor: pointer;
+  transition: color var(--brand-transition);
+}
+
+.patient-search-box .search-icon:hover {
+  color: var(--brand-primary);
+}
+
+.patient-search-box .search-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.patient-search-results {
+  display: none;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-top: 0.5rem;
+  max-height: 16rem;
+  overflow-y: auto;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  padding: 0.35rem;
+  background-color: #fff;
+  animation: theme-fade-up 180ms ease-out;
+}
+
+.patient-search-results.is-open {
+  display: flex;
+}
+
+.patient-result-row {
+  display: grid;
+  grid-template-columns: 1.2fr 2fr 0.6fr 0.6fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-radius: calc(var(--brand-radius) - 0.2rem);
+  color: var(--brand-text);
+  transition: background-color var(--brand-transition), color var(--brand-transition);
+}
+
+.patient-result-row p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.patient-result-header {
+  font-weight: 700;
+  color: var(--brand-secondary);
+  border-bottom: 1px solid var(--brand-border);
+  border-radius: 0;
+}
+
+a .patient-result-row:hover {
+  background-color: var(--brand-primary-tint);
+  color: var(--brand-primary-active);
+}
+
+.patient-search-results a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.patient-search-empty {
+  padding: 1rem;
+  text-align: center;
+  color: var(--brand-text-muted);
+}
+
+.patient-search-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.patient-create-new {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  color: var(--brand-text-muted);
+}
+
+/* ---------- Administration stub pages ---------- */
+
+.admin-stub-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5rem 1rem 2rem;
+  text-align: center;
+}
+
+.admin-stub-page p {
+  color: var(--brand-text-muted);
+}
+
+/* ---------- Legacy custom-class polish (pages not yet migrated) ---------- */
+
+.button-primary {
+  background-color: var(--brand-primary) !important;
+  border-radius: var(--brand-radius) !important;
+  transition: background-color var(--brand-transition), box-shadow var(--brand-transition);
+  box-shadow: none;
+}
+
+.button-primary:hover {
+  background-color: var(--brand-primary-hover) !important;
+  box-shadow: var(--brand-shadow);
+}
+
+.button-primary:active {
+  background-color: var(--brand-primary-active) !important;
+}
+
+.nav-item {
+  transition: color var(--brand-transition);
+}
+
+.nav-item:hover {
+  color: var(--brand-primary-active) !important;
+  text-decoration: underline;
+}
+
+.login-form-container {
+  border-radius: var(--brand-radius) !important;
+  border: 1px solid var(--brand-border);
+  box-shadow: var(--brand-shadow) !important;
+}
+
+.input-label {
+  color: var(--brand-secondary) !important;
+}
+
+/* Un-classed element defaults, for pages/fields with no framework classes */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  border-radius: var(--brand-radius);
+  border: 1px solid #d5dde3;
+  padding: 0.5rem 0.65rem;
+  transition: border-color var(--brand-transition), box-shadow var(--brand-transition);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+  outline: 0;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 0.25rem var(--brand-primary-tint-strong);
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table th {
+  background-color: var(--brand-primary-tint);
+  color: var(--brand-secondary);
+  font-weight: 700;
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+}
+
+table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #e7edf1;
+}
+
+table tbody tr {
+  transition: background-color var(--brand-transition);
+}
+
+table tbody tr:hover {
+  background-color: var(--brand-primary-tint);
+}

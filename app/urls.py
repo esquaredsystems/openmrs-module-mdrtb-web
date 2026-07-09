@@ -278,6 +278,12 @@ urlpatterns = [
         views.check_if_sample_exists,
         name="gettestsamples",
     ),
+    path("commonlab/order/<str:orderid>/gettestsamples", views.check_if_sample_exists, name="gettestsamples",),
+    # Administration stub pages (menu items disabled in nav.html for now).
+    # NOTE: do not use an "admin/" prefix — settings/urls.py routes it to Django admin.
+    path("administration/locations", views.render_manage_locations, name="manageLocations"),
+    path("administration/translations", views.render_manage_translations, name="manageTranslations"),
+    path("administration/defaults", views.render_set_defaults, name="setDefaults"),
     path("logout", views.render_logout, name="logout"),
 ]
 
