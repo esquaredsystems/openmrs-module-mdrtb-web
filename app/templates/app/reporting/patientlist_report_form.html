@@ -1,6 +1,7 @@
 ﻿{% extends 'app/base/base.html' %}
 
 {% block content %}
+{% include 'app/components/nav.html' %}
 
 <div class="p-4 m-6 mx-auto w-1/2 flex flex-col justify-center">
   <h1 class="page-title">{{'mdrtb.patientLists'|get_message:locale|default:"en"}}</h1>

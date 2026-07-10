@@ -1,6 +1,7 @@
 ﻿{% extends 'app/base/base.html' %}
 
 {% block content %}
+{% include 'app/components/nav.html' %}
 <div class="mx-auto w-2/4">
     <form target="_blank" id="report_form" action="{% url 'reportform' target=target %}" method="post"
         class="flex flex-col space-y-6">

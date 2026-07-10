@@ -229,9 +229,16 @@ DEBUG                 = True   # change for prod
 Load order (base.html): styles.css (Tailwind build) → bootstrap.min.css → select2.min.css → theme.css (wins)
 theme.css  app/static/app/css/theme.css   # clinical-white minimalist layer: white bg, 1px borders,
                                           # brand blue #2D9CDB accent, 150ms transitions, CSS vars --brand-*
-Migrated pages (no Tailwind classes):  login.html, search_patients.html, components/header.html, components/nav.html
+Migrated pages (no Tailwind classes):  login.html (.login-* classes), search_patients.html,
+                                       components/header.html, components/nav.html
   header.html   → .header-link (hover pill)
-  nav.html      → .app-menubar (left-aligned full-width menubar, included by search_patients.html + admin stubs)
+  nav.html      → .app-menubar (left-aligned full-width menubar, included per-page by:
+                  search_patients.html, admin stubs, reporting/patientlist_report_form.html,
+                  reporting/report_form_base.html (shared by ALL /reportform/<target> pages —
+                  DOTS/MDR/Other), reporting/closed_reports.html (dots+mdr))
+                  NOTE: the individual reporting/*_report_form.html templates are DEAD CODE —
+                  views.py only renders report_form_base.html + patientlist_report_form.html.
+                  Report RESULT pages (report_base.html, open in new tab) have no menu by design.
                   Administration dropdown: items disabled (Bootstrap .disabled) until pages implemented
                   NOTE 2026-07-10: a "global menubar in base.html + report_base.html" attempt was REVERTED
                   by user request (design regression). Menu persistence on report pages remains an open issue.

@@ -325,6 +325,113 @@ a .patient-result-row:hover {
   color: var(--brand-text-muted);
 }
 
+/* ---------- Login page ---------- */
+
+.login-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.75rem;
+  padding: 4.5rem 1rem 2rem;
+}
+
+.login-page .login-logo {
+  width: 14rem;
+  object-fit: contain;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 26rem;
+  box-sizing: border-box;
+  background-color: #fff;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  box-shadow: var(--brand-shadow);
+  padding: 2rem;
+}
+
+.login-intro {
+  text-align: center;
+  color: var(--brand-text-muted);
+  margin: 0 0 1.5rem;
+}
+
+.login-field {
+  margin-bottom: 1.1rem;
+}
+
+.login-field label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  color: var(--brand-secondary);
+  margin-bottom: 0.35rem;
+}
+
+.login-field label svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.login-field input[type="text"] {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.login-pass-box {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #d5dde3;
+  border-radius: var(--brand-radius);
+  padding-right: 0.5rem;
+  transition: border-color var(--brand-transition), box-shadow var(--brand-transition);
+}
+
+.login-pass-box:focus-within {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 0.25rem var(--brand-primary-tint-strong);
+}
+
+.login-pass-box input {
+  flex: 1;
+  min-width: 0;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none;
+  background: transparent;
+}
+
+.login-pass-box svg {
+  width: 1.4rem;
+  height: 1.4rem;
+  flex-shrink: 0;
+  cursor: pointer;
+  color: var(--brand-text-muted);
+  transition: color var(--brand-transition);
+}
+
+.login-pass-box svg:hover {
+  color: var(--brand-primary);
+}
+
+.login-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+.login-submit svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
 /* ---------- Administration stub pages ---------- */
 
 .admin-stub-page {
@@ -364,12 +471,6 @@ a .patient-result-row:hover {
 .nav-item:hover {
   color: var(--brand-primary-active) !important;
   text-decoration: underline;
-}
-
-.login-form-container {
-  border-radius: var(--brand-radius) !important;
-  border: 1px solid var(--brand-border);
-  box-shadow: var(--brand-shadow) !important;
 }
 
 .input-label {
