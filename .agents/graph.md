@@ -154,8 +154,15 @@ Login:
 
 Per-request guard (app/middleware.py → SessionCheckMiddleware):
   every request → check session.get("session_id")
-  missing → ru.clear_session(request) → session.flush() → redirect /login
-  present → pass through
+  missing → ru.clear_session(request) → redirect /login
+            EXEMPT prefixes: /login, /static/, /favicon.ico, /test/slow
+  present → pass through (views still self-check via check_if_session_alive)
+  NOTE: before 2026-07-10 the middleware only cleared the session and did NOT
+  redirect — stale sessions could render post-login pages with REST errors.
+
+Stale-session guard on landing page (render_search_patients_view):
+  REST failure during render → ru.is_session_authenticated(req) probes GET session
+  (never raises) → unauthenticated/unreachable → clear_session → redirect /login
 
 API request headers (utilities/restapi_utils.py → get_auth_headers):
   Authorization: Basic {encoded_credentials}

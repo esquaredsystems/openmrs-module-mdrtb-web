@@ -1,4 +1,10 @@
+from django.shortcuts import redirect
+
 from utilities import restapi_utils as ru
+
+# Paths that must stay reachable without an authenticated session.
+# (WhiteNoise serves /static/ before this middleware runs; listed anyway for safety.)
+EXEMPT_PATH_PREFIXES = ("/login", "/static/", "/favicon.ico", "/test/slow")
 
 
 class SessionCheckMiddleware:
@@ -6,8 +12,12 @@ class SessionCheckMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        # Check if session_id is present in session
+        # No OpenMRS session id in the Django session -> user is not logged in.
+        # Clear any leftover session data (preserves redirect_url) and send them
+        # to the login page instead of letting views render half-broken pages.
         if not request.session.get("session_id"):
             ru.clear_session(request)
+            if not request.path.startswith(EXEMPT_PATH_PREFIXES):
+                return redirect("login")
         response = self.get_response(request)
         return response

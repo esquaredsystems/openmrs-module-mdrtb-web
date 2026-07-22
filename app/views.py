@@ -161,6 +161,13 @@ def render_search_patients_view(req):
         context["minSearchCharacters"] = mu.get_global_properties(req, "minSearchCharacters")
     except Exception as e:
         context["minSearchCharacters"] = 2
+        # The REST call may have failed because the OpenMRS session died
+        # (expired JSESSIONID -> 401 already cleared the session) or because
+        # OpenMRS is unreachable. In both cases the user is effectively not
+        # logged in, so show the login page instead of a broken landing page.
+        if not check_if_session_alive(req) or not ru.is_session_authenticated(req):
+            ru.clear_session(req)
+            return redirect("login")
         log_and_show_error(e, req)
     return render(req, "app/tbregister/search_patients.html", context=context)
 

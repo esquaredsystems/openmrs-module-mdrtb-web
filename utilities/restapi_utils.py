@@ -95,6 +95,27 @@ def clear_session(req):
         logger.error(str(ke), exc_info=True)
 
 
+def is_session_authenticated(req):
+    """
+    Probes the OpenMRS /session endpoint with the current credentials.
+    Returns True only when OpenMRS is reachable AND reports authenticated=true.
+    Never raises (no @handle_rest_exceptions on purpose) — callers use it to
+    decide between "show error" and "redirect to login".
+    """
+    try:
+        response = requests.get(
+            url=REST_API_BASE_URL + "session",
+            headers=get_auth_headers(req),
+            timeout=REST_TIMEOUT,
+        )
+        return response.status_code == 200 and response.json().get(
+            "authenticated", False
+        )
+    except Exception as e:
+        logger.warning(f"Session probe failed: {e}")
+        return False
+
+
 @handle_rest_exceptions
 def get(req, endpoint, parameters):
     """
