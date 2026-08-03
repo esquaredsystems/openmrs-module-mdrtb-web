@@ -1,0 +1,38 @@
+{% comment %}
+Renders one location node and recurses into its children.
+Expects: node (from locations_util.build_location_tree), can_manage_locations, locale.
+{% endcomment %}
+<li class="loc-node"{% if node.voided_only %} data-voided-only="true"{% endif %}>
+  <div class="loc-row">
+    <button type="button" class="loc-toggle" aria-expanded="false"
+      aria-label="{{'general.edit'|get_message_openMRS:locale|default:"en"}}">+</button>
+    <a class="loc-name{% if node.retired %} loc-retired{% endif %}"
+      href="{% url 'editLocation' uuid=node.uuid %}">{{ node.name }}</a>
+    {% for attribute in node.attributes %}
+    {% if attribute.value %}<span class="loc-badge"
+      title="{{ attribute.name }}: {{ attribute.value }}">{{ attribute.value }}</span>{% endif %}
+    {% endfor %}
+    {% if node.children %}<span class="loc-count">{{ node.children|length }}</span>{% endif %}
+  </div>
+
+  <div class="loc-detail" hidden>
+    <dl class="loc-fields">
+      <dt>{{'Location.country'|get_message_openMRS:locale|default:"en"}}</dt>
+      <dd>{{ node.country|default:"—" }}</dd>
+      <dt>{{'Location.cityVillage'|get_message_openMRS:locale|default:"en"}}</dt>
+      <dd>{{ node.city_village|default:"—" }}</dd>
+      <dt>{{'Location.stateProvince'|get_message_openMRS:locale|default:"en"}}</dt>
+      <dd>{{ node.state_province|default:"—" }}</dd>
+      <dt>{{'mdrtb.locations.countyDistrict'|get_message:locale|default:"en"}}</dt>
+      <dd>{{ node.county_district|default:"—" }}</dd>
+    </dl>
+
+    {% if node.children %}
+    <ul class="loc-children">
+      {% for child in node.children %}
+      {% include 'app/admin/_location_node.html' with node=child %}
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+</li>

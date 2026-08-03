@@ -16,7 +16,13 @@ utilities/patient_utils.py          # Patient CRUD & enrollment (pu alias)
 utilities/forms_util.py             # TB form CRUD (fu alias)
 utilities/commonlab_util.py         # Lab order/sample/result CRUD (clu alias)
 utilities/metadata_util.py          # Concept/location/privilege lookup + caching (mu alias)
-utilities/locations_util.py         # Location hierarchy (lu alias)
+utilities/locations_util.py         # ALL location logic (lu alias) — patient-facing hierarchy
+                                    # (cached) + administration (writes, busts that cache)
+                                    # get_locations(req, include_retired=False) is the ONE list call
+                                    # get_location(req, uuid) is the ONE single-location call
+utilities/users_admin_util.py       # User ADMIN screen (uau alias) — person+user+provider choreography
+utilities/rest_admin.py             # SHARED admin REST: real error text + cap-aware paging (see § below)
+utilities/admin_auth.py             # is_system_developer() — single source for admin write permission
 utilities/common_utils.py           # Date utils, report name lookup
 resources/enums/mdrtbConcepts.py    # Concept UUID enum (full list)
 resources/enums/encounterType.py    # Encounter type UUID enum
@@ -127,10 +133,20 @@ GET/POST /commonlab/order/<oid>/addtestresults             → render_add_test_r
 POST     /commonlab/order/<oid>/submittolab                → submit_order_to_lab              → QuaLIS LIMS POST
 GET      /commonlab/fetchattributes                        → fetch_attributes                 # JSON
 GET      /commonlab/order/<oid>/gettestsamples             → check_if_sample_exists           # JSON
-# Administration (stub pages; menu items disabled in components/nav.html — no "admin/" prefix, that's Django admin)
-GET      /administration/locations                         → render_manage_locations          # stub
-GET      /administration/translations                      → render_manage_translations       # stub
-GET      /administration/defaults                          → render_set_defaults              # stub
+# Administration (no "admin/" prefix — that's Django admin in settings/urls.py)
+GET      /administration/locations                         → render_manage_locations          → lau  # tree + ?voided=1
+GET      /administration/locations/new                     → render_create_location           → lau  # MUST precede <uuid>
+GET/POST /administration/locations/<uuid>                  → render_edit_location             → lau
+POST     /administration/locations/<uuid>/retire           → render_retire_location           → lau
+POST     /administration/locations/<uuid>/unretire         → render_unretire_location         → lau
+GET      /administration/users                             → render_manage_users              → uau  # search
+GET/POST /administration/users/new                         → render_create_user               → uau
+GET/POST /administration/users/<uuid>                      → render_edit_user                 → uau
+GET/POST /administration/users/<uuid>/password             → render_change_password           → uau
+POST     /administration/users/<uuid>/disable              → render_disable_user              → uau
+POST     /administration/users/<uuid>/enable               → render_enable_user               → uau
+GET      /administration/translations                      → render_manage_translations       # stub, menu item disabled
+GET      /administration/defaults                          → render_set_defaults              # stub, menu item disabled
 # Config/Metadata endpoints
 GET      /profile                                          → render_user_profile
 GET      /locations                                        → get_locations                    # JSON
@@ -144,7 +160,15 @@ GET      /changelocale/<locale>                            → change_locale
 Login:
   POST /login → render_login → ru.initiate_session(username, password)
   → Basic Auth header → GET {REST_API_BASE_URL}session
-  → OpenMRS returns: sessionId, user{uuid,roles,userProperties{locale,defaultLocation}}
+  → OpenMRS returns: user{uuid,roles,userProperties{locale,defaultLocation}}
+  !! sessionId is NOT in the response body on current OpenMRS — it was removed
+     deliberately as a security fix. The token only arrives as the JSESSIONID
+     COOKIE. Reading it from the body raises KeyError: 'sessionId' and the popup
+     shows the bare text "sessionId". Resolution order in initiate_session():
+       body["sessionId"] (legacy servers) → cookies["JSESSIONID"] → BASIC_AUTH_ONLY
+     BASIC_AUTH_ONLY is a marker keeping session_id truthy when the server sends
+     no cookie; get_auth_headers() then omits the Cookie header and relies on the
+     Basic credentials, which OpenMRS accepts on every call.
   → Django session stores:
       session["session_id"]          = JSESSIONID value
       session["encoded_credentials"] = base64(username:password)
@@ -256,6 +280,101 @@ Migrated pages (no Tailwind classes):  login.html (.login-* classes), search_pat
 NOT migrated: enrolled_programs.html still uses styles.css classes (search-page-container etc.) — do not
               remove styles.css or its classes until all pages migrated.
 Prod static: Dockerfile runs collectstatic; repo static/ (STATIC_ROOT) may be stale in dev.
+```
+
+## § LOCATION ADMINISTRATION (Administration → Manage Locations)
+```
+Util:   utilities/locations_admin_util.py  (alias lau in views.py)
+        Separate from locations_util.py: admin must SEE retired locations and must
+        BUST the "locations" metadata cache on every write, or the patient enrollment
+        dropdowns keep serving pre-edit names for up to an hour.
+Writes: lau._post/_delete (NOT ru.post) so OpenMRS validation messages reach the user.
+        ru.post calls raise_for_status() before parsing the error body, so its
+        detailed-error branch is unreachable and 4xx becomes a generic message.
+Auth:   lau.is_system_developer(req) — systemId == "admin" OR role name/display ==
+        "System Developer". Roles come from GET /session in REF rep (display only,
+        no "name"), hence both keys are checked. Read = any logged-in user;
+        create/edit/retire/unretire = System Developer only (server-side guard in
+        every write view, plus <fieldset disabled> in the template).
+REST:   GET  location?v=full[&includeAll=true]&limit=100&startIndex=N   (paged)
+          !! SERVER CAP: global property webservices.rest.maxResultsAbsolute. Any
+             limit above it returns HTTP 500 "Administrator has set absolute limit
+             at N" — it does NOT clamp. Intended value here is 1000, but it
+             reverted to the 100 default during a data migration and broke every
+             list screen. Applies to EVERY list endpoint. Do not rely on the
+             setting: page via rest_admin.get_all_pages(), which auto-lowers if a
+             server reports a smaller cap and stops after MAX_PAGES.
+          !! includeAll=true is REQUIRED: normal REST queries filter out retired
+             metadata, so without it the "show voided" toggle finds nothing.
+        GET  locationtag?v=full                     # tag checkboxes (no includeAll:
+                                                    # retired tags must not be offered)
+        GET  locationattributetype?v=full           # LEVEL: maxOccurs=1 -> single-select,
+                                                    # options parsed from handlerConfig CSV
+        NOTE: with v=full, nested objects (parentLocation, tags, attributes.attributeType)
+              come back as REFs — uuid + display, often no "name". Code reads uuid, and
+              falls back name -> display for labels.
+        POST location / location/{uuid}             # core fields + tags (tags = list of uuids)
+        POST/DELETE location/{uuid}/attribute[/{a}] # attributes via SUBRESOURCE, positional
+                                                    # reconcile; posting the attributes array
+                                                    # on update is not reliably applied
+        DELETE location/{uuid}?reason=...           # retire (soft). POST {"retired":false} = restore
+Tree:   lau.build_location_tree(locations, include_retired) nests via parentLocation.
+        A node whose parent is filtered out is PROMOTED TO ROOT, never dropped.
+        The admin view ALWAYS builds with include_retired=True, then
+        lau.mark_voided_only_branches() sets node["voided_only"]. "Show voided" is
+        then a pure CSS filter (.loc-tree.show-voided) — NO page reload, because the
+        REST call returns retired rows regardless of the toggle, so reloading would
+        cost several paged REST calls for zero new data.
+        A retired node with a live descendant is NOT marked voided_only: it stays as
+        a struck-through structural parent so live locations never disappear.
+Form:   hidden "attribute_types" field lists rendered attribute type uuids so an
+        emptied multi-select clears the attribute instead of silently keeping it.
+DATA BUG (open, in the DB — not the web app):
+        Locations carry DUPLICATE LEVEL attributes ("REGION REGION" badges).
+        Cause: openmrs-mdrtb-etl-job/etl/location.py load_location_attribute()
+        uses INSERT IGNORE with UUID() per row, so no duplicate key ever occurs
+        and every ETL run appends another copy. Query 5 also re-inserts a subset
+        of query 3 (both level='DISTRICT') within a single run.
+        LEVEL has maxOccurs=1, so this is invalid. The tree collapses identical
+        (type,value) pairs for display and logs a WARNING with the count; saving
+        a location through the edit screen normalises it to one value.
+        Proper fixes: make the ETL idempotent + de-dupe existing rows in SQL.
+Templates: app/admin/manage_locations.html, app/admin/_location_node.html (recursive
+        include), app/admin/edit_location.html. Styles: theme.css § Location administration.
+```
+
+## § USER ADMINISTRATION (Administration → Manage Users)
+```
+Util:   utilities/users_admin_util.py (alias uau in views.py)
+Auth:   admin_auth.is_system_developer — WRITE is System Developer only, enforced in
+        every write view (not just hidden in the template). Read/search: any login.
+A login is THREE linked records; creation order matters:
+        person  -> POST person   {names:[{givenName,middleName,familyName}], gender, birthdate}
+        user    -> POST user     {username, password, person:<uuid>, roles:[uuid...],
+                                  userProperties:{defaultLocation:<uuid>}}
+        provider-> POST provider {person:<uuid>, identifier:<USERNAME>}
+        !! PROJECT RULE: provider.identifier MUST equal user.username. ensure_provider()
+           creates it when missing and RENAMES it when the username changes (chosen
+           behaviour) — note encounters are attributed to that identifier.
+Rollback: if POST user fails, the just-created person is voided again so a failed
+        attempt leaves no orphan person. A provider failure does NOT roll back the
+        user (the login already works); a warning is surfaced instead.
+Read:   GET user/{uuid}?v=full returns `person` as a REFERENCE — uuid + display
+        only, NO names/gender/birthdate. get_user() therefore fetches
+        GET person/{uuid}?v=full separately and substitutes it in. Without that
+        the edit form is blank AND save_user() cannot find the preferred
+        PersonName, so it would create a SECOND name instead of updating.
+Edit:   person core   -> POST person/{uuid}            {gender, birthdate}
+        person name   -> POST person/{uuid}/name/{nameUuid}   (names are a SUBRESOURCE)
+        user          -> POST user/{uuid}              {username, roles, userProperties}
+Password: POST password/{userUuid} {"newPassword":...}  — separate screen so a password
+        is never reset by accident; requires EDIT_USER_PASSWORDS. Never logged.
+Disable: DELETE user/{uuid}?reason=...   Enable: POST user/{uuid} {"retired": false}
+        Self-disable is blocked in the view.
+Roles:  GET role?v=full (paged). Anonymous/Authenticated are hidden from the picker
+        (implicit roles); retired roles never offered. Multiple roles per user.
+Search: GET user?q=&v=full[&includeAll=true]. The REST resource has NO role filter —
+        role filtering is applied client-side in search_users().
 ```
 
 ## § LOCALIZATION

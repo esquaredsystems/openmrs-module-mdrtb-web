@@ -1,0 +1,148 @@
+{% extends 'app/base/base.html' %}
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+
+{%block content%}
+{% include 'app/components/nav.html' %}
+
+<div class="loc-page loc-form-page">
+  <div class="loc-header">
+    <div>
+      <h1>{{ title }}</h1>
+      {% if user_record.retired %}
+      <p class="loc-subtitle loc-retired-note">{{'mdrtb.users.disabled'|get_message:locale|default:"en"}}</p>
+      {% endif %}
+    </div>
+    <a class="loc-linkbtn" href="{% url 'manageUsers' %}">
+      &larr; {{'User.manage'|get_message_openMRS:locale|default:"en"}}</a>
+  </div>
+
+  <form method="post"
+    action="{% if is_new %}{% url 'createUser' %}{% else %}{% url 'editUser' uuid=user_record.uuid %}{% endif %}">
+    {% csrf_token %}
+
+    <h2 class="loc-section">{{'Person.name'|get_message_openMRS:locale|default:"en"}}</h2>
+
+    <div class="loc-grid">
+      <div class="loc-field">
+        <label for="given_name" class="required">
+          {{'PersonName.givenName'|get_message_openMRS:locale|default:"en"}}</label>
+        <input type="text" id="given_name" name="given_name" required maxlength="50"
+          value="{{ values.given_name }}">
+      </div>
+      <div class="loc-field">
+        <label for="middle_name">{{'PersonName.middleName'|get_message_openMRS:locale|default:"en"}}</label>
+        <input type="text" id="middle_name" name="middle_name" maxlength="50" value="{{ values.middle_name }}">
+      </div>
+      <div class="loc-field">
+        <label for="family_name">{{'PersonName.familyName'|get_message_openMRS:locale|default:"en"}}</label>
+        <input type="text" id="family_name" name="family_name" maxlength="50" value="{{ values.family_name }}">
+      </div>
+      <div class="loc-field">
+        <label for="birthdate">{{'Person.birthdate'|get_message_openMRS:locale|default:"en"}}</label>
+        <input type="date" id="birthdate" name="birthdate" value="{{ values.birthdate }}">
+      </div>
+    </div>
+
+    <div class="loc-field">
+      <span class="loc-field-label required">{{'Person.gender'|get_message_openMRS:locale|default:"en"}}</span>
+      <div class="user-radio-row">
+        {% for code, label in genders %}
+        <label class="loc-tag" for="gender_{{ code }}">
+          <input type="radio" id="gender_{{ code }}" name="gender" value="{{ code }}" required
+            {% if values.gender == code %}checked{% endif %}>
+          <span>{{ label }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <h2 class="loc-section">{{'mdrtb.users.loginInfo'|get_message:locale|default:"en"}}</h2>
+
+    {% if not is_new %}
+    <div class="loc-field">
+      <label for="system_id">{{'User.systemId'|get_message_openMRS:locale|default:"en"}}</label>
+      <input type="text" id="system_id" value="{{ user_record.systemId }}" disabled>
+    </div>
+    {% endif %}
+
+    <div class="loc-field">
+      <label for="username" class="required">{{'User.username'|get_message_openMRS:locale|default:"en"}}</label>
+      <input type="text" id="username" name="username" required maxlength="50" value="{{ values.username }}">
+      <small class="loc-hint">{{'mdrtb.users.providerNote'|get_message:locale|default:"en"}}</small>
+    </div>
+
+    {% if is_new %}
+    <div class="loc-grid">
+      <div class="loc-field">
+        <label for="password" class="required">{{'User.password'|get_message_openMRS:locale|default:"en"}}</label>
+        <input type="password" id="password" name="password" required autocomplete="new-password">
+      </div>
+      <div class="loc-field">
+        <label for="confirm_password" class="required">
+          {{'mdrtb.users.confirmPassword'|get_message:locale|default:"en"}}</label>
+        <input type="password" id="confirm_password" name="confirm_password" required autocomplete="new-password">
+      </div>
+    </div>
+    <p class="loc-hint">{{'mdrtb.users.passwordRule'|get_message:locale|default:"en"}}</p>
+    {% endif %}
+
+    <div class="loc-field">
+      <label for="default_location">{{'mdrtb.users.defaultLocation'|get_message:locale|default:"en"}}</label>
+      <select id="default_location" name="default_location">
+        <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+        {% for location in locations %}
+        <option value="{{ location.uuid }}" {% if values.default_location == location.uuid %}selected{% endif %}>
+          {{ location.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <h2 class="loc-section">{{'User.roles'|get_message_openMRS:locale|default:"en"}}</h2>
+    <div class="loc-tags">
+      {% for role in roles %}
+      <label class="loc-tag" for="role_{{ role.uuid }}"
+        {% if role.description %}title="{{ role.description }}"{% endif %}>
+        <input type="checkbox" id="role_{{ role.uuid }}" name="roles" value="{{ role.uuid }}"
+          {% if role.uuid in selected_roles %}checked{% endif %}>
+        <span>{{ role.name|default:role.display }}</span>
+      </label>
+      {% endfor %}
+    </div>
+
+    <div class="loc-form-actions">
+      <button type="submit" class="btn btn-primary">
+        {{'general.save'|get_message_openMRS:locale|default:"en"}}</button>
+      <a class="loc-linkbtn" href="{% url 'manageUsers' %}">
+        {{'general.cancel'|get_message_openMRS:locale|default:"en"}}</a>
+    </div>
+  </form>
+
+  {% if not is_new %}
+  <div class="loc-danger-zone">
+    <a class="loc-linkbtn" href="{% url 'changeUserPassword' uuid=user_record.uuid %}">
+      {{'mdrtb.users.changePassword'|get_message:locale|default:"en"}}</a>
+
+    {% if user_record.retired %}
+    <form method="post" action="{% url 'enableUser' uuid=user_record.uuid %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-secondary btn-sm">
+        {{'mdrtb.users.enable'|get_message:locale|default:"en"}}</button>
+    </form>
+    {% else %}
+    <form method="post" action="{% url 'disableUser' uuid=user_record.uuid %}"
+      onsubmit="return confirm('{{'mdrtb.users.confirmDisable'|get_message:locale|default:"en"}}');">
+      {% csrf_token %}
+      <label for="retire_reason">{{'general.retiredReason'|get_message_openMRS:locale|default:"en"}}</label>
+      <input type="text" id="retire_reason" name="retire_reason" maxlength="255">
+      <button type="submit" class="btn btn-outline-danger btn-sm">
+        {{'mdrtb.users.disable'|get_message:locale|default:"en"}}</button>
+    </form>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

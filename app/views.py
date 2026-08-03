@@ -8,6 +8,7 @@ import utilities.patient_utils as pu
 import utilities.forms_util as fu
 import utilities.common_utils as util
 import utilities.locations_util as lu
+import utilities.users_util as uau
 import json
 import datetime
 import logging
@@ -1424,7 +1425,7 @@ def render_patient_list(req):
             if status:
                 context["year"] = year
                 context["listname"] = util.get_patient_list_options(listname)
-                context["location"] = lu.get_location_by_uuid(req, location)["name"]
+                context["location"] = lu.get_location(req, location)["name"]
                 context["string_data"] = response["results"][0]["stringData"]
                 return render(
                     req, "app/reporting/patientlist_report.html", context=context
@@ -3016,16 +3017,545 @@ def submit_order_to_lab(req, orderid):
 # Test-only Views (DEBUG) #
 ##########################
 
-# --- Administration stub pages (menu items disabled in nav.html for now) ---
+# --- Administration ---
+
+
+def _location_admin_context(req):
+    """Shared context for the location screens."""
+    return {
+        "locale": req.session.get("locale", "en"),
+        "can_manage_locations": lu.is_system_developer(req),
+    }
 
 
 def render_manage_locations(req):
+    """Location hierarchy as an expandable tree, with a 'show voided' toggle."""
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs(
         "Location.manage", locale=req.session["locale"], source="OpenMRS"
     )
-    return render(req, "app/admin/manage_locations.html", context={"title": title})
+    show_voided = req.GET.get("voided") == "1"
+    context = _location_admin_context(req)
+    context.update({"title": title, "show_voided": show_voided, "tree": []})
+    try:
+        locations = lu.get_locations(req, include_retired=True)
+        # Always build the FULL tree (retired included) and let the browser do the
+        # filtering. OpenMRS returns retired rows either way, so reloading the page
+        # just to hide some of them would be a pointless round trip — and that round
+        # trip is several paged REST calls, which is why toggling felt slow.
+        tree = lu.build_location_tree(locations, include_retired=True)
+        lu.mark_voided_only_branches(tree)
+        context["tree"] = tree
+        context["location_count"] = lu.count_tree_nodes(tree)
+        context["voided_count"] = len(
+            [loc for loc in locations if loc.get("retired")]
+        )
+    except lu.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+    return render(req, "app/admin/manage_locations.html", context=context)
+
+
+def render_edit_location(req, uuid):
+    """View a location; System Developers can also edit and retire it."""
+    if not check_if_session_alive(req):
+        return redirect("login")
+    context = _location_admin_context(req)
+    try:
+        if req.method == "POST":
+            if not context["can_manage_locations"]:
+                return _deny_location_change(req)
+            payload = lu.build_location_payload(req.POST)
+            if not payload["name"]:
+                messages.error(req, "Location name is required")
+                return redirect("editLocation", uuid=uuid)
+            attribute_values = _collect_attribute_values(req)
+            lu.save_location(req, uuid, payload, attribute_values)
+            messages.success(
+                req,
+                mu.get_global_msgs(
+                    "Location.saved", locale=req.session["locale"], source="OpenMRS"
+                ),
+            )
+            return redirect("manageLocations")
+
+        location = lu.get_location(req, uuid)
+        if not location:
+            messages.error(req, "Location not found")
+            return redirect("manageLocations")
+        context.update(_location_form_context(req, location))
+        context["title"] = location.get("name") or "Location"
+        return render(req, "app/admin/edit_location.html", context=context)
+    except lu.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+        return redirect("manageLocations")
+
+
+def render_create_location(req):
+    """Create a new location. System Developers only."""
+    if not check_if_session_alive(req):
+        return redirect("login")
+    context = _location_admin_context(req)
+    if not context["can_manage_locations"]:
+        return _deny_location_change(req)
+    try:
+        if req.method == "POST":
+            payload = lu.build_location_payload(req.POST)
+            if not payload["name"]:
+                messages.error(req, "Location name is required")
+                return redirect("createLocation")
+            attribute_values = _collect_attribute_values(req)
+            lu.create_location(req, payload, attribute_values)
+            messages.success(
+                req,
+                mu.get_global_msgs(
+                    "Location.saved", locale=req.session["locale"], source="OpenMRS"
+                ),
+            )
+            return redirect("manageLocations")
+
+        context.update(_location_form_context(req, location=None))
+        context["title"] = mu.get_global_msgs(
+            "Location.add", locale=req.session["locale"], source="OpenMRS"
+        )
+        # Pre-select the parent when arriving from a tree node's "add child".
+        context["preselected_parent"] = req.GET.get("parent", "")
+        return render(req, "app/admin/edit_location.html", context=context)
+    except lu.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+        return redirect("manageLocations")
+
+
+def render_retire_location(req, uuid):
+    """Retire (soft delete) a location. System Developers only, POST only."""
+    if not check_if_session_alive(req):
+        return redirect("login")
+    if req.method != "POST":
+        return redirect("editLocation", uuid=uuid)
+    if not lu.is_system_developer(req):
+        return _deny_location_change(req)
+    try:
+        lu.retire_location(req, uuid, req.POST.get("retire_reason"))
+        messages.success(
+            req,
+            mu.get_global_msgs(
+                "Location.retired", locale=req.session["locale"], source="OpenMRS"
+            ),
+        )
+    except lu.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+    return redirect("manageLocations")
+
+
+def render_unretire_location(req, uuid):
+    """Restore a retired location. System Developers only, POST only."""
+    if not check_if_session_alive(req):
+        return redirect("login")
+    if req.method != "POST":
+        return redirect("editLocation", uuid=uuid)
+    if not lu.is_system_developer(req):
+        return _deny_location_change(req)
+    try:
+        lu.unretire_location(req, uuid)
+        messages.success(
+            req,
+            mu.get_global_msgs(
+                "mdrtb.locations.restored", locale=req.session["locale"]
+            ),
+        )
+    except lu.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+    return redirect("manageLocations")
+
+
+def _deny_location_change(req):
+    """Single place that refuses a write from a non System Developer."""
+    messages.error(
+        req,
+        mu.get_global_msgs(
+            "mdrtb.locations.notAllowed", locale=req.session.get("locale", "en")
+        ),
+    )
+    logger.warning(
+        "Rejected location change by non System Developer: "
+        f"{req.session.get('logged_user', {}).get('user', {}).get('username')}"
+    )
+    return redirect("manageLocations")
+
+
+def _collect_attribute_values(req):
+    """
+    Reads attr_<attributeTypeUuid> fields off the POST.
+
+    The form carries a hidden "attribute_types" list of every attribute type it
+    rendered. We iterate that rather than the submitted keys, because an empty
+    multi-select submits no key at all — iterating POST keys would silently keep
+    the old value instead of clearing it.
+    """
+    values = {}
+    rendered = (req.POST.get("attribute_types") or "").split(",")
+    for type_uuid in [t.strip() for t in rendered if t.strip()]:
+        values[type_uuid] = req.POST.getlist(f"attr_{type_uuid}")
+    return values
+
+
+def _location_form_context(req, location):
+    """Reference data + current values for the location form."""
+    locations = lu.get_locations(req)
+    attribute_types = lu.get_location_attribute_types(req)
+
+    selected_attributes = {}
+    for attribute in (location or {}).get("attributes") or []:
+        if attribute.get("voided"):
+            continue
+        attr_type = (attribute.get("attributeType") or {}).get("uuid")
+        if attr_type:
+            selected_attributes.setdefault(attr_type, []).append(
+                lu.attribute_display_value(attribute)
+            )
+    for attr_type in attribute_types:
+        attr_type["selected"] = selected_attributes.get(attr_type["uuid"], [])
+
+    selected_tags = [
+        tag["uuid"] for tag in (location or {}).get("tags") or [] if tag.get("uuid")
+    ]
+
+    # A location may not be its own parent.
+    parent_options = sorted(
+        [
+            loc
+            for loc in locations
+            if not loc.get("retired") and loc["uuid"] != (location or {}).get("uuid")
+        ],
+        key=lambda loc: (loc.get("name") or "").lower(),
+    )
+
+    return {
+        "location": location,
+        "is_new": location is None,
+        "tags": lu.get_location_tags(req),
+        "selected_tags": selected_tags,
+        "attribute_types": attribute_types,
+        "parent_options": parent_options,
+        "countries": lu.get_countries(locations),
+    }
+
+
+# --- Administration: users ---------------------------------------------------
+#
+# A login is three linked records (person + user + provider). All the REST
+# choreography lives in users_admin_util; these views only handle HTTP.
+# Every write is guarded server-side: user management grants privileges, so it
+# is System Developer only regardless of what the template renders.
+
+
+def _deny_user_change(req):
+    messages.error(
+        req,
+        mu.get_global_msgs(
+            "mdrtb.users.notAllowed", locale=req.session.get("locale", "en")
+        ),
+    )
+    logger.warning(
+        "Rejected user-management change by non System Developer: "
+        f"{req.session.get('logged_user', {}).get('user', {}).get('username')}"
+    )
+    return redirect("manageUsers")
+
+
+def render_manage_users(req):
+    """Search users by name, role and disabled state."""
+    if not check_if_session_alive(req):
+        return redirect("login")
+    context = {
+        "title": mu.get_global_msgs(
+            "User.manage", locale=req.session["locale"], source="OpenMRS"
+        ),
+        "can_manage_users": uau.is_system_developer(req),
+        "query": req.GET.get("q", "").strip(),
+        "selected_role": req.GET.get("role", ""),
+        "include_disabled": req.GET.get("disabled") == "1",
+        "users": [],
+        "roles": [],
+        "searched": bool(req.GET),
+    }
+    try:
+        context["roles"] = uau.get_roles(req)
+        if context["searched"]:
+            context["users"] = uau.search_users(
+                req,
+                query=context["query"],
+                role_uuid=context["selected_role"] or None,
+                include_disabled=context["include_disabled"],
+            )
+    except uau.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+    return render(req, "app/admin/manage_users.html", context=context)
+
+
+def render_create_user(req):
+    """Add a user: creates the person, the login and the provider."""
+    if not check_if_session_alive(req):
+        return redirect("login")
+    if not uau.is_system_developer(req):
+        return _deny_user_change(req)
+    try:
+        if req.method == "POST":
+            person = uau.read_person_form(req.POST)
+            user = uau.read_user_form(req.POST)
+            password = req.POST.get("password") or ""
+            problems = uau.validate(
+                person,
+                user,
+                password=password,
+                confirm=req.POST.get("confirm_password") or "",
+                require_password=True,
+            )
+            if problems:
+                for problem in problems:
+                    messages.error(req, problem)
+                return render(
+                    req,
+                    "app/admin/edit_user.html",
+                    context=_user_form_context(req, None, submitted=req.POST),
+                )
+            _, warnings = uau.create_user(req, person, user, password)
+            for warning in warnings:
+                messages.warning(req, warning)
+            messages.success(
+                req,
+                mu.get_global_msgs(
+                    "User.saved", locale=req.session["locale"], source="OpenMRS"
+                ),
+            )
+            return redirect("manageUsers")
+
+        return render(
+            req, "app/admin/edit_user.html", context=_user_form_context(req, None)
+        )
+    except uau.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+        return render(
+            req,
+            "app/admin/edit_user.html",
+            context=_user_form_context(req, None, submitted=req.POST or None),
+        )
+
+
+def render_edit_user(req, uuid):
+    """Edit an existing user. Username changes are mirrored to the provider."""
+    if not check_if_session_alive(req):
+        return redirect("login")
+    if not uau.is_system_developer(req):
+        return _deny_user_change(req)
+    try:
+        existing = uau.get_user(req, uuid)
+        if not existing:
+            messages.error(req, "User not found")
+            return redirect("manageUsers")
+
+        if req.method == "POST":
+            person = uau.read_person_form(req.POST)
+            user = uau.read_user_form(req.POST)
+            problems = uau.validate(person, user)
+            if problems:
+                for problem in problems:
+                    messages.error(req, problem)
+                return render(
+                    req,
+                    "app/admin/edit_user.html",
+                    context=_user_form_context(req, existing, submitted=req.POST),
+                )
+            warnings = uau.save_user(req, existing, person, user)
+            for warning in warnings:
+                messages.warning(req, warning)
+            messages.success(
+                req,
+                mu.get_global_msgs(
+                    "User.saved", locale=req.session["locale"], source="OpenMRS"
+                ),
+            )
+            return redirect("manageUsers")
+
+        return render(
+            req, "app/admin/edit_user.html", context=_user_form_context(req, existing)
+        )
+    except uau.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+        return redirect("manageUsers")
+
+
+def render_change_password(req, uuid):
+    """Separate from the edit form so a password is never reset by accident."""
+    if not check_if_session_alive(req):
+        return redirect("login")
+    if not uau.is_system_developer(req):
+        return _deny_user_change(req)
+    try:
+        existing = uau.get_user(req, uuid)
+        if not existing:
+            messages.error(req, "User not found")
+            return redirect("manageUsers")
+
+        if req.method == "POST":
+            password = req.POST.get("password") or ""
+            confirm = req.POST.get("confirm_password") or ""
+            if not password:
+                messages.error(req, "Password is required")
+            elif password != confirm:
+                messages.error(req, "Password and confirmation do not match")
+            else:
+                uau.change_password(req, uuid, password)
+                messages.success(
+                    req,
+                    mu.get_global_msgs(
+                        "mdrtb.users.passwordChanged",
+                        locale=req.session["locale"],
+                    ),
+                )
+                return redirect("manageUsers")
+
+        return render(
+            req,
+            "app/admin/change_password.html",
+            context={
+                "title": mu.get_global_msgs(
+                    "mdrtb.users.changePassword", locale=req.session["locale"]
+                ),
+                "user": existing,
+                "can_manage_users": True,
+            },
+        )
+    except uau.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+        return redirect("manageUsers")
+
+
+def render_disable_user(req, uuid):
+    """Retire (disable) a login. POST only."""
+    if not check_if_session_alive(req):
+        return redirect("login")
+    if req.method != "POST":
+        return redirect("editUser", uuid=uuid)
+    if not uau.is_system_developer(req):
+        return _deny_user_change(req)
+    try:
+        if uuid == (req.session.get("logged_user", {}).get("user", {}) or {}).get("uuid"):
+            messages.error(
+                req,
+                mu.get_global_msgs(
+                    "mdrtb.users.cannotDisableSelf", locale=req.session["locale"]
+                ),
+            )
+            return redirect("manageUsers")
+        uau.retire_user(req, uuid, req.POST.get("retire_reason"))
+        messages.success(
+            req,
+            mu.get_global_msgs(
+                "mdrtb.users.disabled", locale=req.session["locale"]
+            ),
+        )
+    except uau.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+    return redirect("manageUsers")
+
+
+def render_enable_user(req, uuid):
+    """Restore a disabled login. POST only."""
+    if not check_if_session_alive(req):
+        return redirect("login")
+    if req.method != "POST":
+        return redirect("editUser", uuid=uuid)
+    if not uau.is_system_developer(req):
+        return _deny_user_change(req)
+    try:
+        uau.unretire_user(req, uuid)
+        messages.success(
+            req,
+            mu.get_global_msgs("mdrtb.users.enabled", locale=req.session["locale"]),
+        )
+    except uau.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+    return redirect("manageUsers")
+
+
+def _user_form_context(req, existing, submitted=None):
+    """
+    Reference data plus current values for the Add/Edit User form.
+
+    `submitted` re-populates the form after a validation failure so the
+    operator does not have to retype everything.
+    """
+    person = (existing or {}).get("person") or {}
+    names = person.get("names") or []
+    preferred = next((n for n in names if n.get("preferred")), names[0] if names else {})
+    selected_roles = [
+        r.get("uuid") for r in (existing or {}).get("roles") or [] if r.get("uuid")
+    ]
+    user_properties = (existing or {}).get("userProperties") or {}
+
+    values = {
+        "given_name": preferred.get("givenName") or "",
+        "middle_name": preferred.get("middleName") or "",
+        "family_name": preferred.get("familyName") or "",
+        "gender": person.get("gender") or "",
+        "birthdate": (person.get("birthdate") or "")[:10],
+        "username": (existing or {}).get("username") or "",
+        "default_location": user_properties.get("defaultLocation") or "",
+    }
+    if submitted:
+        for field in values:
+            if field in submitted:
+                values[field] = submitted.get(field)
+        selected_roles = submitted.getlist("roles")
+
+    context = {
+        "title": (
+            mu.get_global_msgs(
+                "User.add", locale=req.session["locale"], source="OpenMRS"
+            )
+            if existing is None
+            else (existing.get("username") or existing.get("display") or "User")
+        ),
+        "is_new": existing is None,
+        "user_record": existing,
+        "values": values,
+        "selected_roles": selected_roles,
+        "genders": uau.GENDERS,
+        "can_manage_users": True,
+        "roles": [],
+        "locations": [],
+    }
+    try:
+        context["roles"] = uau.get_roles(req)
+        context["locations"] = lu.get_locations(req)
+    except uau.SessionExpired:
+        raise
+    except Exception as e:
+        log_and_show_error(e, req)
+    return context
 
 
 def render_manage_translations(req):

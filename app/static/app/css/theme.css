@@ -56,6 +56,47 @@ a:hover {
   background-color: var(--brand-primary-tint-strong);
 }
 
+/* ---------- Scrollbars ----------
+   styles.css (the Tailwind build) hides every scrollbar app-wide with a bare
+   `::-webkit-scrollbar { display: none }`, so long pages scroll but give no
+   visual indication that there is more content. Put them back, themed.
+   Loaded after styles.css, so these win.
+   NOTE: the .scrollbar-hide utility still works — a class selector outranks
+   these element-less pseudo-element rules regardless of order. */
+
+::-webkit-scrollbar {
+  display: block;
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-track-piece {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  height: auto;
+  background-color: #c3ced8;
+  border-radius: 999px;
+  border: 3px solid #fff;
+  transition: background-color var(--brand-transition);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #9aabba;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+/* Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #c3ced8 transparent;
+}
+
 /* Entry animation for page content */
 @keyframes theme-fade-up {
   from { opacity: 0; transform: translateY(6px); }
@@ -430,6 +471,413 @@ a .patient-result-row:hover {
 .login-submit svg {
   width: 1.2rem;
   height: 1.2rem;
+}
+
+/* ---------- Location administration ---------- */
+
+.loc-page {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+.loc-form-page {
+  max-width: 44rem;
+}
+
+.loc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--brand-border);
+  margin-bottom: 1rem;
+}
+
+.loc-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.loc-subtitle {
+  margin: 0.15rem 0 0;
+  color: var(--brand-text-muted);
+  font-size: 0.9rem;
+}
+
+.loc-retired-note {
+  color: #b45309;
+}
+
+.loc-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.loc-voided-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  cursor: pointer;
+  color: var(--brand-text-muted);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.loc-voided-toggle input {
+  cursor: pointer;
+}
+
+.loc-readonly-note {
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--brand-border);
+  border-left: 3px solid var(--brand-primary);
+  border-radius: var(--brand-radius);
+  background-color: var(--brand-primary-tint);
+  color: var(--brand-secondary);
+  font-size: 0.9rem;
+}
+
+.loc-toolbar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.loc-linkbtn {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--brand-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color var(--brand-transition);
+}
+
+.loc-linkbtn:hover {
+  color: var(--brand-primary-active);
+  text-decoration: underline;
+}
+
+/* --- tree --- */
+
+.loc-tree,
+.loc-children {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.loc-children {
+  margin-left: 1.1rem;
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--brand-border);
+}
+
+.loc-node {
+  list-style: none;
+}
+
+/* "Show voided" is a CSS filter, not a server round trip. The tree always
+   contains every location; nodes marked voided-only (retired, with no live
+   descendant) are hidden until .show-voided is on. A retired node that still
+   has a live child is NOT marked, so live locations never disappear. */
+.loc-tree:not(.show-voided) [data-voided-only="true"] {
+  display: none;
+}
+
+.loc-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.4rem;
+  border-radius: calc(var(--brand-radius) - 0.2rem);
+  transition: background-color var(--brand-transition);
+}
+
+.loc-row:hover {
+  background-color: var(--brand-primary-tint);
+}
+
+.loc-toggle {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 1px solid var(--brand-border);
+  border-radius: 0.25rem;
+  color: var(--brand-text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color var(--brand-transition), color var(--brand-transition);
+}
+
+.loc-toggle:hover {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+}
+
+.loc-name {
+  color: var(--brand-text);
+  text-decoration: none;
+}
+
+.loc-name:hover {
+  color: var(--brand-primary-active);
+  text-decoration: underline;
+}
+
+/* Voided/retired locations, per the OpenMRS admin convention */
+.loc-retired {
+  text-decoration: line-through;
+  color: var(--brand-text-muted);
+}
+
+.loc-retired:hover {
+  text-decoration: line-through underline;
+}
+
+.loc-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.25rem;
+  background-color: var(--brand-primary-tint);
+  color: var(--brand-primary-active);
+}
+
+.loc-count {
+  font-size: 0.75rem;
+  color: var(--brand-text-muted);
+}
+
+.loc-count::before {
+  content: "(";
+}
+
+.loc-count::after {
+  content: ")";
+}
+
+.loc-detail {
+  margin-left: 1.75rem;
+}
+
+.loc-fields {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.15rem 1rem;
+  margin: 0.25rem 0 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  font-size: 0.85rem;
+}
+
+.loc-fields dt {
+  color: var(--brand-text-muted);
+  font-weight: 600;
+}
+
+.loc-fields dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.loc-empty {
+  color: var(--brand-text-muted);
+  padding: 2rem 0;
+  text-align: center;
+}
+
+/* --- form --- */
+
+.loc-form-page fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.loc-field {
+  margin-bottom: 1rem;
+}
+
+/* Paired fields: address1/address2, country/state, city/district.
+   Collapses to one column on narrow screens so labels never get squeezed. */
+.loc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 1.25rem;
+}
+
+@media (max-width: 40rem) {
+  .loc-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.loc-field label {
+  display: block;
+  font-weight: 600;
+  color: var(--brand-secondary);
+  margin-bottom: 0.3rem;
+}
+
+.loc-field input[type="text"],
+.loc-field textarea,
+.loc-field select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.loc-field input:disabled {
+  background-color: #f4f7f9;
+  color: var(--brand-text-muted);
+  cursor: not-allowed;
+}
+
+.loc-hint {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--brand-text-muted);
+  font-size: 0.8rem;
+}
+
+.loc-section {
+  font-size: 1rem;
+  margin: 1.75rem 0 0.75rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.loc-tags {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.4rem 1.25rem;
+}
+
+@media (max-width: 40rem) {
+  .loc-tags {
+    grid-template-columns: 1fr;
+  }
+}
+
+.loc-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.loc-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-top: 1.75rem;
+}
+
+.loc-danger-zone {
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--brand-border);
+}
+
+.loc-danger-zone form {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.loc-danger-zone label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--brand-text-muted);
+  margin-bottom: 0.3rem;
+}
+
+.loc-danger-zone input {
+  min-width: 18rem;
+}
+
+/* ---------- User administration ---------- */
+
+.user-search {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+}
+
+.user-search .loc-field {
+  margin-bottom: 0;
+  min-width: 14rem;
+  flex: 1 1 14rem;
+}
+
+.user-search-check {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 0.4rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.user-table th {
+  text-align: left;
+}
+
+.user-table td {
+  vertical-align: top;
+}
+
+/* Disabled (retired) logins, matching the voided convention elsewhere */
+.user-disabled td:first-child a,
+.user-disabled td:nth-child(2) {
+  text-decoration: line-through;
+  color: var(--brand-text-muted);
+}
+
+.user-row-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.user-radio-row {
+  display: flex;
+  gap: 1.5rem;
+}
+
+/* Standalone label for a radio group, which has no single "for" target */
+.loc-field-label {
+  display: block;
+  font-weight: 600;
+  color: var(--brand-secondary);
+  margin-bottom: 0.3rem;
 }
 
 /* ---------- Administration stub pages ---------- */

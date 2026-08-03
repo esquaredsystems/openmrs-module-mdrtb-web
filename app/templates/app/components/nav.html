@@ -123,11 +123,15 @@
       {{'Navigation.administration'|get_message_openMRS:locale|default:"en"}}
     </button>
     <ul class="dropdown-menu" aria-labelledby="dropdownAdministration">
-      <!-- Items disabled until the pages are implemented: remove the "disabled" class,
+      <!-- Remaining items are disabled until implemented: remove the "disabled" class,
            aria-disabled and tabindex to enable. Stub routes/views/templates already exist. -->
       <li>
-        <a class="dropdown-item disabled" aria-disabled="true" tabindex="-1"
+        <a class="dropdown-item"
           href="{% url 'manageLocations' %}">{{'Location.manage'|get_message_openMRS:locale|default:"en"}}</a>
+      </li>
+      <li>
+        <a class="dropdown-item"
+          href="{% url 'manageUsers' %}">{{'User.manage'|get_message_openMRS:locale|default:"en"}}</a>
       </li>
       <li>
         <a class="dropdown-item disabled" aria-disabled="true" tabindex="-1"

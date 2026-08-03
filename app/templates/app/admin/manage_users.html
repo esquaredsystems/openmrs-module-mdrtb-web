@@ -1,0 +1,94 @@
+{% extends 'app/base/base.html' %}
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+
+{%block content%}
+{% include 'app/components/nav.html' %}
+
+<div class="loc-page">
+  <div class="loc-header">
+    <div>
+      <h1>{{'User.manage'|get_message_openMRS:locale|default:"en"}}</h1>
+      {% if users %}
+      <p class="loc-subtitle">{{ users|length }}</p>
+      {% endif %}
+    </div>
+    {% if can_manage_users %}
+    <a class="btn btn-primary btn-sm" href="{% url 'createUser' %}">
+      {{'User.add'|get_message_openMRS:locale|default:"en"}}</a>
+    {% endif %}
+  </div>
+
+  {% if not can_manage_users %}
+  <p class="loc-readonly-note">{{'mdrtb.users.readOnly'|get_message:locale|default:"en"}}</p>
+  {% endif %}
+
+  <form method="get" class="user-search">
+    <div class="loc-field">
+      <label for="q">{{'mdrtb.users.findOnName'|get_message:locale|default:"en"}}</label>
+      <input type="text" id="q" name="q" value="{{ query }}" autocomplete="off">
+    </div>
+    <div class="loc-field">
+      <label for="role">{{'Role.role'|get_message_openMRS:locale|default:"en"}}</label>
+      <select id="role" name="role">
+        <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+        {% for role in roles %}
+        <option value="{{ role.uuid }}" {% if selected_role == role.uuid %}selected{% endif %}>
+          {{ role.name|default:role.display }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <label class="user-search-check" for="disabled">
+      <input type="checkbox" id="disabled" name="disabled" value="1" {% if include_disabled %}checked{% endif %}>
+      <span>{{'mdrtb.users.includeDisabled'|get_message:locale|default:"en"}}</span>
+    </label>
+    <button type="submit" class="btn btn-primary btn-sm">
+      {{'general.search'|get_message_openMRS:locale|default:"en"}}</button>
+  </form>
+
+  {% if searched %}
+  {% if users %}
+  <table class="user-table">
+    <thead>
+      <tr>
+        <th>{{'User.username'|get_message_openMRS:locale|default:"en"}}</th>
+        <th>{{'general.name'|get_message_openMRS:locale|default:"en"}}</th>
+        <th>{{'User.roles'|get_message_openMRS:locale|default:"en"}}</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr{% if user.retired %} class="user-disabled"{% endif %}>
+        <td>
+          {% if can_manage_users %}
+          <a href="{% url 'editUser' uuid=user.uuid %}">{{ user.username|default:user.systemId }}</a>
+          {% else %}{{ user.username|default:user.systemId }}{% endif %}
+        </td>
+        <td>{{ user.person.display|default:"—" }}</td>
+        <td>
+          {% for role in user.roles %}
+          <span class="loc-badge">{{ role.name|default:role.display }}</span>
+          {% empty %}—{% endfor %}
+        </td>
+        <td class="user-row-actions">
+          {% if can_manage_users %}
+          <a class="loc-linkbtn" href="{% url 'changeUserPassword' uuid=user.uuid %}">
+            {{'mdrtb.users.changePassword'|get_message:locale|default:"en"}}</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="loc-empty">{{'mdrtb.users.noResults'|get_message:locale|default:"en"}}</p>
+  {% endif %}
+  {% else %}
+  <p class="loc-empty">{{'mdrtb.users.searchPrompt'|get_message:locale|default:"en"}}</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -18,6 +18,11 @@ import logging
 
 logger = logging.getLogger("django")
 
+# Marker stored in session["session_id"] when OpenMRS gives us no JSESSIONID.
+# Keeps the "logged in" checks truthy while telling get_auth_headers() not to
+# send a fabricated Cookie header. See initiate_session().
+BASIC_AUTH_ONLY = "basic-auth-only"
+
 
 @handle_rest_exceptions
 def initiate_session(req, username, password):
@@ -43,7 +48,18 @@ def initiate_session(req, username, password):
     if response.status_code == 200:
         if response.json()["authenticated"]:
             logger.debug("User Authenticated")
-            req.session["session_id"] = response.json()["sessionId"]
+            # OpenMRS removed "sessionId" from the /session response body due to security vulnerability. The session token now only arrives as the JSESSIONID cookie
+            session_id = response.json().get("sessionId") or response.cookies.get(
+                "JSESSIONID"
+            )
+            if not session_id:
+                # Every request also carries HTTP Basic credentials, which OpenMRS accepts on its own, so the user is genuinely logged in
+                logger.info(
+                    "No sessionId in body and no JSESSIONID cookie; "
+                    "continuing with Basic auth only"
+                )
+                session_id = BASIC_AUTH_ONLY
+            req.session["session_id"] = session_id
             if "user" in response.json():
                 req.session["logged_user"] = response.json()
             req.session["encoded_credentials"] = encoded_credentials
@@ -238,8 +254,13 @@ def get_auth_headers(req):
     try:
         headers = {
             "Authorization": "Basic {}".format(req.session["encoded_credentials"]),
-            "Cookie": "JSESSIONID={}".format(req.session["session_id"]),
         }
+        session_id = req.session["session_id"]
+        # Only send a real JSESSIONID. BASIC_AUTH_ONLY is our internal marker for
+        # "OpenMRS issued no cookie" — sending it as a cookie would be a bogus
+        # session token. Basic auth in the header authenticates the call anyway.
+        if session_id and session_id != BASIC_AUTH_ONLY:
+            headers["Cookie"] = "JSESSIONID={}".format(session_id)
         return headers
     except KeyError as ke:
         logger.error(ke, exc_info=True)

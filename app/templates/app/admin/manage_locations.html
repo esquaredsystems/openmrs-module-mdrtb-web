@@ -7,8 +7,92 @@
 
 {%block content%}
 {% include 'app/components/nav.html' %}
-<div class="admin-stub-page">
-  <h1>{{title}}</h1>
-  <p>{{'mdrtb.underConstruction'|get_message:locale|default:"en"}}</p>
+
+<div class="loc-page">
+  <div class="loc-header">
+    <div>
+      <h1>{{'Location.manage'|get_message_openMRS:locale|default:"en"}}</h1>
+      <p class="loc-subtitle">
+        {{ location_count|default:0 }} {{'Location.header'|get_message_openMRS:locale|default:"en"}}
+        {% if voided_count %}&middot; {{ voided_count }} {{'general.voided'|get_message_openMRS:locale|default:"en"}}{% endif %}
+      </p>
+    </div>
+
+    <div class="loc-actions">
+      <label class="loc-voided-toggle" for="show-voided">
+        <input type="checkbox" id="show-voided" {% if show_voided %}checked{% endif %}>
+        <span>{{'mdrtb.locations.showVoided'|get_message:locale|default:"en"}}</span>
+      </label>
+      {% if can_manage_locations %}
+      <a class="btn btn-primary btn-sm" href="{% url 'createLocation' %}">
+        {{'Location.add'|get_message_openMRS:locale|default:"en"}}</a>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if not can_manage_locations %}
+  <p class="loc-readonly-note">{{'mdrtb.locations.readOnly'|get_message:locale|default:"en"}}</p>
+  {% endif %}
+
+  {% if tree %}
+  <div class="loc-toolbar">
+    <button type="button" class="loc-linkbtn" id="expand-all">+ {{'mdrtb.locations.expandAll'|get_message:locale|default:"en"}}</button>
+    <button type="button" class="loc-linkbtn" id="collapse-all">&minus; {{'mdrtb.locations.collapseAll'|get_message:locale|default:"en"}}</button>
+  </div>
+  <ul class="loc-tree{% if show_voided %} show-voided{% endif %}" id="loc-tree">
+    {% for node in tree %}
+    {% include 'app/admin/_location_node.html' with node=node %}
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="loc-empty">{{'Location.missing'|get_message_openMRS:locale|default:"en"}}</p>
+  {% endif %}
 </div>
+
+<script>
+  (function () {
+    // Expand / collapse a single node.
+    document.querySelectorAll('.loc-toggle').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var detail = button.closest('.loc-node').querySelector('.loc-detail');
+        if (!detail) { return; }
+        var isOpen = !detail.hidden;
+        detail.hidden = isOpen;
+        button.textContent = isOpen ? '+' : '−';
+        button.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+      });
+    });
+
+    function setAll(open) {
+      document.querySelectorAll('.loc-node').forEach(function (node) {
+        var detail = node.querySelector('.loc-detail');
+        var button = node.querySelector('.loc-toggle');
+        if (!detail || !button) { return; }
+        detail.hidden = !open;
+        button.textContent = open ? '−' : '+';
+        button.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    }
+    // These two only exist when the tree is non-empty.
+    var expandAll = document.getElementById('expand-all');
+    var collapseAll = document.getElementById('collapse-all');
+    if (expandAll) { expandAll.addEventListener('click', function () { setAll(true); }); }
+    if (collapseAll) { collapseAll.addEventListener('click', function () { setAll(false); }); }
+
+    // Voided toggle is pure CSS — the tree already contains every location, so
+    // there is nothing to fetch and no reason to reload. The URL is kept in sync
+    // (without navigating) so the view stays bookmarkable/shareable.
+    var showVoided = document.getElementById('show-voided');
+    var tree = document.getElementById('loc-tree');
+    if (showVoided && tree) {
+      showVoided.addEventListener('change', function (e) {
+        tree.classList.toggle('show-voided', e.target.checked);
+        var url = new URL(window.location.href);
+        if (e.target.checked) { url.searchParams.set('voided', '1'); }
+        else { url.searchParams.delete('voided'); }
+        window.history.replaceState({}, '', url);
+      });
+    }
+  })();
+</script>
 {% endblock %}

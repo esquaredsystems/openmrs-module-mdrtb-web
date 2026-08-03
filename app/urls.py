@@ -282,6 +282,17 @@ urlpatterns = [
     # Administration stub pages (menu items disabled in nav.html for now).
     # NOTE: do not use an "admin/" prefix — settings/urls.py routes it to Django admin.
     path("administration/locations", views.render_manage_locations, name="manageLocations"),
+    path("administration/locations/new", views.render_create_location, name="createLocation"),
+    path("administration/locations/<str:uuid>", views.render_edit_location, name="editLocation"),
+    path("administration/locations/<str:uuid>/retire", views.render_retire_location, name="retireLocation"),
+    path("administration/locations/<str:uuid>/unretire", views.render_unretire_location, name="unretireLocation"),
+    # "new" must precede "<uuid>" so it is not swallowed as a uuid.
+    path("administration/users", views.render_manage_users, name="manageUsers"),
+    path("administration/users/new", views.render_create_user, name="createUser"),
+    path("administration/users/<str:uuid>", views.render_edit_user, name="editUser"),
+    path("administration/users/<str:uuid>/password", views.render_change_password, name="changeUserPassword"),
+    path("administration/users/<str:uuid>/disable", views.render_disable_user, name="disableUser"),
+    path("administration/users/<str:uuid>/enable", views.render_enable_user, name="enableUser"),
     path("administration/translations", views.render_manage_translations, name="manageTranslations"),
     path("administration/defaults", views.render_set_defaults, name="setDefaults"),
     path("logout", views.render_logout, name="logout"),

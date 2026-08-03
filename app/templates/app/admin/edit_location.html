@@ -1,0 +1,183 @@
+{% extends 'app/base/base.html' %}
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+
+{%block content%}
+{% include 'app/components/nav.html' %}
+
+<div class="loc-page loc-form-page">
+  <div class="loc-header">
+    <div>
+      <h1>
+        {% if is_new %}{{'Location.add'|get_message_openMRS:locale|default:"en"}}
+        {% else %}{{ location.name }}{% endif %}
+      </h1>
+      {% if location.retired %}
+      <p class="loc-subtitle loc-retired-note">{{'general.voided'|get_message_openMRS:locale|default:"en"}}</p>
+      {% endif %}
+    </div>
+    <a class="loc-linkbtn" href="{% url 'manageLocations' %}">
+      &larr; {{'Location.manage'|get_message_openMRS:locale|default:"en"}}</a>
+  </div>
+
+  {% if not can_manage_locations %}
+  <p class="loc-readonly-note">{{'mdrtb.locations.readOnly'|get_message:locale|default:"en"}}</p>
+  {% endif %}
+
+  <form method="post"
+    action="{% if is_new %}{% url 'createLocation' %}{% else %}{% url 'editLocation' uuid=location.uuid %}{% endif %}">
+    {% csrf_token %}
+    <fieldset {% if not can_manage_locations %}disabled{% endif %}>
+
+      {% if not is_new %}
+      <div class="loc-field">
+        <label for="uuid">{{'general.uuid'|get_message_openMRS:locale|default:"en"}}</label>
+        <input type="text" id="uuid" value="{{ location.uuid }}" disabled>
+      </div>
+      {% endif %}
+
+      <div class="loc-field">
+        <label for="name" class="required">{{'general.name'|get_message_openMRS:locale|default:"en"}}</label>
+        <input type="text" id="name" name="name" required maxlength="255" value="{{ location.name|default:'' }}">
+      </div>
+
+      <div class="loc-field">
+        <label for="description">{{'general.description'|get_message_openMRS:locale|default:"en"}}</label>
+        <textarea id="description" name="description" rows="2"
+          maxlength="255">{{ location.description|default:'' }}</textarea>
+      </div>
+
+      <div class="loc-grid">
+        <div class="loc-field">
+          <label for="address1">{{'Location.address1'|get_message_openMRS:locale|default:"en"}}</label>
+          <input type="text" id="address1" name="address1" maxlength="255" value="{{ location.address1|default:'' }}">
+        </div>
+
+        <div class="loc-field">
+          <label for="address2">{{'Location.address2'|get_message_openMRS:locale|default:"en"}}</label>
+          <input type="text" id="address2" name="address2" maxlength="255" value="{{ location.address2|default:'' }}">
+        </div>
+
+        <div class="loc-field">
+          <label for="country">{{'Location.country'|get_message_openMRS:locale|default:"en"}}</label>
+          <input type="text" id="country" name="country" list="country-options" maxlength="50"
+            value="{{ location.country|default:'' }}">
+          <datalist id="country-options">
+            {% for country in countries %}<option value="{{ country }}"></option>{% endfor %}
+          </datalist>
+        </div>
+
+        <div class="loc-field">
+          <label for="state_province">{{'Location.stateProvince'|get_message_openMRS:locale|default:"en"}}</label>
+          <input type="text" id="state_province" name="state_province" maxlength="255"
+            value="{{ location.stateProvince|default:'' }}">
+        </div>
+
+        <div class="loc-field">
+          <label for="city_village">{{'Location.cityVillage'|get_message_openMRS:locale|default:"en"}}</label>
+          <input type="text" id="city_village" name="city_village" maxlength="255"
+            value="{{ location.cityVillage|default:'' }}">
+        </div>
+
+        <div class="loc-field">
+          <label for="county_district">{{'mdrtb.locations.countyDistrict'|get_message:locale|default:"en"}}</label>
+          <input type="text" id="county_district" name="county_district" maxlength="255"
+            value="{{ location.countyDistrict|default:'' }}">
+        </div>
+      </div>
+
+      <div class="loc-field">
+        <label for="parent_location">{{'Location.parentLocation'|get_message_openMRS:locale|default:"en"}}</label>
+        <select id="parent_location" name="parent_location">
+          <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+          {% for option in parent_options %}
+          <option value="{{ option.uuid }}" {% if location.parentLocation.uuid == option.uuid %}selected
+            {% elif preselected_parent == option.uuid %}selected{% endif %}>{{ option.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      {% if attribute_types %}
+      <h2 class="loc-section">{{'mdrtb.locations.attributes'|get_message:locale|default:"en"}}</h2>
+      {% comment %}
+      Tells the view which attribute types this form rendered, so an emptied
+      field is cleared rather than silently left at its old value.
+      {% endcomment %}
+      <input type="hidden" name="attribute_types"
+        value="{% for attribute_type in attribute_types %}{{ attribute_type.uuid }}{% if not forloop.last %},{% endif %}{% endfor %}">
+      {% for attribute_type in attribute_types %}
+      <div class="loc-field">
+        <label for="attr_{{ attribute_type.uuid }}"
+          {% if attribute_type.required %}class="required"{% endif %}>{{ attribute_type.name }}</label>
+        {% if attribute_type.options %}
+        <select id="attr_{{ attribute_type.uuid }}" name="attr_{{ attribute_type.uuid }}"
+          {% if attribute_type.multiple %}multiple size="5"{% endif %}
+          {% if attribute_type.required %}required{% endif %}>
+          {% if not attribute_type.multiple %}
+          <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+          {% endif %}
+          {% for option in attribute_type.options %}
+          <option value="{{ option }}" {% if option in attribute_type.selected %}selected{% endif %}>{{ option }}
+          </option>
+          {% endfor %}
+        </select>
+        {% else %}
+        <input type="text" id="attr_{{ attribute_type.uuid }}" name="attr_{{ attribute_type.uuid }}"
+          value="{{ attribute_type.selected|join:', ' }}" {% if attribute_type.required %}required{% endif %}>
+        {% endif %}
+        {% if attribute_type.description %}
+        <small class="loc-hint">{{ attribute_type.description }}</small>
+        {% endif %}
+      </div>
+      {% endfor %}
+      {% endif %}
+
+      {% if tags %}
+      <h2 class="loc-section">{{'Location.tags'|get_message_openMRS:locale|default:"en"}}</h2>
+      <div class="loc-tags">
+        {% for tag in tags %}
+        <label class="loc-tag" for="tag_{{ tag.uuid }}" {% if tag.description %}title="{{ tag.description }}"{% endif %}>
+          <input type="checkbox" id="tag_{{ tag.uuid }}" name="tags" value="{{ tag.uuid }}"
+            {% if tag.uuid in selected_tags %}checked{% endif %}>
+          <span>{{ tag.name }}</span>
+        </label>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if can_manage_locations %}
+      <div class="loc-form-actions">
+        <button type="submit" class="btn btn-primary">
+          {{'Location.save'|get_message_openMRS:locale|default:"en"}}</button>
+        <a class="loc-linkbtn" href="{% url 'manageLocations' %}">
+          {{'general.cancel'|get_message_openMRS:locale|default:"en"}}</a>
+      </div>
+      {% endif %}
+    </fieldset>
+  </form>
+
+  {% if can_manage_locations and not is_new %}
+  <div class="loc-danger-zone">
+    {% if location.retired %}
+    <form method="post" action="{% url 'unretireLocation' uuid=location.uuid %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-secondary btn-sm">
+        {{'general.restore'|get_message_openMRS:locale|default:"en"}}</button>
+    </form>
+    {% else %}
+    <form method="post" action="{% url 'retireLocation' uuid=location.uuid %}"
+      onsubmit="return confirm('{{'mdrtb.locations.confirmRetire'|get_message:locale|default:"en"}}');">
+      {% csrf_token %}
+      <label for="retire_reason">{{'general.retiredReason'|get_message_openMRS:locale|default:"en"}}</label>
+      <input type="text" id="retire_reason" name="retire_reason" maxlength="255">
+      <button type="submit" class="btn btn-outline-danger btn-sm">
+        {{'general.retire'|get_message_openMRS:locale|default:"en"}}</button>
+    </form>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
