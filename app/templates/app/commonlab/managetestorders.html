@@ -1,4 +1,4 @@
-﻿{% extends 'app/base/base.html' %}
+{% extends 'app/base/base.html' %}
 {% block title %} {{title}} {%endblock %}
 {% block content %}
 
@@ -99,7 +99,8 @@
                 <td id="accordion{{forloop.counter}}" class="border-b w-1/5 border-gray-200 bg-white text-sm">
                   <div class="flex items-center space-x-4 px-5">
                     <div onclick="showResults(this,'{{order.uuid}}')" id="heading{{forloop.counter}}"
-                      data-te-collapse-init data-te-target="#collapse{{forloop.counter}}" aria-expanded="false"
+                      data-bs-toggle="collapse"
+data-bs-target="#collapse{{forloop.counter}}" aria-expanded="false"
                       aria-controls="collapse{{forloop.counter}}">
                       <svg id="detail-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                         stroke-width="1.5" stroke="currentColor" class="w-5 h-5 hover:text-blue-500 cursor-pointer">
@@ -135,8 +136,8 @@
               </tr>
               <tr class="bg-[#9e9e9e28]">
                 <td colspan="6" class="px-4 text-black w-full">
-                  <div class="hidden" id="collapse{{forloop.counter}}" data-te-collapse-item
-                    aria-labelledby="heading{{forloop.counter}}" data-te-parent="#accordion{{forloop.counter}}">
+                  <div class="collapse" id="collapse{{forloop.counter}}"
+                    aria-labelledby="heading{{forloop.counter}}">
                     <div class="flex items-center space-x-2 mt-4">
                       <h2 class="font-bold text-lg">
                         {{'commonlabtest.result.edit'|get_message:locale|default:"en"}}</h2>

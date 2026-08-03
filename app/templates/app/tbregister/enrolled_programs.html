@@ -1,4 +1,4 @@
-﻿{% extends 'app/base/base.html' %}
+{% extends 'app/base/base.html' %}
 {% block title %}
 {{title}}
 {% endblock %}
@@ -226,8 +226,8 @@
               <td id="accordion{{forloop.counter}}" class="px-5 py-4 border-b border-gray-200 w-fit  text-sm">
                 <div class="flex space-x-4">
                   <div onclick="showResults(this,'{{lab_result.uuid}}')" id="heading{{forloop.counter}}"
-                    data-attributes="{{lab_result.attributes}}" data-te-collapse-init
-                    data-te-target="#collapse{{forloop.counter}}" aria-expanded="false"
+                    data-attributes="{{lab_result.attributes}}" data-bs-toggle="collapse"
+data-bs-target="#collapse{{forloop.counter}}" aria-expanded="false"
                     aria-controls="collapse{{forloop.counter}}">
                     <svg id="detail-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                       stroke-width="1.5" stroke="currentColor" class="w-5 h-5 hover:text-blue-500 cursor-pointer">
@@ -248,8 +248,8 @@
             </tr>
             <tr>
               <td colspan="4" class="px-4 text-black w-full">
-                <div class="hidden" id="collapse{{forloop.counter}}" data-te-collapse-item
-                  aria-labelledby="heading{{forloop.counter}}" data-te-parent="#accordion{{forloop.counter}}">
+                <div class="collapse" id="collapse{{forloop.counter}}"
+                  aria-labelledby="heading{{forloop.counter}}">
                   <div>
                     <div id="{{lab_result.uuid}}groups" class="py-4 w-full grid grid-cols-2 gap-2">
                       <div class="w-full bg-white p-2">

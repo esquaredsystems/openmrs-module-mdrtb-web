@@ -149,8 +149,26 @@ main {
 }
 
 .dropdown-item {
+  /* Set explicitly: menu items are anchors, and while styles.css survives its
+     Tailwind preflight resets `a { color: inherit }`. Being explicit keeps every
+     item the same colour regardless of visited state or load order. */
+  color: var(--brand-text);
   border-radius: calc(var(--brand-radius) - 0.2rem);
   transition: background-color var(--brand-transition), color var(--brand-transition);
+}
+
+/* Outline buttons follow the brand too — the compiled Bootstrap hardcodes its
+   own blue in per-component variables, so retinting --bs-primary is not enough. */
+.btn-outline-primary {
+  --bs-btn-color: var(--brand-primary);
+  --bs-btn-border-color: var(--brand-primary);
+  --bs-btn-hover-bg: var(--brand-primary);
+  --bs-btn-hover-border-color: var(--brand-primary);
+  --bs-btn-active-bg: var(--brand-primary-active);
+  --bs-btn-active-border-color: var(--brand-primary-active);
+  --bs-btn-focus-shadow-rgb: var(--brand-primary-rgb);
+  --bs-btn-disabled-color: var(--brand-primary);
+  --bs-btn-disabled-border-color: var(--brand-primary);
 }
 
 .dropdown-item:hover,
@@ -190,6 +208,19 @@ header a:hover img {
   background-color: var(--brand-primary-tint);
   color: var(--brand-primary-active) !important;
   text-decoration: none;
+}
+
+/* Home shortcut: icon-only, so it needs its own sizing rather than the text
+   padding the other header links use. */
+.header-home {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem;
+}
+
+.header-home svg {
+  width: 1.35rem;
+  height: 1.35rem;
 }
 
 header .dropdown-toggle {
@@ -471,6 +502,55 @@ a .patient-result-row:hover {
 .login-submit svg {
   width: 1.2rem;
   height: 1.2rem;
+}
+
+/* ---------- Shared page panel ----------
+   Same width as the enrolled-programs window (75% on wide screens, full width
+   below 840px), so form pages stop spanning the whole monitor. */
+
+.page-panel {
+  width: 100%;
+  margin: 2rem auto;
+}
+
+@media screen and (min-width: 840px) {
+  .page-panel {
+    width: 75%;
+  }
+}
+
+/* .input-container / .input-label are legacy classes from the Tailwind build,
+   still used by ~30 templates. .input-label is width:100%, so in a flex row the
+   label and the control each stretch to half the viewport — that gulf between
+   label and field is what makes these forms look so broad. Inside a .page-panel
+   the label gets a fixed column and the control takes the rest.
+   No gap here: styles.css already puts 1rem between the row's children. */
+
+.page-panel .input-label {
+  width: 14rem;
+  flex: 0 0 14rem;
+}
+
+.page-panel .input-container > .input,
+.page-panel .input-container > .form-control,
+.page-panel .input-container > .input-container,
+.page-panel .input-container > input,
+.page-panel .input-container > select,
+.page-panel .input-container > textarea {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+@media screen and (max-width: 640px) {
+  /* Stack label above field on small screens rather than squeezing both. */
+  .page-panel .input-container {
+    flex-wrap: wrap;
+  }
+
+  .page-panel .input-label {
+    width: 100%;
+    flex: 1 1 100%;
+  }
 }
 
 /* ---------- Location administration ---------- */
@@ -896,20 +976,84 @@ a .patient-result-row:hover {
 
 /* ---------- Legacy custom-class polish (pages not yet migrated) ---------- */
 
+/* --- Ported out of styles.css (the Tailwind build) ---
+   These four are the app's form primitives: ~730 uses across 40 templates.
+   They now live here in full, so the templates using them no longer depend on
+   styles.css. Geometry is reproduced exactly — only the colours move to the
+   brand palette. Do not re-add them to styles.css. */
+
 .button-primary {
-  background-color: var(--brand-primary) !important;
-  border-radius: var(--brand-radius) !important;
+  padding: 0.5rem;
+  border-radius: var(--brand-radius);
+  background-color: var(--brand-primary);
+  color: #fff;
   transition: background-color var(--brand-transition), box-shadow var(--brand-transition);
-  box-shadow: none;
 }
 
 .button-primary:hover {
-  background-color: var(--brand-primary-hover) !important;
+  background-color: var(--brand-primary-hover);
   box-shadow: var(--brand-shadow);
 }
 
 .button-primary:active {
-  background-color: var(--brand-primary-active) !important;
+  background-color: var(--brand-primary-active);
+}
+
+.cancel-button {
+  padding: 0.5rem;
+  font-weight: 700;
+  color: var(--brand-secondary);
+  text-decoration: underline;
+  transition: color var(--brand-transition);
+}
+
+.cancel-button:hover {
+  color: var(--brand-primary-active);
+}
+
+/* Custom radio. float/negative margin are load-bearing: they position the
+   control in the existing markup across 21 templates. Reproduced verbatim.
+   The Tailwind original also drew a nearly invisible ripple via ::before and
+   --tw-* variables; that is dropped, the checked dot is what users see. */
+.radio-input {
+  position: relative;
+  float: left;
+  margin: 0.125rem 0.25rem 0 -1.5rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border: 2px solid rgba(0, 0, 0, 0.25);
+  border-radius: 50%;
+  background-color: #fff;
+  transition: border-color var(--brand-transition), box-shadow var(--brand-transition);
+}
+
+.radio-input:hover {
+  cursor: pointer;
+  border-color: var(--brand-primary);
+}
+
+.radio-input:checked {
+  border-color: var(--brand-primary);
+}
+
+.radio-input:checked::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background-color: var(--brand-primary);
+  transform: translate(-50%, -50%);
+}
+
+.radio-input:focus {
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem var(--brand-primary-tint-strong);
 }
 
 .nav-item {
@@ -921,8 +1065,12 @@ a .patient-result-row:hover {
   text-decoration: underline;
 }
 
+/* Ported out of styles.css. width:100% is what makes the label and its field
+   each take half a row; .page-panel above narrows it to a fixed column. */
 .input-label {
-  color: var(--brand-secondary) !important;
+  width: 100%;
+  font-weight: 700;
+  color: var(--brand-secondary);
 }
 
 /* Un-classed element defaults, for pages/fields with no framework classes */
