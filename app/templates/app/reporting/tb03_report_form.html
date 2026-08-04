@@ -1,4 +1,4 @@
-﻿{% extends 'app/base/base.html' %}
+{% extends 'app/base/base.html' %}
 
 {% block content %}
 <div class="mx-auto w-2/4">
@@ -16,7 +16,7 @@
 		<div class="input-container">
 			<label class="input-label w-1/6" for="month">{{"mdrtb.month"|get_message:locale|default:"en"}}</label>
 			<select required name="month" id="month" class="input form-control">
-				<option value="">Select</option>
+				<option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
 				{% for month in months %}
 				<option value="{{month.value}}">{{month.name}}</option>
 				{% endfor %}
@@ -28,7 +28,7 @@
 
 			<div class="flex items-center w-full space-x-4">
 				<div class="space-x-2 flex items-center">
-					<label for="">Select</label>
+					<label for="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</label>
 					<input checked type="radio" name="quarter" id="quarter" class="radio-input" value="">
 				</div>
 				{% for quarter in quarters %}

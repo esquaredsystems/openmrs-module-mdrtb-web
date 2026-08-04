@@ -19,8 +19,7 @@ import logging
 logger = logging.getLogger("django")
 
 # Marker stored in session["session_id"] when OpenMRS gives us no JSESSIONID.
-# Keeps the "logged in" checks truthy while telling get_auth_headers() not to
-# send a fabricated Cookie header. See initiate_session().
+# Keeps the "logged in" checks truthy. See initiate_session().
 BASIC_AUTH_ONLY = "basic-auth-only"
 
 
@@ -67,6 +66,12 @@ def initiate_session(req, username, password):
                 "defaultLocale", "ru"
             )
             mu.get_all_concepts(req)
+            # Load the UI translations into Redis, the same way concepts are loaded.
+            # Imported here rather than at module level because messages_util reaches back into this module to make the
+            # REST call, and a top-level import would be circular.
+            from utilities import messages_util as msg # CAUTION! DO NOT MOVE THIS IMPORT TO TOP
+            msg.warm(req, req.session["locale"])
+
             try:
                 lu.create_location_hierarchy(req)
             except Exception:

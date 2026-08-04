@@ -961,6 +961,49 @@ a .patient-result-row:hover {
   margin-bottom: 0.3rem;
 }
 
+/* ---------- Manage Translations ---------- */
+
+.translations-table td {
+  vertical-align: middle;
+}
+
+.translations-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  color: var(--brand-secondary);
+  white-space: nowrap;
+  padding-right: 1rem;
+}
+
+.translations-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.translations-row input[type="text"] {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: none;
+}
+
+.translations-delete {
+  display: inline-block;
+  margin-top: 0.25rem;
+}
+
+.translations-add {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+.translations-add .loc-field {
+  margin-bottom: 0;
+  flex: 1 1 12rem;
+}
+
 /* ---------- Administration stub pages ---------- */
 
 .admin-stub-page {

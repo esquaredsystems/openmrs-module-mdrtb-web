@@ -291,7 +291,7 @@
             <tr>
               <th
                 class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                {{'commonlabtest.labTestType'|get_message:locale|default:"en"}}
+                {{'labtest.labTestType'|get_message:locale|default:"en"}}
               </th>
               <th
                 class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
@@ -299,7 +299,7 @@
               </th>
               <th
                 class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                {{'commonlabtest.order.labReferenceNo'|get_message:locale|default:"en"}}
+                {{'labtest.order.labReferenceNo'|get_message:locale|default:"en"}}
               </th>
 
               <th
@@ -552,7 +552,7 @@ data-bs-target="#collapse{{forloop.counter}}" aria-expanded="false"
     $(`#${uuid}groups`).children().each((index, child) => {
       if ($(child).children(1).children(1).length <= 2) {
         $(child).parent().html(
-        `<div class="w-full bg-white p-2"><h1 class="font-bold text-lg text-center">{{'commonlabtest.result.notFound'|get_message:locale|default:"en"}}</h1></div>`);
+        `<div class="w-full bg-white p-2"><h1 class="font-bold text-lg text-center">{{'labtest.result.notFound'|get_message:locale|default:"en"}}</h1></div>`);
       }
     });
     if ($(`#${uuid}groups`).children().length === 0) {

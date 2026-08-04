@@ -7,8 +7,118 @@
 
 {%block content%}
 {% include 'app/components/nav.html' %}
-<div class="admin-stub-page">
-  <h1>{{title}}</h1>
-  <p>{{'mdrtb.underConstruction'|get_message:locale|default:"en"}}</p>
+
+<div class="loc-page">
+  <div class="loc-header">
+    <div>
+      <h1>{{'mdrtb.manageTranslations'|get_message:locale|default:"en"}}</h1>
+      {% if rows %}
+      <p class="loc-subtitle">{{ rows|length }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if not can_manage_translations %}
+  <p class="loc-readonly-note">{{'mdrtb.translations.readOnly'|get_message:locale|default:"en"}}</p>
+  {% endif %}
+
+  <form method="get" class="user-search">
+    <div class="loc-field">
+      <label for="lang">{{'mdrtb.translations.language'|get_message:locale|default:"en"}}</label>
+      <select id="lang" name="lang">
+        {% for code in languages %}
+        <option value="{{ code }}" {% if selected_lang == code %}selected{% endif %}>{{ code }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="loc-field">
+      <label for="q">{{'mdrtb.translations.code'|get_message:locale|default:"en"}}</label>
+      <input type="text" id="q" name="q" value="{{ query }}" autocomplete="off" autofocus
+        placeholder="mdrtb.users.">
+      <small class="loc-hint">{{'mdrtb.translations.codeHelp'|get_message:locale|default:"en"}}</small>
+    </div>
+    <button type="submit" class="btn btn-primary btn-sm">
+      {{'general.search'|get_message_openMRS:locale|default:"en"}}</button>
+  </form>
+
+  {% if searched %}
+  {% if rows %}
+  <table class="user-table translations-table">
+    <thead>
+      <tr>
+        <th>{{'mdrtb.translations.code'|get_message:locale|default:"en"}}</th>
+        <th>{{'mdrtb.translations.message'|get_message:locale|default:"en"}}</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td class="translations-code">{{ row.code }}</td>
+        <td colspan="2">
+          <form method="post" action="{% url 'saveTranslation' %}" class="translations-row">
+            {% csrf_token %}
+            <input type="hidden" name="lang" value="{{ row.lang }}">
+            <input type="hidden" name="code" value="{{ row.code }}">
+            <input type="hidden" name="q" value="{{ query }}">
+            <input type="text" name="message" value="{{ row.message }}"
+              {% if not can_manage_translations %}disabled{% endif %}>
+            {% if can_manage_translations %}
+            <button type="submit" class="btn btn-primary btn-sm">
+              {{'general.save'|get_message_openMRS:locale|default:"en"}}</button>
+            {% endif %}
+          </form>
+          {% if can_manage_translations %}
+          <form method="post" action="{% url 'deleteTranslation' %}" class="translations-delete"
+            onsubmit="return confirm('{{'mdrtb.translations.confirmDelete'|get_message:locale|default:"en"}}');">
+            {% csrf_token %}
+            <input type="hidden" name="lang" value="{{ row.lang }}">
+            <input type="hidden" name="code" value="{{ row.code }}">
+            <input type="hidden" name="q" value="{{ query }}">
+            <button type="submit" class="loc-linkbtn">
+              {{'general.delete'|get_message_openMRS:locale|default:"en"}}</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="loc-hint">{{'mdrtb.translations.cacheNote'|get_message:locale|default:"en"}}</p>
+  {% else %}
+  <p class="loc-empty">{{'mdrtb.translations.noResults'|get_message:locale|default:"en"}}</p>
+  {% endif %}
+  {% else %}
+  <p class="loc-empty">{{'mdrtb.translations.searchPrompt'|get_message:locale|default:"en"}}</p>
+  {% endif %}
+
+  {% if can_manage_translations %}
+  <div class="loc-danger-zone">
+    <h2 class="loc-section">{{'mdrtb.translations.addNew'|get_message:locale|default:"en"}}</h2>
+    <form method="post" action="{% url 'saveTranslation' %}" class="translations-add">
+      {% csrf_token %}
+      <input type="hidden" name="q" value="{{ query }}">
+      <div class="loc-field">
+        <label for="new_lang">{{'mdrtb.translations.language'|get_message:locale|default:"en"}}</label>
+        <select id="new_lang" name="lang">
+          {% for code in languages %}
+          <option value="{{ code }}" {% if selected_lang == code %}selected{% endif %}>{{ code }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="loc-field">
+        <label for="new_code" class="required">
+          {{'mdrtb.translations.code'|get_message:locale|default:"en"}}</label>
+        <input type="text" id="new_code" name="code" required autocomplete="off">
+      </div>
+      <div class="loc-field">
+        <label for="new_message">{{'mdrtb.translations.message'|get_message:locale|default:"en"}}</label>
+        <input type="text" id="new_message" name="message">
+      </div>
+      <button type="submit" class="btn btn-primary btn-sm">
+        {{'general.add'|get_message_openMRS:locale|default:"en"}}</button>
+    </form>
+  </div>
+  {% endif %}
 </div>
 {% endblock %}

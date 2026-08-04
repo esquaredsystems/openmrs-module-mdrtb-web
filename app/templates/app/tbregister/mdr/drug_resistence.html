@@ -74,7 +74,7 @@ Guarded so nothing renders if neither is available.
           {% if state == 'edit' and form.drugResistance %}
             <option selected value="{{form.drugResistance.uuid}}">{{form.drugResistance.display}}</option>
           {% else %}
-           <option selected value="">Select</option>
+           <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
           {% endif %}
           {% for answer in concepts.drugresistanceduringtreatment %}
             <option value="{{answer.uuid}}">{{answer.name}}</option>

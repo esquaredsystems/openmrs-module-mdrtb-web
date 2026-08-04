@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.http import JsonResponse
 from datetime import datetime
 import utilities.restapi_utils as ru
@@ -9,6 +10,7 @@ import utilities.forms_util as fu
 import utilities.common_utils as util
 import utilities.locations_util as lu
 import utilities.users_util as uau
+import utilities.messages_util as msg
 import json
 import datetime
 import logging
@@ -2179,7 +2181,7 @@ def render_manage_test_types(req):
         return redirect("login")
     context = {
         "title": mu.get_global_msgs(
-            "commonlabtest.labtesttype.manage", locale=req.session["locale"]
+            "labtest.labtesttype.manage", locale=req.session["locale"]
         )
     }
     if req.method == "POST":
@@ -2236,7 +2238,7 @@ def render_add_test_type(req):
         return redirect("login")
     context = {
         "title": mu.get_global_msgs(
-            "commonlabtest.labtesttype.add", locale=req.session["locale"]
+            "labtest.labtesttype.add", locale=req.session["locale"]
         )
     }
     if req.method == "POST":
@@ -2265,7 +2267,7 @@ def render_edit_test_type(req, uuid):
         return redirect("login")
     context = {
         "title": mu.get_global_msgs(
-            "commonlabtest.labtesttype.edit", locale=req.session["locale"]
+            "labtest.labtesttype.edit", locale=req.session["locale"]
         )
     }
     status, response = ru.get(
@@ -2341,7 +2343,7 @@ def render_addattributes(req, uuid):
         "prefferedHandlers": cu.get_preffered_handler(),
         "dataTypes": cu.get_attributes_data_types(),
         "title": mu.get_global_msgs(
-            "commonlabtest.labtestattributetype.add", locale=req.session["locale"]
+            "labtest.labtestattributetype.add", locale=req.session["locale"]
         ),
     }
     if req.method == "POST":
@@ -2375,7 +2377,7 @@ def render_edit_attribute(req, testid, attrid):
         "state": "edit",
         "testid": testid,
         "title": mu.get_global_msgs(
-            "commonlabtest.labtestattributetype.edit", locale=req.session["locale"]
+            "labtest.labtestattributetype.edit", locale=req.session["locale"]
         ),
     }
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
@@ -2426,7 +2428,7 @@ def render_managetestorders(req, uuid):
     try:
         context = {
             "title": mu.get_global_msgs(
-                "commonlabtest.labtest.manage", locale=req.session["locale"]
+                "labtest.labtest.manage", locale=req.session["locale"]
             ),
             "patient": uuid,
         }
@@ -2469,7 +2471,7 @@ def render_add_lab_test(req, uuid):
         return redirect("login")
     context = {
         "title": mu.get_global_msgs(
-            "commonlabtest.labtest.add", locale=req.session["locale"]
+            "labtest.labtest.add", locale=req.session["locale"]
         ),
         "patient": uuid,
     }
@@ -2564,7 +2566,7 @@ def render_edit_lab_test(req, patientid, orderid):
         return redirect("login")
     context = {
         "title": mu.get_global_msgs(
-            "commonlabtest.order.edit", locale=req.session["locale"]
+            "labtest.order.edit", locale=req.session["locale"]
         ),
         "state": "edit",
         "orderid": orderid,
@@ -2658,7 +2660,7 @@ def render_managetestsamples(req, orderid):
         return redirect("login")
     context = {
         "title": mu.get_global_msgs(
-            "commonlabtest.labtestsample.manage", locale=req.session["locale"]
+            "labtest.labtestsample.manage", locale=req.session["locale"]
         ),
         "orderid": orderid,
     }
@@ -3581,13 +3583,101 @@ def _user_form_context(req, existing, submitted=None):
     return context
 
 
+def _deny_translation_change(req):
+    messages.error(
+        req,
+        mu.get_global_msgs(
+            "mdrtb.translations.notAllowed", locale=req.session.get("locale", "en")
+        ),
+    )
+    return redirect("manageTranslations")
+
+
 def render_manage_translations(req):
+    """
+    Search and edit the UI labels stored in the MDR-TB module.
+
+    Searching by code fragment is deliberate: there are ~1,700 labels per
+    language, so the screen asks what you are looking for rather than listing
+    everything. 'mdrtb.users.' brings up one screen's labels at a time.
+    """
     if not check_if_session_alive(req):
         return redirect("login")
-    title = mu.get_global_msgs(
-        "mdrtb.manageTranslations", locale=req.session["locale"]
-    )
-    return render(req, "app/admin/manage_translations.html", context={"title": title})
+    locale = req.session.get("locale", "en")
+    context = {
+        "title": mu.get_global_msgs("mdrtb.manageTranslations", locale=locale),
+        "can_manage_translations": lu.is_system_developer(req),
+        "languages": msg.SUPPORTED_LANGS,
+        "selected_lang": req.GET.get("lang", locale),
+        "query": req.GET.get("q", "").strip(),
+        "rows": [],
+        "searched": bool(req.GET),
+    }
+    try:
+        if context["searched"]:
+            context["rows"] = msg.search(
+                req, lang=context["selected_lang"], q=context["query"] or None
+            )
+    except lu.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+    return render(req, "app/admin/manage_translations.html", context=context)
+
+
+def save_translation(req):
+    """Create or update one label. System Developer only, POST only."""
+    if not check_if_session_alive(req):
+        return redirect("login")
+    if req.method != "POST":
+        return redirect("manageTranslations")
+    if not lu.is_system_developer(req):
+        return _deny_translation_change(req)
+
+    lang = req.POST.get("lang")
+    code = req.POST.get("code")
+    back = f"{reverse('manageTranslations')}?lang={lang or ''}&q={req.POST.get('q', '')}"
+    try:
+        msg.save(req, lang, code, req.POST.get("message"))
+        messages.success(
+            req,
+            mu.get_global_msgs(
+                "mdrtb.translations.saved", locale=req.session.get("locale", "en")
+            ),
+        )
+    except lu.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+    return redirect(back)
+
+
+def delete_translation(req):
+    """Remove one label. System Developer only, POST only."""
+    if not check_if_session_alive(req):
+        return redirect("login")
+    if req.method != "POST":
+        return redirect("manageTranslations")
+    if not lu.is_system_developer(req):
+        return _deny_translation_change(req)
+
+    lang = req.POST.get("lang")
+    back = f"{reverse('manageTranslations')}?lang={lang or ''}&q={req.POST.get('q', '')}"
+    try:
+        msg.delete(req, lang, req.POST.get("code"))
+        messages.success(
+            req,
+            mu.get_global_msgs(
+                "mdrtb.translations.deleted", locale=req.session.get("locale", "en")
+            ),
+        )
+    except lu.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+    return redirect(back)
+
+
 
 
 def render_set_defaults(req):

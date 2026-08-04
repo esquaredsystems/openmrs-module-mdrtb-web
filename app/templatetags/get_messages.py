@@ -12,7 +12,7 @@ def get_message_with_params(message_code, locale, default=None, *args):
     return value.format(*args)
 
 
-#TODO: Merge openMRS messages and commonlab messages into messages.properties. No need for 3 different functions
+# The three filters below are now equivalent: since 2026-08-04 all messages live message_properties table
 @register.filter
 def get_message(message_code, locale, default=None):
     if locale == "en":

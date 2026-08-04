@@ -29,7 +29,7 @@
         {% if state == 'edit' %}
         <div id="form-info" class="flex-center space-x-4">
             <h1 class="text-[#2D9CDB] text-3xl font-bold">
-                {{'commonlabtest.order.edit'|get_message:locale|default:"en"}}
+                {{'labtest.order.edit'|get_message:locale|default:"en"}}
             </h1>
             <button type="button" id="editbtn" title="{{'general.edit'|get_message_openMRS:locale|default:"en"}}" aria-label="{{'general.edit'|get_message_openMRS:locale|default:"en"}}">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -50,7 +50,7 @@
         </div>
         {% else %}
         <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
-            {{'commonlabtest.order.add'|get_message:locale|default:"en"}}
+            {{'labtest.order.add'|get_message:locale|default:"en"}}
         </h2>
         {% endif %}
     </div>
@@ -78,7 +78,7 @@
     </div>
     <div class="input-container">
             <label class="input-label" for="">
-                {{'commonlabtest.testGroup'|get_message:locale|default:"en"}}
+                {{'labtest.testGroup'|get_message:locale|default:"en"}}
             </label>
             <select name="testGroup" id="group-select" class="input form-control">
                 {% if state == 'edit' %}
@@ -88,13 +88,13 @@
                 {% endif %}
 
                 {% for group in testgroups %}
-                    <option value="{{ group }}">{{'commonlabtest.testgroup.'|add:group|lower|get_message:locale|default:"en"}}</option>
+                    <option value="{{ group }}">{{'labtest.testgroup.'|add:group|lower|get_message:locale|default:"en"}}</option>
                 {% endfor %}
             </select>
         </div>
         <div class="input-container">
             <label class="input-label" for="">
-                {{'commonlabtest.testType'|get_message:locale|default:"en"}}
+                {{'labtest.testType'|get_message:locale|default:"en"}}
             </label>
             {% if state == 'edit' %}
             <select name="testType" id="test-select" class="input form-control">
@@ -108,11 +108,11 @@
 
         <div class="input-container">
             <label class="input-label" for="name">
-                {{'commonlabtest.careSetting'|get_message:locale|default:"en"}}
+                {{'labtest.careSetting'|get_message:locale|default:"en"}}
             </label>
             <div class="flex items-center justify-start space-x-4 w-full">
                 <div class="flex-center space-x-2">
-                    <label for="inpatient">{{'commonlabtest.careSetting.inpatient'|get_message:locale|default:"en"}}</label>
+                    <label for="inpatient">{{'labtest.careSetting.inpatient'|get_message:locale|default:"en"}}</label>
                     {% if state == 'edit' %}
                         <input {% if laborder.careSetting.uuid == care_setting.inpatient.value %} checked {% endif %}
                             name="careSetting" type="radio" value="{{ care_setting.inpatient.value }}" class="radio-input" />
@@ -121,7 +121,7 @@
                     {% endif %}
                 </div>
                 <div class="flex-center space-x-2">
-                    <label for="outpatient">{{'commonlabtest.careSetting.outpatient'|get_message:locale|default:"en"}}</label>
+                    <label for="outpatient">{{'labtest.careSetting.outpatient'|get_message:locale|default:"en"}}</label>
                     {% if state == 'edit' %}
                         <input {% if laborder.careSetting.uuid == care_setting.outpatient.value %} checked {% endif %}
                             name="careSetting" type="radio" value="{{ care_setting.outpatient.value }}" class="radio-input" />
@@ -134,7 +134,7 @@
 
         <div class="input-container">
             <label class="input-label" for="">
-                {{'commonlabtest.order.labReferenceNo'|get_message:locale|default:"en"}}
+                {{'labtest.order.labReferenceNo'|get_message:locale|default:"en"}}
 
             </label>
             {% if state == 'edit' %}
@@ -146,7 +146,7 @@
         </div>
         <div class="input-container">
             <label class="input-label" for="">
-                {{'commonlabtest.instructions'|get_message:locale|default:"en"}}
+                {{'labtest.instructions'|get_message:locale|default:"en"}}
 
             </label>
             {% if state == 'edit' %}

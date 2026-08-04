@@ -294,6 +294,8 @@ urlpatterns = [
     path("administration/users/<str:uuid>/disable", views.render_disable_user, name="disableUser"),
     path("administration/users/<str:uuid>/enable", views.render_enable_user, name="enableUser"),
     path("administration/translations", views.render_manage_translations, name="manageTranslations"),
+    path("administration/translations/save", views.save_translation, name="saveTranslation"),
+    path("administration/translations/delete", views.delete_translation, name="deleteTranslation"),
     path("administration/defaults", views.render_set_defaults, name="setDefaults"),
     path("logout", views.render_logout, name="logout"),
 ]

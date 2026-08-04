@@ -392,7 +392,43 @@ Search: GET user?q=&v=full[&includeAll=true]. The REST resource has NO role filt
         role filtering is applied client-side in search_users().
 ```
 
-## § LOCALIZATION
+## § LOCALIZATION (rewritten 2026-08-04 — the .properties files are GONE)
+```
+Source of truth: the MDR-TB module's message_properties table (lang + code),
+seeded by MdrtbActivator from api/src/main/resources/messages{,_ru,_tj}.properties.
+Reached over REST: /ws/rest/v1/mdrtb/messageproperty
+  GET  ?lang=&q=            list (q = case-insensitive substring of the CODE)
+  GET|DELETE /{lang}/{code}
+  POST {lang,code,message}  upsert
+  !! plain @Controller, NOT a REST resource -> the maxResultsAbsolute page cap
+     does not apply; one call returns all ~1,700 rows for a language.
+
+utilities/messages_util.py (alias msg)
+  lookup(code, locale, default)  <- what get_global_msgs() now calls
+     Takes NO request and ONLY reads cache. A page performs >1,000 lookups, so
+     rendering must never be able to trigger REST. Falls back:
+     language -> en -> default -> the code itself.
+  TWO cache layers, both needed:
+     Redis  ("metadata", 1h)  one compressed {code: message} map per language
+     _local (60s, per worker)  in front of Redis. WITHOUT IT every label was a
+            Redis round trip + zlib + unpickle: ~1,100 per page, slower than the
+            files this replaced. Measured after: 1 Redis read on a cold worker,
+            0 on a warm one.
+     Cost of _local: an edit is visible within 60s per worker. invalidate()
+     clears BOTH, and every write calls it.
+  warm(req, locale)   fills Redis; called at login next to get_all_concepts and
+                      as a safety net in SessionCheckMiddleware (Redis restarts).
+
+get_global_msgs(code, locale, default, source) keeps its signature; `source` is
+accepted and IGNORED (the mdrtb/OpenMRS/commonlab files became one table), so the
+~1,100 call sites and the three template filters were untouched.
+
+ADDING A NEW LABEL now means adding it to the module bundles (so the activator
+seeds it) or creating it in Administration -> Manage Translations. Editing a
+.properties file in this repo no longer does anything — there are none.
+```
+
+## § LOCALIZATION (historical)
 ```
 Session:   session["locale"] set at login from OpenMRS userProperties.locale (default "ru")
 Switch:    GET /changelocale/<locale> → change_locale view → updates session + OpenMRS user property

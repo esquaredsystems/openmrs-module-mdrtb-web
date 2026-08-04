@@ -116,7 +116,7 @@ Guarded so nothing renders if neither is available.
               {% if state == 'edit' and form.placeOfCommission %}
                 <option selected value="{{form.placeOfCommission.uuid}}">{{form.placeOfCommission.display}}</option>
               {% else %}
-                <option selected value="">Select</option>
+                <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
               {% endif %}
               {% for concept in concepts.cmacplace %}
                <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -132,7 +132,7 @@ Guarded so nothing renders if neither is available.
               {% if state == 'edit' and form.resistanceType %}
                <option selected value="{{form.resistanceType.uuid}}">{{form.resistanceType.display}}</option>
               {% else %}
-               <option selected value="">Select</option>
+               <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
               {% endif %}
               {% for concept in concepts.resistancetype %}
                 <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -146,7 +146,7 @@ Guarded so nothing renders if neither is available.
               {% if state == 'edit' and form.fundingSource %}
                <option selected value="{{form.fundingSource.uuid}}">{{form.fundingSource.display}}</option>
               {% else %}
-                <option selected value="">Select</option>
+                <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
               {% endif %}
               {% for concept in concepts.fundingsource %}
                 <option value="{{concept.uuid}}">{{concept.name}}</option>
@@ -162,7 +162,7 @@ Guarded so nothing renders if neither is available.
               {% if state == 'edit' and form.sldRegimen %}
                 <option selected value="{{form.sldRegimen.uuid}}">{{form.sldRegimen.display}}</option>
               {% else %}
-                <option selected value="">Select</option>
+                <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
               {% endif %}
               {% for concept in concepts.sldregimentype %}
                 <option value="{{concept.uuid}}">{{concept.name}}</option>

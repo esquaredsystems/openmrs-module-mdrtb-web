@@ -1,6 +1,7 @@
 import re
 from utilities import common_utils as u
 from utilities import restapi_utils as ru
+from utilities import messages_util as msg
 from utilities import commonlab_util as clu
 from resources.enums.constants import Constants
 from django.core.cache import caches
@@ -20,69 +21,22 @@ metadata_cache = caches["metadata"]
 
 
 def get_global_msgs(message_code, locale=None, default=None, source=None):
-    # No messages file for en_GB
     """
-    Retrieves a global message based on the provided message code.
+    The translated label for a message code.
 
-    It looks for the message code in different message files based on the locale, source, and default properties file names.
-    It uses the u.get_project_root function to determine the project root directory.
+    Reads the Redis-cached messages loaded from the MDR-TB module's
+    message_properties table (utilities/messages_util.py). Until 2026-08-04 this
+    opened a .properties file and scanned it line by line on every single call,
+    with a page performing over a thousand calls; those files no longer exist.
 
-    Parameters:
-    - message_code (str): The code of the message to retrieve.
-    - locale (str, optional): The locale code. Defaults to None.
-    - default (str, optional): The default value to return if the message code is not found. Defaults to None.
-    - source (str, optional): The source of the message. Can be "OpenMRS" or "commonlab". Defaults to None.
+    `source` is accepted and ignored. It used to pick between the mdrtb,
+    OpenMRS and commonlab property files; all three now live in one table, so
+    the ~300 call sites using get_message_openMRS keep working unchanged.
 
-    Returns:
-    - str: The retrieved global message.
-           Returns the message code itself if the corresponding message is not found.
-
-    Raises:
-    - Exception: If no message code is provided.
-
-    Example:
-        get_global_msgs("mdrtb.allCasesEnrolled", locale="en_US", source="OpenMRS")
-    "All cases enrolled"
+    Returns the code itself when there is no translation, which is what the
+    old reader did and makes a gap visible on screen.
     """
-
-    if message_code:
-        value = ""
-        dir = f"{u.get_project_root()}/resources"
-        if source is None:
-            if locale is None or locale == "en_GB" or locale == "en":
-                file = f"{dir}/messages.properties"
-            else:
-                file = f"{dir}/messages_{locale}.properties"
-
-        if source == "OpenMRS":
-            if locale is None or locale == "en_GB" or locale == "en":
-                file = f"{dir}/openMRS_messages.properties"
-            else:
-                file = f"{dir}/openMRS_messages_{locale}.properties"
-
-        if source == "commonlab":
-            if locale is None or locale == "en_GB" or locale == "en":
-                file = f"{dir}/commonlab_messages.properties"
-            else:
-                file = f"{dir}/commonlab_messages_{locale}.properties"
-
-        data = u.read_properties_file(file, "r", encoding="utf-8")
-        if data is not None:
-            for message in data:
-                split_msg = message.split("=")
-                if split_msg[0].strip() == message_code.strip():
-                    value = split_msg[1]
-                elif default:
-                    value = default
-        else:
-            value = message_code
-        if len(value) < 1:
-            value = message_code
-        cleaner = re.compile("<.*?>")
-        return re.sub(cleaner, " ", value.strip())
-
-    else:
-        raise Exception("Please provide a valid message code")
+    return msg.lookup(message_code, locale=locale, default=default)
 
 
 def _concepts_cache_key(locale):

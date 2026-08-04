@@ -1,5 +1,6 @@
 from django.shortcuts import redirect
 
+from utilities import messages_util as msg
 from utilities import restapi_utils as ru
 
 # Paths that must stay reachable without an authenticated session.
@@ -19,5 +20,11 @@ class SessionCheckMiddleware:
             ru.clear_session(request)
             if not request.path.startswith(EXEMPT_PATH_PREFIXES):
                 return redirect("login")
+        else:
+            # Translations are cached at login, but Redis can be restarted 
+            # or the entry can expire mid-session. Without this every
+            # label on the next page would render as its code.
+            # One Redis read per request; REST call only when the cache is cold.
+            msg.warm(request, request.session.get("locale"))
         response = self.get_response(request)
         return response

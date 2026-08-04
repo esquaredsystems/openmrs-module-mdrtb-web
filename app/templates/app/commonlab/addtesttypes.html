@@ -17,7 +17,7 @@
       {% if state == 'edit' %}
       <div id="form-info" class="flex-center space-x-4">
         <h1 class="text-[#2D9CDB] text-3xl font-bold">
-          {{'commonlabtest.labtesttype.edit'|get_message:locale|default:"en"}}
+          {{'labtest.labtesttype.edit'|get_message:locale|default:"en"}}
         </h1>
         <button type="button" id="editbtn" title="{{'general.edit'|get_message_openMRS:locale|default:"en"}}" aria-label="{{'general.edit'|get_message_openMRS:locale|default:"en"}}">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -33,11 +33,11 @@
 
       </div>
       <a href="{% url 'manageattr' uuid=testType.uuid %}" class="text-[#044062] font-bold underline">
-        {{'commonlabtest.labtestattributetype.manage'|get_message:locale|default:"en"}}
+        {{'labtest.labtestattributetype.manage'|get_message:locale|default:"en"}}
       </a>
       {% else %}
       <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
-        {{'commonlabtest.labtesttype.add'|get_message:locale|default:"en"}}
+        {{'labtest.labtesttype.add'|get_message:locale|default:"en"}}
       </h2>
       {% endif %}
     </div>
@@ -161,9 +161,9 @@
         <div class="flex-center space-x-4">
           <button type="submit" id="submitBtn" class="button-primary w-1/5">
             {% if state == 'edit' %}
-            {{'commonlabtest.labtesttype.edit'|get_message:locale|default:"en"}}
+            {{'labtest.labtesttype.edit'|get_message:locale|default:"en"}}
             {% else %}
-            {{'commonlabtest.labtesttype.add'|get_message:locale|default:"en"}}
+            {{'labtest.labtesttype.add'|get_message:locale|default:"en"}}
             {% endif %}
           </button>
           <a class="cancel-button" href="javascript:history.go(-1)">Cancel</a>
@@ -177,13 +177,13 @@
 
         <div class="input-container -mt-3">
           <label class="w-1/6 text-[#9E9E9E] input-label"
-            for="testname">{{'commonlabtest.labtesttype.void'|get_message:locale|default:"en"}}</label>
+            for="testname">{{'labtest.labtesttype.void'|get_message:locale|default:"en"}}</label>
           <input id="retireTestType" class="input form-control"
             placeholder="{{'general.retireReason'|get_message:locale|default:"en"}}" type="text"
             name="Retire" required />
         </div>
         <button id="updateBtn" type="submit" class="button-primary  w-1/5">
-          {{'commonlabtest.labtesttype.void'|get_message:locale|default:"en"}}
+          {{'labtest.labtesttype.void'|get_message:locale|default:"en"}}
         </button>
 
       </form>

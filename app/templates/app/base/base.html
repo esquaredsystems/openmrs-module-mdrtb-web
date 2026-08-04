@@ -164,15 +164,15 @@
 		}
 		let clearSubregions = () => {
 			$('#subregion-container') && $('#subregion-container').addClass('hidden')
-			$("#subregion-select").html(`<option value="">Select</option>`)
+			$("#subregion-select").html(`<option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>`)
 		}
 		const clearDistrictsAndFacilities = () => {
 			$('#district-select').prop('disabled', true)
 			$('#district-select').prop('required', false)
-			$("#district-select").html(`<option value="">Select</option>`)
+			$("#district-select").html(`<option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>`)
 			$('#facility-select').prop('disabled', true)
 			$('#facility-select').prop('required', false)
-			$("#facility-select").html(`<option value="">Select</option>`)
+			$("#facility-select").html(`<option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>`)
 		}
 		const insertchildren = (selectedLocation, insertInto, level) => {
 			const selectedRegion = $('#region-select').val()
@@ -193,7 +193,7 @@
 		const clearFacilities = () => {
 			$('#facility-select').prop('disabled', true)
 			$('#facility-select').prop('required', false)
-			$("#facility-select").html(`<option value="">Select</option>`)
+			$("#facility-select").html(`<option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>`)
 		}
 		$('#region-select').change(region => {
 			clearDistrictsAndFacilities()
