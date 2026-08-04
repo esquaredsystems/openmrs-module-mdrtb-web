@@ -155,6 +155,21 @@ GET      /concepts/<uuid>                                  → get_concepts     
 GET      /changelocale/<locale>                            → change_locale
 ```
 
+## § ERROR HANDLING IN VIEWS
+```
+views.log_and_show_error(e, req)      # message + logged traceback
+views.redirect_after_error(req)       # WHERE to go when a page fails to LOAD
+
+!! Never `return redirect("<own url name>")` from the except block that guards a
+   view's RENDER path. 23 views did, so one OpenMRS 500 became an endless
+   redirect loop (~25 requests in 9s against the clinical server, ending in a
+   broken pipe). Use redirect_after_error(req): it prefers session["redirect_url"]
+   (the referer, set when these views start) and falls back to "/" — and it never
+   returns the path that just failed.
+   Self-redirects inside the `if req.method == "POST"` branch are FINE and were
+   left alone: a failed save re-shows the form, and the GET succeeds.
+```
+
 ## § AUTH FLOW
 ```
 Login:

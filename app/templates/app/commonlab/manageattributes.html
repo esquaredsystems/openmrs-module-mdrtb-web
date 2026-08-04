@@ -1,4 +1,4 @@
-﻿{% extends 'app/base/base.html' %}
+{% extends 'app/base/base.html' %}
 {% block title %}
 {{title}}
 {% endblock %}
@@ -80,7 +80,7 @@
                     </p>
                   </td> -->
                   <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <a href="{% url 'editattr' testid=labTestUuid attrid=attr.uuid %}">
+                    <a href="{% url 'editattr' testid=labTestUuid attrid=attr.uuid %}" title="{{'general.edit'|get_message_openMRS:locale|default:"en"}}" aria-label="{{'general.edit'|get_message_openMRS:locale|default:"en"}}">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
                         <path stroke-linecap="round" stroke-linejoin="round"

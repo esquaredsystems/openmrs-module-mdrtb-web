@@ -519,36 +519,37 @@ a .patient-result-row:hover {
   }
 }
 
-/* .input-container / .input-label are legacy classes from the Tailwind build,
-   still used by ~30 templates. .input-label is width:100%, so in a flex row the
-   label and the control each stretch to half the viewport — that gulf between
-   label and field is what makes these forms look so broad. Inside a .page-panel
-   the label gets a fixed column and the control takes the rest.
-   No gap here: styles.css already puts 1rem between the row's children. */
+/* Label/field rows. .input-label was width:100%, so in a flex row the label and
+   the control each stretched to half the viewport — that gulf is what made the
+   forms look so broad. Applied globally rather than only inside .page-panel:
+   32 pages use this row pattern with a different wrapper each, and one rule here
+   fixes them all without editing any markup.
+   No gap declared: .input-container already puts 1rem between its children. */
 
-.page-panel .input-label {
-  width: 14rem;
+.input-label {
   flex: 0 0 14rem;
 }
 
-.page-panel .input-container > .input,
-.page-panel .input-container > .form-control,
-.page-panel .input-container > .input-container,
-.page-panel .input-container > input,
-.page-panel .input-container > select,
-.page-panel .input-container > textarea {
+.input-container > .input,
+.input-container > .form-control,
+.input-container > .input-container,
+.input-container > input,
+.input-container > select,
+.input-container > textarea {
   flex: 1 1 auto;
   min-width: 0;
+  /* Stops a single field growing to fill a 27" monitor. Label 14rem + field
+     32rem keeps a form readable without needing a wrapper on every page. */
+  max-width: 32rem;
 }
 
 @media screen and (max-width: 640px) {
   /* Stack label above field on small screens rather than squeezing both. */
-  .page-panel .input-container {
+  .input-container {
     flex-wrap: wrap;
   }
 
-  .page-panel .input-label {
-    width: 100%;
+  .input-label {
     flex: 1 1 100%;
   }
 }
@@ -1065,10 +1066,9 @@ a .patient-result-row:hover {
   text-decoration: underline;
 }
 
-/* Ported out of styles.css. width:100% is what makes the label and its field
-   each take half a row; .page-panel above narrows it to a fixed column. */
+/* Ported out of styles.css. The original width:100% is deliberately NOT kept —
+   the flex-basis set in the label/field row rules above replaces it. */
 .input-label {
-  width: 100%;
   font-weight: 700;
   color: var(--brand-secondary);
 }

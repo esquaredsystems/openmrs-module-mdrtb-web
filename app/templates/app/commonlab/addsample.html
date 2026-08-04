@@ -1,4 +1,4 @@
-﻿{% extends 'app/base/base.html' %}
+{% extends 'app/base/base.html' %}
 
 
 {% block title %}
@@ -17,7 +17,7 @@
         <h1 class="text-[#2D9CDB] text-3xl font-bold">
             {{'commonlabtest.labtestsample.edit'|get_message:locale|default:"en"}}
         </h1>
-        <button type="button" id="editbtn">
+        <button type="button" id="editbtn" title="{{'general.edit'|get_message_openMRS:locale|default:"en"}}" aria-label="{{'general.edit'|get_message_openMRS:locale|default:"en"}}">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-5 h-5">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -26,7 +26,7 @@
 
         </button>
         <button hidden type="button" id="canceleditbtn" class="cancel-button">Cancel</button>
-        <a href="{% url 'deletesample' orderid=orderid sampleid=sample.uuid %}" type="button" id="dellabtest">
+        <a href="{% url 'deletesample' orderid=orderid sampleid=sample.uuid %}" type="button" id="dellabtest" title="{{'general.delete'|get_message_openMRS:locale|default:"en"}}" aria-label="{{'general.delete'|get_message_openMRS:locale|default:"en"}}">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round"

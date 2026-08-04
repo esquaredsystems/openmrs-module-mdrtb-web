@@ -1,4 +1,4 @@
-﻿{% extends 'app/base/base.html' %}
+{% extends 'app/base/base.html' %}
 
 {% block title %}
 {{title}}
@@ -6,6 +6,17 @@
 
 
 {%block content%}
+{% comment %}
+Patient banner. The patient comes from the view context where it exists
+(form89), otherwise from the session flow set when the patient was opened.
+Guarded so nothing renders if neither is available.
+{% endcomment %}
+{% with banner_patient=patient|default:request.session.current_patient_program_flow.current_patient %}
+{% if banner_patient %}
+{% include 'app/components/patient_banner.html' with patient=banner_patient %}
+{% endif %}
+{% endwith %}
+
 
 <div>
   <form onsubmit="disableSubmit()"
@@ -21,7 +32,7 @@
           {{'mdrtb.edit'|get_message:locale|default:"en"}}
           {{'mdrtb.tb03u'|get_message:locale|default:"en"}}
         </h1>
-        <button type="button" id="editbtn">
+        <button type="button" id="editbtn" title="{{'general.edit'|get_message_openMRS:locale|default:"en"}}" aria-label="{{'general.edit'|get_message_openMRS:locale|default:"en"}}">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round"
@@ -31,7 +42,7 @@
         </button>
         <button hidden type="button" id="canceleditbtn" class="cancel-button">Cancel</button>
         {% if delete_encounters_privilege %}
-        <a class="cancel-button" href="{% url 'deletetb03u' formid=form.uuid %}" type="button" id="deletetb03">
+        <a class="cancel-button" href="{% url 'deletetb03u' formid=form.uuid %}" type="button" id="deletetb03" title="{{'general.delete'|get_message_openMRS:locale|default:"en"}}" aria-label="{{'general.delete'|get_message_openMRS:locale|default:"en"}}">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="w-6 h-6">
             <path stroke-linecap="round" stroke-linejoin="round"

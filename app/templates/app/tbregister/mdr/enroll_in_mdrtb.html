@@ -1,10 +1,21 @@
-﻿{% extends 'app/base/base.html' %}
+{% extends 'app/base/base.html' %}
 
 {% block title %}
 {{title}}
 {% endblock %}
 
 {% block content %}
+{% comment %}
+Patient banner. The patient comes from the view context where it exists
+(form89), otherwise from the session flow set when the patient was opened.
+Guarded so nothing renders if neither is available.
+{% endcomment %}
+{% with banner_patient=patient|default:request.session.current_patient_program_flow.current_patient %}
+{% if banner_patient %}
+{% include 'app/components/patient_banner.html' with patient=banner_patient %}
+{% endif %}
+{% endwith %}
+
 <div class="mx-auto w-1/2">
     {% include 'app/components/breadcrumbs.html'%}
 
@@ -54,7 +65,7 @@
                 <label class="input-label w-1/6 required "
                     for="">{{'mdrtb.enrollment.date'|get_message:locale|default:"en"}}</label>
                 {% if state == 'edit' %}
-                <button id="editEnrollmentDate" type="button">
+                <button id="editEnrollmentDate" type="button" title="{{'general.edit'|get_message_openMRS:locale|default:"en"}}" aria-label="{{'general.edit'|get_message_openMRS:locale|default:"en"}}">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -74,7 +85,7 @@
                 <div id="prefilledlocation" class="input-container">
                     <label class="input-label w-1/6 flex-center space-x-2" for="">
                         {{'mdrtb.location'|get_message:locale|default:"en"}}
-                        <button class="ml-4" id="editLocations" type="button">
+                        <button class="ml-4" id="editLocations" type="button" title="{{'general.edit'|get_message_openMRS:locale|default:"en"}}" aria-label="{{'general.edit'|get_message_openMRS:locale|default:"en"}}">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -106,7 +117,7 @@
                 <label class="input-label w-1/6 "
                     for="">{{'mdrtb.enrollment.completionDate'|get_message:locale|default:"en"}}</label>
                 {% if state == 'edit' %}
-                <button id="editCompletionDate" type="button">
+                <button id="editCompletionDate" type="button" title="{{'general.edit'|get_message_openMRS:locale|default:"en"}}" aria-label="{{'general.edit'|get_message_openMRS:locale|default:"en"}}">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
                         <path stroke-linecap="round" stroke-linejoin="round"

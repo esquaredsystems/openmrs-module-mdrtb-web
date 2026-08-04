@@ -1,4 +1,4 @@
-﻿{% extends 'app/base/base.html' %}
+{% extends 'app/base/base.html' %}
 
 {% block title %}
 {{title}}
@@ -25,7 +25,7 @@
                 <div id="defaultLocationTrue" class="profile-input-container">
                     <label class="profile-input-label text-md"
                         for="defaultLocation">{{'options.default.location'|get_message_openMRS:locale|default:"en"}}</label>
-                    <button class="ml-4" id="editLocations" type="button">
+                    <button class="ml-4" id="editLocations" type="button" title="{{'general.edit'|get_message_openMRS:locale|default:"en"}}" aria-label="{{'general.edit'|get_message_openMRS:locale|default:"en"}}">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -43,7 +43,7 @@
 
                     <label class="profile-input-label text-lg" for="name">
                         {{'options.default.location'|get_message_openMRS:locale|default:"en"}}
-                        <button type="button" hidden id="edit_cancel">
+                        <button type="button" hidden id="edit_cancel" title="{{'general.close'|get_message_openMRS:locale|default:"en"}}" aria-label="{{'general.close'|get_message_openMRS:locale|default:"en"}}">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="w-6 h-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />

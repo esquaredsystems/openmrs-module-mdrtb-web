@@ -116,6 +116,8 @@ def render_login(req):
             else:
                 return render(req, "app/tbregister/login.html", context=context)
         except Exception as e:
+            # Failed sign-in: show the login page again with the message.
+            # This is not a loop — GET /login always renders.
             log_and_show_error(e, req)
             return redirect("login")
     else:
@@ -298,7 +300,7 @@ def render_enroll_in_dots_program(req, uuid):
                 raise Exception("Couldn't enroll patient in progarm")
         except Exception as e:
             log_and_show_error(e, req)
-            return redirect("dotsprogramenroll", uuid=uuid)
+            return redirect_after_error(req)
     try:
         enrolled_location = req.session.get("location_enrolled_in", None)
         context["enrolled_location"] = enrolled_location
@@ -414,7 +416,7 @@ def render_edit_dots_program(req, uuid, programid):
         return render(req, "app/tbregister/dots/enroll_in_dots.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("editdotsprogram", uuid=uuid, programid=programid)
+        return redirect_after_error(req)
 
 
 def render_edit_mdrtb_program(req, uuid, programid):
@@ -460,7 +462,7 @@ def render_edit_mdrtb_program(req, uuid, programid):
         return render(req, "app/tbregister/mdr/enroll_in_mdrtb.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("editmdrtbprogram", uuid=uuid, programid=programid)
+        return redirect_after_error(req)
 
 
 def render_patient_dashboard(req, uuid, mdrtb=None):
@@ -573,7 +575,7 @@ def render_tb03_form(req, uuid):
         return render(req, "app/tbregister/dots/tb03.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("tb03", uuid=uuid)
+        return redirect_after_error(req)
 
 
 def render_edit_tb03_form(req, uuid, formid):
@@ -625,7 +627,7 @@ def render_edit_tb03_form(req, uuid, formid):
             return render(req, "app/tbregister/dots/tb03.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("edittb03", uuid=uuid, formid=formid)
+        return redirect_after_error(req)
 
 
 def render_delete_tb03_form(req, formid):
@@ -689,7 +691,7 @@ def render_tb03u_form(req, uuid):
         return render(req, "app/tbregister/mdr/tb03u.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("tb03u", uuid=uuid)
+        return redirect_after_error(req)
 
 
 def render_edit_tb03u_form(req, uuid, formid):
@@ -744,7 +746,7 @@ def render_edit_tb03u_form(req, uuid, formid):
             return render(req, "app/tbregister/mdr/tb03u.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("edittb03u", uuid=uuid, formid=formid)
+        return redirect_after_error(req)
 
 
 def render_delete_tb03u_form(req, formid):
@@ -808,7 +810,7 @@ def render_adverse_events_form(req, patientid):
         return render(req, "app/tbregister/mdr/adverse_events.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("adverseevents", patientid=patientid)
+        return redirect_after_error(req)
 
 
 def render_edit_adverse_events_form(req, patientid, formid):
@@ -878,7 +880,7 @@ def render_edit_adverse_events_form(req, patientid, formid):
             )
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("editadverseevents", uuid=patientid, formid=formid)
+        return redirect_after_error(req)
 
 
 def render_delete_adverse_events_form(req, formid):
@@ -917,7 +919,7 @@ def render_drug_resistence_form(req, patientid):
         return render(req, "app/tbregister/mdr/drug_resistence.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("drugresistanse", uuid=patientid)
+        return redirect_after_error(req)
 
 
 def render_edit_drug_resistence_form(req, patientid, formid):
@@ -956,7 +958,7 @@ def render_edit_drug_resistence_form(req, patientid, formid):
         return render(req, "app/tbregister/mdr/drug_resistence.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("editdrugresistanse", uuid=patientid, formid=formid)
+        return redirect_after_error(req)
 
 
 def render_delete_drug_resistence_form(req, formid):
@@ -1000,7 +1002,7 @@ def render_regimen_form(req, patientid):
         return render(req, "app/tbregister/mdr/regimen.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("regimen", uuid=patientid)
+        return redirect_after_error(req)
 
 
 def render_edit_regimen_form(req, patientid, formid):
@@ -1017,7 +1019,7 @@ def render_edit_regimen_form(req, patientid, formid):
                 return redirect(req.session["redirect_url"])
         except Exception as e:
             log_and_show_error(e, req)
-            return redirect("editregimen", uuid=patientid, formid=formid)
+            return redirect_after_error(req)
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         concept_ids = [
@@ -1115,7 +1117,7 @@ def render_form_89(req, uuid):
         return render(req, "app/tbregister/dots/form89.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("form89", uuid=uuid)
+        return redirect_after_error(req)
 
 
 def render_edit_form_89(req, uuid, formid):
@@ -1176,7 +1178,7 @@ def render_edit_form_89(req, uuid, formid):
             return render(req, "app/tbregister/dots/form89.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("editform89", uuid=uuid, formid=formid)
+        return redirect_after_error(req)
 
 
 def render_delete_form_89(req, formid):
@@ -1279,7 +1281,7 @@ def render_transferout_form(req, patientuuid):
                 return redirect(req.session["redirect_url"])
         except Exception as e:
             log_and_show_error(e, req)
-            return redirect("transferout", uuid=patientuuid)
+            return redirect_after_error(req)
     else:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         title = mu.get_global_msgs("mdrtb.transferOut", locale=req.session["locale"])
@@ -1323,7 +1325,7 @@ def render_edit_transferout_form(req, patientuuid, formid):
         return render(req, "app/tbregister/dots/transfer.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("edittransferout", uuid=patientuuid, formid=formid)
+        return redirect_after_error(req)
 
 
 def render_delete_transferout_form(req, formid):
@@ -1349,6 +1351,27 @@ def render_logout(req):
 def log_and_show_error(error, req):
     messages.error(req, error)
     logger.error(error, exc_info=True)
+
+
+def redirect_after_error(req, fallback="/"):
+    """
+    Where to send the user when a page fails to LOAD.
+
+    Never returns the page that just failed. Views used to redirect to
+    themselves from their except block, so a single OpenMRS 500 became an
+    endless redirect loop — roughly 25 requests in 9 seconds against the
+    clinical server before the browser gave up.
+
+    Prefers the page the user came from (set as session["redirect_url"] when
+    these views start), falling back to the patient search.
+    """
+    target = req.session.get("redirect_url") or fallback
+    try:
+        if str(target).split("?")[0].rstrip("/") == req.path.rstrip("/"):
+            target = fallback
+    except Exception:
+        target = fallback
+    return redirect(target)
 
 
 #########################
@@ -2533,7 +2556,7 @@ def render_add_lab_test(req, uuid):
         return render(req, "app/commonlab/addlabtest.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("addlabtest", uuid=uuid)
+        return redirect_after_error(req)
 
 
 def render_edit_lab_test(req, patientid, orderid):
@@ -2618,7 +2641,7 @@ def render_edit_lab_test(req, patientid, orderid):
             return redirect("managetestorders", uuid=patientid)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("editlabtest", uuid=patientid, orderid=orderid)
+        return redirect_after_error(req)
 
 
 def render_delete_lab_test(req, patientid, orderid):
@@ -2695,7 +2718,7 @@ def render_add_test_sample(req, orderid):
         return render(req, "app/commonlab/addsample.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("addtestsample", orderid=orderid)
+        return redirect_after_error(req)
 
 
 def render_edit_test_sample(req, orderid, sampleid):
@@ -2755,7 +2778,7 @@ def render_edit_test_sample(req, orderid, sampleid):
             return render(req, "app/commonlab/addsample.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("edittestsample", orderid=orderid, sampleid=sampleid)
+        return redirect_after_error(req)
 
 
 def render_change_sample_status(req, orderid, sampleid):
@@ -2865,7 +2888,7 @@ def render_add_test_results(req, orderid):
             return render(req, "app/commonlab/addtestresults.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("addtestresults", orderid=orderid)
+        return redirect_after_error(req)
 
 
 def check_if_sample_exists(req, orderid):
