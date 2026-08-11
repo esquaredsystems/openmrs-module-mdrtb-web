@@ -10,10 +10,10 @@
 <div class="loc-page">
   <div class="loc-header">
     <div>
-      <h1>{{'Location.manage'|get_message_openMRS:locale|default:"en"}}</h1>
+      <h1>{{'Location.manage'|get_message:locale|default:"en"}}</h1>
       <p class="loc-subtitle">
-        {{ location_count|default:0 }} {{'Location.header'|get_message_openMRS:locale|default:"en"}}
-        {% if voided_count %}&middot; {{ voided_count }} {{'general.voided'|get_message_openMRS:locale|default:"en"}}{% endif %}
+        {{ location_count|default:0 }} {{'Location.header'|get_message:locale|default:"en"}}
+        {% if voided_count %}&middot; {{ voided_count }} {{'general.voided'|get_message:locale|default:"en"}}{% endif %}
       </p>
     </div>
 
@@ -24,7 +24,7 @@
       </label>
       
       <a class="btn btn-primary btn-sm" href="{% url 'createLocation' %}">
-        {{'Location.add'|get_message_openMRS:locale|default:"en"}}</a>
+        {{'Location.add'|get_message:locale|default:"en"}}</a>
       
     </div>
   </div>
@@ -40,7 +40,7 @@
     {% endfor %}
   </ul>
   {% else %}
-  <p class="loc-empty">{{'Location.missing'|get_message_openMRS:locale|default:"en"}}</p>
+  <p class="loc-empty">{{'Location.missing'|get_message:locale|default:"en"}}</p>
   {% endif %}
 </div>
 

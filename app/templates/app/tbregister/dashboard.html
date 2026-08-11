@@ -119,7 +119,7 @@
       </div>
       <div class="space-x-3">
         <span class="font-bold">
-          {{'Program.program'|get_message_openMRS:locale|default:"en"}}
+          {{'Program.program'|get_message:locale|default:"en"}}
           {{'mdrtb.outcome'|get_message:locale|default:"en"}}: </span><span
           class="tb03-form-label">{{program.outcome}}
         </span>
@@ -270,16 +270,16 @@
       <div class="flex-center space-x-2">
         <h2 class="text-[#2D9CDB] text-3xl font-bold">
           {{'mdrtb.lab'|get_message:locale|default:"en"}}
-          {{'Order.header'|get_message_openMRS:locale|default:"en"}}
+          {{'Order.header'|get_message:locale|default:"en"}}
         </h2>
         <a href="{% url 'managetestorders' uuid=uuid %}" class="cancel-button">
-          {{'general.view'|get_message_openMRS:locale|default:"en"}}
+          {{'general.view'|get_message:locale|default:"en"}}
           {{'mdrtb.all'|get_message:locale|default:"en"}}
-          {{'Order.header'|get_message_openMRS:locale|default:"en"}}
+          {{'Order.header'|get_message:locale|default:"en"}}
         </a>
         <a href="{% url 'addlabtest' uuid=uuid %}" class="cancel-button text-sm">
-          {{'general.add'|get_message_openMRS:locale|default:"en"}}
-          {{'general.new'|get_message_openMRS:locale|default:"en"}}
+          {{'general.add'|get_message:locale|default:"en"}}
+          {{'general.new'|get_message:locale|default:"en"}}
         </a>
       </div>
 
@@ -295,7 +295,7 @@
               </th>
               <th
                 class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                {{'ConceptProposal.encounter'|get_message_openMRS:locale|default:"en"}}
+                {{'ConceptProposal.encounter'|get_message:locale|default:"en"}}
               </th>
               <th
                 class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
@@ -304,7 +304,7 @@
 
               <th
                 class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                {{'ActiveLists.actions'|get_message_openMRS:locale|default:"en"}}
+                {{'ActiveLists.actions'|get_message:locale|default:"en"}}
               </th>
             </tr>
           </thead>
@@ -332,7 +332,7 @@ data-bs-target="#collapse{{forloop.counter}}" aria-expanded="false"
                       <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                   </div>
-                  <a href="{% url 'editlabtest' orderid=lab_result.uuid patientid=uuid %}" title="{{'general.edit'|get_message_openMRS:locale|default:"en"}}" aria-label="{{'general.edit'|get_message_openMRS:locale|default:"en"}}">
+                  <a href="{% url 'editlabtest' orderid=lab_result.uuid patientid=uuid %}" title="{{'general.edit'|get_message:locale|default:"en"}}" aria-label="{{'general.edit'|get_message:locale|default:"en"}}">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                       stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
                       <path stroke-linecap="round" stroke-linejoin="round"
@@ -353,9 +353,9 @@ data-bs-target="#collapse{{forloop.counter}}" aria-expanded="false"
                         <div id="{{lab_result.uuid}}common"
                           class="grid grid-cols-2 place-items-center justify-items-center p-2 w-full">
                           <div class="border p-2 border-gray-200 font-bold w-full">
-                            {{'ConceptProposal.obs'|get_message_openMRS:locale|default:"en"}}</div>
+                            {{'ConceptProposal.obs'|get_message:locale|default:"en"}}</div>
                           <div class="border p-2 border-gray-200 font-bold w-full">
-                            {{'general.value'|get_message_openMRS:locale|default:"en"}}</div>
+                            {{'general.value'|get_message:locale|default:"en"}}</div>
 
 
                         </div>
@@ -475,8 +475,8 @@ data-bs-target="#collapse{{forloop.counter}}" aria-expanded="false"
             <h1 class="font-bold text-lg text-center">${group}</h1>
             <div id="${uuid}${group.toLowerCase()}"
               class="grid grid-cols-2 place-items-center justify-items-center  p-2">
-              <div class="border p-2 border-gray-200 font-bold w-full">{{'ConceptProposal.obs'|get_message_openMRS:locale|default:"en"}}</div>
-              <div class="border p-2 border-gray-200 font-bold w-full">{{'general.value'|get_message_openMRS:locale|default:"en"}}</div>
+              <div class="border p-2 border-gray-200 font-bold w-full">{{'ConceptProposal.obs'|get_message:locale|default:"en"}}</div>
+              <div class="border p-2 border-gray-200 font-bold w-full">{{'general.value'|get_message:locale|default:"en"}}</div>
             </div>
           </div>
           `

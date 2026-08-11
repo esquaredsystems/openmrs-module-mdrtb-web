@@ -124,16 +124,16 @@
   <div class="dropdown">
     <button class="btn btn-link dropdown-toggle" type="button"
       id="dropdownAdministration" data-bs-toggle="dropdown" aria-expanded="false">
-      {{'Navigation.administration'|get_message_openMRS:locale|default:"en"}}
+      {{'Navigation.administration'|get_message:locale|default:"en"}}
     </button>
     <ul class="dropdown-menu" aria-labelledby="dropdownAdministration">
       <li>
         <a class="dropdown-item"
-          href="{% url 'manageLocations' %}">{{'Location.manage'|get_message_openMRS:locale|default:"en"}}</a>
+          href="{% url 'manageLocations' %}">{{'Location.manage'|get_message:locale|default:"en"}}</a>
       </li>
       <li>
         <a class="dropdown-item"
-          href="{% url 'manageUsers' %}">{{'User.manage'|get_message_openMRS:locale|default:"en"}}</a>
+          href="{% url 'manageUsers' %}">{{'User.manage'|get_message:locale|default:"en"}}</a>
       </li>
       <li>
         <a class="dropdown-item"

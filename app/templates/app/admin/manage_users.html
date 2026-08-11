@@ -10,14 +10,14 @@
 <div class="loc-page">
   <div class="loc-header">
     <div>
-      <h1>{{'User.manage'|get_message_openMRS:locale|default:"en"}}</h1>
+      <h1>{{'User.manage'|get_message:locale|default:"en"}}</h1>
       {% if users %}
       <p class="loc-subtitle">{{ users|length }}</p>
       {% endif %}
     </div>
     
     <a class="btn btn-primary btn-sm" href="{% url 'createUser' %}">
-      {{'User.add'|get_message_openMRS:locale|default:"en"}}</a>
+      {{'User.add'|get_message:locale|default:"en"}}</a>
     
   </div>
 
@@ -27,7 +27,7 @@
       <input type="text" id="q" name="q" value="{{ query }}" autocomplete="off">
     </div>
     <div class="loc-field">
-      <label for="role">{{'Role.role'|get_message_openMRS:locale|default:"en"}}</label>
+      <label for="role">{{'Role.role'|get_message:locale|default:"en"}}</label>
       <select id="role" name="role">
         <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
         {% for role in roles %}
@@ -41,7 +41,7 @@
       <span>{{'mdrtb.users.includeDisabled'|get_message:locale|default:"en"}}</span>
     </label>
     <button type="submit" class="btn btn-primary btn-sm">
-      {{'general.search'|get_message_openMRS:locale|default:"en"}}</button>
+      {{'general.search'|get_message:locale|default:"en"}}</button>
   </form>
 
   {% if searched %}
@@ -49,9 +49,9 @@
   <table class="user-table">
     <thead>
       <tr>
-        <th>{{'User.username'|get_message_openMRS:locale|default:"en"}}</th>
-        <th>{{'general.name'|get_message_openMRS:locale|default:"en"}}</th>
-        <th>{{'User.roles'|get_message_openMRS:locale|default:"en"}}</th>
+        <th>{{'User.username'|get_message:locale|default:"en"}}</th>
+        <th>{{'general.name'|get_message:locale|default:"en"}}</th>
+        <th>{{'User.roles'|get_message:locale|default:"en"}}</th>
         <th></th>
       </tr>
     </thead>

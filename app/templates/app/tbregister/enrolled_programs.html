@@ -47,8 +47,8 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-4">
             <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
-              {{'Program.enrolled'|get_message_openMRS:locale|default:"en"}}
-              {{'Program.header'|get_message_openMRS:locale|default:"en"}}
+              {{'Program.enrolled'|get_message:locale|default:"en"}}
+              {{'Program.header'|get_message:locale|default:"en"}}
             </h2>
           </div>
 
@@ -62,25 +62,25 @@
                 <tr class="">
                   <th
                     class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
-                    {{'Program.program'|get_message_openMRS:locale|default:"en"}}
+                    {{'Program.program'|get_message:locale|default:"en"}}
                   </th>
                   <th
                     class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase">
-                    {{'Program.dateEnrolled'|get_message_openMRS:locale|default:"en"}}
+                    {{'Program.dateEnrolled'|get_message:locale|default:"en"}}
                   </th>
 
                   <th
                     class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
-                    {{'Program.location'|get_message_openMRS:locale|default:"en"}}
+                    {{'Program.location'|get_message:locale|default:"en"}}
                   </th>
                   <th
                     class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
-                    {{'Program.dateCompleted'|get_message_openMRS:locale|default:"en"}}
+                    {{'Program.dateCompleted'|get_message:locale|default:"en"}}
                   </th>
                   <th
                     class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
-                    {{'general.view'|get_message_openMRS:locale|default:"en"}}
-                    {{'Program.states'|get_message_openMRS:locale|default:"en"}}
+                    {{'general.view'|get_message:locale|default:"en"}}
+                    {{'Program.states'|get_message:locale|default:"en"}}
                   </th>
                   <th
                     class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase ">
@@ -124,8 +124,8 @@
                   <td class="px-5 py-4 border-b border-gray-200 w-min  text-sm">
                     <button onclick="showStatesModal(this,'{{program.program.name}}')"
                       data-program-states="{{program.states}}" type="button" class="button-primary">
-                      {{'general.view'|get_message_openMRS:locale|default:"en"}}
-                      {{'Program.states'|get_message_openMRS:locale|default:"en"}}
+                      {{'general.view'|get_message:locale|default:"en"}}
+                      {{'Program.states'|get_message:locale|default:"en"}}
                     </button>
                   </td>
                   {% if program.program.uuid == dots_program %}
@@ -153,11 +153,11 @@
         {% else %}
         <div class="mx-auto">
           <div class="flex items-center space-x-2 justify-center text-center">
-            <h1 class="font-bold text-2xl">{{'Program.notEnrolledInAny'|get_message_openMRS:locale|default:"en"}}
+            <h1 class="font-bold text-2xl">{{'Program.notEnrolledInAny'|get_message:locale|default:"en"}}
             </h1>
             <a class="cancel-button" href="{% url 'dotsprogramenroll' uuid=uuid %}?flow=new" type="button">
-              {{'general.add'|get_message_openMRS:locale|default:"en"}}
-              {{'general.new'|get_message_openMRS:locale|default:"en"}}
+              {{'general.add'|get_message:locale|default:"en"}}
+              {{'general.new'|get_message:locale|default:"en"}}
             </a>
           </div>
         </div>
@@ -172,17 +172,17 @@
       <div class="flex items-center space-x-4">
         <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
           {{'mdrtb.lab'|get_message:locale|default:"en"}}
-          {{'Order.header'|get_message_openMRS:locale|default:"en"}}
+          {{'Order.header'|get_message:locale|default:"en"}}
 
         </h2>
         <a target="_blank" href="{% url 'managetestorders' uuid=uuid %}" class="cancel-button">
-          {{'general.view'|get_message_openMRS:locale|default:"en"}}
+          {{'general.view'|get_message:locale|default:"en"}}
           {{'mdrtb.all'|get_message:locale|default:"en"}}
-          {{'Order.header'|get_message_openMRS:locale|default:"en"}}
+          {{'Order.header'|get_message:locale|default:"en"}}
         </a>
         <a href="{% url 'addlabtest' uuid=uuid %}" class="cancel-button text-sm">
-          {{'general.add'|get_message_openMRS:locale|default:"en"}}
-          {{'general.new'|get_message_openMRS:locale|default:"en"}}
+          {{'general.add'|get_message:locale|default:"en"}}
+          {{'general.new'|get_message:locale|default:"en"}}
         </a>
       </div>
     </div>
@@ -197,7 +197,7 @@
               </th>
               <th
                 class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                {{'ConceptProposal.encounter'|get_message_openMRS:locale|default:"en"}}
+                {{'ConceptProposal.encounter'|get_message:locale|default:"en"}}
               </th>
               <th
                 class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
@@ -206,7 +206,7 @@
 
               <th
                 class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                {{'ActiveLists.actions'|get_message_openMRS:locale|default:"en"}}
+                {{'ActiveLists.actions'|get_message:locale|default:"en"}}
               </th>
             </tr>
           </thead>
@@ -236,7 +236,7 @@ data-bs-target="#collapse{{forloop.counter}}" aria-expanded="false"
                       <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                   </div>
-                  <a href="{% url 'editlabtest' orderid=lab_result.uuid patientid=uuid %}" title="{{'general.edit'|get_message_openMRS:locale|default:"en"}}" aria-label="{{'general.edit'|get_message_openMRS:locale|default:"en"}}">
+                  <a href="{% url 'editlabtest' orderid=lab_result.uuid patientid=uuid %}" title="{{'general.edit'|get_message:locale|default:"en"}}" aria-label="{{'general.edit'|get_message:locale|default:"en"}}">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                       stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
                       <path stroke-linecap="round" stroke-linejoin="round"
@@ -257,9 +257,9 @@ data-bs-target="#collapse{{forloop.counter}}" aria-expanded="false"
                         <div id="{{lab_result.uuid}}common"
                           class="grid grid-cols-2 place-items-center justify-items-center p-2 w-full">
                           <div class="border p-2 border-gray-200 font-bold w-full">
-                            {{'ConceptProposal.obs'|get_message_openMRS:locale|default:"en"}}</div>
+                            {{'ConceptProposal.obs'|get_message:locale|default:"en"}}</div>
                           <div class="border p-2 border-gray-200 font-bold w-full">
-                            {{'general.value'|get_message_openMRS:locale|default:"en"}}</div>
+                            {{'general.value'|get_message:locale|default:"en"}}</div>
 
 
                         </div>
@@ -322,8 +322,8 @@ data-bs-target="#collapse{{forloop.counter}}" aria-expanded="false"
             <h1 class="font-bold text-lg text-center">${group}</h1>
             <div id="${uuid}${group.toLowerCase()}"
               class="grid grid-cols-2 place-items-center justify-items-center  p-2">
-              <div class="border p-2 border-gray-200 font-bold w-full">{{'ConceptProposal.obs'|get_message_openMRS:locale|default:"en"}}</div>
-              <div class="border p-2 border-gray-200 font-bold w-full">{{'general.value'|get_message_openMRS:locale|default:"en"}}</div>
+              <div class="border p-2 border-gray-200 font-bold w-full">{{'ConceptProposal.obs'|get_message:locale|default:"en"}}</div>
+              <div class="border p-2 border-gray-200 font-bold w-full">{{'general.value'|get_message:locale|default:"en"}}</div>
             </div>
           </div>`
         )
@@ -416,7 +416,7 @@ data-bs-target="#collapse{{forloop.counter}}" aria-expanded="false"
   const showStatesModal = (element, name) => {
     $('#modal').removeClass('opacity-0')
     let states = $(element).data('programStates')
-    $('#modal-title').html(`${name} {{'Program.states'|get_message_openMRS:locale|default:"en"}}`)
+    $('#modal-title').html(`${name} {{'Program.states'|get_message:locale|default:"en"}}`)
     let jsonStates = stringToJson(states)
     if (jsonStates.length > 0) {
       for (state of jsonStates) {
@@ -427,7 +427,7 @@ data-bs-target="#collapse{{forloop.counter}}" aria-expanded="false"
             ${state.answer != null ?
                 `<span class="text-md font-bold">${state.answer.concept.name}
                 ${state.answer.start_date != null ?
-                `( {{'general.since'|get_message_openMRS:locale|default:"en"}} ${state.answer.start_date.substring(0, 10)} )
+                `( {{'general.since'|get_message:locale|default:"en"}} ${state.answer.start_date.substring(0, 10)} )
                 ` : ''
                 }
                 </span>`

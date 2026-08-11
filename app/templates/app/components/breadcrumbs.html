@@ -4,7 +4,7 @@
     <ol class="list-reset flex">
         <li>
             <a href="/"
-                class="text-[#2D9CDB] font-md font-bold">{{'Navigation.home'|get_message_openMRS:locale|default:"en"}}</a>
+                class="text-[#2D9CDB] font-md font-bold">{{'Navigation.home'|get_message:locale|default:"en"}}</a>
         </li>
         {% for url in request.session.breadcrumbs %}
         <li>

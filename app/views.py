@@ -1,10 +1,16 @@
+import json
+import datetime
+import logging
+import time as _time
+from datetime import datetime
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.core.paginator import Paginator
 from django.http import JsonResponse
-from datetime import datetime
+from django.contrib import messages
+from django.conf import settings as _settings
+from django.http import HttpResponse as _HttpResponse, HttpResponseForbidden as _HttpResponseForbidden
 import utilities.restapi_utils as ru
-from functools import wraps
 import utilities.metadata_util as mu
 import utilities.commonlab_util as cu
 import utilities.patient_utils as pu
@@ -13,15 +19,12 @@ import utilities.common_utils as util
 import utilities.locations_util as lu
 import utilities.users_util as uau
 import utilities.messages_util as msg
-import json
-import datetime
-import logging
-from django.contrib import messages
 from resources.enums.mdrtbConcepts import Concepts
 from resources.enums.privileges import Privileges
 from resources.enums.constants import Constants
 from resources.enums.encounterType import EncounterType
 from settings.settings import REST_API_BASE_URL
+
 
 logger = logging.getLogger("django")
 
@@ -481,7 +484,7 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
         Privileges.EDIT_ENCOUNTERS,
         Privileges.EDIT_ENCOUNTERS,
         Privileges.ADD_PATIENT_PROGRAMS,
-        Privileges.VIEW_COMMONLABTEST_RESULTS,
+        Privileges.VIEW_LABTEST_RESULTS,
     ]
     if not check_if_session_alive(req):
         return redirect("login")
@@ -3046,10 +3049,6 @@ def submit_order_to_lab(req, orderid):
 ##########################
 # Test-only Views (DEBUG) #
 ##########################
-
-# --- Administration ---
-
-
 def _location_admin_context(req):
     """Shared context for the location screens."""
     return {
@@ -3057,9 +3056,65 @@ def _location_admin_context(req):
     }
 
 
-@system_developer_required("mdrtb.locations.notAllowed")
+def _collect_attribute_values(req):
+    """
+    Reads attr_<attributeTypeUuid> fields off the POST.
+    The form carries a hidden "attribute_types" list of every attribute type it
+    rendered. We iterate that rather than the submitted keys, because an empty
+    multi-select submits no key at all — iterating POST keys would silently keep
+    the old value instead of clearing it.
+    """
+    values = {}
+    rendered = (req.POST.get("attribute_types") or "").split(",")
+    for type_uuid in [t.strip() for t in rendered if t.strip()]:
+        values[type_uuid] = req.POST.getlist(f"attr_{type_uuid}")
+    return values
+
+
+def _location_form_context(req, location):
+    """Reference data + current values for the location form."""
+    locations = lu.get_locations(req)
+    attribute_types = lu.get_location_attribute_types(req)
+    selected_attributes = {}
+    for attribute in (location or {}).get("attributes") or []:
+        if attribute.get("voided"):
+            continue
+        attr_type = (attribute.get("attributeType") or {}).get("uuid")
+        if attr_type:
+            selected_attributes.setdefault(attr_type, []).append(
+                lu.attribute_display_value(attribute)
+            )
+    for attr_type in attribute_types:
+        attr_type["selected"] = selected_attributes.get(attr_type["uuid"], [])
+
+    selected_tags = [
+        tag["uuid"] for tag in (location or {}).get("tags") or [] if tag.get("uuid")
+    ]
+    # A location may not be its own parent.
+    parent_options = sorted(
+        [
+            loc
+            for loc in locations
+            if not loc.get("retired") and loc["uuid"] != (location or {}).get("uuid")
+        ],
+        key=lambda loc: (loc.get("name") or "").lower(),
+    )
+    return {
+        "location": location,
+        "is_new": location is None,
+        "tags": lu.get_location_tags(req),
+        "selected_tags": selected_tags,
+        "attribute_types": attribute_types,
+        "parent_options": parent_options,
+        "countries": lu.get_countries(locations),
+    }
+
+
 def render_manage_locations(req):
     """Location hierarchy as an expandable tree, with a 'show voided' toggle."""
+    blocked = route_non_system_developer(req, "mdrtb.locations.notAllowed")
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs(
@@ -3088,9 +3143,11 @@ def render_manage_locations(req):
     return render(req, "app/admin/manage_locations.html", context=context)
 
 
-@system_developer_required("mdrtb.locations.notAllowed")
 def render_edit_location(req, uuid):
     """View a location; System Developers can also edit and retire it."""
+    blocked = route_non_system_developer(req, "mdrtb.locations.notAllowed")
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     context = _location_admin_context(req)
@@ -3124,9 +3181,11 @@ def render_edit_location(req, uuid):
         return redirect("manageLocations")
 
 
-@system_developer_required("mdrtb.locations.notAllowed")
 def render_create_location(req):
     """Create a new location. System Developers only."""
+    blocked = route_non_system_developer(req, "mdrtb.locations.notAllowed")
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     context = _location_admin_context(req)
@@ -3160,9 +3219,11 @@ def render_create_location(req):
         return redirect("manageLocations")
 
 
-@system_developer_required("mdrtb.locations.notAllowed")
 def render_retire_location(req, uuid):
     """Retire (soft delete) a location. System Developers only, POST only."""
+    blocked = route_non_system_developer(req, "mdrtb.locations.notAllowed")
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     if req.method != "POST":
@@ -3182,9 +3243,11 @@ def render_retire_location(req, uuid):
     return redirect("manageLocations")
 
 
-@system_developer_required("mdrtb.locations.notAllowed")
 def render_unretire_location(req, uuid):
     """Restore a retired location. System Developers only, POST only."""
+    blocked = route_non_system_developer(req, "mdrtb.locations.notAllowed")
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     if req.method != "POST":
@@ -3204,119 +3267,28 @@ def render_unretire_location(req, uuid):
     return redirect("manageLocations")
 
 
-def system_developer_required(message_code):
-    """
-    Refuse an Administration page to anyone without the System Developer role.
-
-    The menu hides these pages, but a hidden link is not a guard - the URLs are
-    bookmarkable and guessable, so every Administration view (read AND write)
-    carries this. Denied users get the translated reason and land back on Home
-    rather than on the page they were refused, which would otherwise bounce
-    them straight into the same denial.
-
-    message_code picks the wording for the area (locations / users /
-    translations) so the existing translations keep working.
-    """
-
-    def decorator(view):
-        @wraps(view)
-        def guarded(req, *args, **kwargs):
-            # An expired session must land on login, not on a misleading
-            # "you are not a System Developer" - the role simply cannot be read
-            # once the session is gone.
-            if not req.session.get("session_id"):
-                return redirect("login")
-            if mu.is_system_developer(req):
-                return view(req, *args, **kwargs)
-            messages.error(
-                req,
-                mu.get_global_msgs(
-                    message_code, locale=req.session.get("locale", "en")
-                ),
-            )
-            logger.warning(
-                "Blocked Administration access to %s by non System Developer: %s",
-                req.path,
-                (req.session.get("logged_user", {}).get("user", {}) or {}).get(
-                    "username"
-                ),
-            )
-            return redirect("searchPatientsView")
-
-        return guarded
-
-    return decorator
-
-
-def _collect_attribute_values(req):
-    """
-    Reads attr_<attributeTypeUuid> fields off the POST.
-
-    The form carries a hidden "attribute_types" list of every attribute type it
-    rendered. We iterate that rather than the submitted keys, because an empty
-    multi-select submits no key at all — iterating POST keys would silently keep
-    the old value instead of clearing it.
-    """
-    values = {}
-    rendered = (req.POST.get("attribute_types") or "").split(",")
-    for type_uuid in [t.strip() for t in rendered if t.strip()]:
-        values[type_uuid] = req.POST.getlist(f"attr_{type_uuid}")
-    return values
-
-
-def _location_form_context(req, location):
-    """Reference data + current values for the location form."""
-    locations = lu.get_locations(req)
-    attribute_types = lu.get_location_attribute_types(req)
-
-    selected_attributes = {}
-    for attribute in (location or {}).get("attributes") or []:
-        if attribute.get("voided"):
-            continue
-        attr_type = (attribute.get("attributeType") or {}).get("uuid")
-        if attr_type:
-            selected_attributes.setdefault(attr_type, []).append(
-                lu.attribute_display_value(attribute)
-            )
-    for attr_type in attribute_types:
-        attr_type["selected"] = selected_attributes.get(attr_type["uuid"], [])
-
-    selected_tags = [
-        tag["uuid"] for tag in (location or {}).get("tags") or [] if tag.get("uuid")
-    ]
-
-    # A location may not be its own parent.
-    parent_options = sorted(
-        [
-            loc
-            for loc in locations
-            if not loc.get("retired") and loc["uuid"] != (location or {}).get("uuid")
-        ],
-        key=lambda loc: (loc.get("name") or "").lower(),
+def route_non_system_developer(req, message_code):
+    # An expired session goes to login, not to a misleading "you are not a System Developer" - the role simply cannot be read once the session is gone.
+    if not req.session.get("session_id"):
+        return redirect("login")
+    if mu.is_system_developer(req):
+        return None
+    messages.error(
+        req, mu.get_global_msgs(message_code, locale=req.session.get("locale", "en"))
     )
-
-    return {
-        "location": location,
-        "is_new": location is None,
-        "tags": lu.get_location_tags(req),
-        "selected_tags": selected_tags,
-        "attribute_types": attribute_types,
-        "parent_options": parent_options,
-        "countries": lu.get_countries(locations),
-    }
+    logger.warning(
+        "Blocked Administration access to %s by non System Developer: %s",
+        req.path,
+        (req.session.get("logged_user", {}).get("user", {}) or {}).get("username"),
+    )
+    return redirect("searchPatientsView")
 
 
-# --- Administration: users ---------------------------------------------------
-#
-# A login is three linked records (person + user + provider). All the REST
-# choreography lives in users_admin_util; these views only handle HTTP.
-# Every write is guarded server-side: user management grants privileges, so it
-# is System Developer only regardless of what the template renders.
-
-
-@system_developer_required("mdrtb.users.notAllowed")
 def render_manage_users(req):
     """Search users by name, role and disabled state."""
+    blocked = route_non_system_developer(req, "mdrtb.users.notAllowed")
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     context = {
@@ -3346,9 +3318,11 @@ def render_manage_users(req):
     return render(req, "app/admin/manage_users.html", context=context)
 
 
-@system_developer_required("mdrtb.users.notAllowed")
 def render_create_user(req):
     """Add a user: creates the person, the login and the provider."""
+    blocked = route_non_system_developer(req, "mdrtb.users.notAllowed")
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     try:
@@ -3396,9 +3370,11 @@ def render_create_user(req):
         )
 
 
-@system_developer_required("mdrtb.users.notAllowed")
 def render_edit_user(req, uuid):
     """Edit an existing user. Username changes are mirrored to the provider."""
+    blocked = route_non_system_developer(req, "mdrtb.users.notAllowed")
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     try:
@@ -3440,9 +3416,11 @@ def render_edit_user(req, uuid):
         return redirect("manageUsers")
 
 
-@system_developer_required("mdrtb.users.notAllowed")
 def render_change_password(req, uuid):
     """Separate from the edit form so a password is never reset by accident."""
+    blocked = route_non_system_developer(req, "mdrtb.users.notAllowed")
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     try:
@@ -3486,9 +3464,11 @@ def render_change_password(req, uuid):
         return redirect("manageUsers")
 
 
-@system_developer_required("mdrtb.users.notAllowed")
 def render_disable_user(req, uuid):
     """Retire (disable) a login. POST only."""
+    blocked = route_non_system_developer(req, "mdrtb.users.notAllowed")
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     if req.method != "POST":
@@ -3516,9 +3496,11 @@ def render_disable_user(req, uuid):
     return redirect("manageUsers")
 
 
-@system_developer_required("mdrtb.users.notAllowed")
 def render_enable_user(req, uuid):
     """Restore a disabled login. POST only."""
+    blocked = route_non_system_developer(req, "mdrtb.users.notAllowed")
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     if req.method != "POST":
@@ -3539,9 +3521,7 @@ def render_enable_user(req, uuid):
 def _user_form_context(req, existing, submitted=None):
     """
     Reference data plus current values for the Add/Edit User form.
-
-    `submitted` re-populates the form after a validation failure so the
-    operator does not have to retype everything.
+    `submitted` re-populates the form after a validation failure so the user does not have retype.
     """
     person = (existing or {}).get("person") or {}
     names = person.get("names") or []
@@ -3592,15 +3572,14 @@ def _user_form_context(req, existing, submitted=None):
     return context
 
 
-@system_developer_required("mdrtb.translations.notAllowed")
 def render_manage_translations(req):
     """
-    All labels as a sheet: a row per code, a column per language, 50 to a page.
-
-    The search is applied server-side (OpenMRS filters on the code) so it spans
-    every label, not just the page on screen — filtering in the browser would
-    only ever search the 50 rows currently rendered.
+    All labels as a sheet: a row per code, a column per language, 50 to a page. The search is applied server-side
+    (OpenMRS filters on the code) so it spans every label, not just the page on screen.
     """
+    blocked = route_non_system_developer(req, "mdrtb.translations.notAllowed")
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     locale = req.session.get("locale", "en")
@@ -3626,9 +3605,11 @@ def render_manage_translations(req):
     return render(req, "app/admin/manage_translations.html", context=context)
 
 
-@system_developer_required("mdrtb.translations.notAllowed")
 def save_translation(req):
     """Save one row: every language for a single code. System Developer only."""
+    blocked = route_non_system_developer(req, "mdrtb.translations.notAllowed")
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     if req.method != "POST":
@@ -3656,9 +3637,11 @@ def save_translation(req):
     )
 
 
-@system_developer_required("mdrtb.translations.notAllowed")
 def delete_translation(req):
     """Remove a code from every language. System Developer only."""
+    blocked = route_non_system_developer(req, "mdrtb.translations.notAllowed")
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     if req.method != "POST":
@@ -3681,17 +3664,14 @@ def delete_translation(req):
     )
 
 
-@system_developer_required("mdrtb.locations.notAllowed")
 def render_set_defaults(req):
+    blocked = route_non_system_developer(req, "mdrtb.locations.notAllowed")
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     title = mu.get_global_msgs("mdrtb.setDefaults", locale=req.session["locale"])
     return render(req, "app/admin/set_defaults.html", context={"title": title})
-
-
-import time as _time
-from django.conf import settings as _settings
-from django.http import HttpResponse as _HttpResponse, HttpResponseForbidden as _HttpResponseForbidden
 
 
 def slow_response(request):

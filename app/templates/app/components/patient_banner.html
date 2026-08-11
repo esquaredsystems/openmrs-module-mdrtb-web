@@ -1,16 +1,29 @@
 {% load static %}
 
+{% comment %}
+Every view that includes this banner sets `patient` only when the REST fetch
+succeeded, so it can legitimately be missing - a failed privilege check, a dead
+session, or an unreachable OpenMRS all get here with no patient. When that
+happens the view has already put the real reason in messages; the banner must
+stay quiet rather than blow the page up.
 
+The edit link is guarded because {% templatetag openblock %} url {% templatetag closeblock %}
+raises NoReverseMatch on an empty uuid, turning a handled error into a 500 that
+hides the actual message.
+{% endcomment %}
+{% if patient %}
 <div class="patient-banner-container mt-4">
     <div class="patient-info-container">
         <div>
-            <a href="{% url 'editpatient' uuid=patient.uuid %}" type="button" id="editpatient" title="{{'general.edit'|get_message_openMRS:locale|default:"en"}}" aria-label="{{'general.edit'|get_message_openMRS:locale|default:"en"}}">
+            {% if patient.uuid %}
+            <a href="{% url 'editpatient' uuid=patient.uuid %}" type="button" id="editpatient" title="{{'general.edit'|get_message:locale|default:"en"}}" aria-label="{{'general.edit'|get_message:locale|default:"en"}}">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-5 h-5">
                 <path stroke-linecap="round" stroke-linejoin="round"
                   d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
               </svg>
             </a>
+            {% endif %}
         </div>
         <div class="font-bold">
             <div>{{patient.name}}</div>
@@ -23,3 +36,4 @@
         {% endfor %}
     </div>
 </div>
+{% endif %}

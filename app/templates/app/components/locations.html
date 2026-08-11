@@ -4,7 +4,7 @@
 <div id="locations-container" class="flex flex-col space-y-4">
     <div class="input-container" id="country-container">
         <label class="input-label w-1/6"
-            for="country-select">{{'Location.country'|get_message_openMRS:locale|default:"en"}}</label>
+            for="country-select">{{'Location.country'|get_message:locale|default:"en"}}</label>
         <select class="input form-control" name="country" id="country-select">
             <option selected value="Таджикистан (Точикистон)">{{'COUNTRY'|get_constant}}</option>
         </select>

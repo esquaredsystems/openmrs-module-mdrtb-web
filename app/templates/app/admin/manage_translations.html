@@ -21,10 +21,10 @@
         <input type="search" name="q" value="{{ query }}" autocomplete="off" autofocus
           placeholder="{{'mdrtb.translations.codeHelp'|get_message:locale|default:"en"}}">
         <button type="submit" class="btn btn-outline-secondary btn-sm">
-          {{'general.search'|get_message_openMRS:locale|default:"en"}}</button>
+          {{'general.search'|get_message:locale|default:"en"}}</button>
         {% if query %}
         <a class="loc-linkbtn" href="{% url 'manageTranslations' %}">
-          {{'general.cancel'|get_message_openMRS:locale|default:"en"}}</a>
+          {{'general.cancel'|get_message:locale|default:"en"}}</a>
         {% endif %}
       </form>
       
@@ -61,7 +61,7 @@
     </div>
     {% endfor %}
     <button type="submit" class="btn btn-primary btn-sm">
-      {{'general.save'|get_message_openMRS:locale|default:"en"}}</button>
+      {{'general.save'|get_message:locale|default:"en"}}</button>
   </form>
 
   {% if page and page.object_list %}
@@ -95,7 +95,7 @@
             <input type="hidden" name="q" value="{{ query }}">
             <input type="hidden" name="page" value="{{ page.number }}">
             <button type="submit" class="btn btn-primary btn-sm tr-save" disabled>
-              {{'general.save'|get_message_openMRS:locale|default:"en"}}</button>
+              {{'general.save'|get_message:locale|default:"en"}}</button>
           </form>
           <form method="post" action="{% url 'deleteTranslation' %}"
             onsubmit="return confirm('{{'mdrtb.translations.confirmDelete'|get_message:locale|default:"en"}}');">
@@ -104,7 +104,7 @@
             <input type="hidden" name="q" value="{{ query }}">
             <input type="hidden" name="page" value="{{ page.number }}">
             <button type="submit" class="btn btn-danger btn-sm">
-              {{'general.delete'|get_message_openMRS:locale|default:"en"}}</button>
+              {{'general.delete'|get_message:locale|default:"en"}}</button>
           </form>
           
         </td>

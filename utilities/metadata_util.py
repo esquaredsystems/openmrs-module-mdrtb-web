@@ -295,9 +295,18 @@ def check_if_user_has_privilege(req, privilege_to_check, user_privileges):
     """
     Checks if a user has a specific privilege.
 
+    privilege_to_check is the privilege's name as OpenMRS spells it, e.g.
+    "Add Patients" - the values in resources/enums/privileges.py. Matching used
+    to be on UUID, but privilege UUIDs are regenerated when the server is
+    redeployed, which silently turned every check False and hid whole screens.
+    Names are stable across deployments.
+
+    Both "display" and "name" are checked: GET /session returns privileges in
+    ref representation, which carries display but no name.
+
     Parameters:
         req (Request): The request object.
-        privilege_to_check (str): The UUID of the privilege to check.
+        privilege_to_check (str): The privilege name to look for.
         user_privileges (list): A list of user privileges.
 
     Returns:
@@ -306,11 +315,12 @@ def check_if_user_has_privilege(req, privilege_to_check, user_privileges):
     # Admins and System Developers get every privilege.
     if is_system_developer(req):
         return True
-    has_privilege = False
-    for privilege in user_privileges:
-        if privilege["uuid"] == privilege_to_check:
-            has_privilege = True
-    return has_privilege
+    for privilege in user_privileges or []:
+        if privilege.get("display") == privilege_to_check:
+            return True
+        if privilege.get("name") == privilege_to_check:
+            return True
+    return False
 
 
 def get_encounter_by_uuid(req, uuid):

@@ -388,6 +388,52 @@ a .patient-result-row:hover {
   padding: 1rem;
 }
 
+/*
+ * Loading spinner.
+ *
+ * Pure CSS on purpose. This replaced 36 <lord-icon> elements that each pulled a
+ * Lottie animation from cdn.lordicon.com, plus a 334 KB lordicon.js loaded on
+ * every page - so a clinic machine had to reach the public internet just to
+ * show "loading". Nothing here touches the network.
+ *
+ *   <div class="app-spinner"></div>                     50px, brand blue
+ *   <div class="app-spinner app-spinner--sm"></div>     28px
+ *   <div class="app-spinner app-spinner--light"></div>  for dark backgrounds
+ */
+.app-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--brand-border);
+  border-top-color: var(--brand-primary);
+  border-radius: 50%;
+  animation: app-spin 700ms linear infinite;
+}
+
+.app-spinner--sm {
+  width: 28px;
+  height: 28px;
+  border-width: 3px;
+}
+
+.app-spinner--light {
+  border-color: rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+}
+
+@keyframes app-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Respect the OS "reduce motion" setting: slow it right down rather than
+   freezing it, so it still reads as "working". */
+@media (prefers-reduced-motion: reduce) {
+  .app-spinner {
+    animation-duration: 2.4s;
+  }
+}
+
 .patient-create-new {
   display: flex;
   align-items: center;

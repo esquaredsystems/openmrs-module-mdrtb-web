@@ -11,8 +11,8 @@
 
         {% if request.session.session_id %}
         <a class="header-link header-home" href="{% url 'searchPatientsView' %}"
-            title="{{'Navigation.home'|get_message_openMRS:locale|default:"en"}}"
-            aria-label="{{'Navigation.home'|get_message_openMRS:locale|default:"en"}}">
+            title="{{'Navigation.home'|get_message:locale|default:"en"}}"
+            aria-label="{{'Navigation.home'|get_message:locale|default:"en"}}">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -48,11 +48,11 @@
                 {% endif %}
             </ul>
         </div>
-        <span class="header-link">{{'header.logged.in'|get_message_openMRS:locale|default:"en"}}
+        <span class="header-link">{{'header.logged.in'|get_message:locale|default:"en"}}
             {{request.session.logged_user.user.person.display}}</span>
         <a class="header-link"
-            href="{% url 'profile' %}">{{'Navigation.options'|get_message_openMRS:locale|default:"en"}}</a>
-        <a class="header-link" href="{% url 'logout' %}">{{'header.logout'|get_message_openMRS:locale|default:"en"}}</a>
+            href="{% url 'profile' %}">{{'Navigation.options'|get_message:locale|default:"en"}}</a>
+        <a class="header-link" href="{% url 'logout' %}">{{'header.logout'|get_message:locale|default:"en"}}</a>
         {% else %}
         <a class="header-link d-flex align-items-center gap-2" href="{% url 'login' %}">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -60,7 +60,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round"
                     d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
             </svg>
-            <span>{{'auth.login'|get_message_openMRS:'ru'}}</span>
+            <span>{{'auth.login'|get_message:'ru'}}</span>
         </a>
         {% endif %}
     </nav>

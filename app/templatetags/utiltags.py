@@ -54,21 +54,6 @@ def to_date(date_str):
 
 
 @register.filter
-def get_encounter_name(name):
-    return name[: len(name) - 10]
-
-
-@register.filter
-def get_id_from_name(name):
-    return name.split("-")[0]
-
-
-@register.filter
-def get_year(date):
-    return date[:4]
-
-
-@register.filter
 def get_range(number):
     return range(int(number))
 

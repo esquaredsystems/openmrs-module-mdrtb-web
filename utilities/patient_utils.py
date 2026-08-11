@@ -521,6 +521,39 @@ def get_enrolled_programs_by_patient(req, uuid, enrollment_id=None):
                 for program in response["results"]
             ]
             return programs_info
+    except KeyError as ke:
+        # OpenMRS silently drops any property the user lacks the privilege to
+        # read, so the response comes back a field short instead of returning
+        # 403. The bare "KeyError: 'program'" that used to surface here gave no
+        # hint that this is a permissions problem on the OpenMRS side.
+        #
+        # Field -> privilege the REST layer requires to render it. Note these
+        # are the REST-era "Get ..." names; a role holding only the legacy 1.x
+        # "View ..." equivalent will still come back empty.
+        needed = {
+            "program": "Get Programs",
+            "location": "Get Locations",
+            "states": "Get Concepts",
+            "patient": "Get Patients",
+        }
+        missing = str(ke).strip("'")
+        privilege = needed.get(missing)
+        logger.error(
+            "programenrollment response has no '%s' field for patient %s. "
+            "This usually means the logged-in user lacks the '%s' privilege in "
+            "OpenMRS - the REST layer omits properties it may not render.",
+            missing,
+            uuid,
+            privilege or "corresponding Get",
+            exc_info=True,
+        )
+        if privilege:
+            raise Exception(
+                f"Cannot read the patient's programs: OpenMRS did not return "
+                f"'{missing}'. The user's role is most likely missing the "
+                f"'{privilege}' privilege."
+            )
+        raise Exception(f"Unexpected programenrollment response: missing '{missing}'")
     except Exception as e:
         logger.error(e, exc_info=True)
         raise Exception(e)

@@ -17,38 +17,38 @@
       {% endif %}
     </div>
     <a class="loc-linkbtn" href="{% url 'manageUsers' %}">
-      &larr; {{'User.manage'|get_message_openMRS:locale|default:"en"}}</a>
+      &larr; {{'User.manage'|get_message:locale|default:"en"}}</a>
   </div>
 
   <form method="post"
     action="{% if is_new %}{% url 'createUser' %}{% else %}{% url 'editUser' uuid=user_record.uuid %}{% endif %}">
     {% csrf_token %}
 
-    <h2 class="loc-section">{{'Person.name'|get_message_openMRS:locale|default:"en"}}</h2>
+    <h2 class="loc-section">{{'Person.name'|get_message:locale|default:"en"}}</h2>
 
     <div class="loc-grid">
       <div class="loc-field">
         <label for="given_name" class="required">
-          {{'PersonName.givenName'|get_message_openMRS:locale|default:"en"}}</label>
+          {{'PersonName.givenName'|get_message:locale|default:"en"}}</label>
         <input type="text" id="given_name" name="given_name" required maxlength="50"
           value="{{ values.given_name }}">
       </div>
       <div class="loc-field">
-        <label for="middle_name">{{'PersonName.middleName'|get_message_openMRS:locale|default:"en"}}</label>
+        <label for="middle_name">{{'PersonName.middleName'|get_message:locale|default:"en"}}</label>
         <input type="text" id="middle_name" name="middle_name" maxlength="50" value="{{ values.middle_name }}">
       </div>
       <div class="loc-field">
-        <label for="family_name">{{'PersonName.familyName'|get_message_openMRS:locale|default:"en"}}</label>
+        <label for="family_name">{{'PersonName.familyName'|get_message:locale|default:"en"}}</label>
         <input type="text" id="family_name" name="family_name" maxlength="50" value="{{ values.family_name }}">
       </div>
       <div class="loc-field">
-        <label for="birthdate">{{'Person.birthdate'|get_message_openMRS:locale|default:"en"}}</label>
+        <label for="birthdate">{{'Person.birthdate'|get_message:locale|default:"en"}}</label>
         <input type="date" id="birthdate" name="birthdate" value="{{ values.birthdate }}">
       </div>
     </div>
 
     <div class="loc-field">
-      <span class="loc-field-label required">{{'Person.gender'|get_message_openMRS:locale|default:"en"}}</span>
+      <span class="loc-field-label required">{{'Person.gender'|get_message:locale|default:"en"}}</span>
       <div class="user-radio-row">
         {% for code, label in genders %}
         <label class="loc-tag" for="gender_{{ code }}">
@@ -64,13 +64,13 @@
 
     {% if not is_new %}
     <div class="loc-field">
-      <label for="system_id">{{'User.systemId'|get_message_openMRS:locale|default:"en"}}</label>
+      <label for="system_id">{{'User.systemId'|get_message:locale|default:"en"}}</label>
       <input type="text" id="system_id" value="{{ user_record.systemId }}" disabled>
     </div>
     {% endif %}
 
     <div class="loc-field">
-      <label for="username" class="required">{{'User.username'|get_message_openMRS:locale|default:"en"}}</label>
+      <label for="username" class="required">{{'User.username'|get_message:locale|default:"en"}}</label>
       <input type="text" id="username" name="username" required maxlength="50" value="{{ values.username }}">
       <small class="loc-hint">{{'mdrtb.users.providerNote'|get_message:locale|default:"en"}}</small>
     </div>
@@ -78,7 +78,7 @@
     {% if is_new %}
     <div class="loc-grid">
       <div class="loc-field">
-        <label for="password" class="required">{{'User.password'|get_message_openMRS:locale|default:"en"}}</label>
+        <label for="password" class="required">{{'User.password'|get_message:locale|default:"en"}}</label>
         <input type="password" id="password" name="password" required autocomplete="new-password">
       </div>
       <div class="loc-field">
@@ -101,7 +101,7 @@
       </select>
     </div>
 
-    <h2 class="loc-section">{{'User.roles'|get_message_openMRS:locale|default:"en"}}</h2>
+    <h2 class="loc-section">{{'User.roles'|get_message:locale|default:"en"}}</h2>
     <div class="loc-tags">
       {% for role in roles %}
       <label class="loc-tag" for="role_{{ role.uuid }}"
@@ -115,9 +115,9 @@
 
     <div class="loc-form-actions">
       <button type="submit" class="btn btn-primary">
-        {{'general.save'|get_message_openMRS:locale|default:"en"}}</button>
+        {{'general.save'|get_message:locale|default:"en"}}</button>
       <a class="loc-linkbtn" href="{% url 'manageUsers' %}">
-        {{'general.cancel'|get_message_openMRS:locale|default:"en"}}</a>
+        {{'general.cancel'|get_message:locale|default:"en"}}</a>
     </div>
   </form>
 
@@ -136,7 +136,7 @@
     <form method="post" action="{% url 'disableUser' uuid=user_record.uuid %}"
       onsubmit="return confirm('{{'mdrtb.users.confirmDisable'|get_message:locale|default:"en"}}');">
       {% csrf_token %}
-      <label for="retire_reason">{{'general.retiredReason'|get_message_openMRS:locale|default:"en"}}</label>
+      <label for="retire_reason">{{'general.retiredReason'|get_message:locale|default:"en"}}</label>
       <input type="text" id="retire_reason" name="retire_reason" maxlength="255">
       <button type="submit" class="btn btn-outline-danger btn-sm">
         {{'mdrtb.users.disable'|get_message:locale|default:"en"}}</button>

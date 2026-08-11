@@ -32,7 +32,7 @@
 
     {% if add_patients_privilege %}
     <div class="patient-create-new">
-      <span>{{'PatientSearch.noneFound'|get_message_openMRS:locale|default:"en"}}?</span>
+      <span>{{'PatientSearch.noneFound'|get_message:locale|default:"en"}}?</span>
       <a href="{% url 'enrollPatient' %}"><button
           class="btn btn-primary">{{'mdrtb.createNewPatient'|get_message:locale|default:"en"}}</button></a>
     </div>
@@ -40,86 +40,108 @@
   </div>
 
   <script>
-    const minSearchCharacters = "{{minSearchCharacters}}"
-    const handleSearch = (searchQuery) => {
-      if (searchQuery.length < 0) {
+    // "{{minSearchCharacters}}" arrives as a string; compare numbers, not text.
+    const minSearchCharacters = Number("{{minSearchCharacters}}") || 2
 
+    const handleSearch = (searchQuery) => {
+      if (searchQuery.length < minSearchCharacters) {
         $('#search-results').removeClass('is-open')
         $('#search-results').html("")
+        return
+      }
 
-      } else if (searchQuery.length >= Number(minSearchCharacters)) {
-        $('#search-results').html("")
-        $('#search-results').append(`
+      console.log('[search] query=%s (min %d chars)', searchQuery, minSearchCharacters)
+
+      $('#search-results').html(`
         <div class="patient-search-loader">
-          <lord-icon
-              src="https://cdn.lordicon.com/xjovhxra.json"
-              trigger="loop"
-              colors="primary:#121331,secondary:#2d9cdb"
-              style="width:50px;height:50px">
-          </lord-icon>
-          </div>`)
-        $.ajax({
-          url: "{% url 'search'%}?q=" + `${searchQuery}`,
-          method: 'GET',
-          success: function (data) {
-            if (data.error) {
-              $('#search-results').html(
-                `<div class="patient-search-empty">
+          <div class="app-spinner" role="status" aria-label="Loading"></div>
+        </div>`)
+      $('#search-results').addClass('is-open')
+
+      $.ajax({
+        url: "{% url 'search'%}?q=" + encodeURIComponent(searchQuery),
+        method: 'GET',
+        success: function (data) {
+          console.log('[search] raw response:', data)
+
+          if (data && data.error) {
+            console.error('[search] server reported:', data.error)
+            $('#search-results').html(
+              `<div class="patient-search-empty">
                   <h3>
-                    Error finding patient
+                    {{'mdrtb.PatientNotFound'|get_message:locale|default:"en"}}
                   </h3>
                 </div>`)
-            }
-            else if (data.results.length === 0) {
-              $('#search-results').html("")
-              $('#search-results').append(
-                `<div class="patient-search-empty">
+            return
+          }
+
+          // Guard the shape: anything unexpected must show a message, not
+          // throw halfway through and leave an empty box behind.
+          const results = (data && Array.isArray(data.results)) ? data.results : []
+          console.log('[search] %d result(s):', results.length, results)
+
+          if (results.length === 0) {
+            $('#search-results').html(
+              `<div class="patient-search-empty">
                   <h3>
-                    Could not find any patient according to your search
+                    {{'mdrtb.PatientNotFound'|get_message:locale|default:"en"}}
                   </h3>
               </div>`)
-            } else {
-              $('#search-results').html("")
-              $('#search-results').append(
-                `<div class="patient-result-row patient-result-header">
+            return
+          }
+
+          $('#search-results').html(
+            `<div class="patient-result-row patient-result-header">
                   <p>{{'mdrtb.Identifier'|get_message:locale|default:"en"}}</p>
                   <p>{{'mdrtb.givenname'|get_message:locale|default:"en"}}</p>
                   <p>{{'mdrtb.age'|get_message:locale|default:"en"}}</p>
                   <p>{{'mdrtb.gender'|get_message:locale|default:"en"}}</p>
                 </div>`)
-              for (i = 0; i < data.results.length; i++) {
-                const path = `patient/${data.results[i].uuid}/enrolledprograms`
-                let identifierToShow = data.results[i].identifiers[0].identifier;
-                for (identifier of data.results[i].identifiers) {
-                  if (identifier.identifier === searchQuery) {
-                    identifierToShow = identifier.identifier
-                  }
-                }
-                $('#search-results').append(
-                  `<a href="${path}">
+
+          results.forEach(function (patient, i) {
+            const path = `patient/${patient.uuid}/enrolledprograms`
+            const identifiers = patient.identifiers || []
+
+            // A patient with no identifier used to throw here on identifiers[0],
+            // which aborted the loop and left the whole list blank.
+            let identifierToShow = identifiers.length ? identifiers[0].identifier : ""
+            identifiers.forEach(function (identifier) {
+              if (identifier.identifier === searchQuery) {
+                identifierToShow = identifier.identifier
+              }
+            })
+            if (!identifiers.length) {
+              console.warn('[search] result %d (%s) has no identifiers', i, patient.uuid)
+            }
+
+            const person = patient.person || {}
+            $('#search-results').append(
+              `<a href="${path}">
                     <div class="patient-result-row">
                       <p>${identifierToShow}</p>
-                      <p>${data.results[i].person.display}</p>
-                      <p>${data.results[i].person.age}</p>
-                      <p>${data.results[i].person.gender}</p>
+                      <p>${person.display || ""}</p>
+                      <p>${person.age != null ? person.age : ""}</p>
+                      <p>${person.gender || ""}</p>
                   </div>
                   </a>`)
-              }
-            }
-          }
-        })
-        $('#search-results').addClass('is-open')
-      }
-    }
+          })
 
-    function debounce(func, delay) {
-      let timerId;
-      return function (...args) {
-        clearTimeout(timerId);
-        timerId = setTimeout(() => {
-          func.apply(this, args);
-        }, delay);
-      };
+          console.log('[search] rendered %d row(s)', results.length)
+        },
+        error: function (xhr, textStatus, errorThrown) {
+          // Without this the spinner span forever on a 401/500 and the console
+          // stayed silent, so a dead session looked like "no results".
+          console.error('[search] request failed: status=%s (%s) %s',
+            xhr.status, textStatus, errorThrown)
+          console.error('[search] response body:', xhr.responseText)
+          $('#search-results').html(
+            `<div class="patient-search-empty">
+                  <h3>
+                    {{'mdrtb.PatientNotFound'|get_message:locale|default:"en"}}
+                  </h3>
+                </div>`)
+        }
+      })
     }
 
     var searchTimeout; // Declare a variable to hold the timeout ID
@@ -127,11 +149,10 @@
     $('#search-input').keyup(function (e) {
       clearTimeout(searchTimeout); // Clear the previous timeout
 
-      if (e.target.value.length > minSearchCharacters) {
-        // Set a new timeout of 1 second before making the API call
+      if (e.target.value.length >= minSearchCharacters) {
         searchTimeout = setTimeout(function () {
           handleSearch(e.target.value);
-        }, 500); // 1000 milliseconds (1 second)
+        }, 500);
       } else {
         $('#search-results').removeClass('is-open');
       }
@@ -142,7 +163,7 @@
 {% else %}
 <div class="patient-search-page">
   <h1>
-    {{'general.accountHasNoPrivilege'|get_message_openMRS:locale|default:"en"}}<strong><i>{{'Navigation.findCreatePatient'|get_message_openMRS:locale|default:"en"}}</i></strong>
+    {{'general.accountHasNoPrivilege'|get_message:locale|default:"en"}}<strong><i>{{'Navigation.findCreatePatient'|get_message:locale|default:"en"}}</i></strong>
     <a class="cancel-button" href="{% url 'logout' %}">Logout</a>
   </h1>
 </div>
