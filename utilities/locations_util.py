@@ -24,7 +24,6 @@ import utilities.restapi_utils as ru
 from django.core.cache import caches
 from resources.enums.constants import Constants
 
-from utilities.admin_auth import is_system_developer  # noqa: F401  (re-exported)
 from utilities.rest_admin import (  # noqa: F401  (re-exported for the views)
     SessionExpired,
     get_all_pages as _get_all_pages,

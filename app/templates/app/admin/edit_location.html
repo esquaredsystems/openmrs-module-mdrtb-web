@@ -4,7 +4,6 @@
 {{title}}
 {% endblock %}
 
-
 {%block content%}
 {% include 'app/components/nav.html' %}
 
@@ -23,14 +22,10 @@
       &larr; {{'Location.manage'|get_message_openMRS:locale|default:"en"}}</a>
   </div>
 
-  {% if not can_manage_locations %}
-  <p class="loc-readonly-note">{{'mdrtb.locations.readOnly'|get_message:locale|default:"en"}}</p>
-  {% endif %}
-
   <form method="post"
     action="{% if is_new %}{% url 'createLocation' %}{% else %}{% url 'editLocation' uuid=location.uuid %}{% endif %}">
     {% csrf_token %}
-    <fieldset {% if not can_manage_locations %}disabled{% endif %}>
+    <fieldset>
 
       {% if not is_new %}
       <div class="loc-field">
@@ -148,18 +143,17 @@
       </div>
       {% endif %}
 
-      {% if can_manage_locations %}
       <div class="loc-form-actions">
         <button type="submit" class="btn btn-primary">
           {{'Location.save'|get_message_openMRS:locale|default:"en"}}</button>
         <a class="loc-linkbtn" href="{% url 'manageLocations' %}">
           {{'general.cancel'|get_message_openMRS:locale|default:"en"}}</a>
       </div>
-      {% endif %}
+      
     </fieldset>
   </form>
 
-  {% if can_manage_locations and not is_new %}
+  {% if not is_new %}
   <div class="loc-danger-zone">
     {% if location.retired %}
     <form method="post" action="{% url 'unretireLocation' uuid=location.uuid %}">

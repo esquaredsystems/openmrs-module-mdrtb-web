@@ -4,6 +4,7 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse
 from datetime import datetime
 import utilities.restapi_utils as ru
+from functools import wraps
 import utilities.metadata_util as mu
 import utilities.commonlab_util as cu
 import utilities.patient_utils as pu
@@ -3053,10 +3054,10 @@ def _location_admin_context(req):
     """Shared context for the location screens."""
     return {
         "locale": req.session.get("locale", "en"),
-        "can_manage_locations": lu.is_system_developer(req),
     }
 
 
+@system_developer_required("mdrtb.locations.notAllowed")
 def render_manage_locations(req):
     """Location hierarchy as an expandable tree, with a 'show voided' toggle."""
     if not check_if_session_alive(req):
@@ -3087,6 +3088,7 @@ def render_manage_locations(req):
     return render(req, "app/admin/manage_locations.html", context=context)
 
 
+@system_developer_required("mdrtb.locations.notAllowed")
 def render_edit_location(req, uuid):
     """View a location; System Developers can also edit and retire it."""
     if not check_if_session_alive(req):
@@ -3094,8 +3096,6 @@ def render_edit_location(req, uuid):
     context = _location_admin_context(req)
     try:
         if req.method == "POST":
-            if not context["can_manage_locations"]:
-                return _deny_location_change(req)
             payload = lu.build_location_payload(req.POST)
             if not payload["name"]:
                 messages.error(req, "Location name is required")
@@ -3124,13 +3124,12 @@ def render_edit_location(req, uuid):
         return redirect("manageLocations")
 
 
+@system_developer_required("mdrtb.locations.notAllowed")
 def render_create_location(req):
     """Create a new location. System Developers only."""
     if not check_if_session_alive(req):
         return redirect("login")
     context = _location_admin_context(req)
-    if not context["can_manage_locations"]:
-        return _deny_location_change(req)
     try:
         if req.method == "POST":
             payload = lu.build_location_payload(req.POST)
@@ -3161,14 +3160,13 @@ def render_create_location(req):
         return redirect("manageLocations")
 
 
+@system_developer_required("mdrtb.locations.notAllowed")
 def render_retire_location(req, uuid):
     """Retire (soft delete) a location. System Developers only, POST only."""
     if not check_if_session_alive(req):
         return redirect("login")
     if req.method != "POST":
         return redirect("editLocation", uuid=uuid)
-    if not lu.is_system_developer(req):
-        return _deny_location_change(req)
     try:
         lu.retire_location(req, uuid, req.POST.get("retire_reason"))
         messages.success(
@@ -3184,14 +3182,13 @@ def render_retire_location(req, uuid):
     return redirect("manageLocations")
 
 
+@system_developer_required("mdrtb.locations.notAllowed")
 def render_unretire_location(req, uuid):
     """Restore a retired location. System Developers only, POST only."""
     if not check_if_session_alive(req):
         return redirect("login")
     if req.method != "POST":
         return redirect("editLocation", uuid=uuid)
-    if not lu.is_system_developer(req):
-        return _deny_location_change(req)
     try:
         lu.unretire_location(req, uuid)
         messages.success(
@@ -3207,19 +3204,48 @@ def render_unretire_location(req, uuid):
     return redirect("manageLocations")
 
 
-def _deny_location_change(req):
-    """Single place that refuses a write from a non System Developer."""
-    messages.error(
-        req,
-        mu.get_global_msgs(
-            "mdrtb.locations.notAllowed", locale=req.session.get("locale", "en")
-        ),
-    )
-    logger.warning(
-        "Rejected location change by non System Developer: "
-        f"{req.session.get('logged_user', {}).get('user', {}).get('username')}"
-    )
-    return redirect("manageLocations")
+def system_developer_required(message_code):
+    """
+    Refuse an Administration page to anyone without the System Developer role.
+
+    The menu hides these pages, but a hidden link is not a guard - the URLs are
+    bookmarkable and guessable, so every Administration view (read AND write)
+    carries this. Denied users get the translated reason and land back on Home
+    rather than on the page they were refused, which would otherwise bounce
+    them straight into the same denial.
+
+    message_code picks the wording for the area (locations / users /
+    translations) so the existing translations keep working.
+    """
+
+    def decorator(view):
+        @wraps(view)
+        def guarded(req, *args, **kwargs):
+            # An expired session must land on login, not on a misleading
+            # "you are not a System Developer" - the role simply cannot be read
+            # once the session is gone.
+            if not req.session.get("session_id"):
+                return redirect("login")
+            if mu.is_system_developer(req):
+                return view(req, *args, **kwargs)
+            messages.error(
+                req,
+                mu.get_global_msgs(
+                    message_code, locale=req.session.get("locale", "en")
+                ),
+            )
+            logger.warning(
+                "Blocked Administration access to %s by non System Developer: %s",
+                req.path,
+                (req.session.get("logged_user", {}).get("user", {}) or {}).get(
+                    "username"
+                ),
+            )
+            return redirect("searchPatientsView")
+
+        return guarded
+
+    return decorator
 
 
 def _collect_attribute_values(req):
@@ -3288,20 +3314,7 @@ def _location_form_context(req, location):
 # is System Developer only regardless of what the template renders.
 
 
-def _deny_user_change(req):
-    messages.error(
-        req,
-        mu.get_global_msgs(
-            "mdrtb.users.notAllowed", locale=req.session.get("locale", "en")
-        ),
-    )
-    logger.warning(
-        "Rejected user-management change by non System Developer: "
-        f"{req.session.get('logged_user', {}).get('user', {}).get('username')}"
-    )
-    return redirect("manageUsers")
-
-
+@system_developer_required("mdrtb.users.notAllowed")
 def render_manage_users(req):
     """Search users by name, role and disabled state."""
     if not check_if_session_alive(req):
@@ -3310,7 +3323,6 @@ def render_manage_users(req):
         "title": mu.get_global_msgs(
             "User.manage", locale=req.session["locale"], source="OpenMRS"
         ),
-        "can_manage_users": uau.is_system_developer(req),
         "query": req.GET.get("q", "").strip(),
         "selected_role": req.GET.get("role", ""),
         "include_disabled": req.GET.get("disabled") == "1",
@@ -3334,12 +3346,11 @@ def render_manage_users(req):
     return render(req, "app/admin/manage_users.html", context=context)
 
 
+@system_developer_required("mdrtb.users.notAllowed")
 def render_create_user(req):
     """Add a user: creates the person, the login and the provider."""
     if not check_if_session_alive(req):
         return redirect("login")
-    if not uau.is_system_developer(req):
-        return _deny_user_change(req)
     try:
         if req.method == "POST":
             person = uau.read_person_form(req.POST)
@@ -3385,12 +3396,11 @@ def render_create_user(req):
         )
 
 
+@system_developer_required("mdrtb.users.notAllowed")
 def render_edit_user(req, uuid):
     """Edit an existing user. Username changes are mirrored to the provider."""
     if not check_if_session_alive(req):
         return redirect("login")
-    if not uau.is_system_developer(req):
-        return _deny_user_change(req)
     try:
         existing = uau.get_user(req, uuid)
         if not existing:
@@ -3430,12 +3440,11 @@ def render_edit_user(req, uuid):
         return redirect("manageUsers")
 
 
+@system_developer_required("mdrtb.users.notAllowed")
 def render_change_password(req, uuid):
     """Separate from the edit form so a password is never reset by accident."""
     if not check_if_session_alive(req):
         return redirect("login")
-    if not uau.is_system_developer(req):
-        return _deny_user_change(req)
     try:
         existing = uau.get_user(req, uuid)
         if not existing:
@@ -3468,7 +3477,6 @@ def render_change_password(req, uuid):
                     "mdrtb.users.changePassword", locale=req.session["locale"]
                 ),
                 "user": existing,
-                "can_manage_users": True,
             },
         )
     except uau.SessionExpired:
@@ -3478,14 +3486,13 @@ def render_change_password(req, uuid):
         return redirect("manageUsers")
 
 
+@system_developer_required("mdrtb.users.notAllowed")
 def render_disable_user(req, uuid):
     """Retire (disable) a login. POST only."""
     if not check_if_session_alive(req):
         return redirect("login")
     if req.method != "POST":
         return redirect("editUser", uuid=uuid)
-    if not uau.is_system_developer(req):
-        return _deny_user_change(req)
     try:
         if uuid == (req.session.get("logged_user", {}).get("user", {}) or {}).get("uuid"):
             messages.error(
@@ -3509,14 +3516,13 @@ def render_disable_user(req, uuid):
     return redirect("manageUsers")
 
 
+@system_developer_required("mdrtb.users.notAllowed")
 def render_enable_user(req, uuid):
     """Restore a disabled login. POST only."""
     if not check_if_session_alive(req):
         return redirect("login")
     if req.method != "POST":
         return redirect("editUser", uuid=uuid)
-    if not uau.is_system_developer(req):
-        return _deny_user_change(req)
     try:
         uau.unretire_user(req, uuid)
         messages.success(
@@ -3573,7 +3579,6 @@ def _user_form_context(req, existing, submitted=None):
         "values": values,
         "selected_roles": selected_roles,
         "genders": uau.GENDERS,
-        "can_manage_users": True,
         "roles": [],
         "locations": [],
     }
@@ -3587,16 +3592,7 @@ def _user_form_context(req, existing, submitted=None):
     return context
 
 
-def _deny_translation_change(req):
-    messages.error(
-        req,
-        mu.get_global_msgs(
-            "mdrtb.translations.notAllowed", locale=req.session.get("locale", "en")
-        ),
-    )
-    return redirect("manageTranslations")
-
-
+@system_developer_required("mdrtb.translations.notAllowed")
 def render_manage_translations(req):
     """
     All labels as a sheet: a row per code, a column per language, 50 to a page.
@@ -3611,7 +3607,6 @@ def render_manage_translations(req):
     query = req.GET.get("q", "").strip()
     context = {
         "title": mu.get_global_msgs("mdrtb.manageTranslations", locale=locale),
-        "can_manage_translations": lu.is_system_developer(req),
         "languages": msg.SUPPORTED_LANGS,
         "query": query,
         "page": None,
@@ -3631,14 +3626,13 @@ def render_manage_translations(req):
     return render(req, "app/admin/manage_translations.html", context=context)
 
 
+@system_developer_required("mdrtb.translations.notAllowed")
 def save_translation(req):
     """Save one row: every language for a single code. System Developer only."""
     if not check_if_session_alive(req):
         return redirect("login")
     if req.method != "POST":
         return redirect("manageTranslations")
-    if not lu.is_system_developer(req):
-        return _deny_translation_change(req)
 
     code = req.POST.get("code")
     values = {lang: req.POST.get(f"message_{lang}", "") for lang in msg.SUPPORTED_LANGS}
@@ -3662,14 +3656,13 @@ def save_translation(req):
     )
 
 
+@system_developer_required("mdrtb.translations.notAllowed")
 def delete_translation(req):
     """Remove a code from every language. System Developer only."""
     if not check_if_session_alive(req):
         return redirect("login")
     if req.method != "POST":
         return redirect("manageTranslations")
-    if not lu.is_system_developer(req):
-        return _deny_translation_change(req)
     try:
         if msg.delete_row(req, req.POST.get("code")):
             messages.success(
@@ -3688,6 +3681,7 @@ def delete_translation(req):
     )
 
 
+@system_developer_required("mdrtb.locations.notAllowed")
 def render_set_defaults(req):
     if not check_if_session_alive(req):
         return redirect("login")

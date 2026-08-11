@@ -1,6 +1,6 @@
 {% comment %}
 Renders one location node and recurses into its children.
-Expects: node (from locations_util.build_location_tree), can_manage_locations, locale.
+Expects: node (from locations_util.build_location_tree), locale.
 {% endcomment %}
 <li class="loc-node"{% if node.voided_only %} data-voided-only="true"{% endif %}>
   <div class="loc-row">

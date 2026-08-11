@@ -14,6 +14,17 @@ def get_locale(request, default='en'):
     return request.session.get('locale', default)
 
 
+def template_context(request):
+    """
+    Django context processor, registered in settings.TEMPLATES. components/nav.html renders on every page, so the Administration flag has to be here rather than in each view.
+    """
+    return {
+        # do not not use get_locale's "en" because this is the UI default for Tajikistan.
+        'locale': get_locale(request, 'ru'),
+        'is_system_developer': mu.is_system_developer(request),
+    }
+
+
 def get_project_root() -> Path:
     """
     Returns the root path of the project.

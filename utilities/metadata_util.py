@@ -14,10 +14,10 @@ from datetime import datetime
 
 
 logger = logging.getLogger("django")
+
 metadata_cache = caches["metadata"]
 
-# os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
-# django.setup()
+SYSTEM_DEVELOPER_ROLE = "System Developer"
 
 
 def get_global_msgs(message_code, locale=None, default=None, source=None):
@@ -267,6 +267,30 @@ def get_global_properties(req, key):
         raise Exception(e)
 
 
+def is_system_developer(req):
+    """
+    True when the logged-in user may modify administration data
+    (Manage Locations / Users / Translations).
+
+    The 'admin' account is always allowed. Roles are matched on both "name" and
+    "display" because GET /session returns roles in ref representation, which
+    carries display but often no name.
+
+    Reads the session only - no REST call - so it is cheap enough for the
+    context processor to call on every page render.
+    """
+    logged_user = req.session.get("logged_user") or {}
+    user = logged_user.get("user") or {}
+    if user.get("systemId") == "admin":
+        return True
+    for role in user.get("roles") or []:
+        if role.get("name") == SYSTEM_DEVELOPER_ROLE:
+            return True
+        if role.get("display") == SYSTEM_DEVELOPER_ROLE:
+            return True
+    return False
+
+
 def check_if_user_has_privilege(req, privilege_to_check, user_privileges):
     """
     Checks if a user has a specific privilege.
@@ -279,15 +303,9 @@ def check_if_user_has_privilege(req, privilege_to_check, user_privileges):
     Returns:
         bool: True if the user has the privilege, False otherwise.
     """
-    # Check if user is admin grant all privileges
-    if req.session["logged_user"]["user"]["systemId"] == "admin":
+    # Admins and System Developers get every privilege.
+    if is_system_developer(req):
         return True
-
-    user = req.session["logged_user"]["user"]
-    if "roles" in user:
-        for role in user["roles"]:
-            if role.get("name") == "System Developer":
-                return True
     has_privilege = False
     for privilege in user_privileges:
         if privilege["uuid"] == privilege_to_check:

@@ -4,7 +4,6 @@
 {{title}}
 {% endblock %}
 
-
 {%block content%}
 {% include 'app/components/nav.html' %}
 
@@ -28,7 +27,7 @@
           {{'general.cancel'|get_message_openMRS:locale|default:"en"}}</a>
         {% endif %}
       </form>
-      {% if can_manage_translations %}
+      
       {# Green = add, blue = save, red = delete, used consistently on this page. #}
       <button type="button" class="btn btn-success tr-add-btn" id="tr-add-toggle"
         title="{{'mdrtb.translations.addNew'|get_message:locale|default:"en"}}"
@@ -39,15 +38,11 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
       </button>
-      {% endif %}
+      
     </div>
   </div>
 
-  {% if not can_manage_translations %}
-  <p class="loc-readonly-note">{{'mdrtb.translations.readOnly'|get_message:locale|default:"en"}}</p>
-  {% endif %}
-
-  {% if can_manage_translations %}
+  
   <form method="post" action="{% url 'saveTranslation' %}" id="tr-add" class="tr-add" hidden>
     {% csrf_token %}
     <input type="hidden" name="q" value="{{ query }}">
@@ -68,7 +63,6 @@
     <button type="submit" class="btn btn-primary btn-sm">
       {{'general.save'|get_message_openMRS:locale|default:"en"}}</button>
   </form>
-  {% endif %}
 
   {% if page and page.object_list %}
   <table class="tr-table">
@@ -88,14 +82,13 @@
         {% for lang in languages %}
         <td>
           <input form="f_{{ forloop.parentloop.counter }}" type="text" name="message_{{ lang }}"
-            value="{{ lang|get_dict_item_by_key:row.text }}"
-            {% if not can_manage_translations %}disabled{% endif %}>
+            value="{{ lang|get_dict_item_by_key:row.text }}">
           <input form="f_{{ forloop.parentloop.counter }}" type="hidden" name="original_{{ lang }}"
             value="{{ lang|get_dict_item_by_key:row.text }}">
         </td>
         {% endfor %}
         <td class="tr-actions">
-          {% if can_manage_translations %}
+          
           <form method="post" action="{% url 'saveTranslation' %}" id="f_{{ forloop.counter }}">
             {% csrf_token %}
             <input type="hidden" name="code" value="{{ row.code }}">
@@ -113,7 +106,7 @@
             <button type="submit" class="btn btn-danger btn-sm">
               {{'general.delete'|get_message_openMRS:locale|default:"en"}}</button>
           </form>
-          {% endif %}
+          
         </td>
       </tr>
       {% endfor %}

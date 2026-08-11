@@ -4,7 +4,6 @@
 {{title}}
 {% endblock %}
 
-
 {%block content%}
 {% include 'app/components/nav.html' %}
 
@@ -23,16 +22,12 @@
         <input type="checkbox" id="show-voided" {% if show_voided %}checked{% endif %}>
         <span>{{'mdrtb.locations.showVoided'|get_message:locale|default:"en"}}</span>
       </label>
-      {% if can_manage_locations %}
+      
       <a class="btn btn-primary btn-sm" href="{% url 'createLocation' %}">
         {{'Location.add'|get_message_openMRS:locale|default:"en"}}</a>
-      {% endif %}
+      
     </div>
   </div>
-
-  {% if not can_manage_locations %}
-  <p class="loc-readonly-note">{{'mdrtb.locations.readOnly'|get_message:locale|default:"en"}}</p>
-  {% endif %}
 
   {% if tree %}
   <div class="loc-toolbar">

@@ -4,7 +4,6 @@
 {{title}}
 {% endblock %}
 
-
 {%block content%}
 {% include 'app/components/nav.html' %}
 
@@ -16,15 +15,11 @@
       <p class="loc-subtitle">{{ users|length }}</p>
       {% endif %}
     </div>
-    {% if can_manage_users %}
+    
     <a class="btn btn-primary btn-sm" href="{% url 'createUser' %}">
       {{'User.add'|get_message_openMRS:locale|default:"en"}}</a>
-    {% endif %}
+    
   </div>
-
-  {% if not can_manage_users %}
-  <p class="loc-readonly-note">{{'mdrtb.users.readOnly'|get_message:locale|default:"en"}}</p>
-  {% endif %}
 
   <form method="get" class="user-search">
     <div class="loc-field">
@@ -64,9 +59,9 @@
       {% for user in users %}
       <tr{% if user.retired %} class="user-disabled"{% endif %}>
         <td>
-          {% if can_manage_users %}
+          
           <a href="{% url 'editUser' uuid=user.uuid %}">{{ user.username|default:user.systemId }}</a>
-          {% else %}{{ user.username|default:user.systemId }}{% endif %}
+          
         </td>
         <td>{{ user.person.display|default:"—" }}</td>
         <td>
@@ -75,10 +70,10 @@
           {% empty %}—{% endfor %}
         </td>
         <td class="user-row-actions">
-          {% if can_manage_users %}
+          
           <a class="loc-linkbtn" href="{% url 'changeUserPassword' uuid=user.uuid %}">
             {{'mdrtb.users.changePassword'|get_message:locale|default:"en"}}</a>
-          {% endif %}
+          
         </td>
       </tr>
       {% endfor %}
