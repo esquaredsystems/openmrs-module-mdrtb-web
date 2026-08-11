@@ -8,12 +8,37 @@
 {%block content%}
 {% include 'app/components/nav.html' %}
 
-<div class="loc-page">
+<div class="loc-page tr-page">
   <div class="loc-header">
     <div>
       <h1>{{'mdrtb.manageTranslations'|get_message:locale|default:"en"}}</h1>
-      {% if rows %}
-      <p class="loc-subtitle">{{ rows|length }}</p>
+      <p class="loc-subtitle">
+        {{ total }} &middot; {{'mdrtb.translations.cacheNote'|get_message:locale|default:"en"}}
+      </p>
+    </div>
+    <div class="loc-actions">
+      {# Searching is server-side: it must span every label, not just this page. #}
+      <form method="get" class="tr-search">
+        <input type="search" name="q" value="{{ query }}" autocomplete="off" autofocus
+          placeholder="{{'mdrtb.translations.codeHelp'|get_message:locale|default:"en"}}">
+        <button type="submit" class="btn btn-outline-secondary btn-sm">
+          {{'general.search'|get_message_openMRS:locale|default:"en"}}</button>
+        {% if query %}
+        <a class="loc-linkbtn" href="{% url 'manageTranslations' %}">
+          {{'general.cancel'|get_message_openMRS:locale|default:"en"}}</a>
+        {% endif %}
+      </form>
+      {% if can_manage_translations %}
+      {# Green = add, blue = save, red = delete, used consistently on this page. #}
+      <button type="button" class="btn btn-success tr-add-btn" id="tr-add-toggle"
+        title="{{'mdrtb.translations.addNew'|get_message:locale|default:"en"}}"
+        aria-label="{{'mdrtb.translations.addNew'|get_message:locale|default:"en"}}"
+        aria-expanded="false">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+          stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+      </button>
       {% endif %}
     </div>
   </div>
@@ -22,60 +47,70 @@
   <p class="loc-readonly-note">{{'mdrtb.translations.readOnly'|get_message:locale|default:"en"}}</p>
   {% endif %}
 
-  <form method="get" class="user-search">
+  {% if can_manage_translations %}
+  <form method="post" action="{% url 'saveTranslation' %}" id="tr-add" class="tr-add" hidden>
+    {% csrf_token %}
+    <input type="hidden" name="q" value="{{ query }}">
+    <input type="hidden" name="page" value="{{ page.number }}">
     <div class="loc-field">
-      <label for="lang">{{'mdrtb.translations.language'|get_message:locale|default:"en"}}</label>
-      <select id="lang" name="lang">
-        {% for code in languages %}
-        <option value="{{ code }}" {% if selected_lang == code %}selected{% endif %}>{{ code }}</option>
-        {% endfor %}
-      </select>
+      <label for="new_code" class="required">
+        {{'mdrtb.translations.code'|get_message:locale|default:"en"}}</label>
+      <input type="text" id="new_code" name="code" required autocomplete="off" placeholder="mdrtb.example.label">
     </div>
+    {% for lang in languages %}
     <div class="loc-field">
-      <label for="q">{{'mdrtb.translations.code'|get_message:locale|default:"en"}}</label>
-      <input type="text" id="q" name="q" value="{{ query }}" autocomplete="off" autofocus
-        placeholder="mdrtb.users.">
-      <small class="loc-hint">{{'mdrtb.translations.codeHelp'|get_message:locale|default:"en"}}</small>
+      <label for="new_{{ lang }}">
+        {{ 'mdrtb.language.'|add:lang|get_message:locale|default:"en" }}</label>
+      <input type="text" id="new_{{ lang }}" name="message_{{ lang }}" autocomplete="off">
+      <input type="hidden" name="original_{{ lang }}" value="">
     </div>
+    {% endfor %}
     <button type="submit" class="btn btn-primary btn-sm">
-      {{'general.search'|get_message_openMRS:locale|default:"en"}}</button>
+      {{'general.save'|get_message_openMRS:locale|default:"en"}}</button>
   </form>
+  {% endif %}
 
-  {% if searched %}
-  {% if rows %}
-  <table class="user-table translations-table">
+  {% if page and page.object_list %}
+  <table class="tr-table">
     <thead>
       <tr>
         <th>{{'mdrtb.translations.code'|get_message:locale|default:"en"}}</th>
-        <th>{{'mdrtb.translations.message'|get_message:locale|default:"en"}}</th>
+        {% for lang in languages %}
+        <th>{{ 'mdrtb.language.'|add:lang|get_message:locale|default:"en" }} <small>({{ lang }})</small></th>
+        {% endfor %}
         <th></th>
       </tr>
     </thead>
     <tbody>
-      {% for row in rows %}
+      {% for row in page.object_list %}
       <tr>
-        <td class="translations-code">{{ row.code }}</td>
-        <td colspan="2">
-          <form method="post" action="{% url 'saveTranslation' %}" class="translations-row">
+        <td class="tr-code" title="{{ row.code }}">{{ row.code }}</td>
+        {% for lang in languages %}
+        <td>
+          <input form="f_{{ forloop.parentloop.counter }}" type="text" name="message_{{ lang }}"
+            value="{{ lang|get_dict_item_by_key:row.text }}"
+            {% if not can_manage_translations %}disabled{% endif %}>
+          <input form="f_{{ forloop.parentloop.counter }}" type="hidden" name="original_{{ lang }}"
+            value="{{ lang|get_dict_item_by_key:row.text }}">
+        </td>
+        {% endfor %}
+        <td class="tr-actions">
+          {% if can_manage_translations %}
+          <form method="post" action="{% url 'saveTranslation' %}" id="f_{{ forloop.counter }}">
             {% csrf_token %}
-            <input type="hidden" name="lang" value="{{ row.lang }}">
             <input type="hidden" name="code" value="{{ row.code }}">
             <input type="hidden" name="q" value="{{ query }}">
-            <input type="text" name="message" value="{{ row.message }}"
-              {% if not can_manage_translations %}disabled{% endif %}>
-            {% if can_manage_translations %}
-            <button type="submit" class="btn btn-primary btn-sm">
+            <input type="hidden" name="page" value="{{ page.number }}">
+            <button type="submit" class="btn btn-primary btn-sm tr-save" disabled>
               {{'general.save'|get_message_openMRS:locale|default:"en"}}</button>
-            {% endif %}
           </form>
-          {% if can_manage_translations %}
-          <form method="post" action="{% url 'deleteTranslation' %}" class="translations-delete"
+          <form method="post" action="{% url 'deleteTranslation' %}"
             onsubmit="return confirm('{{'mdrtb.translations.confirmDelete'|get_message:locale|default:"en"}}');">
             {% csrf_token %}
-            <input type="hidden" name="lang" value="{{ row.lang }}">
             <input type="hidden" name="code" value="{{ row.code }}">
             <input type="hidden" name="q" value="{{ query }}">
-            <button type="submit" class="loc-linkbtn">
+            <input type="hidden" name="page" value="{{ page.number }}">
+            <button type="submit" class="btn btn-danger btn-sm">
               {{'general.delete'|get_message_openMRS:locale|default:"en"}}</button>
           </form>
           {% endif %}
@@ -84,41 +119,70 @@
       {% endfor %}
     </tbody>
   </table>
-  <p class="loc-hint">{{'mdrtb.translations.cacheNote'|get_message:locale|default:"en"}}</p>
+
+  <nav class="tr-pager">
+    <span class="tr-pager-info">
+      {{ page.start_index }}&ndash;{{ page.end_index }} / {{ total }}
+    </span>
+    {% if page.has_previous %}
+    <a class="loc-linkbtn" href="?q={{ query|urlencode }}&amp;page=1">&laquo;</a>
+    <a class="loc-linkbtn" href="?q={{ query|urlencode }}&amp;page={{ page.previous_page_number }}">&lsaquo;</a>
+    {% endif %}
+    <span class="tr-pager-page">{{ page.number }} / {{ page.paginator.num_pages }}</span>
+    {% if page.has_next %}
+    <a class="loc-linkbtn" href="?q={{ query|urlencode }}&amp;page={{ page.next_page_number }}">&rsaquo;</a>
+    <a class="loc-linkbtn"
+      href="?q={{ query|urlencode }}&amp;page={{ page.paginator.num_pages }}">&raquo;</a>
+    {% endif %}
+  </nav>
   {% else %}
   <p class="loc-empty">{{'mdrtb.translations.noResults'|get_message:locale|default:"en"}}</p>
   {% endif %}
-  {% else %}
-  <p class="loc-empty">{{'mdrtb.translations.searchPrompt'|get_message:locale|default:"en"}}</p>
-  {% endif %}
-
-  {% if can_manage_translations %}
-  <div class="loc-danger-zone">
-    <h2 class="loc-section">{{'mdrtb.translations.addNew'|get_message:locale|default:"en"}}</h2>
-    <form method="post" action="{% url 'saveTranslation' %}" class="translations-add">
-      {% csrf_token %}
-      <input type="hidden" name="q" value="{{ query }}">
-      <div class="loc-field">
-        <label for="new_lang">{{'mdrtb.translations.language'|get_message:locale|default:"en"}}</label>
-        <select id="new_lang" name="lang">
-          {% for code in languages %}
-          <option value="{{ code }}" {% if selected_lang == code %}selected{% endif %}>{{ code }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="loc-field">
-        <label for="new_code" class="required">
-          {{'mdrtb.translations.code'|get_message:locale|default:"en"}}</label>
-        <input type="text" id="new_code" name="code" required autocomplete="off">
-      </div>
-      <div class="loc-field">
-        <label for="new_message">{{'mdrtb.translations.message'|get_message:locale|default:"en"}}</label>
-        <input type="text" id="new_message" name="message">
-      </div>
-      <button type="submit" class="btn btn-primary btn-sm">
-        {{'general.add'|get_message_openMRS:locale|default:"en"}}</button>
-    </form>
-  </div>
-  {% endif %}
 </div>
+
+<script>
+  (function () {
+    var toggle = document.getElementById('tr-add-toggle');
+    var addForm = document.getElementById('tr-add');
+    if (toggle && addForm) {
+      toggle.addEventListener('click', function () {
+        addForm.hidden = !addForm.hidden;
+        toggle.setAttribute('aria-expanded', addForm.hidden ? 'false' : 'true');
+        toggle.classList.toggle('is-open', !addForm.hidden);
+        if (!addForm.hidden) { document.getElementById('new_code').focus(); }
+      });
+    }
+
+    // Long text is clipped by the box, so hovering reveals it in full. The
+    // title is only set while the text actually overflows, otherwise every
+    // field would pop a tooltip saying what you can already read.
+    function syncTooltip(box) {
+      if (box.scrollWidth > box.clientWidth + 1) {
+        box.title = box.value;
+      } else {
+        box.removeAttribute('title');
+      }
+    }
+
+    // A row's Save stays disabled until one of its boxes differs from what was
+    // loaded, so the only enabled buttons are the rows you actually touched.
+    document.querySelectorAll('.tr-table tbody tr').forEach(function (row) {
+      var save = row.querySelector('.tr-save');
+      var boxes = Array.prototype.slice.call(row.querySelectorAll('input[type="text"]'));
+      var initial = boxes.map(function (b) { return b.value; });
+      boxes.forEach(syncTooltip);
+      if (!save) { return; }
+      var check = function () {
+        var dirty = boxes.some(function (b, i) { return b.value !== initial[i]; });
+        save.disabled = !dirty;
+        row.classList.toggle('is-dirty', dirty);
+      };
+      boxes.forEach(function (b) {
+        b.addEventListener('input', function () { check(); syncTooltip(b); });
+        // Recheck on hover too: the column width changes with the window.
+        b.addEventListener('mouseenter', function () { syncTooltip(b); });
+      });
+    });
+  })();
+</script>
 {% endblock %}

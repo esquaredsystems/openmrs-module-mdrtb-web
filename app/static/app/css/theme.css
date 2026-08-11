@@ -961,47 +961,169 @@ a .patient-result-row:hover {
   margin-bottom: 0.3rem;
 }
 
-/* ---------- Manage Translations ---------- */
+/* ---------- Manage Translations (the editing sheet) ---------- */
 
-.translations-table td {
-  vertical-align: middle;
+.tr-page {
+  max-width: none;  /* a sheet wants the full width */
 }
 
-.translations-code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.85rem;
-  color: var(--brand-secondary);
-  white-space: nowrap;
-  padding-right: 1rem;
+.tr-page .loc-actions {
+  gap: 0.75rem;
 }
 
-.translations-row {
+.tr-search {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.translations-row input[type="text"] {
-  flex: 1 1 auto;
-  min-width: 0;
-  max-width: none;
+.tr-search input[type="search"] {
+  min-width: 22rem;
 }
 
-.translations-delete {
-  display: inline-block;
-  margin-top: 0.25rem;
+.tr-pager {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 0.75rem 0.25rem;
+  font-size: 0.9rem;
 }
 
-.translations-add {
+.tr-pager-info {
+  margin-right: auto;
+  color: var(--brand-text-muted);
+}
+
+.tr-pager-page {
+  color: var(--brand-secondary);
+  font-weight: 600;
+}
+
+.tr-pager .loc-linkbtn {
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--brand-border);
+  border-radius: calc(var(--brand-radius) - 0.2rem);
+}
+
+.tr-add {
   display: flex;
   align-items: flex-end;
   flex-wrap: wrap;
   gap: 0.75rem 1.25rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  background-color: var(--brand-primary-tint);
 }
 
-.translations-add .loc-field {
+.tr-add .loc-field {
   margin-bottom: 0;
-  flex: 1 1 12rem;
+  flex: 1 1 14rem;
+}
+
+.tr-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Header stays put while scrolling ~1,700 rows */
+.tr-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: #fff;
+  border-bottom: 2px solid var(--brand-border);
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+}
+
+.tr-table td {
+  padding: 0.2rem 0.6rem;
+  border-bottom: 1px solid var(--brand-border);
+  vertical-align: middle;
+}
+
+.tr-table tbody tr:hover {
+  background-color: var(--brand-primary-tint);
+}
+
+.tr-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+  color: var(--brand-secondary);
+  white-space: nowrap;
+  max-width: 26rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tr-table td input[type="text"] {
+  width: 100%;
+  max-width: none;
+  padding: 0.25rem 0.4rem;
+  font-size: 0.9rem;
+}
+
+/* An empty box means "not translated" — make that visible at a glance */
+.tr-table td input[type="text"]:placeholder-shown,
+.tr-table td input[type="text"]:not([value]):not(:focus),
+.tr-table td input[type="text"][value=""]:not(:focus) {
+  background-color: #fffaf0;
+}
+
+/* Icon-only add button: square, so the plus sits centred */
+.tr-add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  padding: 0;
+  flex: 0 0 auto;
+}
+
+.tr-add-btn svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  transition: transform var(--brand-transition);
+}
+
+/* The plus becomes a cross while the form is open */
+.tr-add-btn.is-open svg {
+  transform: rotate(45deg);
+}
+
+/* An edited row is marked, so it is obvious what is waiting to be saved */
+.tr-table tbody tr.is-dirty {
+  background-color: var(--brand-primary-tint);
+}
+
+/* Save is blue but faded until its row is edited */
+.tr-save:disabled {
+  opacity: 0.4;
+}
+
+/* Green add / red delete keep Bootstrap's semantic colours; only the shape and
+   transition are aligned with the rest of the theme. */
+.btn-success,
+.btn-danger {
+  border-radius: var(--brand-radius);
+}
+
+.tr-actions .btn {
+  border-radius: calc(var(--brand-radius) - 0.15rem);
+}
+
+.tr-actions {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.tr-actions form {
+  display: inline-block;
+  margin-left: 0.5rem;
 }
 
 /* ---------- Administration stub pages ---------- */

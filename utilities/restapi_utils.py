@@ -216,6 +216,7 @@ def post(req, endpoint, data):
             else short_error_message
         )
         raise Exception(error_message)
+    return None
 
 
 @handle_rest_exceptions

@@ -26,6 +26,8 @@ import re
 import time
 import zlib
 
+from urllib.parse import quote
+
 from django.core.cache import caches
 
 logger = logging.getLogger("django")
@@ -42,6 +44,13 @@ SUPPORTED_LANGS = ("en", "ru", "tj")
 # Labels are rendered as text, so tags are stripped exactly as the old
 # properties-file reader did.
 _TAG = re.compile("<.*?>")
+
+SHEET_TTL = 30  # seconds
+
+_SHEET_VERSION_KEY = "messages_sheet_version"
+
+# resources/messages{,_ru,_tj}.properties are the last resort, and they matter most on the LOGIN PAGE
+_files = {}  # lang -> {code: message}
 
 
 def normalise_lang(locale):
@@ -60,7 +69,7 @@ def cache_key(lang):
 #
 # lookup() is called once per label and a page renders over a thousand of them.
 # Without this, every label meant a Redis round trip plus a zlib decompress and
-# an unpickle — a thousand of each per page, which would have been slower than
+# an unpickle - a thousand of each per page, which would have been slower than
 # the .properties files this replaced. With it, a worker touches Redis about
 # once a minute per language and every label is a plain dict hit.
 #
@@ -106,6 +115,7 @@ def invalidate(lang=None):
     for one in ([lang] if lang else SUPPORTED_LANGS):
         metadata_cache.delete(cache_key(normalise_lang(one)))
         _local.pop(normalise_lang(one), None)
+    _bump_sheet_version()  # also retires every cached page of the editing sheet
 
 
 def fetch(req, lang):
@@ -154,13 +164,52 @@ def warm(req, locale=None, force=False):
             logger.error(f"Could not load messages for '{lang}': {e}")
 
 
+def _file_messages(lang):
+    lang = normalise_lang(lang)
+    if lang in _files:
+        return _files[lang]
+
+    from utilities.common_utils import get_project_root
+
+    name = "messages.properties" if lang == DEFAULT_LANG else f"messages_{lang}.properties"
+    path = f"{get_project_root()}/resources/{name}"
+    mapping = {}
+    try:
+        # Mode "r" is spelled out: these files are never opened for writing.
+        with open(path, mode="r", encoding="utf-8-sig") as handle:
+            for line in handle:
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                key, value = line.split("=", 1)
+                key = key.strip()
+                if key:
+                    mapping[key] = value.strip()
+        logger.info(f"Loaded {len(mapping)} fallback messages from {name}")
+    except FileNotFoundError:
+        logger.info(f"No fallback message file for '{lang}' ({name})")
+    except Exception as e:
+        logger.warning(f"Could not read fallback messages from {name}: {e}")
+
+    _files[lang] = mapping
+    return mapping
+
+
+def reload_files():
+    """Forget the parsed .properties files, so edits are picked up."""
+    _files.clear()
+
+
 def lookup(code, locale=None, default=None):
     """
     The translated label for a code.
 
-    Order: requested language -> English -> the supplied default -> the code
-    itself. Returning the code matches the old behaviour and makes a missing
-    translation obvious on screen rather than showing an empty label.
+    Order: cached language -> cached English -> the shipped .properties file for
+    the language -> the English file -> the supplied default -> the code itself.
+
+    The files come after the cache so an edit made in Manage Translations wins
+    over the copy shipped with the app, but before the code, so a page rendered
+    without a warm cache (the login screen) still shows real text.
     """
     if not code:
         raise Exception("Please provide a valid message code")
@@ -172,15 +221,13 @@ def lookup(code, locale=None, default=None):
     if not value and lang != DEFAULT_LANG:
         value = (get_cached(DEFAULT_LANG) or {}).get(code)
     if not value:
+        value = _file_messages(lang).get(code)
+    if not value and lang != DEFAULT_LANG:
+        value = _file_messages(DEFAULT_LANG).get(code)
+    if not value:
         value = default or code
 
     return _TAG.sub(" ", str(value)).strip() or code
-
-
-# ---------------------------------------------------------------- administration
-#
-# Used by Administration -> Manage Translations. These are the only functions
-# that write, and each one drops the cache so the change shows up.
 
 
 def search(req, lang=None, q=None):
@@ -190,7 +237,7 @@ def search(req, lang=None, q=None):
     `q` is a case-insensitive substring of the CODE (not the text), matched by
     OpenMRS. It is what makes the screen usable: 'mdrtb.users.' lists that whole
     group, 'general.' lists the shared buttons. Without a filter this returns
-    every label for the language (~1,700 rows) — the endpoint is a plain
+    every label for the language (~1,700 rows) - the endpoint is a plain
     controller, so it is not subject to the REST page cap, but the screen still
     asks for a filter first rather than rendering the lot.
     """
@@ -203,6 +250,105 @@ def search(req, lang=None, q=None):
         params["q"] = q.strip()
     rows = rest_get(req, ENDPOINT, params) or []
     return sorted(rows, key=lambda r: ((r or {}).get("code") or "").lower())
+
+
+# The sheet is paged, so the same rows are asked repeatedly while someone clicks through.
+# Building it costs one REST call per language (~1,700 rows each), so the assembled sheet is cached 
+def _sheet_version():
+    return metadata_cache.get(_SHEET_VERSION_KEY) or 1
+
+
+def _bump_sheet_version():
+    try:
+        metadata_cache.set(_SHEET_VERSION_KEY, _sheet_version() + 1, None)
+    except Exception as e:
+        logger.warning(f"Could not bump the translations sheet version: {e}")
+
+
+def table(req, q=None):
+    """
+    Every code with its text in all languages, for the editing sheet:
+
+        [{"code": "mdrtb.yes", "text": {"en": "Yes", "ru": "Да", "tj": ""}}, ...]
+
+    The per-language dict is called "text", not "values": in a Django template
+    `row.values` would be ambiguous with dict.values().
+
+    Read straight from OpenMRS rather than the Redis cache: this is the screen
+    where the values are edited, so it must show what is actually stored, not a
+    copy that can be up to a minute old.
+    """
+    key = f"messages_sheet_{_sheet_version()}_{(q or '').lower()}"
+    cached = metadata_cache.get(key)
+    if cached:
+        try:
+            return pickle.loads(zlib.decompress(cached))
+        except Exception:
+            metadata_cache.delete(key)
+
+    by_code = {}
+    for lang in SUPPORTED_LANGS:
+        for row in search(req, lang=lang, q=q):
+            code = (row or {}).get("code")
+            if not code:
+                continue
+            by_code.setdefault(code, {l: "" for l in SUPPORTED_LANGS})
+            by_code[code][lang] = row.get("message") or ""
+    rows = [
+        {"code": code, "text": by_code[code]}
+        for code in sorted(by_code, key=str.lower)
+    ]
+    try:
+        metadata_cache.set(key, zlib.compress(pickle.dumps(rows)), SHEET_TTL)
+    except Exception as e:
+        logger.warning(f"Could not cache the translations sheet: {e}")
+    return rows
+
+
+def save_row(req, code, values, originals=None):
+    """
+    Saves one code across languages, spreadsheet style.
+
+    Only languages whose text actually changed are written. Clearing a box
+    deletes that language's row, so the screen falls back to English (or to the
+    code) rather than storing an empty string that would render as a blank label.
+
+    Returns (saved, removed) counts.
+    """
+    code = (code or "").strip()
+    if not code:
+        raise Exception("A code is required")
+    originals = originals or {}
+    saved = removed = 0
+
+    for lang in SUPPORTED_LANGS:
+        new = (values.get(lang) or "").strip()
+        old = (originals.get(lang) or "").strip()
+        if new == old:
+            continue
+        if new:
+            save(req, lang, code, new)
+            saved += 1
+        elif old:
+            try:
+                delete(req, lang, code)
+                removed += 1
+            except Exception as e:
+                # Nothing stored for that language is not an error here.
+                logger.info(f"Could not remove {code} ({lang}): {e}")
+    return saved, removed
+
+
+def delete_row(req, code):
+    """Removes a code from every language. Returns how many were removed."""
+    removed = 0
+    for lang in SUPPORTED_LANGS:
+        try:
+            delete(req, lang, code)
+            removed += 1
+        except Exception:
+            pass  # not stored in that language
+    return removed
 
 
 def save(req, lang, code, message):
@@ -221,8 +367,11 @@ def save(req, lang, code, message):
 
 
 def delete(req, lang, code):
-    """Removes one label. The screen then falls back to English, or the code."""
-    from urllib.parse import quote
+    """
+    Removes one stored label. Deletes only from message_properties - the shipped
+    .properties file is read-only, so the label reverts to the text that ships
+    with the app (then English, then the code).
+    """
 
     from utilities.rest_admin import rest_delete
 

@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.core.paginator import Paginator
 from django.http import JsonResponse
 from datetime import datetime
 import utilities.restapi_utils as ru
@@ -22,6 +23,9 @@ from resources.enums.encounterType import EncounterType
 from settings.settings import REST_API_BASE_URL
 
 logger = logging.getLogger("django")
+
+# Rows per page on Administration -> Manage Translations
+TRANSLATIONS_PER_PAGE = 50
 
 
 def check_if_session_alive(req):
@@ -3595,29 +3599,31 @@ def _deny_translation_change(req):
 
 def render_manage_translations(req):
     """
-    Search and edit the UI labels stored in the MDR-TB module.
+    All labels as a sheet: a row per code, a column per language, 50 to a page.
 
-    Searching by code fragment is deliberate: there are ~1,700 labels per
-    language, so the screen asks what you are looking for rather than listing
-    everything. 'mdrtb.users.' brings up one screen's labels at a time.
+    The search is applied server-side (OpenMRS filters on the code) so it spans
+    every label, not just the page on screen — filtering in the browser would
+    only ever search the 50 rows currently rendered.
     """
     if not check_if_session_alive(req):
         return redirect("login")
     locale = req.session.get("locale", "en")
+    query = req.GET.get("q", "").strip()
     context = {
         "title": mu.get_global_msgs("mdrtb.manageTranslations", locale=locale),
         "can_manage_translations": lu.is_system_developer(req),
         "languages": msg.SUPPORTED_LANGS,
-        "selected_lang": req.GET.get("lang", locale),
-        "query": req.GET.get("q", "").strip(),
-        "rows": [],
-        "searched": bool(req.GET),
+        "query": query,
+        "page": None,
+        "total": 0,
     }
     try:
-        if context["searched"]:
-            context["rows"] = msg.search(
-                req, lang=context["selected_lang"], q=context["query"] or None
-            )
+        rows = msg.table(req, q=query or None)
+        paginator = Paginator(rows, TRANSLATIONS_PER_PAGE)
+        # get_page clamps out-of-range and non-numeric values instead of raising,
+        # so a stale ?page= from a bookmark or after a delete still renders.
+        context["page"] = paginator.get_page(req.GET.get("page"))
+        context["total"] = paginator.count
     except lu.SessionExpired:
         return redirect("login")
     except Exception as e:
@@ -3626,7 +3632,7 @@ def render_manage_translations(req):
 
 
 def save_translation(req):
-    """Create or update one label. System Developer only, POST only."""
+    """Save one row: every language for a single code. System Developer only."""
     if not check_if_session_alive(req):
         return redirect("login")
     if req.method != "POST":
@@ -3634,50 +3640,52 @@ def save_translation(req):
     if not lu.is_system_developer(req):
         return _deny_translation_change(req)
 
-    lang = req.POST.get("lang")
     code = req.POST.get("code")
-    back = f"{reverse('manageTranslations')}?lang={lang or ''}&q={req.POST.get('q', '')}"
+    values = {lang: req.POST.get(f"message_{lang}", "") for lang in msg.SUPPORTED_LANGS}
+    originals = {lang: req.POST.get(f"original_{lang}", "") for lang in msg.SUPPORTED_LANGS}
     try:
-        msg.save(req, lang, code, req.POST.get("message"))
-        messages.success(
-            req,
-            mu.get_global_msgs(
-                "mdrtb.translations.saved", locale=req.session.get("locale", "en")
-            ),
-        )
+        saved, removed = msg.save_row(req, code, values, originals)
+        if saved or removed:
+            messages.success(
+                req,
+                mu.get_global_msgs(
+                    "mdrtb.translations.saved", locale=req.session.get("locale", "en")
+                ),
+            )
     except lu.SessionExpired:
         return redirect("login")
     except Exception as e:
         log_and_show_error(e, req)
-    return redirect(back)
+    return redirect(
+        f"{reverse('manageTranslations')}?q={req.POST.get('q', '')}"
+        f"&page={req.POST.get('page', '')}"
+    )
 
 
 def delete_translation(req):
-    """Remove one label. System Developer only, POST only."""
+    """Remove a code from every language. System Developer only."""
     if not check_if_session_alive(req):
         return redirect("login")
     if req.method != "POST":
         return redirect("manageTranslations")
     if not lu.is_system_developer(req):
         return _deny_translation_change(req)
-
-    lang = req.POST.get("lang")
-    back = f"{reverse('manageTranslations')}?lang={lang or ''}&q={req.POST.get('q', '')}"
     try:
-        msg.delete(req, lang, req.POST.get("code"))
-        messages.success(
-            req,
-            mu.get_global_msgs(
-                "mdrtb.translations.deleted", locale=req.session.get("locale", "en")
-            ),
-        )
+        if msg.delete_row(req, req.POST.get("code")):
+            messages.success(
+                req,
+                mu.get_global_msgs(
+                    "mdrtb.translations.deleted", locale=req.session.get("locale", "en")
+                ),
+            )
     except lu.SessionExpired:
         return redirect("login")
     except Exception as e:
         log_and_show_error(e, req)
-    return redirect(back)
-
-
+    return redirect(
+        f"{reverse('manageTranslations')}?q={req.POST.get('q', '')}"
+        f"&page={req.POST.get('page', '')}"
+    )
 
 
 def render_set_defaults(req):

@@ -405,9 +405,17 @@ Reached over REST: /ws/rest/v1/mdrtb/messageproperty
 
 utilities/messages_util.py (alias msg)
   lookup(code, locale, default)  <- what get_global_msgs() now calls
-     Takes NO request and ONLY reads cache. A page performs >1,000 lookups, so
-     rendering must never be able to trigger REST. Falls back:
-     language -> en -> default -> the code itself.
+     Takes NO request and never makes a REST call: a page performs >1,000
+     lookups, so rendering must not be able to. Order:
+       cached lang -> cached en -> FILE lang -> FILE en -> default -> the code
+     !! The .properties files in resources/ are the last resort and are NOT
+        optional. The LOGIN PAGE cannot have a warm cache — warming needs an
+        authenticated REST call — so without the files every label on it renders
+        as its own code. They also cover a Redis restart or OpenMRS being down.
+        Parsed ONCE per language into memory (never per lookup);
+        reload_files() drops them.
+        The cache is checked first, so an edit in Manage Translations still wins
+        over the shipped file.
   TWO cache layers, both needed:
      Redis  ("metadata", 1h)  one compressed {code: message} map per language
      _local (60s, per worker)  in front of Redis. WITHOUT IT every label was a
