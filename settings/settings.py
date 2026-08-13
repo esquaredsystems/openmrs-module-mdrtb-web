@@ -21,6 +21,8 @@ DEBUG = os.getenv("DEBUG", "True") == "True"
 
 LOCAL_IP_ADDRESS = os.getenv("LOCAL_IP_ADDRESS", "127.0.0.1")
 
+REDIS_HOST = os.getenv("REDIS_HOST", "127.0.0.1")
+
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
 
@@ -81,7 +83,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": f"redis://{LOCAL_IP_ADDRESS}:6379/1",
+        "LOCATION": f"redis://{REDIS_HOST}:6379/1",
     },
     # Holds OpenMRS reference data (concepts, locations, lab test attribute types).
     # Kept on a separate Redis DB from "default" so clearing/flushing it can never
@@ -89,7 +91,7 @@ CACHES = {
     # login/logout since none of it is session- or user-specific.
     "metadata": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": f"redis://{LOCAL_IP_ADDRESS}:6379/2",
+        "LOCATION": f"redis://{REDIS_HOST}:6379/2",
         "TIMEOUT": 60 * 60,
     },
 }
