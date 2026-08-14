@@ -34,15 +34,15 @@
 				<td>
 					{{"mdrtb.tb07u.nameOfFacility"|get_message:locale|default:"en"}}:
 					<u>{{ location.facility.name}}</u><br />
-					{{"mdrtb.tb07u.regionCityDistrict"|get_message:locale|default:"en"}}:
+					{{"mdrtb.forms.regionCityDistrict"|get_message:locale|default:"en"}}:
 					<u> {{ location.region.name}}/{{ location.district.name }}
 					</u><br />
 					{{"mdrtb.tb07u.tbCoordinatorName"|get_message:locale|default:"en"}}: ___________________ </br>
-					{{"mdrtb.tb07u.signature"|get_message:locale|default:"en"}}: _________________
+					{{"mdrtb.forms.signature"|get_message:locale|default:"en"}}: _________________
 				</td>
 
 				<td>
-					{{"mdrtb.pv.quarter"|get_message:locale|default:"en"}},{{"mdrtb.pv.year"|get_message:locale|default:"en"}}:
+					{{"mdrtb.pv.quarter"|get_message:locale|default:"en"}},{{"mdrtb.year"|get_message:locale|default:"en"}}:
 					<u> {{ request.GET.quarter }}, {{ request.GET.year }}</u></br>
 					{{"mdrtb.pv.reportDate"|get_message:locale|default:"en"}}:<u>&nbsp;
 						{{report_date|get_report_date}}</u>
@@ -112,7 +112,7 @@
 					<th align="center">{{"mdrtb.pv.regimenWithBdqAndDlm"|get_message:locale|default:"en"}}</th>
 					<th align="center">{{"mdrtb.pv.regimenWithCfzLzd"|get_message:locale|default:"en"}}</th>
 					<th align="center">{{"mdrtb.pv.other"|get_message:locale|default:"en"}}</th>
-					<th align="center">{{"mdrtb.pv.total"|get_message:locale|default:"en"}}</th>
+					<th align="center">{{"mdrtb.forms.total"|get_message:locale|default:"en"}}</th>
 				</tr>
 				<tr>
 					<td align="left">{{"mdrtb.pv.report.saes"|get_message:locale|default:"en"}}</td>
@@ -336,7 +336,7 @@
 					<td align="center">{{ tables.table2.renalFailureTotal }}</td>
 				</tr>
 				<tr>
-					<td align="left">{{"mdrtb.pv.total"|get_message:locale|default:"en"}}</td>
+					<td align="left">{{"mdrtb.forms.total"|get_message:locale|default:"en"}}</td>
 					<td align="center">{{ tables.table2.totalStandard }}</td>
 					<td align="center">{{ tables.table2.totalShort }}</td>
 					<td align="center">{{ tables.table2.totalBdq }}</td>
@@ -368,7 +368,7 @@
 					<th align="center">{{"mdrtb.pv.pto"|get_message:locale|default:"en"}}</th>
 					<th align="center">{{"mdrtb.pv.z"|get_message:locale|default:"en"}}</th>
 					<th align="center">{{"mdrtb.pv.e"|get_message:locale|default:"en"}}</th>
-					<th align="center">{{"mdrtb.pv.total"|get_message:locale|default:"en"}}</th>
+					<th align="center">{{"mdrtb.forms.total"|get_message:locale|default:"en"}}</th>
 				</tr>
 				<tr>
 					<td align="left">{{"mdrtb.pv.report.saes"|get_message:locale|default:"en"}}</td>
@@ -712,7 +712,7 @@
 					<td align="center">{{ tables.table3.renalFailureTotal }}</td>
 				</tr>
 				<tr>
-					<td align="left">{{"mdrtb.pv.total"|get_message:locale|default:"en"}}</td>
+					<td align="left">{{"mdrtb.forms.total"|get_message:locale|default:"en"}}</td>
 					<td align="center">{{ tables.table3.totalBdq }}</td>
 					<td align="center">{{ tables.table3.totalDlm }}</td>
 					<td align="center">{{ tables.table3.totalCfz }}</td>

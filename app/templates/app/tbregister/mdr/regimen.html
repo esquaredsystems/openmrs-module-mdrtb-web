@@ -408,7 +408,7 @@ Guarded so nothing renders if neither is available.
           </div>
           <div class="input-container">
             <label style="width: 30%;" class="tb03-form-label"
-              for="comments">{{'mdrtb.pv.comments'|get_message:locale|default:"en"}}</label>
+              for="comments">{{'mdrtb.comments'|get_message:locale|default:"en"}}</label>
             {% if state == 'edit' and form.comment %}
             <textarea name="{{'CLINICIAN_NOTES' | get_concept }}" class="input form-control" cols="10"
               rows="5">{{form.comment}}</textarea>

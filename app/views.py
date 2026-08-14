@@ -2185,42 +2185,38 @@ def save_closed_report(req):
 # CommonLab Views START #
 #########################
 def render_manage_test_types(req):
+    """List the lab test types, with an optional name filter."""
+    blocked = route_non_system_developer(req)
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
+    query = req.GET.get("q", "").strip()
     context = {
         "title": mu.get_global_msgs(
             "labtest.labtesttype.manage", locale=req.session["locale"]
-        )
+        ),
+        "query": query,
     }
-    if req.method == "POST":
-        try:
-            search_results = cu.get_test_types_by_search(req, req.POST["search"])
-            if len(search_results) > 0:
-                context["response"] = search_results
-                return render(
-                    req, "app/commonlab/managetesttypes.html", context=context
-                )
-            else:
-                status, response = ru.get(req, "commonlab/labtesttype", {"v": "full"})
-                context["response"] = response["results"]
-                return render(
-                    req, "app/commonlab/managetesttypes.html", context=context
-                )
-        except Exception as e:
-            log_and_show_error(e, req)
-            return redirect(req.session["redirect_url"])
     try:
-        status, response = ru.get(req, "commonlab/labtesttype", {"v": "full"})
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         mu.add_url_to_breadcrumb(req, context["title"])
-        context["response"] = response["results"] if status else []
+        if query:
+            # Filtering happens in Django because the REST resource has no name
+            # search; get_test_types_by_search does a substring match.
+            context["test_types"] = cu.get_test_types_by_search(req, query)
+        else:
+            status, response = ru.get(req, "commonlab/labtesttype", {"v": "full"})
+            context["test_types"] = response["results"] if status else []
         return render(req, "app/commonlab/managetesttypes.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect(req.session["redirect_url"])
-
+        return redirect_after_error(req)
 
 def fetch_attributes(req):
+    blocked = route_non_system_developer(req)
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     response = cu.get_attributes_of_labtest(req, req.GET["uuid"])
@@ -2242,6 +2238,9 @@ def fetch_attributes(req):
 
 
 def render_add_test_type(req):
+    blocked = route_non_system_developer(req)
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     context = {
@@ -2253,7 +2252,9 @@ def render_add_test_type(req):
         body = {
             "name": req.POST["testname"],
             "testGroup": req.POST["testgroup"],
-            "requiresSpecimen": True if req.POST["requirespecimen"] == "Yes" else False,
+            # A checkbox posts nothing when unchecked, so read presence, not
+            # value - req.POST["requirespecimen"] would raise on "No".
+            "requiresSpecimen": "requirespecimen" in req.POST,
             "referenceConcept": req.POST["referenceConceptuuid"],
             "description": req.POST["description"],
             "shortName": None if req.POST["shortname"] == "" else req.POST["shortname"],
@@ -2271,21 +2272,59 @@ def render_add_test_type(req):
 
 
 def render_edit_test_type(req, uuid):
+    """
+    Edit one lab test type, and manage its attribute types on the same page.
+
+    The attribute types used to live on a separate screen; they are listed here
+    instead so the whole definition of a test is visible at once. Passing
+    ?attribute=<uuid> loads that attribute into the inline form for editing.
+    """
+    blocked = route_non_system_developer(req)
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     context = {
         "title": mu.get_global_msgs(
             "labtest.labtesttype.edit", locale=req.session["locale"]
-        )
+        ),
+        "state": "edit",
     }
-    status, response = ru.get(
-        req, f"commonlab/labtesttype/{uuid}", {"v": "full", "lang": "en"}
-    )
-    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-    mu.add_url_to_breadcrumb(req, context["title"])
-    if status:
-        data = response
-        context["state"] = "edit"
+
+    if req.method == "POST":
+        body = {
+            "name": req.POST["testname"],
+            "testGroup": req.POST["testgroup"],
+            # A checkbox posts nothing when unchecked, so read presence, not
+            # value - req.POST["requirespecimen"] would raise on "No".
+            "requiresSpecimen": "requirespecimen" in req.POST,
+            "referenceConcept": req.POST["referenceConceptuuid"],
+            "description": req.POST["description"],
+            "shortName": None if req.POST["shortname"] == "" else req.POST["shortname"],
+        }
+        try:
+            status, response = cu.add_edit_test_type(
+                req, body, f"commonlab/labtesttype/{uuid}"
+            )
+            if status:
+                messages.success(
+                    req,
+                    mu.get_global_msgs(
+                        "mdrtb.labtest.saved", locale=req.session["locale"]
+                    ),
+                )
+                return redirect("managetesttypes")
+        except Exception as e:
+            log_and_show_error(e, req)
+
+    try:
+        status, data = ru.get(
+            req, f"commonlab/labtesttype/{uuid}", {"v": "full", "lang": "en"}
+        )
+        if not status:
+            return redirect("managetesttypes")
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+        mu.add_url_to_breadcrumb(req, context["title"])
         context["testType"] = {
             "uuid": data["uuid"],
             "name": data["name"],
@@ -2298,41 +2337,106 @@ def render_edit_test_type(req, uuid):
                 "name": data["referenceConcept"]["display"],
             },
         }
-        # context["referenceConcepts"] = cu.get_commonlab_concepts_by_type(
-        #     req, "labtesttype"
-        # )
-        context["testGroups"] = util.remove_given_str_from_arr(
-            cu.get_commonlab_test_groups(), data["testGroup"]
-        )
-    if req.method == "POST":
-        body = {
-            "name": req.POST["testname"],
-            "testGroup": req.POST["testgroup"],
-            "requiresSpecimen": True if req.POST["requirespecimen"] == "Yes" else False,
-            "referenceConcept": req.POST["referenceConceptuuid"],
-            "description": req.POST["description"],
-            "shortName": None if req.POST["shortname"] == "" else req.POST["shortname"],
-        }
-        status, response = cu.add_edit_test_type(
-            req, body, f"commonlab/labtesttype/{uuid}"
-        )
-        if status:
-            return redirect("managetesttypes")
+        context["testGroups"] = cu.get_commonlab_test_groups()
+        context["attributes"] = cu.get_attributes_of_labtest(req, data)
+        context["dataTypes"] = cu.get_attributes_data_types()
+        context["prefferedHandlers"] = cu.get_preffered_handler()
+
+        # The attribute list and the attribute form are two states of the same
+        # panel, never shown together:
+        #   ?attribute=new    -> empty form
+        #   ?attribute=<uuid> -> form pre-filled with that attribute
+        #   (absent)          -> the list
+        editing = req.GET.get("attribute")
+        if editing == "new":
+            context["addingAttribute"] = True
+        elif editing:
+            found = [a for a in context["attributes"] if a["uuid"] == editing]
+            if found:
+                context["editingAttribute"] = found[0]
+    except Exception as e:
+        log_and_show_error(e, req)
+        return redirect_after_error(req)
     return render(req, "app/commonlab/addtesttypes.html", context=context)
 
 
-def render_retire_test_type(req, uuid):
+def reorder_attributes(req, uuid):
+    """
+    Persist a new order for one test type's attribute types.
+
+    The page posts the attribute uuids in the order the rows now appear; this
+    rewrites sortWeight as 1..N to match. Sort weight is an ordering, so the
+    user moves rows rather than typing numbers.
+
+    Only the rows whose weight actually changed are sent to OpenMRS - moving one
+    row in a list of twenty should not be twenty writes.
+    """
+    blocked = route_non_system_developer(req)
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
-    if req.method == "POST":
+    if req.method != "POST":
+        return redirect("edittesttype", uuid=uuid)
+    try:
+        order = [u for u in req.POST.get("order", "").split(",") if u]
+        current = {a["uuid"]: a for a in cu.get_attributes_of_labtest(req, uuid)}
+        unknown = [u for u in order if u not in current]
+        if unknown or len(order) != len(current):
+            # The list moved under the user - re-read rather than write a
+            # partial order that would leave gaps or duplicates.
+            raise Exception(
+                "The attribute list changed while you were reordering it. "
+                "Please try again."
+            )
+        changed = 0
+        for position, attribute_uuid in enumerate(order, start=1):
+            if (current[attribute_uuid].get("sortWeight") or 0) == position:
+                continue
+            ru.post(
+                req,
+                f"commonlab/labtestattributetype/{attribute_uuid}",
+                {"sortWeight": float(position)},
+            )
+            changed += 1
+        if changed:
+            cu.invalidate_labtest_attributes(uuid)
+            messages.success(
+                req,
+                mu.get_global_msgs(
+                    "mdrtb.labtest.saved", locale=req.session["locale"]
+                ),
+            )
+    except Exception as e:
+        log_and_show_error(e, req)
+    return redirect("edittesttype", uuid=uuid)
+
+
+def render_retire_test_type(req, uuid):
+    blocked = route_non_system_developer(req)
+    if blocked:
+        return blocked
+    if not check_if_session_alive(req):
+        return redirect("login")
+    try:
         status, _ = ru.delete(req, f"commonlab/labtesttype/{uuid}")
         if status:
-            return redirect("managetesttypes")
-    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-    return render(req, "app/commonlab/addtesttypes.html")
+            cu.invalidate_labtest_attributes(uuid)
+            messages.success(
+                req,
+                mu.get_global_msgs(
+                    "mdrtb.labtest.retired", locale=req.session["locale"]
+                ),
+            )
+    except Exception as e:
+        log_and_show_error(e, req)
+    return redirect("managetesttypes")
 
 
 def render_manage_attributes(req, uuid):
+    blocked = route_non_system_developer(req)
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     context = {"labTestUuid": uuid, "title": "Manage Attributes"}
@@ -2344,6 +2448,9 @@ def render_manage_attributes(req, uuid):
 
 
 def render_addattributes(req, uuid):
+    blocked = route_non_system_developer(req)
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     context = {
@@ -2360,7 +2467,10 @@ def render_addattributes(req, uuid):
             "name": req.POST["name"],
             "description": req.POST["desc"],
             "datatypeClassname": req.POST["datatype"],
-            "sortWeight": float(int(req.POST.get("sortweight", 0.0))),
+            # Sort weight is the position in the list, not something the
+            # user types: a new attribute goes last, and the order is changed
+            # afterwards by reordering the rows.
+            "sortWeight": float(len(cu.get_attributes_of_labtest(req, uuid)) + 1),
             "maxOccurs": 0
             if req.POST.get("maxoccur") == ""
             else req.POST.get("maxoccur"),
@@ -2370,15 +2480,22 @@ def render_addattributes(req, uuid):
             "multisetName": req.POST.get("mutname", ""),
             "handlerConfig": req.POST.get("handleconfig", ""),
         }
+        body["hint"] = req.POST.get("hint", "")
         status, response = ru.post(req, "commonlab/labtestattributetype", body)
         if status:
-            return redirect(f"/commonlab/labtest/{uuid}/manageattributes")
+            # The attribute list is cached with no expiry, so a new attribute
+            # would stay invisible until Redis was cleared by hand.
+            cu.invalidate_labtest_attributes(uuid)
+            return redirect("edittesttype", uuid=uuid)
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
     mu.add_url_to_breadcrumb(req, context["title"])
     return render(req, "app/commonlab/addattributes.html", context=context)
 
 
 def render_edit_attribute(req, testid, attrid):
+    blocked = route_non_system_developer(req)
+    if blocked:
+        return blocked
     if not check_if_session_alive(req):
         return redirect("login")
     context = {
@@ -2412,7 +2529,9 @@ def render_edit_attribute(req, testid, attrid):
             "name": req.POST["name"],
             "description": req.POST["desc"],
             "datatypeClassname": req.POST["datatype"],
-            "sortWeight": req.POST.get("sortweight", 0.0),
+            # Keep the existing position. Reading it from the form would
+            # reset the order to 0 now that the field is gone.
+            "sortWeight": response.get("sortWeight") if status else 0.0,
             "maxOccurs": 0
             if req.POST.get("maxoccur") == ""
             else req.POST.get("maxoccur"),
@@ -2422,11 +2541,13 @@ def render_edit_attribute(req, testid, attrid):
             "multisetName": req.POST.get("mutname", ""),
             "handlerConfig": req.POST.get("handleconfig", ""),
         }
+        body["hint"] = req.POST.get("hint", "")
         status, response = ru.post(
             req, f"commonlab/labtestattributetype/{attrid}", body
         )
         if status:
-            return redirect(f"/commonlab/labtest/{testid}/manageattributes")
+            cu.invalidate_labtest_attributes(testid)
+            return redirect("edittesttype", uuid=testid)
     return render(req, "app/commonlab/addattributes.html", context=context)
 
 
@@ -3112,7 +3233,7 @@ def _location_form_context(req, location):
 
 def render_manage_locations(req):
     """Location hierarchy as an expandable tree, with a 'show voided' toggle."""
-    blocked = route_non_system_developer(req, "mdrtb.locations.notAllowed")
+    blocked = route_non_system_developer(req)
     if blocked:
         return blocked
     if not check_if_session_alive(req):
@@ -3145,7 +3266,7 @@ def render_manage_locations(req):
 
 def render_edit_location(req, uuid):
     """View a location; System Developers can also edit and retire it."""
-    blocked = route_non_system_developer(req, "mdrtb.locations.notAllowed")
+    blocked = route_non_system_developer(req)
     if blocked:
         return blocked
     if not check_if_session_alive(req):
@@ -3183,7 +3304,7 @@ def render_edit_location(req, uuid):
 
 def render_create_location(req):
     """Create a new location. System Developers only."""
-    blocked = route_non_system_developer(req, "mdrtb.locations.notAllowed")
+    blocked = route_non_system_developer(req)
     if blocked:
         return blocked
     if not check_if_session_alive(req):
@@ -3221,7 +3342,7 @@ def render_create_location(req):
 
 def render_retire_location(req, uuid):
     """Retire (soft delete) a location. System Developers only, POST only."""
-    blocked = route_non_system_developer(req, "mdrtb.locations.notAllowed")
+    blocked = route_non_system_developer(req)
     if blocked:
         return blocked
     if not check_if_session_alive(req):
@@ -3245,7 +3366,7 @@ def render_retire_location(req, uuid):
 
 def render_unretire_location(req, uuid):
     """Restore a retired location. System Developers only, POST only."""
-    blocked = route_non_system_developer(req, "mdrtb.locations.notAllowed")
+    blocked = route_non_system_developer(req)
     if blocked:
         return blocked
     if not check_if_session_alive(req):
@@ -3267,14 +3388,15 @@ def render_unretire_location(req, uuid):
     return redirect("manageLocations")
 
 
-def route_non_system_developer(req, message_code):
+def route_non_system_developer(req):
     # An expired session goes to login, not to a misleading "you are not a System Developer" - the role simply cannot be read once the session is gone.
     if not req.session.get("session_id"):
         return redirect("login")
     if mu.is_system_developer(req):
         return None
     messages.error(
-        req, mu.get_global_msgs(message_code, locale=req.session.get("locale", "en"))
+        req,
+        mu.get_global_msgs("general.notAllowed", locale=req.session.get("locale", "en")),
     )
     logger.warning(
         "Blocked Administration access to %s by non System Developer: %s",
@@ -3286,7 +3408,7 @@ def route_non_system_developer(req, message_code):
 
 def render_manage_users(req):
     """Search users by name, role and disabled state."""
-    blocked = route_non_system_developer(req, "mdrtb.users.notAllowed")
+    blocked = route_non_system_developer(req)
     if blocked:
         return blocked
     if not check_if_session_alive(req):
@@ -3320,7 +3442,7 @@ def render_manage_users(req):
 
 def render_create_user(req):
     """Add a user: creates the person, the login and the provider."""
-    blocked = route_non_system_developer(req, "mdrtb.users.notAllowed")
+    blocked = route_non_system_developer(req)
     if blocked:
         return blocked
     if not check_if_session_alive(req):
@@ -3372,7 +3494,7 @@ def render_create_user(req):
 
 def render_edit_user(req, uuid):
     """Edit an existing user. Username changes are mirrored to the provider."""
-    blocked = route_non_system_developer(req, "mdrtb.users.notAllowed")
+    blocked = route_non_system_developer(req)
     if blocked:
         return blocked
     if not check_if_session_alive(req):
@@ -3418,7 +3540,7 @@ def render_edit_user(req, uuid):
 
 def render_change_password(req, uuid):
     """Separate from the edit form so a password is never reset by accident."""
-    blocked = route_non_system_developer(req, "mdrtb.users.notAllowed")
+    blocked = route_non_system_developer(req)
     if blocked:
         return blocked
     if not check_if_session_alive(req):
@@ -3466,7 +3588,7 @@ def render_change_password(req, uuid):
 
 def render_disable_user(req, uuid):
     """Retire (disable) a login. POST only."""
-    blocked = route_non_system_developer(req, "mdrtb.users.notAllowed")
+    blocked = route_non_system_developer(req)
     if blocked:
         return blocked
     if not check_if_session_alive(req):
@@ -3498,7 +3620,7 @@ def render_disable_user(req, uuid):
 
 def render_enable_user(req, uuid):
     """Restore a disabled login. POST only."""
-    blocked = route_non_system_developer(req, "mdrtb.users.notAllowed")
+    blocked = route_non_system_developer(req)
     if blocked:
         return blocked
     if not check_if_session_alive(req):
@@ -3577,7 +3699,7 @@ def render_manage_translations(req):
     All labels as a sheet: a row per code, a column per language, 50 to a page. The search is applied server-side
     (OpenMRS filters on the code) so it spans every label, not just the page on screen.
     """
-    blocked = route_non_system_developer(req, "mdrtb.translations.notAllowed")
+    blocked = route_non_system_developer(req)
     if blocked:
         return blocked
     if not check_if_session_alive(req):
@@ -3607,7 +3729,7 @@ def render_manage_translations(req):
 
 def save_translation(req):
     """Save one row: every language for a single code. System Developer only."""
-    blocked = route_non_system_developer(req, "mdrtb.translations.notAllowed")
+    blocked = route_non_system_developer(req)
     if blocked:
         return blocked
     if not check_if_session_alive(req):
@@ -3639,7 +3761,7 @@ def save_translation(req):
 
 def delete_translation(req):
     """Remove a code from every language. System Developer only."""
-    blocked = route_non_system_developer(req, "mdrtb.translations.notAllowed")
+    blocked = route_non_system_developer(req)
     if blocked:
         return blocked
     if not check_if_session_alive(req):
@@ -3665,7 +3787,7 @@ def delete_translation(req):
 
 
 def render_set_defaults(req):
-    blocked = route_non_system_developer(req, "mdrtb.locations.notAllowed")
+    blocked = route_non_system_developer(req)
     if blocked:
         return blocked
     if not check_if_session_alive(req):

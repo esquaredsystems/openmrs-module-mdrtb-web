@@ -36,7 +36,7 @@
         {% endfor %}
       </select>
     </div>
-    <label class="user-search-check" for="disabled">
+    <label class="loc-check" for="disabled">
       <input type="checkbox" id="disabled" name="disabled" value="1" {% if include_disabled %}checked{% endif %}>
       <span>{{'mdrtb.users.includeDisabled'|get_message:locale|default:"en"}}</span>
     </label>
@@ -80,7 +80,7 @@
     </tbody>
   </table>
   {% else %}
-  <p class="loc-empty">{{'mdrtb.users.noResults'|get_message:locale|default:"en"}}</p>
+  <p class="loc-empty">{{'general.noResults'|get_message:locale|default:"en"}}</p>
   {% endif %}
   {% else %}
   <p class="loc-empty">{{'mdrtb.users.searchPrompt'|get_message:locale|default:"en"}}</p>

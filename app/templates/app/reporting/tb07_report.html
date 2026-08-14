@@ -38,7 +38,7 @@
                     {{"mdrtb.tb07u.nameOfFacility"|get_message:locale|default:"en"}} <u>&nbsp;
                         {{ location.location }}
                         &nbsp;</u></br>
-                    {{"mdrtb.tb07u.regionCityDistrict"|get_message:locale|default:"en"}} <u>
+                    {{"mdrtb.forms.regionCityDistrict"|get_message:locale|default:"en"}} <u>
                         {{ location.parent }}/{{ location.grandparent }}
                     </u>
                     {% else %}
@@ -49,20 +49,20 @@
                     {{"mdrtb.tb07u.nameOfFacility"|get_message:locale|default:"en"}} <u>&nbsp;
                         _________
                         &nbsp;</u></br>
-                    {{"mdrtb.tb07u.regionCityDistrict"|get_message:locale|default:"en"}} <u>
+                    {{"mdrtb.forms.regionCityDistrict"|get_message:locale|default:"en"}} <u>
                         {{ location.location }}/{{ location.parent }}
                         {% elif location.parent is None and location.grandparent is None %}
                         {{"mdrtb.tb07u.nameOfFacility"|get_message:locale|default:"en"}} <u>&nbsp;
                             _________
                             &nbsp;</u></br>
-                        {{"mdrtb.tb07u.regionCityDistrict"|get_message:locale|default:"en"}} <u>
+                        {{"mdrtb.forms.regionCityDistrict"|get_message:locale|default:"en"}} <u>
                             _____/{{ location.location }}
                         </u>
 
                         {% endif %}
                     </u></br>
                     {{"mdrtb.tb07u.tbCoordinatorName"|get_message:locale|default:"en"}} ___________________ </br>
-                    {{"mdrtb.tb07u.signature"|get_message:locale|default:"en"}}_________________
+                    {{"mdrtb.forms.signature"|get_message:locale|default:"en"}}_________________
                 </td>
 
                 <td>
@@ -96,7 +96,7 @@
                     <td colspan="2" rowspan="1" style="text-align: center;">55-64</td>
                     <td colspan="2" rowspan="1" style="text-align: center;">&gt;65</td>
                     <td colspan="3" rowspan="1" style="text-align: center;">
-                        {{"mdrtb.tb07u.total"|get_message:locale|default:"en"}}</td>
+                        {{"mdrtb.forms.total"|get_message:locale|default:"en"}}</td>
                 </tr>
                 <tr>
 
@@ -137,7 +137,7 @@
                     <td style="text-align: center;">{{"mdrtb.tb03.gender.male"|get_message:locale|default:"en"}}</td>
                     <td style="text-align: center;">{{"mdrtb.tb03.gender.female"|get_message:locale|default:"en"}}
                     </td>
-                    <td style="text-align: center;">{{"mdrtb.tb07u.total"|get_message:locale|default:"en"}}</td>
+                    <td style="text-align: center;">{{"mdrtb.forms.total"|get_message:locale|default:"en"}}</td>
 
                 </tr>
                 <tr>
@@ -399,7 +399,7 @@
                     <td>{{ table1.newExtrapulmonaryHIV }}</td>
                 </tr>
                 <tr>
-                    <td colspan="2" align="left">{{"mdrtb.tb07u.total"|get_message:locale|default:"en"}}</td>
+                    <td colspan="2" align="left">{{"mdrtb.forms.total"|get_message:locale|default:"en"}}</td>
 
                     <td>{{ table1.newMale04 }}</td>
                     <td>{{ table1.newFemale04 }}</td>
@@ -514,7 +514,7 @@
                 </tr>
                 <tr>
                     <td rowspan="6">
-                        {{"mdrtb.tb07u.relapse"|get_message:locale|default:"en"}}
+                        {{"mdrtb.forms.relapse"|get_message:locale|default:"en"}}
                     </td>
                     <td>{{"mdrtb.tb07u.pulmonaryBC"|get_message:locale|default:"en"}}</td>
                     <td>{{ table1.relapseMalePulmonaryBC04 }}</td>
@@ -773,7 +773,7 @@
 
                 </tr>
                 <tr>
-                    <td colspan="2" align="left">{{"mdrtb.tb07u.total"|get_message:locale|default:"en"}}</td>
+                    <td colspan="2" align="left">{{"mdrtb.forms.total"|get_message:locale|default:"en"}}</td>
                     <td>{{ table1.relapseMale04 }}</td>
                     <td>{{ table1.relapseFemale04 }}</td>
 
@@ -1047,7 +1047,7 @@
                     <td>{{table1.newExtrapulmonaryHIV|sum:table1.relapseExtrapulmonaryHIV }}
                 </tr>
                 <tr>
-                    <td colspan="2" align="left">{{"mdrtb.tb07u.total"|get_message:locale|default:"en"}}</td>
+                    <td colspan="2" align="left">{{"mdrtb.forms.total"|get_message:locale|default:"en"}}</td>
 
                     <td>{{table1.newMale04|sum:table1.relapseMale04 }}</td>
                     <td>{{table1.newFemale04|sum:table1.relapseFemale04 }}</td>
@@ -1114,17 +1114,17 @@
                 <tr>
                     <td>&nbsp;</td>
                     <td style="text-align: center;" colspan="3">
-                        {{"mdrtb.tb07u.afterFailure"|get_message:locale|default:"en"}}</td>
+                        {{"mdrtb.forms.afterFailure"|get_message:locale|default:"en"}}</td>
                     <td style="text-align: center;" colspan="3">
-                        {{"mdrtb.tb07u.afterDefault"|get_message:locale|default:"en"}}</td>
+                        {{"mdrtb.forms.afterDefault"|get_message:locale|default:"en"}}</td>
                     <td style="text-align: center;" colspan="3">
                         {{"mdrtb.tb07u.others"|get_message:locale|default:"en"}}
                     </td>
                     <td style="text-align: center;" colspan="3">
-                        {{"mdrtb.tb07u.total"|get_message:locale|default:"en"}}
+                        {{"mdrtb.forms.total"|get_message:locale|default:"en"}}
                     </td>
                     <td colspan="3">
-                        <p style="text-align: center;">{{"mdrtb.tb07u.total"|get_message:locale|default:"en"}}</p>
+                        <p style="text-align: center;">{{"mdrtb.forms.total"|get_message:locale|default:"en"}}</p>
                         <p style="text-align: center;">({{"mdrtb.tb07u.t1t2"|get_message:locale|default:"en"}})</p>
                     </td>
                 </tr>
@@ -1132,19 +1132,19 @@
                     <td>&nbsp;</td>
                     <td align="center">{{"mdrtb.tb03.gender.male"|get_message:locale|default:"en"}}</td>
                     <td align="center">{{"mdrtb.tb03.gender.female"|get_message:locale|default:"en"}}</td>
-                    <td align="center">{{"mdrtb.tb07u.total"|get_message:locale|default:"en"}}</td>
+                    <td align="center">{{"mdrtb.forms.total"|get_message:locale|default:"en"}}</td>
                     <td align="center">{{"mdrtb.tb03.gender.male"|get_message:locale|default:"en"}}</td>
                     <td align="center">{{"mdrtb.tb03.gender.female"|get_message:locale|default:"en"}}</td>
-                    <td align="center">{{"mdrtb.tb07u.total"|get_message:locale|default:"en"}}</td>
+                    <td align="center">{{"mdrtb.forms.total"|get_message:locale|default:"en"}}</td>
                     <td align="center">{{"mdrtb.tb03.gender.male"|get_message:locale|default:"en"}}</td>
                     <td align="center">{{"mdrtb.tb03.gender.female"|get_message:locale|default:"en"}}</td>
-                    <td align="center">{{"mdrtb.tb07u.total"|get_message:locale|default:"en"}}</td>
+                    <td align="center">{{"mdrtb.forms.total"|get_message:locale|default:"en"}}</td>
                     <td align="center">{{"mdrtb.tb03.gender.male"|get_message:locale|default:"en"}}</td>
                     <td align="center">{{"mdrtb.tb03.gender.female"|get_message:locale|default:"en"}}</td>
-                    <td align="center">{{"mdrtb.tb07u.total"|get_message:locale|default:"en"}}</td>
+                    <td align="center">{{"mdrtb.forms.total"|get_message:locale|default:"en"}}</td>
                     <td align="center">{{"mdrtb.tb03.gender.male"|get_message:locale|default:"en"}}</td>
                     <td align="center">{{"mdrtb.tb03.gender.female"|get_message:locale|default:"en"}}</td>
-                    <td align="center">{{"mdrtb.tb07u.total"|get_message:locale|default:"en"}}</td>
+                    <td align="center">{{"mdrtb.forms.total"|get_message:locale|default:"en"}}</td>
                 </tr>
                 <tr>
                     <td>
@@ -1258,7 +1258,7 @@
                     <td>{{ table1.totalExtrapulmonaryHIV }}</td>
                 <tr>
                     <td style="margin-left: 30px; text-align: center;">
-                        <strong>{{"mdrtb.tb07u.total"|get_message:locale|default:"en"}}</strong>
+                        <strong>{{"mdrtb.forms.total"|get_message:locale|default:"en"}}</strong>
                     </td>
                     <td>{{ table1.failureMale }}</td>
                     <td>{{ table1.failureFemale }}</td>

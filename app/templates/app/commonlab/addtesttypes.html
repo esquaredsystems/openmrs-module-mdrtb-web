@@ -1,331 +1,456 @@
 {% extends 'app/base/base.html' %}
 
-
 {% block title %}
 {{title}}
 {% endblock %}
 
-{% block content %}
+{%block content%}
+{% include 'app/components/nav.html' %}
 
-<div class="m-4">
-  {% include 'app/components/breadcrumbs.html'%}
-</div>
-<div class="m-16">
-
-  <div class="flex flex-col">
-    <div class="flex items-center justify-between">
-      {% if state == 'edit' %}
-      <div id="form-info" class="flex-center space-x-4">
-        <h1 class="text-[#2D9CDB] text-3xl font-bold">
-          {{'labtest.labtesttype.edit'|get_message:locale|default:"en"}}
-        </h1>
-        <button type="button" id="editbtn" title="{{'general.edit'|get_message:locale|default:"en"}}" aria-label="{{'general.edit'|get_message:locale|default:"en"}}">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-            stroke="currentColor" class="w-5 h-5">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-          </svg>
-
-        </button>
-        <button hidden type="button" id="canceleditbtn" class="cancel-button">Cancel</button>
-
-
-
-      </div>
-      <a href="{% url 'manageattr' uuid=testType.uuid %}" class="text-[#044062] font-bold underline">
-        {{'labtest.labtestattributetype.manage'|get_message:locale|default:"en"}}
-      </a>
-      {% else %}
-      <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
-        {{'labtest.labtesttype.add'|get_message:locale|default:"en"}}
-      </h2>
-      {% endif %}
-    </div>
-
-    <div class="m-4">
-      <form onsubmit="disableSubmit()" method="post"
-        action="{% if state == 'edit' %} {% url 'edittesttype' uuid=testType.uuid %} {% else %} {% url 'addtesttype' %} {% endif %}"
-        class="flex flex-col p-4">
-        {% csrf_token %}
-        <div class="flex py-4 space-x-12">
-          <div class="space-y-3 w-3/4">
-            <div class="input-container">
-              <label class="input-label w-4/5" for="testgroup">Search Reference Concept</label>
-              <input type="text" class="input form-control" id="concept">
-            </div>
-
-
-
-            <div id="search-results" class="search-result-container bg-white shadow-md w-full mx-auto z-10">
-
-            </div>
-
-
-
-            <div class="input-container">
-              <label class="input-label w-4/5"
-                for="testname">{{'general.testName'|get_message:locale|default:"en"}}</label>
-              {% if state == 'edit' %}
-              <input required class="input form-control" value="{{testType.name}}" type="text" name="testname" />
-              {% else %}
-              <input required class="input form-control" type="text" name="testname" />
-              {% endif %}
-            </div>
-
-            <div class="input-container group">
-              <label class="input-label w-4/5"
-                for="shortname">{{'general.shortName'|get_message:locale|default:"en"}}</label>
-              {% if state == 'edit' %}
-              <input class="input form-control" type="text" value="{{testType.shortName}}" name="shortname" />
-              {% else %}
-              <input class="input form-control" type="text" name="shortname" />
-              {% endif %}
-            </div>
-          </div>
-
-          <div class="space-y-3 w-2/4">
-            <div class="input-container">
-              <label class="input-label w-4/5" for="referenceconcept">
-                {{'general.referenceConcept'|get_message:locale|default:"en"}}
-              </label>
-              {% if state == 'edit' %}
-              <input hidden type="text" class="input form-control" name="referenceConceptuuid" id="referenceConceptuuid"
-                value="{{testType.referenceConcept.uuid}}" />
-              <input disabled type="text" class="input form-control" name="referenceConcept" id="referenceConcept"
-                value="{{testType.referenceConcept.name}}" />
-              {% else %}
-              <input hidden type="text" class="input form-control" name="referenceConceptuuid"
-                id="referenceConceptuuid">
-              <input disabled type="text" class="input form-control" name="referenceConcept" id="referenceConcept">
-              {% endif %}
-
-            </div>
-
-            <div class="input-container">
-              <label class="input-label w-4/5"
-                for="testgroup">{{'general.testGroup'|get_message:locale|default:"en"}}</label>
-
-              <select class="input form-control" name="testgroup">
-                <option selected value="{{testType.testGroup}}">
-                  {{testType.testGroup}}
-                </option>
-                {% for item in testGroups %}
-                <option value="{{item}}">{{item}}</option>
-                {% endfor %}
-              </select>
-            </div>
-            <div class="input-container mt-4">
-              <label class="input-label w-4/5 "
-                for="specimen">{{'general.requiresSpecimen'|get_message:locale|default:"en"}}</label>
-              <div class="flex items-center justify-around space-x-6">
-                <div class="flex items-center space-x-8">
-                  <label class="input-label" for="requirespecimen">Yes</label>
-                  {% if state == 'edit' %}
-                  {% if testType.requiresSpecimen == True %}
-                  <input name="requirespecimen" checked type="radio" value="Yes" />
-                  {% else %}
-                  <input name="requirespecimen" checked type="radio" value="Yes" />
-                  {% endif %}
-                  {% else %}
-                  <input name="requirespecimen" type="radio" value="Yes" />
-
-                  {% endif %}
-                </div>
-                <div class="flex items-center space-x-8">
-                  <label class="input-label" for="requirespecimen">No</label>
-                  {% if state == 'edit' %}
-                  {% if testType.requiresSpecimen == False %}
-                  <input name="requirespecimen" checked type="radio" value="No" />
-                  {% else %}
-                  <input name="requirespecimen" type="radio" value="No" />
-                  {% endif %}
-                  {% else %}
-                  <input name="requirespecimen" type="radio" value="No" />
-
-                  {% endif %}
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-        <div class="input-container space-x-4 -mt-3 mb-4">
-          <label class="w-1/6 text-[#9E9E9E] input-label"
-            for="testname">{{'general.description'|get_message:locale|default:"en"}}</label>
-          {% if state == 'edit' %}
-          <input class="input ml-4" type="text" value="{{testType.description}}" name="description" />
-          {% else %}
-          <input class="input form-control" type="text" name="description" />
-          {% endif %}
-        </div>
-        <div class="flex-center space-x-4">
-          <button type="submit" id="submitBtn" class="button-primary w-1/5">
-            {% if state == 'edit' %}
-            {{'labtest.labtesttype.edit'|get_message:locale|default:"en"}}
-            {% else %}
-            {{'labtest.labtesttype.add'|get_message:locale|default:"en"}}
-            {% endif %}
-          </button>
-          <a class="cancel-button" href="javascript:history.go(-1)">Cancel</a>
-
-        </div>
-      </form>
-      {% if state == 'edit' %}
-      <form onsubmit="disableSubmit()" class="flex flex-col bg-white p-4 shadow-lg space-y-4 mt-4"
-        action="{% url 'retiretesttype' uuid=testType.uuid %}" method="post">
-        {% csrf_token %}
-
-        <div class="input-container -mt-3">
-          <label class="w-1/6 text-[#9E9E9E] input-label"
-            for="testname">{{'labtest.labtesttype.void'|get_message:locale|default:"en"}}</label>
-          <input id="retireTestType" class="input form-control"
-            placeholder="{{'general.retireReason'|get_message:locale|default:"en"}}" type="text"
-            name="Retire" required />
-        </div>
-        <button id="updateBtn" type="submit" class="button-primary  w-1/5">
-          {{'labtest.labtesttype.void'|get_message:locale|default:"en"}}
-        </button>
-
-      </form>
-      {% endif %}
-    </div>
+<div class="loc-page loc-form-page">
+  <div class="loc-header">
+    <h1>
+      {% if state == 'edit' %}{{'labtest.labtesttype.edit'|get_message:locale|default:"en"}}
+      {% else %}{{'labtest.labtesttype.add'|get_message:locale|default:"en"}}{% endif %}
+    </h1>
+    <a class="cancel-button" href="{% url 'managetesttypes' %}">
+      {{'general.cancel'|get_message:locale|default:"en"}}</a>
   </div>
+
+  {% if error %}
+  <p class="loc-empty">{{ error }}</p>
+  {% endif %}
+
+  <div class="page-panel">
+    <form method="post"
+      action="{% if state == 'edit' %}{% url 'edittesttype' uuid=testType.uuid %}{% else %}{% url 'addtesttype' %}{% endif %}">
+      {% csrf_token %}
+
+      {% comment %}
+      Name gets twice the width of Short Name - a short name is a handful of
+      characters, a name is a sentence. .loc-row is the location *tree* row
+      (it even tints on hover); form pairs use a grid.
+      {% endcomment %}
+      <div class="lab-grid lab-grid-name">
+        <div class="loc-field">
+          <label for="testname">{{'general.name'|get_message:locale|default:"en"}}</label>
+          <input type="text" id="testname" name="testname" required autofocus value="{{ testType.name|default:'' }}">
+        </div>
+        <div class="loc-field">
+          <label for="shortname">{{'general.shortName'|get_message:locale|default:"en"}}</label>
+          <input type="text" id="shortname" name="shortname" value="{{ testType.shortName|default:'' }}">
+        </div>
+      </div>
+
+      <div class="lab-grid lab-grid-group">
+        <div class="loc-field">
+          <label for="testgroup">{{'labtest.testGroup'|get_message:locale|default:"en"}}</label>
+          {% comment %}
+          The group list is always rendered whole and the stored value selected.
+          It used to be rendered with the current value stripped out and pushed
+          to the front, which made the selected option depend on list order.
+          {% endcomment %}
+          <select id="testgroup" name="testgroup" required>
+            {% for group in testGroups %}
+            <option value="{{ group }}" {% if testType.testGroup == group %}selected{% endif %}>{{ group }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        {% comment %}
+        A plain checkbox: the value is a yes/no, and an unchecked box posting
+        nothing is exactly what the view now expects. The original radio pair
+        carried `checked` on both options when editing, so opening any test
+        type showed "Yes" and saving silently flipped the stored value.
+        {% endcomment %}
+        <div class="loc-field lab-check-field">
+          <label class="loc-check" for="requirespecimen">
+            <input type="checkbox" id="requirespecimen" name="requirespecimen" value="yes"
+              {% if testType.requiresSpecimen %}checked{% endif %}>
+            <span>{{'general.requiresSpecimen'|get_message:locale|default:"en"}}</span>
+          </label>
+        </div>
+      </div>
+
+      {% comment %}
+      referenceConcept is a Concept, so the field itself is the search box: type
+      to look concepts up, pick one from the list. What gets submitted is the
+      uuid in the hidden field - the visible text is only a label, and is
+      cleared if it stops matching the picked concept.
+      {% endcomment %}
+      <div class="loc-field lab-concept lab-narrow">
+        <label for="referenceConcept">{{'labtest.referenceConcept'|get_message:locale|default:"en"}}</label>
+        <input type="text" id="referenceConcept" autocomplete="off" required
+          placeholder="{{'general.search'|get_message:locale|default:"en"}}"
+          value="{{ testType.referenceConcept.name|default:'' }}">
+        <input type="hidden" id="referenceConceptuuid" name="referenceConceptuuid"
+          value="{{ testType.referenceConcept.uuid|default:'' }}">
+        <div id="concept-results" class="patient-search-results"></div>
+      </div>
+
+      <div class="loc-field lab-narrow">
+        <label for="description">{{'general.description'|get_message:locale|default:"en"}}</label>
+        <textarea id="description" name="description" rows="3">{{ testType.description|default:'' }}</textarea>
+      </div>
+
+      <div class="loc-actions">
+        <button type="submit" class="button-primary">
+          {{'general.save'|get_message:locale|default:"en"}}</button>
+
+        {% comment %}
+        Retire posts the same form to a different URL via formaction, so the
+        button can sit beside Save without nesting a second <form>, which HTML
+        forbids. formnovalidate because retiring must not be blocked by an
+        empty required field, and the confirm names the test type so it is
+        clear what is about to be retired.
+        {% endcomment %}
+        {% if state == 'edit' %}
+        <button type="submit" class="button-danger" formnovalidate
+          formaction="{% url 'retiretesttype' uuid=testType.uuid %}"
+          onclick="return confirm('{{'labtest.labtesttype.void'|get_message:locale|default:"en"|escapejs}}: {{ testType.name|escapejs }}?')">
+          {{'labtest.labtesttype.void'|get_message:locale|default:"en"}}</button>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
+  {% comment %}
+  Attribute types only exist once the test type does - a new test type has no
+  uuid to hang them off yet, so this section appears after the first save.
+  {% endcomment %}
+  {% if state == 'edit' %}
+  {% comment %}
+  <details> rather than a JS accordion: it collapses without any script, keeps
+  keyboard and screen-reader behaviour for free, and survives a page reload.
+  Open when there is something to act on - an attribute being edited, or none
+  defined yet - otherwise collapsed so the test type fields stay in view.
+  {% endcomment %}
+  <details class="lab-attrs" {% if editingAttribute or addingAttribute or not attributes %}open{% endif %}>
+    <summary>
+      <span>{{'mdrtb.labtest.attributes'|get_message:locale|default:"en"}}</span>
+      <span class="loc-badge">{{ attributes|length|default:"0" }}</span>
+    </summary>
+
+    {% comment %}
+    The panel has two states and never shows both: the list of attribute types,
+    or the form for one of them. Adding and editing are the same form, reached
+    by ?attribute=new and ?attribute=<uuid> - so Back and a bookmarked URL both
+    behave sensibly.
+    {% endcomment %}
+    {% if not editingAttribute and not addingAttribute %}
+
+    {% if attributes %}
+    {% comment %}
+    Sort weight is an ordering, so the rows are moved rather than numbered:
+    drag a row, or use the arrow buttons. The buttons are not decoration - drag
+    and drop is unusable from a keyboard and awkward on a touch screen.
+    Nothing is written until "Save order" is pressed.
+    {% endcomment %}
+    <form method="post" action="{% url 'reorderattr' uuid=testType.uuid %}" id="attr-order-form">
+      {% csrf_token %}
+      <input type="hidden" name="order" id="attr-order">
+      <table class="user-table lab-attr-table" id="attr-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>{{'general.name'|get_message:locale|default:"en"}}</th>
+            <th>{{'general.dataType'|get_message:locale|default:"en"}}</th>
+            <th>{{'labtest.labtestattributetype.groupName'|get_message:locale|default:"en"}}</th>
+            <th>{{'labtest.labtestattributetype.multisetName'|get_message:locale|default:"en"}}</th>
+            <th>{{'general.maxOccurs'|get_message:locale|default:"en"}}</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for attribute in attributes %}
+          <tr draggable="true" data-uuid="{{ attribute.uuid }}"{% if attribute.retired %} class="user-disabled"{% endif %}>
+            <td class="lab-attr-handle">
+              <span class="lab-attr-grip" aria-hidden="true">⠿</span>
+              <button type="button" class="loc-linkbtn lab-attr-up"
+                title="{{'mdrtb.labtest.moveUp'|get_message:locale|default:"en"}}"
+                aria-label="{{'mdrtb.labtest.moveUp'|get_message:locale|default:"en"}}">&#9650;</button>
+              <button type="button" class="loc-linkbtn lab-attr-down"
+                title="{{'mdrtb.labtest.moveDown'|get_message:locale|default:"en"}}"
+                aria-label="{{'mdrtb.labtest.moveDown'|get_message:locale|default:"en"}}">&#9660;</button>
+            </td>
+            <td>{{ attribute.name }}</td>
+            {% comment %}
+            datatypeClassname is a fully qualified Java class name; show only the
+            readable tail, e.g. "FreeTextDatatype".
+            {% endcomment %}
+            <td><span class="loc-badge">{{ attribute.datatypeClassname|cut:"org.openmrs.customdatatype.datatype."|cut:".name" }}</span></td>
+            <td>{{ attribute.groupName|default:"—" }}</td>
+            <td>{{ attribute.multisetName|default:"—" }}</td>
+            <td>{{ attribute.maxOccurs|default:"—" }}</td>
+            <td class="user-row-actions">
+              <a class="loc-linkbtn" href="{% url 'edittesttype' uuid=testType.uuid %}?attribute={{ attribute.uuid }}">
+                {{'general.edit'|get_message:locale|default:"en"}}</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="lab-attrs-actions">
+        <button type="submit" class="button-primary" id="attr-order-save" hidden>
+          {{'mdrtb.labtest.saveOrder'|get_message:locale|default:"en"}}</button>
+      </div>
+    </form>
+    {% else %}
+    <p class="loc-empty">{{'mdrtb.none'|get_message:locale|default:"en"}}</p>
+    {% endif %}
+
+    <div class="lab-attrs-actions">
+      <a class="btn btn-success btn-sm" href="{% url 'edittesttype' uuid=testType.uuid %}?attribute=new">
+        {{'labtest.labtestattributetype.add'|get_message:locale|default:"en"}}</a>
+    </div>
+
+    {% else %}
+
+  <div class="page-panel">
+    <h3>
+      {% if editingAttribute %}{{'labtest.labtestattributetype.edit'|get_message:locale|default:"en"}}
+      {% else %}{{'labtest.labtestattributetype.add'|get_message:locale|default:"en"}}{% endif %}
+    </h3>
+    <form method="post"
+      action="{% if editingAttribute %}{% url 'editattr' testid=testType.uuid attrid=editingAttribute.uuid %}{% else %}{% url 'addattr' uuid=testType.uuid %}{% endif %}">
+      {% csrf_token %}
+
+      {% comment %}
+      No Sort Weight field: it is the row's position, set by reordering the list
+      rather than typed. A new attribute is appended to the end.
+      {% endcomment %}
+      <div class="loc-field">
+        <label for="attr-name">{{'general.name'|get_message:locale|default:"en"}}</label>
+        <input type="text" id="attr-name" name="name" required value="{{ editingAttribute.name|default:'' }}">
+      </div>
+
+      <div class="loc-row">
+        <div class="loc-field">
+          <label for="attr-datatype">{{'general.dataType'|get_message:locale|default:"en"}}</label>
+          <select id="attr-datatype" name="datatype" required>
+            {% for datatype in dataTypes %}
+            <option value="{{ datatype.value }}"
+              {% if editingAttribute.datatypeClassname == datatype.value %}selected{% endif %}>{{ datatype.name }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="loc-field">
+          <label for="attr-handler">{{'general.preferredHandler'|get_message:locale|default:"en"}}</label>
+          <select id="attr-handler" name="handler">
+            <option value="">{{'mdrtb.none'|get_message:locale|default:"en"}}</option>
+            {% for handler in prefferedHandlers %}
+            <option value="{{ handler.value }}"
+              {% if editingAttribute.preferredHandlerClassname == handler.value %}selected{% endif %}>{{ handler.name }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="loc-row">
+        <div class="loc-field">
+          <label for="attr-grpname">{{'labtest.labtestattributetype.groupName'|get_message:locale|default:"en"}}</label>
+          <input type="text" id="attr-grpname" name="grpname" value="{{ editingAttribute.groupName|default:'' }}">
+        </div>
+        <div class="loc-field">
+          <label
+            for="attr-mutname">{{'labtest.labtestattributetype.multisetName'|get_message:locale|default:"en"}}</label>
+          <input type="text" id="attr-mutname" name="mutname" value="{{ editingAttribute.multisetName|default:'' }}">
+        </div>
+      </div>
+
+      {% comment %}
+      No Min Occurs field: the REST resource exposes neither a representation
+      property nor a creatable one for it, so it could never be saved or shown.
+      {% endcomment %}
+      <div class="loc-field">
+        <label for="attr-maxoccur">{{'general.maxOccurs'|get_message:locale|default:"en"}}</label>
+        <input type="number" step="1" id="attr-maxoccur" name="maxoccur"
+          value="{{ editingAttribute.maxOccurs|default:'' }}">
+      </div>
+
+      <div class="loc-row">
+        <div class="loc-field">
+          <label for="attr-datatypeconfig">{{'general.datatypeConfiguration'|get_message:locale|default:"en"}}</label>
+          <input type="text" id="attr-datatypeconfig" name="datatypeconfig"
+            value="{{ editingAttribute.datatypeConfig|default:'' }}">
+        </div>
+        <div class="loc-field">
+          <label for="attr-handleconfig">{{'general.handlerConfiguration'|get_message:locale|default:"en"}}</label>
+          <input type="text" id="attr-handleconfig" name="handleconfig"
+            value="{{ editingAttribute.handlerConfig|default:'' }}">
+        </div>
+      </div>
+
+      <div class="loc-field">
+        <label for="attr-hint">{{'mdrtb.labtest.hint'|get_message:locale|default:"en"}}</label>
+        <input type="text" id="attr-hint" name="hint" value="{{ editingAttribute.hint|default:'' }}">
+      </div>
+
+      <div class="loc-field">
+        <label for="attr-desc">{{'general.description'|get_message:locale|default:"en"}}</label>
+        <textarea id="attr-desc" name="desc" rows="2">{{ editingAttribute.description|default:'' }}</textarea>
+      </div>
+
+      <div class="loc-actions">
+        <button type="submit" class="button-primary">
+          {{'general.save'|get_message:locale|default:"en"}}</button>
+        <a class="cancel-button" href="{% url 'edittesttype' uuid=testType.uuid %}">
+          {{'general.cancel'|get_message:locale|default:"en"}}</a>
+      </div>
+    </form>
+  </div>
+
+  {% endif %}
+  </details>
+  {% endif %}
 </div>
-
-
-
 
 <script>
-  const handleSearch = (searchQuery) => {
-    if (searchQuery.length < 0) {
+  // Concept lookup for referenceConcept: the field is its own search box.
+  (function () {
+    var field = document.getElementById('referenceConcept');
+    var hidden = document.getElementById('referenceConceptuuid');
+    var results = document.getElementById('concept-results');
+    if (!field) return;
+    var timer = null;
+    // What the field said when a concept was last picked. If the user types
+    // over it the selection is void, so the uuid is dropped and the form will
+    // refuse to submit rather than silently keep the old concept.
+    var chosenLabel = field.value;
 
-      $('#search-results').addClass('hidden')
-      $('#search-results').removeClass('flex')
-      $('#search-results').html("")
+    function close() { results.classList.remove('is-open'); results.innerHTML = ''; }
 
-    } else if (searchQuery.length >= 1) {
-      $('#search-results').html("")
-      $('#search-results').append(`
+    field.addEventListener('input', function () {
+      if (field.value !== chosenLabel) hidden.value = '';
+      clearTimeout(timer);
+      var q = field.value.trim();
+      if (q.length < 2) { close(); return; }
+      timer = setTimeout(function () { search(q); }, 400);
+    });
 
-        <div class="loader-box">
-<div class="app-spinner" role="status" aria-label="Loading"></div>
-          </div>
+    field.addEventListener('blur', function () {
+      // Let a click on a result register before the list disappears.
+      setTimeout(close, 200);
+    });
 
-`)
+    field.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') close();
+    });
+
+    function search(q) {
+      results.classList.add('is-open');
+      results.innerHTML =
+        '<div class="patient-search-loader"><div class="app-spinner" role="status" aria-label="Loading"></div></div>';
       $.ajax({
-        url: "{% url 'concepts'%}?q=" + `${searchQuery}`,
+        url: "{% url 'concepts' %}?q=" + encodeURIComponent(q),
         method: 'GET',
         success: function (data) {
-          if (data.error) {
-            $('#search-results').html(
-              `
-    <div class="patient-notfound-box">
-      <h3>
-        Error finding concept
-        </h3>
-  </div>
-    `
-            )
+          console.log('[concepts] %s -> %o', q, data);
+          if (data && data.error) {
+            results.innerHTML = '<div class="patient-search-empty"><h3>Error finding concept</h3></div>';
+            return;
           }
-          else if (data.results.length === 0) {
-
-            $('#search-results').html("")
-            $('#search-results').append(
-              `
-    <div class="patient-notfound-box">
-      <h3>
-        Could not find any concept according to your search
-        </h3>
-  </div>
-    `
-            )
-          } else {
-            $('#search-results').html("")
-            for (i = 0; i < data.results.length; i++) {
-              let uuid = data.results[i].uuid
-              let name = data.results[i].display
-              $('#search-results').append(
-                `
-      
-        <div  class="flex  items-center space-x-4 m-2 cursor-pointer hover:bg-gray-200 p-1">
-          <input id="concept" name="concept" hidden value=${uuid} />
-          <button type="button" onclick="selectConcept('${uuid}','${name}')" class="border-none bg-transparent text-left" >${name}</button>
-  </div>
-        
-        `
-              )
-            }
+          var list = (data && Array.isArray(data.results)) ? data.results : [];
+          if (!list.length) {
+            results.innerHTML =
+              '<div class="patient-search-empty"><h3>{{"mdrtb.none"|get_message:locale|default:"en"|escapejs}}</h3></div>';
+            return;
           }
-
+          results.innerHTML = '';
+          list.forEach(function (concept) {
+            // .text(), not interpolation: concept names are free text and
+            // would otherwise be injected straight into the markup.
+            $('<button type="button" class="loc-linkbtn"></button>')
+              .text(concept.display)
+              .on('mousedown', function (e) {
+                e.preventDefault();
+                hidden.value = concept.uuid;
+                field.value = concept.display;
+                chosenLabel = concept.display;
+                close();
+              })
+              .appendTo(results);
+          });
+        },
+        error: function (xhr, textStatus, errorThrown) {
+          console.error('[concepts] failed: status=%s (%s) %s', xhr.status, textStatus, errorThrown);
+          results.innerHTML = '<div class="patient-search-empty"><h3>Error finding concept</h3></div>';
         }
-
-
-      })
-
-      $('#search-results').removeClass('hidden')
-      $('#search-results').addClass('flex')
+      });
     }
-  }
+  })();
 
-  let state = '{{state | escapejs}}'
-  if (state === 'edit') {
-    $('input').prop('disabled', true)
-    $('input[name=csrfmiddlewaretoken]').prop('disabled', false)
-    $('select').prop('disabled', true).prop('', false)
-    $('textarea').prop('disabled', true).prop('', false)
-    $('#canceleditbtn').prop('hidden', true)
-    $('#retireTestType').prop('disabled', false)
-  }
-  $('#editbtn').click(function () {
-    $('input').prop('disabled', false)
-    $('select').prop('disabled', false)
-    $('textarea').prop('disabled', false)
-    $('#canceleditbtn').prop('hidden', false)
-    $('#referenceConcept').prop('disabled', true)
-  })
-  $('#canceleditbtn').click(function () {
-    $('input').prop('disabled', true)
-    $('select').prop('disabled', true)
-    $('textarea').prop('disabled', true)
-    $('#canceleditbtn').prop('hidden', true)
-    $('#retireTestType').prop('disabled', false)
-  })
-  const disableSubmit = () => {
-    $('#submitBtn').prop('disabled', true)
-    $('#submitBtn').removeClass('button-primary')
-    $('#submitBtn').html(`
-        <div class="app-spinner" role="status" aria-label="Loading"></div>
-
-        
-        `)
-    if (state === 'edit') {
-      $('#updateBtn').prop('disabled', true)
-      $('#updateBtn').removeClass('button-primary')
-      $('#updateBtn').html(`
-          <div class="app-spinner" role="status" aria-label="Loading"></div>
-
-          
-          `)
-
+  // referenceConcept is mandatory on the entity; block the save rather than
+  // let OpenMRS reject it after the user has filled everything in.
+  $('form').on('submit', function (e) {
+    if ($(this).find('#referenceConceptuuid').length && !$('#referenceConceptuuid').val()) {
+      e.preventDefault();
+      alert('{{"labtest.referenceConcept"|get_message:locale|default:"en"|escapejs}}');
+      $('#referenceConcept').focus();
     }
-  }
+  });
+</script>
+<script>
+  // Reordering the attribute types. Sort weight is a position, so the user
+  // moves rows; the server turns the resulting order into 1..N.
+  (function () {
+    var table = document.getElementById('attr-table');
+    if (!table) return;
+    var body = table.tBodies[0];
+    var orderField = document.getElementById('attr-order');
+    var saveButton = document.getElementById('attr-order-save');
+    var original = rowUuids().join(',');
 
-
-  $('#concept').keyup(function (e) {
-    if (e.target.value.length > 1) {
-
-      handleSearch(e.target.value)
-    } else {
-      $('#search-results').addClass('hidden')
+    function rowUuids() {
+      return Array.prototype.map.call(body.rows, function (r) { return r.dataset.uuid; });
     }
-  })
 
-  function selectConcept(uuid, name) {
-    console.log(uuid, name)
-    $('#search-results').addClass('hidden')
-    $('#referenceConceptuuid').val(uuid)
-    $('#referenceConcept').val(name)
-    $('#concept').val('')
-  }
+    function orderChanged() {
+      var now = rowUuids().join(',');
+      orderField.value = now;
+      // Only offer to save when the order actually differs, so an accidental
+      // drag that lands where it started writes nothing.
+      saveButton.hidden = (now === original);
+    }
+
+    body.addEventListener('click', function (e) {
+      var up = e.target.closest('.lab-attr-up');
+      var down = e.target.closest('.lab-attr-down');
+      if (!up && !down) return;
+      var row = e.target.closest('tr');
+      if (up && row.previousElementSibling) {
+        body.insertBefore(row, row.previousElementSibling);
+      } else if (down && row.nextElementSibling) {
+        body.insertBefore(row.nextElementSibling, row);
+      }
+      e.target.focus();
+      orderChanged();
+    });
+
+    var dragged = null;
+    body.addEventListener('dragstart', function (e) {
+      dragged = e.target.closest('tr');
+      if (dragged) dragged.classList.add('lab-attr-dragging');
+    });
+    body.addEventListener('dragend', function () {
+      if (dragged) dragged.classList.remove('lab-attr-dragging');
+      dragged = null;
+      orderChanged();
+    });
+    body.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      var over = e.target.closest('tr');
+      if (!over || !dragged || over === dragged) return;
+      var rows = Array.prototype.slice.call(body.rows);
+      if (rows.indexOf(dragged) < rows.indexOf(over)) {
+        body.insertBefore(dragged, over.nextElementSibling);
+      } else {
+        body.insertBefore(dragged, over);
+      }
+    });
+
+    orderField.value = original;
+  })();
 </script>
 {% endblock %}

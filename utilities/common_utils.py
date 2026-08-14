@@ -314,7 +314,7 @@ def get_patient_list_options(code):
         },
         {
             "rest_code": "dotsbyregistrationgroupandbacteriologicalstatus",
-            "message_code": "dotsPulmonaryCasesByRegisrationGroupAndBacStatus",
+            "message_code": "mdrtb.dotsPulmonaryCasesByRegisrationGroupAndBacStatus",
         },
         {"rest_code": "mdrxdrpatients", "message_code": "mdrtb.drTbPatients"},
         {

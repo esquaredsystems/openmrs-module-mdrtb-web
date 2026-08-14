@@ -30,15 +30,15 @@
                 <td>
                     {{"mdrtb.tb07u.nameOfFacility"|get_message:locale|default:"en"}}: <u>
                         {{ location.facility.name}}</u><br />
-                    {{"mdrtb.tb07u.regionCityDistrict"|get_message:locale|default:"en"}}: <u>
+                    {{"mdrtb.forms.regionCityDistrict"|get_message:locale|default:"en"}}: <u>
                         {{ location.region.name}}/{{ location.district.name }}
                     </u><br />
                     {{"mdrtb.tb07u.tbCoordinatorName"|get_message:locale|default:"en"}}: ___________________ </br>
-                    {{"mdrtb.tb07u.signature"|get_message:locale|default:"en"}}: _________________
+                    {{"mdrtb.forms.signature"|get_message:locale|default:"en"}}: _________________
                 </td>
 
                 <td>
-                    {{"mdrtb.pv.quarter"|get_message:locale|default:"en"}},{{"mdrtb.pv.year"|get_message:locale|default:"en"}}:
+                    {{"mdrtb.pv.quarter"|get_message:locale|default:"en"}},{{"mdrtb.year"|get_message:locale|default:"en"}}:
                     <u>{{ request.GET.quarter }}, {{ request.GET.year }}</u></br>
                     {{"mdrtb.pv.reportDate"|get_message:locale|default:"en"}}:<u>&nbsp; {{ report_date|get_report_date }}</u>
                 </td>
@@ -94,7 +94,7 @@
                     <th rowspan="2">
                         {{"mdrtb.pv.register.yellowCardDate"|get_message:locale|default:"en"}}
                     </th>
-                    <th rowspan="2">{{"mdrtb.pv.register.comments"|get_message:locale|default:"en"}}</th>
+                    <th rowspan="2">{{"mdrtb.comments"|get_message:locale|default:"en"}}</th>
                 </tr>
                 <tr>
                     <th>{{"mdrtb.pv.register.serious"|get_message:locale|default:"en"}}</th>

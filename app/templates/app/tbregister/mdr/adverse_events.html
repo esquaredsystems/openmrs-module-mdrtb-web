@@ -1298,7 +1298,7 @@ Guarded so nothing renders if neither is available.
         </div>
         <div>
             <label class="tb03-form-label w-full">
-              {{'mdrtb.pv.register.comments'|get_message:locale|default:"en"}}</label>
+              {{'mdrtb.comments'|get_message:locale|default:"en"}}</label>
             {% if state == 'edit' and form.clinicianNotes %}
             <textarea name="{{'CLINICIAN_NOTES' | get_concept }}"
               class="input form-control">{{form.clinicianNotes}}</textarea>

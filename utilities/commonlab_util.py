@@ -129,17 +129,26 @@ def get_attributes_data_types():
 
 
 def get_test_types_by_search(req, query):
-    status, response = ru.get(req, "commonlab/labtesttype")
-    labtests = []
-    if status:
-        for labtest in response["results"]:
-            if (
-                    labtest["name"].startswith(query)
-                    or labtest["name"] == query
-                    or labtest["name"].__contains__(query)
-            ):
-                labtests.append(labtest)
-    return labtests
+    """
+    Lab test types whose name contains `query`, case-insensitively.
+
+    Filtering happens here because the REST resource has no name search.
+    v=full is required: the default representation returns only uuid and
+    display, so the list would render with every other column blank.
+
+    `parameters` is positional on ru.get - omitting it raised
+    "get() missing 1 required positional argument: 'parameters'".
+    """
+    status, response = ru.get(req, "commonlab/labtesttype", {"v": "full"})
+    if not status:
+        return []
+    needle = (query or "").strip().lower()
+    return [
+        labtest
+        for labtest in response["results"]
+        if needle in (labtest.get("name") or "").lower()
+        or needle in (labtest.get("shortName") or "").lower()
+    ]
 
 
 def add_edit_test_type(req, data, url):
@@ -300,32 +309,58 @@ def get_custom_lab_order(full_order):
     }
 
 
+def _attribute_cache_key(uuid):
+    """
+    Cache key for one test type's attribute types.
+
+    Keyed on uuid, not name: the key used to be built from the name, so renaming
+    a test type orphaned its cached attributes under the old key.
+    """
+    return f"labtest_attrtypes_{uuid}"
+
+
+def invalidate_labtest_attributes(uuid):
+    """
+    Drops the cached attribute types for one test type.
+
+    Must be called after adding, editing or retiring an attribute type. The
+    cache is written with timeout=None (never expires), so without this a newly
+    added attribute would stay invisible until Redis was cleared by hand.
+    """
+    cache.delete(_attribute_cache_key(uuid))
+
+
 def get_attributes_of_labtest(req, lab_test_type):
     """
-    Retrieves the attributes of a lab test based on the provided UUID.
+    The attribute types belonging to one lab test type, sorted by sort weight.
+
     Parameters:
         req: The request object.
-        lab_test_type (str): The lab test type.
+        lab_test_type (dict or str): The test type, or just its uuid. Callers
+            passed both, and the dict-only version raised
+            "TypeError: string indices must be integers" on a plain uuid.
     Returns:
-        list: A list of dictionaries representing the attributes of the lab test. Each dictionary contains detailed information about an attribute.
+        list: One dictionary per attribute type.
     Raises:
         Exception: If there is an error retrieving the attributes.
     """
-    compressed_attribute_types = cache.get(
-        f"{lab_test_type['name'].replace(' ', '')}_attribute_types"
-    )
+    uuid = lab_test_type["uuid"] if isinstance(lab_test_type, dict) else lab_test_type
+
+    compressed_attribute_types = cache.get(_attribute_cache_key(uuid))
     if compressed_attribute_types:
         return pickle.loads(zlib.decompress(compressed_attribute_types))
     status, data = ru.get(
         req,
         "commonlab/labtestattributetype",
-        {"testTypeUuid": lab_test_type["uuid"], "v": "full"},
+        {"testTypeUuid": uuid, "v": "full"},
     )
     if status:
-        attribute_types = sorted(data["results"], key=lambda x: x["sortWeight"])
+        attribute_types = sorted(
+            data["results"], key=lambda x: x.get("sortWeight") or 0
+        )
         compressed_attribute_types = zlib.compress(pickle.dumps(attribute_types))
         cache.set(
-            f"{lab_test_type['name'].replace(' ', '')}_attribute_types",
+            _attribute_cache_key(uuid),
             compressed_attribute_types,
             timeout=None,
         )

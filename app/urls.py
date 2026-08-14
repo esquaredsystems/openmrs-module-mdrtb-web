@@ -229,6 +229,11 @@ urlpatterns = [
         name="editattr",
     ),
     path(
+        "commonlab/labtest/<str:uuid>/reorderattributes",
+        views.reorder_attributes,
+        name="reorderattr",
+    ),
+    path(
         "commonlab/patient/<str:uuid>/managetestorders",
         views.render_managetestorders,
         name="managetestorders",
