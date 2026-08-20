@@ -2,7 +2,7 @@
 # Django 4.1.1 frontend — communicates with OpenMRS via REST only, NO direct DB access.
 # Shared facts (domain model, concept/encounter-type/identifier UUIDs, topology): ../.agents/graph.md
 # Usage + notation legend + maintenance rules: ../.agents/instructions.md
-# Last updated: 2026-07-10 (theme + administration stubs)
+# Last updated: 2026-08-20 (patient banner fallback -> flow_patient context processor)
 
 ## § MODULE LAYOUT
 ```
@@ -168,6 +168,19 @@ views.redirect_after_error(req)       # WHERE to go when a page fails to LOAD
    returns the path that just failed.
    Self-redirects inside the `if req.method == "POST"` branch are FINE and were
    left alone: a failed save re-shows the form, and the GET succeeds.
+
+ru.describe_error(method, response)   # OpenMRS error body -> readable message
+!! ru.get/post/delete no longer call response.raise_for_status(). It raised
+   BEFORE the body was read, so an OpenMRS 400 reached the user as
+   "An error occured while processing your request" and the actual reason
+   ("Unknown property X", "Identifier is in use", fieldErrors) was never logged.
+   Non-2xx now raises Exception(describe_error(...)), which logs the full body
+   and puts error.message + globalErrors + fieldErrors in the message.
+   utilities/rest_admin.py::_describe_error delegates to it - one implementation.
+!! exceptions.handle_rest_exceptions: except clauses are ordered
+   ConnectionError -> Timeout -> HTTPError -> RequestException. RequestException
+   is the base class of the other three; while it was first, the connection and
+   timeout messages were dead code.
 ```
 
 ## § AUTH FLOW
@@ -268,7 +281,28 @@ TIME_ZONE             = "Asia/Dushanbe"
 REDIS_LOCATION        = env("REDIS_LOCATION", default="redis://127.0.0.1:6379/1")
 CORS_ALLOWED_ORIGINS  = ["http://46.20.206.173:38080","http://127.0.0.1:8080"]
 DEBUG                 = True   # change for prod
+context_processors    = django debug/request/auth/messages + utilities.common_utils.template_context
 ```
+
+`template_context` (utilities/common_utils.py) puts three names in EVERY template:
+```
+locale                # session locale, default "ru"
+is_system_developer   # nav.html Administration menu
+flow_patient          # patient banner fallback: session["current_patient_program_flow"]
+                      # ["current_patient"], or None (get_flow_patient). Straight session
+                      # read, NOT checked against the <uuid> in the URL - so the banner can
+                      # still show a patient opened earlier if a form URL is reached without
+                      # passing through the search page (which clears the flow). Known and
+                      # deliberate; do not add a uuid check without asking Uzair.
+```
+Banner usage in the TB form templates (tb03, tb03u, form89, transfer, regimen,
+adverse_events, drug_resistence, enroll_in_dots, enroll_in_mdrtb):
+```
+{% include 'app/components/patient_banner.html' with patient=patient|default:flow_patient %}
+```
+NEVER write `patient|default:request.session.<key>...` - a variable used as a FILTER
+ARGUMENT is resolved without the usual "missing is empty" fallback, so a missing
+session key raises VariableDoesNotExist and 500s the page (was the enroll_in_dots bug).
 
 ## § UI THEME / STYLE MIGRATION (Tailwind → Bootstrap, plan: style_migration_plan.txt)
 ```

@@ -78,28 +78,8 @@ def _request(method, req, endpoint, params=None, payload=None):
 
 
 def _describe_error(method, response):
-    """Pulls the human-readable message out of an OpenMRS error body."""
-    detail = (response.text or "")[:1500]
-    message = f"OpenMRS returned {response.status_code}"
-    try:
-        body = response.json()
-        error = body.get("error") or {}
-        if error:
-            message = error.get("message", message)
-            parts = [
-                ge.get("message")
-                for ge in (error.get("globalErrors") or [])
-                if ge.get("message")
-            ]
-            for field, errs in (error.get("fieldErrors") or {}).items():
-                for err in errs:
-                    parts.append(f"{field}: {err.get('message', '')}".strip())
-            if parts:
-                message = message + ": " + "; ".join(parts)
-    except ValueError:
-        message = f"OpenMRS returned {response.status_code}: {detail[:300]}"
-    logger.error(f"{method} {response.url} -> {response.status_code}: {detail}")
-    return message
+    # Pulls the human-readable message out of an OpenMRS error body.
+    return ru.describe_error(method, response)
 
 
 def rest_get(req, endpoint, params=None):

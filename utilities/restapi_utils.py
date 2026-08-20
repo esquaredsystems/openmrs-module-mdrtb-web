@@ -137,6 +137,41 @@ def is_session_authenticated(req):
         return False
 
 
+def describe_error(method, response):
+    """Turns a failed OpenMRS response into a message a human can act on.
+
+    OpenMRS answers a rejected write with 400 and puts the actual reason in the
+    body ("Unknown property", "required", the failing field, ...). Calling
+    response.raise_for_status() throws that body away and the request only
+    shows up as "400 Client Error", which is not enough to fix anything. So the
+    body is logged in full and its message is what gets raised.
+
+    Also used by utilities/rest_admin.py so both REST paths report errors the
+    same way.
+    """
+    detail = (response.text or "")[:1500]
+    message = f"OpenMRS returned {response.status_code}"
+    try:
+        body = response.json()
+        error = body.get("error") or {}
+        if error:
+            message = error.get("message", message)
+            parts = [
+                ge.get("message")
+                for ge in (error.get("globalErrors") or [])
+                if ge.get("message")
+            ]
+            for field, errs in (error.get("fieldErrors") or {}).items():
+                for err in errs:
+                    parts.append(f"{field}: {err.get('message', '')}".strip())
+            if parts:
+                message = message + ": " + "; ".join(parts)
+    except ValueError:
+        message = f"OpenMRS returned {response.status_code}: {detail[:300]}"
+    logger.error(f"{method} {response.url} -> {response.status_code}: {detail}")
+    return message
+
+
 @handle_rest_exceptions
 def get(req, endpoint, parameters):
     """
@@ -166,7 +201,8 @@ def get(req, endpoint, parameters):
         logger.debug("Session expired")
         clear_session(req)
         raise Exception(session_expired_msg)
-    response.raise_for_status()
+    if not response.ok:
+        raise Exception(describe_error("GET", response))
     logger.debug(
         f"GET Request successful to /{endpoint}, status: {response.status_code}"
     )
@@ -196,27 +232,16 @@ def post(req, endpoint, data):
         timeout=REST_TIMEOUT,
     )
     logger.debug(f"'Making POST call to /{endpoint}'")
-    response.raise_for_status()
     if response.ok:
         data = response.json()
         logger.debug(f"POST Request successful, status: {response.status_code}")
         return True, data
     if response.status_code == 401:
         clear_session(req)
-    logger.debug(f"'POST Request failed to /{endpoint}, status: {response.status_code}'")
-    if "error" in response.json():
-        logger.error(response.json(), exc_info=True)
-        short_error_message = response.json()["error"]["message"]
-        detailed_message = None
-        if "globalErrors" in response.json()["error"]:
-            detailed_message = response.json()["error"]["globalErrors"][0]["message"]
-        error_message = (
-            short_error_message + ": " + detailed_message
-            if detailed_message
-            else short_error_message
-        )
-        raise Exception(error_message)
-    return None
+    # Do NOT call raise_for_status() here. It raises before the body is read,
+    # and the body is the only place OpenMRS says what was actually wrong with
+    # the payload.
+    raise Exception(describe_error("POST", response))
 
 
 @handle_rest_exceptions
@@ -240,7 +265,10 @@ def delete(req, endpoint):
         timeout=REST_TIMEOUT,
     )
     logger.debug(f"'Making DELETE call to /{endpoint}'")
-    response.raise_for_status()
+    if not response.ok:
+        if response.status_code == 401:
+            clear_session(req)
+        raise Exception(describe_error("DELETE", response))
     logger.debug(
         f"'DEL Request successful to /{endpoint}, status: {response.status_code}'"
     )

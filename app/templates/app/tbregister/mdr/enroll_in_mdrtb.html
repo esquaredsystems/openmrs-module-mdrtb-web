@@ -6,15 +6,10 @@
 
 {% block content %}
 {% comment %}
-Patient banner. The patient comes from the view context where it exists
-(form89), otherwise from the session flow set when the patient was opened.
-Guarded so nothing renders if neither is available.
+`patient` is used when the view fetched one, otherwise `flow_patient`, i.e. the patient cached in the program-flow session and put in every template's context.
 {% endcomment %}
-{% with banner_patient=patient|default:request.session.current_patient_program_flow.current_patient %}
-{% if banner_patient %}
-{% include 'app/components/patient_banner.html' with patient=banner_patient %}
-{% endif %}
-{% endwith %}
+
+{% include 'app/components/patient_banner.html' with patient=patient|default:flow_patient %}
 
 <div class="mx-auto w-1/2">
     {% include 'app/components/breadcrumbs.html'%}

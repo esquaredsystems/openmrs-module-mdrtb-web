@@ -14,6 +14,15 @@ def get_locale(request, default='en'):
     return request.session.get('locale', default)
 
 
+def get_flow_patient(request):
+    """Patient held in the program-flow session, for the patient banner.
+    The TB form pages (tb03, tb03u, form89, transfer, regimen, ...) do not fetch the patient themselves; 
+    the banner falls back to the copy that request.session["current_patient_program_flow"] keeps from the dashboard/enrollment.
+    """
+    flow = request.session.get("current_patient_program_flow") or {}
+    return flow.get("current_patient") or None
+
+
 def template_context(request):
     """
     Django context processor, registered in settings.TEMPLATES. components/nav.html renders on every page, so the Administration flag has to be here rather than in each view.
@@ -22,6 +31,7 @@ def template_context(request):
         # do not not use get_locale's "en" because this is the UI default for Tajikistan.
         'locale': get_locale(request, 'ru'),
         'is_system_developer': mu.is_system_developer(request),
+        'flow_patient': get_flow_patient(request),
     }
 
 
