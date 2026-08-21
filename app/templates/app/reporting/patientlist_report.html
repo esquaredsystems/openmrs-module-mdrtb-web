@@ -5,15 +5,24 @@
 
 <div>
     <div style="font-size: 0.75rem;">
-
-        <p class="text-xl"><b>Year:</b> {{year}}</p>
-        <p class="text-xl"><b>Location:</b> {{location}}</p>
+         <!-- Year -->
+        <p class="text-xl"><b>{{'mdrtb.year'|get_message:locale|default:"en"}}:</b> {{year}}</p>
+        <!-- Location -->
+        <p class="text-xl"><b>{{'mdrtb.location'|get_message:locale|default:"en"}}:</b> {{location}}</p>
+        <!-- Region -->
+        <p class="text-xl"><b>{{'mdrtb.region'|get_message:locale|default:"en"}}:</b> {{region}}</p>
+        <!-- District -->
+        <p class="text-xl"><b>{{'mdrtb.district'|get_message:locale|default:"en"}}:</b> {{district}}</p>
+        <!-- Facility -->
+        <p class="text-xl"><b>{{'mdrtb.facility'|get_message:locale|default:"en"}}:</b> {{facility}}</p>
+        <!-- Month or Quarter (conditional) -->
         {% if month %}
-        <p><b>Month:</b> {{month}}</p>
+        <p class="text-xl"><b>{{'mdrtb.month'|get_message:locale|default:"en"}}:</b> {{month}}</p>
         {% elif quarter %}
-        <p><b>Quarter:</b> {{quarter}}</p>
+        <p class="text-xl"><b>{{'mdrtb.quarter'|get_message:locale|default:"en"}}:</b> {{quarter}}</p>
         {% endif %}
-        <p><b>List:</b> {{listname}}</p>
+        <!-- List -->
+        <p class="text-xl"><b>{{'mdrtb.list'|get_message:locale|default:"en"}}:</b> {{listname}}</p>
     </div>
     <div id="patientlist">{{ string_data|safe }}</div>
 
