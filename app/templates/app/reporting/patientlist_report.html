@@ -7,19 +7,26 @@
     <div style="font-size: 0.75rem;">
          <!-- Year -->
         <p class="text-xl"><b>{{'mdrtb.year'|get_message:locale|default:"en"}}:</b> {{year}}</p>
-        <!-- Location -->
-        <p class="text-xl"><b>{{'mdrtb.location'|get_message:locale|default:"en"}}:</b> {{location}}</p>
         <!-- Region -->
         <p class="text-xl"><b>{{'mdrtb.region'|get_message:locale|default:"en"}}:</b> {{region}}</p>
         <!-- District -->
         <p class="text-xl"><b>{{'mdrtb.district'|get_message:locale|default:"en"}}:</b> {{district}}</p>
         <!-- Facility -->
-        <p class="text-xl"><b>{{'mdrtb.facility'|get_message:locale|default:"en"}}:</b> {{facility}}</p>
+        <p class="text-xl">
+            <b>{{ 'mdrtb.facility'|get_message:locale|default:"en" }}:</b>
+            {% if facility %}
+            {{ facility }}
+            {% else %}
+            {{ 'mdrtb.none'|get_message:locale|default:"en" }}
+            {% endif %}
+        </p>
         <!-- Month or Quarter (conditional) -->
-        {% if month %}
-        <p class="text-xl"><b>{{'mdrtb.month'|get_message:locale|default:"en"}}:</b> {{month}}</p>
-        {% elif quarter %}
-        <p class="text-xl"><b>{{'mdrtb.quarter'|get_message:locale|default:"en"}}:</b> {{quarter}}</p>
+        <p><b>{{'mdrtb.month.start'|get_message:locale|default:"Start Month"}}:</b> {{month}}</p>
+        <p><b>{{'mdrtb.month.end'|get_message:locale|default:"End Month"}}:</b> {{month2}}</p>
+
+        <!-- Auto-detected Quarter -->
+        {% if quarter_display %}
+        <p><b>{{'mdrtb.quarter'|get_message:locale|default:"Quarter"}}:</b> {{quarter_display}}</p>
         {% endif %}
         <!-- List -->
         <p class="text-xl"><b>{{'mdrtb.list'|get_message:locale|default:"en"}}:</b> {{listname}}</p>

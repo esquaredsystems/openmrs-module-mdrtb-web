@@ -402,3 +402,64 @@ def string_to_html(html_string):
 
 def get_date_time_now():
     return datetime.now().isoformat()
+
+
+def get_quarters_with_multiple_months(start_month, end_month):
+    # Convert string inputs to integers if necessary
+    start = int(start_month) if isinstance(start_month, str) else start_month
+    end = int(end_month) if isinstance(end_month, str) else end_month
+
+    # Generate the sequential range of months within the single year
+    months = list(range(start, end + 1))
+
+    # Dictionary to track the count of months in each quarter
+    quarter_counts = {'Q1': 0, 'Q2': 0, 'Q3': 0, 'Q4': 0}
+
+    # Distribute months into their respective quarters
+    for m in months:
+        if m <= 3:
+            quarter_counts['Q1'] += 1
+        elif m <= 6:
+            quarter_counts['Q2'] += 1
+        elif m <= 9:
+            quarter_counts['Q3'] += 1
+        else:
+            quarter_counts['Q4'] += 1
+
+    # Filter quarters with strictly more than 1 month
+    valid_quarters = [quarter for quarter, count in quarter_counts.items() if count > 1]
+
+    # Join the list into a single comma-separated display string
+    return ", ".join(valid_quarters)
+
+
+def extract_location_hierarchy(location_details, location_type):
+    """
+    Given the location object returned for whichever level the user picked
+    (facility/district/region), walk up parentLocation to populate all
+    three levels consistently.
+
+    Assumes hierarchy: facility -> district -> region -> country,
+    and that location_details["parentLocation"] is the next level up.
+    """
+    result = {"facility": None, "district": None, "region": None}
+
+    if location_type == "facility":
+        result["facility"] = location_details.get("name")
+        district = location_details.get("parentLocation")
+        if district:
+            result["district"] = district.get("name")
+            region = district.get("parentLocation")
+            if region:
+                result["region"] = region.get("name")
+
+    elif location_type == "district":
+        result["district"] = location_details.get("name")
+        region = location_details.get("parentLocation")
+        if region:
+            result["region"] = region.get("name")
+
+    elif location_type == "region":
+        result["region"] = location_details.get("name")
+
+    return result

@@ -3,160 +3,497 @@
 {% block content %}
 {% include 'app/components/nav.html' %}
 
+<style>
+    .month-range-container {
+        width: 100%;
+        padding: 6px 0 0;
+    }
+
+    .month-slider-wrapper {
+        position: relative;
+        width: 100%;
+        height: 28px;
+    }
+
+    /* Base track */
+    .month-range-track {
+        position: absolute;
+        top: 11px;
+        left: 9px;
+        right: 9px;
+        height: 6px;
+        background: #d1d5db;
+        border-radius: 3px;
+    }
+
+    /* Selected range */
+    .month-range-selected {
+        position: absolute;
+        top: 0;
+        height: 6px;
+        background: #374151;
+        border-radius: 3px;
+    }
+
+    /* Invisible native slider */
+    .month-slider {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 28px;
+        margin: 0;
+        padding: 0;
+
+        appearance: none;
+        -webkit-appearance: none;
+
+        background: transparent;
+        pointer-events: none;
+        outline: none;
+    }
+
+    /* Chrome / Edge / Safari */
+    .month-slider::-webkit-slider-runnable-track {
+        height: 6px;
+        background: transparent;
+        border: none;
+    }
+
+    .month-slider::-webkit-slider-thumb {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        margin-top: -6px;
+        border: none;
+        border-radius: 50%;
+        background: #2D9CE2;
+        cursor: pointer;
+        pointer-events: auto;
+    }
+
+    /* Firefox */
+    .month-slider::-moz-range-track {
+        height: 6px;
+        background: transparent;
+        border: none;
+    }
+
+    .month-slider::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+
+        border: none;
+        border-radius: 50%;
+
+        background: #374151;
+
+        cursor: pointer;
+        pointer-events: auto;
+    }
+
+    /*
+     * Month labels align with the actual
+     * slider track rather than the full container.
+     */
+    .month-labels {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+
+        margin-left: 9px;
+        margin-right: 9px;
+        margin-top: 5px;
+
+        font-size: 13px;
+        color: #6b7280;
+    }
+
+    .month-label {
+        text-align: center;
+    }
+
+    /*
+     * Align first and last numbers exactly
+     * with the track edges.
+     */
+    .month-label:first-child {
+        text-align: left;
+    }
+
+    .month-label:last-child {
+        text-align: right;
+    }
+</style>
+
 <div class="p-4 m-6 mx-auto w-1/2 flex flex-col justify-center">
-  <h1 class="page-title">{{'mdrtb.patientLists'|get_message:locale|default:"en"}}</h1>
 
-  <form target="_blank" method="post" action="{% url 'patientlist' %}" class=" flex flex-col space-y-4 p-4">
-    {% csrf_token %}
-    <div>
-      {% include 'app/components/locations.html' %}
-    </div>
+    <h1 class="page-title">
+        {{'mdrtb.patientLists'|get_message:locale|default:"en"}}
+    </h1>
 
-    <div class="input-container">
-      <label class="input-label w-1/6" for="year">{{"mdrtb.year"|get_message:locale|default:"en"}}</label>
-      <input required type="text" class="input form-control" name="year" size="4" id="year">
-    </div>
-    <div class="input-container">
-      <label class="input-label w-1/6" for="month">{{"mdrtb.month"|get_message:locale|default:"en"}}</label>
-      <select required name="month" id="month" class="input form-control">
-        <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
-        {% for month in months %}
-        <option value="{{month.value}}">{{month.name}}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="input-container">
-      <label class="input-label w-1/6" for="quarter">{{"mdrtb.quarter"|get_message:locale|default:"en"}}</label>
-
-      <div class="flex items-center w-full space-x-4">
-        <div class="space-x-2 flex items-center">
-          <label>{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</label>
-          <input checked type="radio" name="quarter" id="quarter" class="radio-input" value="">
+    <form target="_blank" method="post" action="{% url 'patientlist' %}" class="flex flex-col space-y-4 p-4">
+        {% csrf_token %}
+        <div>
+            {% include 'app/components/locations.html' %}
         </div>
-        {% for quarter in quarters %}
-        <div class="space-x-2 flex items-center">
-          <label for="quarter">{{quarter}}</label>
-          <input required type="radio" name="quarter" id="quarter" class="radio-input" value="{{quarter}}">
+        <!-- Year -->
+        <div class="input-container">
+            <label class="input-label w-1/6" for="year">
+                {{'mdrtb.year'|get_message:locale|default:"en"}}
+            </label>
+
+            <input required type="text" class="input form-control" name="year" size="4" id="year">
         </div>
-        {% endfor %}
-      </div>
-    </div>
+        <!-- Month Range -->
+        <div class="input-container">
+            <label class="input-label w-1/6">
+                {{'mdrtb.month.range'|get_message:locale|default:"en"}}
+            </label>
+            <div class="month-range-container">
+                <div class="month-slider-wrapper">
+                    <div class="month-range-track">
+                        <div id="selectedMonthRange" class="month-range-selected"></div>
+                    </div>
+                    <input required type="range" id="month" name="month" min="1" max="12" step="1" value="1" class="month-slider" aria-label="Reporting period start month">
+                    <input required type="range" id="month2" name="month2" min="1" max="12" step="1" value="3" class="month-slider" aria-label="Reporting period end month">
+                </div>
 
-    <div class="p-4 flex flex-col justify-center space-y-2">
-      <div class="flex items-center space-x-4">
-        <input required type="radio" class="radio-input" name="listname" value="allenrolled">
-        <label>{{'mdrtb.allCasesEnrolled'|get_message:locale|default:"en"}}</label>
-      </div>
-      <div class="flex items-center space-x-4">
-        <input required type="radio" class="radio-input" name="listname" value="dotsbyregistrationgroup">
-        <label>{{'mdrtb.dotsCasesByRegistrationGroup'|get_message:locale|default:"en"}}</label>
-      </div>
-      <div class="flex items-center space-x-4">
-        <input required type="radio" class="radio-input" name="listname" value="dotsbydrugresistance">
-        <label>{{'mdrtb.byDrugResistance'|get_message:locale|default:"en"}}</label>
-      </div>
-      <div class="flex items-center space-x-4">
-        <input required type="radio" class="radio-input" name="listname" value="dotsbyanatomicalsite">
-        <label>{{'mdrtb.dotsCasesByAnatomicalSite'|get_message:locale|default:"en"}}</label>
-      </div>
-      <div class="flex items-center space-x-4">
-        <input required type="radio" class="radio-input" name="listname"
-          value="dotsbyregistrationgroupandbacteriologicalstatus">
-        <label>{{'mdrtb.dotsPulmonaryCasesByRegisrationGroupAndBacStatus'|get_message:locale|default:"en"}}</label>
-      </div>
-      <div class="flex items-center space-x-4">
-        <input required type="radio" class="radio-input" name="listname" value="mdrxdrpatients">
-        <label>{{'mdrtb.drTbPatients'|get_message:locale|default:"en"}}</label>
-      </div>
-      <div class="flex items-center space-x-4">
-        <input required type="radio" class="radio-input" name="listname" value="mdrsuccessfultreatmentoutcome">
-        <label>{{'mdrtb.drTbPatientsSuccessfulTreatment'|get_message:locale|default:"en"}}</label>
-      </div>
-      <div class="flex items-center space-x-4">
-        <input required type="radio" class="radio-input" name="listname" value="mdrxdrwithnotreatment">
-        <label>{{'mdrtb.drTbPatientsNoTreatment'|get_message:locale|default:"en"}}</label>
-      </div>
-      <div class="flex items-center space-x-4">
-        <input required type="radio" class="radio-input" name="listname" value="womenofchildbearingage">
-        <label>{{'mdrtb.womenOfChildbearingAge'|get_message:locale|default:"en"}}</label>
-      </div>
-      <div class="flex items-center space-x-4">
-        <input required type="radio" class="radio-input" name="listname" value="menofconscriptage">
-        <label>{{'mdrtb.menOfConscriptAge'|get_message:locale|default:"en"}}</label>
-      </div>
-      <div class="flex items-center space-x-4">
-        <input required type="radio" class="radio-input" name="listname" value="withconcomitantdisease">
-        <label>{{'mdrtb.withConcomitantDisease'|get_message:locale|default:"en"}}</label>
-      </div>
-      <div class="flex items-center space-x-4">
-        <input required type="radio" class="radio-input" name="listname" value="bydwelling">
-        <label>{{'mdrtb.byDwelling'|get_message:locale|default:"en"}}</label>
-      </div>
-      <div class="flex items-center space-x-4">
-        <input required type="radio" class="radio-input" name="listname" value="bysocprofstatus">
-        <label>{{'mdrtb.bySocProfStatus'|get_message:locale|default:"en"}}</label>
-      </div>
-      <div class="flex items-center space-x-4">
-        <input required type="radio" class="radio-input" name="listname" value="bypopulationcategory">
-        <label>{{'mdrtb.byPopCategory'|get_message:locale|default:"en"}}</label>
-      </div>
-      <div class="flex items-center space-x-4">
-        <input required type="radio" class="radio-input" name="listname" value="byplacesofdetection">
-        <label>{{'mdrtb.byPlaceOfDetection'|get_message:locale|default:"en"}}</label>
-      </div>
-      <div class="flex items-center space-x-4">
-        <input required type="radio" class="radio-input" name="listname" value="bymethodofdetection">
-        <label>{{'mdrtb.byMethodOfDetection'|get_message:locale|default:"en"}}</label>
-      </div>
-      <div class="flex items-center space-x-4">
-        <input required type="radio" class="radio-input" name="listname" value="bycircumstancesofdetection">
-        <label>{{'mdrtb.byCircumstancesOfDetection'|get_message:locale|default:"en"}}</label>
-      </div>
-      <div class="flex items-center space-x-4">
-        <input required type="radio" class="radio-input" name="listname" value="bypulmonarylocation">
-        <label>{{'mdrtb.byPulmonaryLocation'|get_message:locale|default:"en"}}</label>
-      </div>
-      <div class="flex items-center space-x-4">
-        <input required type="radio" class="radio-input" name="listname" value="byextrapulmonarylocation">
-        <label>{{'mdrtb.byExtraPulmonaryLocation'|get_message:locale|default:"en"}}</label>
-      </div>
-    </div>
+                <div class="month-labels">
+                    <span class="month-label">1</span>
+                    <span class="month-label">2</span>
+                    <span class="month-label">3</span>
+                    <span class="month-label">4</span>
+                    <span class="month-label">5</span>
+                    <span class="month-label">6</span>
+                    <span class="month-label">7</span>
+                    <span class="month-label">8</span>
+                    <span class="month-label">9</span>
+                    <span class="month-label">10</span>
+                    <span class="month-label">11</span>
+                    <span class="month-label">12</span>
+                </div>
 
-    <div>
-      <button id="submitBtn" class="button-primary w-1/5">
-        {{'mdrtb.generate'|get_message:locale|default:"en"}}</button>
-      <a href="/" class="cancel-button">
-        {{'general.cancel'|get_message:locale|default:"en"}} </a>
-    </div>
-  </form>
+            </div>
+
+        </div>
+
+        <!-- Patient List -->
+        <div class="p-4 flex flex-col justify-center space-y-2">
+            <div class="flex items-center space-x-4">
+                <input required type="radio" class="radio-input" name="listname" value="allenrolled">
+                <label>
+                    {{'mdrtb.allCasesEnrolled'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <input required type="radio" class="radio-input" name="listname" value="dotsbyregistrationgroup">
+                <label>
+                    {{'mdrtb.dotsCasesByRegistrationGroup'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <input required type="radio" class="radio-input" name="listname" value="dotsbydrugresistance">
+                <label>
+                    {{'mdrtb.byDrugResistance'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <input required type="radio" class="radio-input" name="listname" value="dotsbyanatomicalsite">
+                <label>
+                    {{'mdrtb.dotsCasesByAnatomicalSite'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <input required type="radio" class="radio-input" name="listname" value="dotsbyregistrationgroupandbacteriologicalstatus">
+                <label>
+                    {{'mdrtb.dotsPulmonaryCasesByRegisrationGroupAndBacStatus'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <input required type="radio" class="radio-input" name="listname" value="dotsbyregistrationgroupandbacteriologicalstatus">
+                <label>
+                    {{'mdrtb.dotsPulmonaryCasesByRegisrationGroupAndBacStatus'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <input required type="radio" class="radio-input" name="listname" value="mdrxdrpatients">
+                <label>
+                    {{'mdrtb.drTbPatients'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <input required type="radio" class="radio-input" name="listname" value="mdrsuccessfultreatmentoutcome">
+                <label>
+                    {{'mdrtb.drTbPatientsSuccessfulTreatment'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <input required type="radio" class="radio-input" name="listname" value="mdrxdrwithnotreatment">
+                <label>
+                    {{'mdrtb.drTbPatientsNoTreatment'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <input required type="radio" class="radio-input" name="listname" value="womenofchildbearingage">
+                <label>
+                    {{'mdrtb.womenOfChildbearingAge'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <input required type="radio" class="radio-input" name="listname" value="menofconscriptage">
+                <label>
+                    {{'mdrtb.menOfConscriptAge'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <input required type="radio" class="radio-input" name="listname" value="menofconscriptage">
+                <label>
+                    {{'mdrtb.menOfConscriptAge'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <input required type="radio" class="radio-input" name="listname" value="withconcomitantdisease">
+                <label>
+                    {{'mdrtb.withConcomitantDisease'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <input
+                        required
+                        type="radio"
+                        class="radio-input"
+                        name="listname"
+                        value="bydwelling"
+                >
+                <label>
+                    {{'mdrtb.byDwelling'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <input
+                        required
+                        type="radio"
+                        class="radio-input"
+                        name="listname"
+                        value="bysocprofstatus"
+                >
+                <label>
+                    {{'mdrtb.bySocProfStatus'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <input
+                        required
+                        type="radio"
+                        class="radio-input"
+                        name="listname"
+                        value="bypopulationcategory"
+                >
+                <label>
+                    {{'mdrtb.byPopCategory'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <input
+                        required
+                        type="radio"
+                        class="radio-input"
+                        name="listname"
+                        value="byplacesofdetection"
+                >
+                <label>
+                    {{'mdrtb.byPlaceOfDetection'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <input
+                        required
+                        type="radio"
+                        class="radio-input"
+                        name="listname"
+                        value="bymethodofdetection"
+                >
+                <label>
+                    {{'mdrtb.byMethodOfDetection'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <input
+                        required
+                        type="radio"
+                        class="radio-input"
+                        name="listname"
+                        value="bycircumstancesofdetection"
+                >
+                <label>
+                    {{'mdrtb.byCircumstancesOfDetection'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <input
+                        required
+                        type="radio"
+                        class="radio-input"
+                        name="listname"
+                        value="bypulmonarylocation"
+                >
+                <label>
+                    {{'mdrtb.byPulmonaryLocation'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <input
+                        required
+                        type="radio"
+                        class="radio-input"
+                        name="listname"
+                        value="byextrapulmonarylocation"
+                >
+                <label>
+                    {{'mdrtb.byExtraPulmonaryLocation'|get_message:locale|default:"en"}}
+                </label>
+            </div>
+
+        </div>
+
+        <!-- Buttons -->
+        <div>
+
+            <button
+                    id="submitBtn"
+                    type="submit"
+                    class="button-primary w-1/5"
+            >
+                {{'mdrtb.generate'|get_message:locale|default:"en"}}
+            </button>
+
+            <a
+                    href="/"
+                    class="cancel-button"
+            >
+                {{'general.cancel'|get_message:locale|default:"en"}}
+            </a>
+
+        </div>
+
+    </form>
 
 </div>
+
 <script type="text/javascript">
-  $("#region-select").prop("required", true);
-  $('#month').change((e) => {
-    if (e.target.value != '') {
-      $("input[name='quarter']").prop('disabled', true)
-      $("input[name='quarter']").prop('title', 'Quarter cannot be selected with month')
-    } else {
-      $("input[name='quarter']").prop('disabled', false)
-      $("input[name='quarter']").prop('title', '')
+
+    $("#region-select").prop("required", true);
+
+    const monthSlider = document.getElementById("month");
+    const month2Slider = document.getElementById("month2");
+
+    const startMonthLabel = document.getElementById("startMonthLabel");
+    const endMonthLabel = document.getElementById("endMonthLabel");
+
+    const selectedMonthRange = document.getElementById("selectedMonthRange");
+
+    function updateMonthRange(changedSlider) {
+
+        let startMonth = parseInt(monthSlider.value, 10);
+        let endMonth = parseInt(month2Slider.value, 10);
+
+        /*
+         * The start month must never be greater than
+         * the end month.
+         */
+        if (startMonth > endMonth) {
+
+            if (changedSlider === monthSlider) {
+                endMonth = startMonth;
+                month2Slider.value = endMonth;
+            } else {
+                startMonth = endMonth;
+                monthSlider.value = startMonth;
+            }
+
+        }
+
+        startMonthLabel.textContent = startMonth;
+        endMonthLabel.textContent = endMonth;
+
+        /*
+         * Update the highlighted range between
+         * the two slider handles.
+         */
+        const min = 1;
+        const max = 12;
+
+        const startPercentage =
+            ((startMonth - min) / (max - min)) * 100;
+
+        const endPercentage =
+            ((endMonth - min) / (max - min)) * 100;
+
+        selectedMonthRange.style.left =
+            startPercentage + "%";
+
+        selectedMonthRange.style.width =
+            (endPercentage - startPercentage) + "%";
     }
-  })
-  $("input[name='quarter']").change((e) => {
-    if (e.target.value != '') {
-      $('#month').prop('disabled', true)
-      $('#month').prop('title', 'Month cannot be selected with quarter')
-    } else {
-      $('#month').prop('disabled', false)
-      $('#month').prop('title', '')
-    }
-  })
-  const disableSubmit = () => {
-    $('#submitBtn').prop('disabled', true)
-    $('#submitBtn').removeClass('button-primary')
-    $('#submitBtn').html(`
-      <div class="app-spinner" role="status" aria-label="Loading"></div>`)
-  }
+
+    monthSlider.addEventListener("input", function () {
+        updateMonthRange(monthSlider);
+    });
+
+    month2Slider.addEventListener("input", function () {
+        updateMonthRange(month2Slider);
+    });
+
+    /*
+     * Initialize the slider.
+     *
+     * Default:
+     * month  = 1
+     * month2 = 12
+     */
+    updateMonthRange(monthSlider);
+
+    /*
+     * Disable the submit button while
+     * the report is being generated.
+     */
+    const disableSubmit = () => {
+
+        $('#submitBtn').prop('disabled', true);
+
+        $('#submitBtn').removeClass('button-primary');
+
+        $('#submitBtn').html(`
+      <div
+        class="app-spinner"
+        role="status"
+        aria-label="Loading"
+      ></div>
+    `);
+
+    };
+
 </script>
 
 {% endblock %}

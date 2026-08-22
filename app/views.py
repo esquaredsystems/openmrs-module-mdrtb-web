@@ -1437,29 +1437,37 @@ def render_patient_list(req):
     try:
         if req.method == "POST":
             month = req.POST.get("month")
-            quarter = req.POST.get("quarter")
+            end_month = req.POST.get("month2")
             keys_to_check = ["facility", "district", "region"]
             location = None
+            location_type = None
             for key in keys_to_check:
                 value = req.POST.get(key)
                 if value and len(value) > 0:
                     location = value
+                    location_type = key
                     break
             year = req.POST.get("year")
             listname = req.POST.get("listname")
             params = {"year": year, "listname": listname, "location": location}
-            if month:
-                params["month"] = month
-                context["month"] = month
-            elif quarter:
-                params["quarter"] = quarter
-                context["quarter"] = quarter
+            params["month"] = month
+            context["month"] = month
+
+            params["month2"] = end_month
+            context["month2"] = end_month
             status, response = ru.get(req, "mdrtb/patientlist", params)
             if status:
                 context["year"] = year
                 context["listname"] = util.get_patient_list_options(listname)
-                context["location"] = lu.get_location(req, location)["name"]
+                location_details = lu.get_location(req, location)
+
+                location_hierarchy = util.extract_location_hierarchy(location_details, location_type)
+                context["facility"] = location_hierarchy["facility"]
+                context["district"] = location_hierarchy["district"]
+                context["region"] = location_hierarchy["region"]
+
                 context["string_data"] = response["results"][0]["stringData"]
+                context["quarter_display"] = util.get_quarters_with_multiple_months(month, end_month)
                 return render(
                     req, "app/reporting/patientlist_report.html", context=context
                 )
@@ -1467,7 +1475,6 @@ def render_patient_list(req):
         log_and_show_error(e, req)
         return redirect("/")
     return render(req, "app/reporting/patientlist_report_form.html", context=context)
-
 
 def render_tb03_report(req):
     context = {"title": "TB03 Report"}
