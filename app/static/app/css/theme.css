@@ -1669,51 +1669,68 @@ table tbody tr:hover {
  * .patient-form-page makes every rule below inert everywhere except these
  * two pages, regardless of what other templates happen to reuse.
  *
- * Root cause of the squashed Given/Family Name boxes:
- *   .enrollform-section > .input-container > .input-label carries the
- *   Tailwind class "w-full" (width:100%) while sitting in a flex ROW next
- *   to its own <input>. The label claims the full row first, so the input
- *   is squeezed into whatever pixels are left over. Two of these sit side
- *   by side (name/name, dob/age), which is what produced the tiny
- *   misaligned boxes in the screenshot.
+ * LAYOUT: the personal-info rows (Given/Family Name, Birthdate/Age, Gender)
+ * now use the exact same label-left / input-right, single-line pattern as
+ * the location box below them (Country/Region/District/Facility), which
+ * already comes from the "Address row" rule further down this section
+ * (label flex: 0 0 12rem). Reusing that same width keeps every label in
+ * both boxes lined up on the same left edge.
  */
 
 .patient-form-page .enrollform-section {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  align-items: start;
-  width: 100%;
-}
-
-.patient-form-page .enrollform-section .input-container {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0.35rem;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
+  align-items: center;
   width: 100%;
 }
 
 /*
- * Label no longer competes with the input for row space — sits above it.
- * IMPORTANT: the global rule further up this file, `.input-label { flex: 0 0
- * 14rem; }`, sets a flex-basis meant for HORIZONTAL label/field rows
- * elsewhere in the app. flex-basis applies along a flex container's main
- * axis — and here the container is now column-direction, so without this
- * override that same 14rem is read as a fixed HEIGHT instead of a width,
- * which is what produced the large empty gap between each label and its
- * input. Resetting flex-basis to auto and switching to block sidesteps the
- * inherited rule entirely.
+ * Neutralizes styles.css's Tailwind rule
+ *   .enrollform-section > :not([hidden]) ~ :not([hidden]) { margin-left: 1rem }
+ * which was intended for horizontal flex rows (sibling inputs sitting side-by-side)
+ * but now causes vertical offset when the layout is a grid column. Without this
+ * reset, the 2nd+ children of .enrollform-section get shoved right, creating the
+ * alternating left-alignment you see in the screenshot.
  */
-.patient-form-page .enrollform-section .input-container > .input-label {
-  flex: 0 0 auto;
-  width: auto;
-  display: block;
+.patient-form-page .enrollform-section > :not([hidden]) ~ :not([hidden]) {
+  margin-left: 0;
 }
 
-.patient-form-page .enrollform-section .input-container input,
-.patient-form-page .enrollform-section .input-container .radios-container {
+.patient-form-page .enrollform-section .input-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
   width: 100%;
+}
+
+/*
+ * Neutralizes styles.css's Tailwind rule
+ *   .input-container > :not([hidden]) ~ :not([hidden]) { margin-left: 1rem }
+ * which targets any 2nd-or-later child of .input-container regardless of
+ * this element's own flex-direction. Without this reset it silently stacks
+ * on top of the `gap: 1rem` above (doubling the label/input spacing to
+ * ~2rem), and it's the exact rule that caused the diagonal indentation bug
+ * when this section briefly used a column layout — a left margin doesn't
+ * go away just because the axis rotated, it just becomes visible as a
+ * vertical offset instead of a horizontal gap. Resetting it here means the
+ * gap is controlled by exactly one property, regardless of future layout
+ * changes to this container.
+ */
+.patient-form-page .enrollform-section .input-container > * {
+  margin-left: 0;
+}
+
+.patient-form-page .enrollform-section .input-container > .input-label {
+  flex: 0 0 8rem;
+  width: auto;
+  white-space: nowrap;
+}
+
+.patient-form-page .enrollform-section .input-container input {
+  flex: 1 1 auto;
+  min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
 }
@@ -1722,7 +1739,7 @@ table tbody tr:hover {
   display: flex;
   align-items: center;
   gap: 2rem;
-  margin-top: 0.15rem;
+  flex: 1 1 auto;
 }
 
 .patient-form-page .enrollform-section .radio-container {
@@ -1752,7 +1769,6 @@ table tbody tr:hover {
   box-sizing: border-box;
 }
 
-
 /*
  * Gender's .enrollform-section has only ONE .input-container child (its
  * sibling — the DOTS identifier block — is commented out in the template).
@@ -1766,6 +1782,10 @@ table tbody tr:hover {
 @media (max-width: 640px) {
   .patient-form-page .enrollform-section {
     grid-template-columns: 1fr;
+  }
+
+  .patient-form-page .enrollform-section .input-container > .input-label {
+    flex-basis: 6.5rem;
   }
 }
 
@@ -1846,25 +1866,17 @@ table tbody tr:hover {
   height: 1.125rem;
 }
 
+/*
+ * Suspect / Deceased checkbox labels: display the localized HTML text (from get_message
+ * filter) instead of hardcoded CSS ::after content. The get_message filter in the
+ * template dynamically inserts localized strings based on the user's current locale,
+ * which cannot be replicated in CSS. See enroll_patients.html and edit_patient.html.
+ */
 .patient-form-page #suspect-container > .input-container:first-child .input-label,
 .patient-form-page #deceased-fields > .input-container:first-child .input-label {
   font-weight: 400;
   color: var(--brand-text-muted);
-  font-size: 0; /* hide the repeated "Suspect"/"Deceased" text visually only */
-}
-
-.patient-form-page #suspect-container > .input-container:first-child .input-label::after,
-.patient-form-page #deceased-fields > .input-container:first-child .input-label::after {
   font-size: 0.95rem;
-  color: var(--brand-text-muted);
-}
-
-.patient-form-page #suspect-container > .input-container:first-child .input-label::after {
-  content: "Yes, flag this patient as a suspect";
-}
-
-.patient-form-page #deceased-fields > .input-container:first-child .input-label::after {
-  content: "Yes, this patient is deceased";
 }
 
 .patient-form-page #suspect-container input[type="checkbox"],
@@ -1881,7 +1893,6 @@ table tbody tr:hover {
 }
 
 .patient-form-page #suspect-container .input-container:last-child::before {
-  content: "Identifier";
   display: block;
   flex: 0 0 auto;
   font-weight: 600;

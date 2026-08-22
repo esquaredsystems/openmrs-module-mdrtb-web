@@ -73,7 +73,7 @@
             </div>
 
         </div>
-        <!-- Fix for EET-152 -->
+
         <div class="enroll_form_bg">
             {% include 'app/components/locations.html' %}
             <div class="input-container">
@@ -96,9 +96,10 @@
                 <div class="input-container">
                     <input id="suspect" type="checkbox" class="border-none shadow-sm cursor-pointer" name="suspect"/>
                     <label class="input-label"
-                           for="suspect">{{'mdrtb.suspect'|get_message:locale|default:"en"}}</label>
+                           for="suspect">{{'mdrtb.suspect.yes'|get_message:locale|default:"Yes, flag this patient as a suspect"}}</label>
                 </div>
                 <div class="input-container">
+                    <label class="input-label" for="patientidentifier">{{'mdrtb.Identifier'|get_message:locale|default:"Identifier"}}</label>
                     <input class="input form-control" type="text" name="patientidentifier" id="patientidentifier"/>
                 </div>
             </div>
@@ -111,7 +112,7 @@
             <div id="deceased-fields" class="hidden">
                 <div class="input-container">
                     <label class="input-label"
-                           for="deceased">{{'mdrtb.deceased'|get_message:locale|default:"en"}}</label>
+                           for="deceased">{{'mdrtb.deceased.yes'|get_message:locale|default:"Yes, this patient is deceased"}}</label>
                     <input id="deceased" type="checkbox" class="border-none shadow-sm cursor-pointer" name="deceased"/>
                 </div>
                 <div id="deceased-container" class="hidden items-center space-x-8">

@@ -106,7 +106,7 @@
       <div id="deceased-fields" class="hidden">
         <div class="input-container">
           <label class="input-label"
-            for="deceased">{{'mdrtb.deceased'|get_message:locale|default:"en"}}</label>
+            for="deceased">{{'mdrtb.deceased.yes'|get_message:locale|default:"Yes, this patient is deceased"}}</label>
           <input id="deceased" type="checkbox" class="border-none shadow-sm cursor-pointer" name="deceased"
             {% if patient.dead %} checked {% endif %} />
         </div>
