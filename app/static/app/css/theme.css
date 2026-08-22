@@ -1648,3 +1648,259 @@ table tbody tr:hover {
 .month-label:last-child {
   text-align: right;
 }
+
+/* ---------- Patient enroll/edit form ---------- */
+
+/*
+ * enroll_patients.html / edit_patient.html are not yet migrated off the
+ * Tailwind classes in styles.css (see § UI THEME / STYLE MIGRATION in
+ * graph.md), so this section only overrides layout, not the underlying
+ * .enrollform-*, .input-container, .radio-container etc. class names.
+ *
+ * SCOPING: everything below is nested under .patient-form-page, a class
+ * added directly to the <div class="enrollform-sections-container"> wrapper
+ * in these two templates only (no other template has it). This is
+ * deliberate: .enrollform-section / .input-container / .radio-container /
+ * .checkbox-input / .collapsible-header are generic, reused class names —
+ * per graph.md they're very likely shared by the other TB forms (tb03,
+ * tb03u, form89, transferout, regimen, adverseevents, drugresistense, dots
+ * and mdrtb enrollment) which are not visible in this working set. Un-scoped
+ * rules here would silently reflow those pages too. Nesting under
+ * .patient-form-page makes every rule below inert everywhere except these
+ * two pages, regardless of what other templates happen to reuse.
+ *
+ * Root cause of the squashed Given/Family Name boxes:
+ *   .enrollform-section > .input-container > .input-label carries the
+ *   Tailwind class "w-full" (width:100%) while sitting in a flex ROW next
+ *   to its own <input>. The label claims the full row first, so the input
+ *   is squeezed into whatever pixels are left over. Two of these sit side
+ *   by side (name/name, dob/age), which is what produced the tiny
+ *   misaligned boxes in the screenshot.
+ */
+
+.patient-form-page .enrollform-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+  width: 100%;
+}
+
+.patient-form-page .enrollform-section .input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+/*
+ * Label no longer competes with the input for row space — sits above it.
+ * IMPORTANT: the global rule further up this file, `.input-label { flex: 0 0
+ * 14rem; }`, sets a flex-basis meant for HORIZONTAL label/field rows
+ * elsewhere in the app. flex-basis applies along a flex container's main
+ * axis — and here the container is now column-direction, so without this
+ * override that same 14rem is read as a fixed HEIGHT instead of a width,
+ * which is what produced the large empty gap between each label and its
+ * input. Resetting flex-basis to auto and switching to block sidesteps the
+ * inherited rule entirely.
+ */
+.patient-form-page .enrollform-section .input-container > .input-label {
+  flex: 0 0 auto;
+  width: auto;
+  display: block;
+}
+
+.patient-form-page .enrollform-section .input-container input,
+.patient-form-page .enrollform-section .input-container .radios-container {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.patient-form-page .enrollform-section .radios-container {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 0.15rem;
+}
+
+.patient-form-page .enrollform-section .radio-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/*
+ * .radio-input renders as an oval instead of a circle here — Bootstrap's
+ * base input reset / select2 load order (see graph.md load order note)
+ * leaves `appearance` and `border-radius` unset for this class in some
+ * contexts, so the browser falls back to its native (elongated) control
+ * shape. Forcing explicit square dimensions + 50% radius + appearance:none
+ * guarantees a true circle regardless of load order.
+ */
+.patient-form-page .enrollform-section .radio-container .radio-input {
+  float: none;
+  margin: 0;
+  flex: 0 0 auto;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1.15rem;
+  height: 1.15rem;
+  min-width: 1.15rem;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+
+/*
+ * Gender's .enrollform-section has only ONE .input-container child (its
+ * sibling — the DOTS identifier block — is commented out in the template).
+ * The 2-column grid still reserves that empty second column, producing a
+ * visible blank box to its right. A lone child spans the full row instead.
+ */
+.patient-form-page .enrollform-section .input-container:only-child {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 640px) {
+  .patient-form-page .enrollform-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Address row: label given a fixed basis so it stops fighting the input
+   for width and both rows (address / address2) line up on the same edge */
+.patient-form-page .enroll_form_bg > .input-container {
+  align-items: center;
+  gap: 1rem;
+}
+
+.patient-form-page .enroll_form_bg > .input-container > .input-label {
+  flex: 0 0 12rem;
+  width: auto;
+}
+
+/*
+ * Suspect / Deceased collapsibles: both previously repeated the same
+ * message key as the section header AND as the checkbox's own <label>
+ * ("Suspect" / "Suspect", "Deceased" / "Deceased"). The <label for="...">
+ * is kept in the DOM for click-to-toggle and screen readers, but its
+ * visible text is swapped for a plain affirmation so the row reads as a
+ * real sentence instead of an echo of the header above it.
+ */
+
+.patient-form-page .collapsible-header {
+  padding: 0.75rem 1rem;
+  border-radius: var(--brand-radius);
+  transition: background-color var(--brand-transition);
+}
+
+.patient-form-page .collapsible-header:hover {
+  background-color: var(--brand-primary-tint);
+}
+
+.patient-form-page .collapsible-header .input-label {
+  font-weight: 700;
+  color: var(--brand-secondary);
+}
+
+.patient-form-page #suspect-container,
+.patient-form-page #deceased-fields {
+  padding: 0 1rem 1rem;
+}
+
+.patient-form-page #suspect-container > .input-container:first-child,
+.patient-form-page #deceased-fields > .input-container:first-child {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: nowrap;
+}
+
+.patient-form-page #suspect-container > .input-container:first-child .input-label,
+.patient-form-page #deceased-fields > .input-container:first-child .input-label {
+  order: 2;
+  white-space: nowrap;
+}
+
+.patient-form-page #suspect-container > .input-container:first-child input[type="checkbox"],
+.patient-form-page #deceased-fields > .input-container:first-child input[type="checkbox"] {
+  order: 1;
+}
+
+/*
+ * These checkboxes use the plain `.checkbox-input` rule from styles.css,
+ * which — like .radio-input above — is built for normal document flow
+ * (`position: relative; float: left; margin-left: -1.5rem;`). Same collision:
+ * once the row became a flex container the checkbox rendered as a thin
+ * misaligned strip instead of a proper square.
+ */
+.patient-form-page #suspect-container > .input-container:first-child input[type="checkbox"],
+.patient-form-page #deceased-fields > .input-container:first-child input[type="checkbox"] {
+  float: none;
+  margin: 0;
+  flex: 0 0 auto;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.patient-form-page #suspect-container > .input-container:first-child .input-label,
+.patient-form-page #deceased-fields > .input-container:first-child .input-label {
+  font-weight: 400;
+  color: var(--brand-text-muted);
+  font-size: 0; /* hide the repeated "Suspect"/"Deceased" text visually only */
+}
+
+.patient-form-page #suspect-container > .input-container:first-child .input-label::after,
+.patient-form-page #deceased-fields > .input-container:first-child .input-label::after {
+  font-size: 0.95rem;
+  color: var(--brand-text-muted);
+}
+
+.patient-form-page #suspect-container > .input-container:first-child .input-label::after {
+  content: "Yes, flag this patient as a suspect";
+}
+
+.patient-form-page #deceased-fields > .input-container:first-child .input-label::after {
+  content: "Yes, this patient is deceased";
+}
+
+.patient-form-page #suspect-container input[type="checkbox"],
+.patient-form-page #deceased-fields input[type="checkbox"] {
+  margin: 0;
+}
+
+/* Suspect identifier field had no visible label at all */
+.patient-form-page #suspect-container .input-container:last-child {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.patient-form-page #suspect-container .input-container:last-child::before {
+  content: "Identifier";
+  display: block;
+  flex: 0 0 auto;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--brand-secondary);
+  margin-bottom: 0;
+}
+
+.patient-form-page #deceased-container {
+  gap: 2rem;
+  margin-top: 0.75rem;
+}
+
+.patient-form-page #deceased-container .input-container {
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.patient-form-page #deceased-container .input-container label {
+  font-weight: 600;
+  font-size: 0.85rem;
+}

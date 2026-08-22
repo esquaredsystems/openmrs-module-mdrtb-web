@@ -1776,7 +1776,7 @@ def render_tb07_report(req):
             context["location"] = Constants.COUNTRY.value
             if location:
                 context["location"] = mu.get_location(req, location)
-            context["reporttime"] = datetime.datetime.today().strftime("%Y-%m-%d")
+            context["reporttime"] = datetime.today().strftime("%Y-%m-%d")
             context["table1"] = response["results"][0]
             context["json"] = json.dumps(response["results"][0])
             return render(req, "app/reporting/tb07_report.html", context)

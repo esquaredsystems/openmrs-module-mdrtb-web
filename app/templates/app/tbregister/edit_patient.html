@@ -13,20 +13,22 @@
 <form onsubmit="disableSubmit()" action="{% url 'editpatient' uuid=patient.uuid %}" method="post"
   class="enroll-form mx-auto responsive">
   {% csrf_token %}
-  <div class="enrollform-sections-container">
+  <div class="enrollform-sections-container patient-form-page">
 
     <h1 class="page-title">
       {{'mdrtb.editPatient'|get_message:locale|default:"en"}}
     </h1>
-    <div class="input-container">
-      {% if patient.dotsidentifier %}
-        <label class="input-label w-full required"
+    {% if patient.dotsidentifier %}
+    <div class="enroll_form_bg">
+      <div class="input-container">
+        <label class="input-label required"
           for="patientidentifiertype">{{'mdrtb.dotsIdentifier'|get_message:locale|default:"en"}}</label>
         <input hidden required class="input form-control" type="text" value="{{'DOTS_IDENTIFIER' | get_constant }}"
           name="patientidentifiertype" id="patientidentifiertype" />
         <input disabled class="input form-control" type="text" name="patientidentifier" value="{{patient.dotsidentifier}}"/>
-      {% endif %}
+      </div>
     </div>
+    {% endif %}
     <div class="enroll_form_bg">
       <div class="enrollform-section">
         <div class="input-container">
@@ -96,6 +98,34 @@
         />
       </div>
     </div>
+    <div class="enroll_form_bg">
+      <div class="collapsible-header" id="deceased-toggle">
+        <label class="input-label">{{'mdrtb.deceased'|get_message:locale|default:"en"}}</label>
+        <span id="deceased-chevron" class="collapsible-chevron">&#9656;</span>
+      </div>
+      <div id="deceased-fields" class="hidden">
+        <div class="input-container">
+          <label class="input-label"
+            for="deceased">{{'mdrtb.deceased'|get_message:locale|default:"en"}}</label>
+          <input id="deceased" type="checkbox" class="border-none shadow-sm cursor-pointer" name="deceased"
+            {% if patient.dead %} checked {% endif %} />
+        </div>
+        <div id="deceased-container" class="{% if patient.dead %}flex{% else %}hidden{% endif %} items-center space-x-8">
+          <div class="input-container">
+            <label class="text-[#9E9E9E] font-bold"
+              for="deathdate">{{'mdrtb.deathDate'|get_message:locale|default:"en"}}</label>
+            <input type="date" class="input form-control" name="deathdate" id="deathdate"
+              value="{{patient.deathDate|default:''}}" />
+          </div>
+          <div class="input-container">
+            <label class="text-[#9E9E9E] font-bold"
+              for="causeofdeath">{{'mdrtb.causeOfDeath'|get_message:locale|default:"en"}}</label>
+            <input type="text" class="input form-control" name="causeofdeath" id="causeofdeath"
+              value="{{patient.causeOfDeath|default:''}}" />
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="flex-center">
       <button type="submit" id="submitBtn"
@@ -144,6 +174,24 @@
       $("#voided-container").removeClass("flex");
     }
   });
+  $("#deceased").change(function () {
+    if ($("#deceased").prop("checked")) {
+      $("#deceased-container").removeClass("hidden");
+      $("#deceased-container").addClass("flex");
+    } else {
+      $("#deceased-container").addClass("hidden");
+      $("#deceased-container").removeClass("flex");
+    }
+  });
+
+  const toggleCollapsible = (headerId, contentId, chevronId) => {
+    $(`#${headerId}`).click(function () {
+      $(`#${contentId}`).toggleClass('hidden');
+      $(`#${chevronId}`).toggleClass('collapsible-chevron-open');
+    });
+  };
+  toggleCollapsible('deceased-toggle', 'deceased-fields', 'deceased-chevron');
+
   $(window).on("load", function() {
       // Set locations as per the data
       const country = "{{ patient.country }}";
@@ -163,5 +211,21 @@
       });
   }
 </script>
+
+<style>
+  .collapsible-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+  .collapsible-chevron {
+    display: inline-block;
+    transition: transform 150ms;
+  }
+  .collapsible-chevron-open {
+    transform: rotate(90deg);
+  }
+</style>
 
 {% endblock %}
