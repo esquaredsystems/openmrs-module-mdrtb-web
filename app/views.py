@@ -1437,7 +1437,7 @@ def render_patient_list(req):
     try:
         if req.method == "POST":
             month = req.POST.get("month")
-            end_month = req.POST.get("month2")
+            end_month = req.POST.get("endmonth")
             keys_to_check = ["facility", "district", "region"]
             location = None
             location_type = None
@@ -1458,7 +1458,7 @@ def render_patient_list(req):
             status, response = ru.get(req, "mdrtb/patientlist", params)
             if status:
                 context["year"] = year
-                context["listname"] = util.get_patient_list_options(listname)
+                context["listname"] = util.get_patient_list_options(listname, locale=req.session["locale"])
                 location_details = lu.get_location(req, location)
 
                 location_hierarchy = util.extract_location_hierarchy(location_details, location_type)

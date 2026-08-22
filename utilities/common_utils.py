@@ -292,7 +292,7 @@ def get_report_names(type, locale):
     return messages
 
 
-def get_patient_list_options(code):
+def get_patient_list_options(code, locale=None):
     """
     Retrieves a message code based on the given code parameter.
 
@@ -307,7 +307,7 @@ def get_patient_list_options(code):
            Returns None if no matching code is found.
 
     Example:
-    >>> get_patient_list_options("allenrolled")
+    >>> get_patient_list_options("allenrolled", 'en')
     "mdrtb.allCasesEnrolled"
 
     """
@@ -363,7 +363,7 @@ def get_patient_list_options(code):
 
     for option in options:
         if option["rest_code"] == code:
-            return mu.get_global_msgs(option["message_code"])
+            return mu.get_global_msgs(option["message_code"], locale=locale, default='en')
 
 
 def get_report_name(key, locale):

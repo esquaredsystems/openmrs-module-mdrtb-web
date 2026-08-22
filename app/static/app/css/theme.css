@@ -1509,3 +1509,142 @@ table tbody tr {
 table tbody tr:hover {
   background-color: var(--brand-primary-tint);
 }
+
+/* Month-range slider (reporting forms: patientlist, tb03, tb03u, form89, form8,
+   missing tb03/tb03u). Two overlapping <input type="range"> elements (month/month2)
+   share this markup; see app/components/month_range_script.html for the JS that
+   keeps them in sync and paints .month-range-selected. */
+.month-range-container {
+  width: 100%;
+  padding: 6px 0 0;
+}
+
+.month-slider-wrapper {
+  position: relative;
+  width: 100%;
+  height: 28px;
+}
+
+/* Base track */
+.month-range-track {
+  position: absolute;
+  top: 11px;
+  left: 9px;
+  right: 9px;
+  height: 6px;
+  background: var(--brand-border);
+  border-radius: 3px;
+}
+
+/* Selected range */
+.month-range-selected {
+  position: absolute;
+  top: 0;
+  height: 6px;
+  background: var(--brand-primary);
+  border-radius: 3px;
+}
+
+/* Invisible native slider */
+.month-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  /* Override the generic input:not(...) rule's border/radius (theme.css above)
+     so the two full-width overlapping range inputs don't paint a visible pill
+     outline around the whole slider. */
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  pointer-events: none;
+  outline: none;
+}
+
+/* The generic input:not(...):focus rule (theme.css above) would otherwise draw
+   a border-color + box-shadow halo across the full-width invisible input while
+   dragging; the custom thumb/track styling replaces that affordance. */
+.month-slider:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+/* Chrome / Edge / Safari */
+.month-slider::-webkit-slider-runnable-track {
+  height: 6px;
+  background: transparent;
+  border: none;
+}
+
+.month-slider::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -6px;
+  border: none;
+  border-radius: 50%;
+  background: var(--brand-primary);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* Firefox */
+.month-slider::-moz-range-track {
+  height: 6px;
+  background: transparent;
+  border: none;
+}
+
+.month-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: var(--brand-primary);
+
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/*
+ * Month labels align with the actual
+ * slider track rather than the full container.
+ */
+.month-labels {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+
+  margin-left: 9px;
+  margin-right: 9px;
+  margin-top: 5px;
+
+  font-size: 13px;
+  color: var(--brand-text-muted);
+}
+
+.month-label {
+  text-align: center;
+}
+
+/*
+ * Align first and last numbers exactly
+ * with the track edges.
+ */
+.month-label:first-child {
+  text-align: left;
+}
+
+.month-label:last-child {
+  text-align: right;
+}

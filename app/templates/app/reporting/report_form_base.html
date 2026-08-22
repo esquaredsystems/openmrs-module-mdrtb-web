@@ -14,44 +14,36 @@
             <label class="input-label w-1/6" for="year">{{"mdrtb.year"|get_message:locale|default:"en"}}</label>
             <input required type="text" class="input form-control" name="year" size="4" id="year">
         </div>
-        <div class="flex items-center space-x-4">
-            <div class="input-container">
-                <label style="width: 43%;" class="input-label" for="month">Start
-                    {{"mdrtb.month"|get_message:locale|default:"en"}}</label>
-                <select name="month" id="month" class="input form-control">
-                    <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
-                    {% for month in months %}
-                    <option value="{{month.value}}">{{month.name}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="input-container">
-                <label style="width: 43%;" class="input-label" for="endmonth">End
-                    {{"mdrtb.month"|get_message:locale|default:"en"}}</label>
-                <select name="endmonth" id="endmonth" class="input form-control">
-                    <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
-                    {% for month in months %}
-                    <option value="{{month.value}}">{{month.name}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
         <div class="input-container">
-            <label class="input-label w-1/6"
-                for="quarter">{{"mdrtb.quarter"|get_message:locale|default:"en"}}</label>
+            <label class="input-label w-1/6">
+                {{"mdrtb.month.range"|get_message:locale|default:"en"}}
+            </label>
+            <div class="month-range-container">
+                <div class="month-slider-wrapper">
+                    <div class="month-range-track">
+                        <div class="month-range-selected"></div>
+                    </div>
+                    <input required type="range" id="month" name="month" min="1" max="12" step="1" value="1" class="month-slider" aria-label="Reporting period start month">
+                    <input required type="range" id="endmonth" name="endmonth" min="1" max="12" step="1" value="3" class="month-slider" aria-label="Reporting period end month">
+                </div>
 
-            <div class="flex items-center w-full space-x-4">
-                <div class="space-x-2 flex items-center">
-                    <label for="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</label>
-                    <input checked type="radio" name="quarter" id="quarter" class="radio-input" value="">
+                <div class="month-labels">
+                    <span class="month-label">1</span>
+                    <span class="month-label">2</span>
+                    <span class="month-label">3</span>
+                    <span class="month-label">4</span>
+                    <span class="month-label">5</span>
+                    <span class="month-label">6</span>
+                    <span class="month-label">7</span>
+                    <span class="month-label">8</span>
+                    <span class="month-label">9</span>
+                    <span class="month-label">10</span>
+                    <span class="month-label">11</span>
+                    <span class="month-label">12</span>
                 </div>
-                {% for quarter in quarters %}
-                <div class="space-x-2 flex items-center">
-                    <label for="quarter">{{quarter}}</label>
-                    <input type="radio" name="quarter" class="radio-input" value="{{quarter}}">
-                </div>
-                {% endfor %}
+
             </div>
+
         </div>
         <div class="flex-center space-x-4 mt-4">
             <button type="submit" id="submitBtn"
@@ -64,34 +56,8 @@
     </form>
 </div>
 <script type="text/javascript">
-    let path = window.location.pathname.split('/')
-    let reportName = path[path.length - 1]
-    if (reportName === "dotsdqresults" || reportName === "mdrdqresults") {
-        $("#month").prop("required", true)
-    }
     $('#region-select').prop('required', false)
 
-    $('#month').change((e) => {
-        $("#endmonth").val(e.target.value)
-        if (e.target.value != '') {
-            $("input[name='quarter']").prop('disabled', true)
-            $("input[name='quarter']").prop('title', 'Quarter cannot be selected with month')
-        } else {
-            $("input[name='quarter']").prop('disabled', false)
-            $("input[name='quarter']").prop('title', '')
-        }
-    })
-    $("input[name='quarter']").change((e) => {
-        if (e.target.value != '') {
-            $('#month').prop('disabled', true)
-            $('#endmonth').prop('disabled', true)
-            $('#month').prop('title', 'Month cannot be selected with quarter')
-        } else {
-            $('#month').prop('disabled', false)
-            $('#endmonth').prop('disabled', false)
-            $('#month').prop('title', '')
-        }
-    })
     const disableSubmit = () => {
         $('#submitBtn').prop('disabled', true)
         $('#submitBtn').removeClass('button-primary')
@@ -100,5 +66,6 @@
     }
 
 </script>
+{% include 'app/components/month_range_script.html' %}
 
 {% endblock %}

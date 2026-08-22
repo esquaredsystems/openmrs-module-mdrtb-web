@@ -3,129 +3,6 @@
 {% block content %}
 {% include 'app/components/nav.html' %}
 
-<style>
-    .month-range-container {
-        width: 100%;
-        padding: 6px 0 0;
-    }
-
-    .month-slider-wrapper {
-        position: relative;
-        width: 100%;
-        height: 28px;
-    }
-
-    /* Base track */
-    .month-range-track {
-        position: absolute;
-        top: 11px;
-        left: 9px;
-        right: 9px;
-        height: 6px;
-        background: #d1d5db;
-        border-radius: 3px;
-    }
-
-    /* Selected range */
-    .month-range-selected {
-        position: absolute;
-        top: 0;
-        height: 6px;
-        background: #374151;
-        border-radius: 3px;
-    }
-
-    /* Invisible native slider */
-    .month-slider {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 28px;
-        margin: 0;
-        padding: 0;
-
-        appearance: none;
-        -webkit-appearance: none;
-
-        background: transparent;
-        pointer-events: none;
-        outline: none;
-    }
-
-    /* Chrome / Edge / Safari */
-    .month-slider::-webkit-slider-runnable-track {
-        height: 6px;
-        background: transparent;
-        border: none;
-    }
-
-    .month-slider::-webkit-slider-thumb {
-        appearance: none;
-        -webkit-appearance: none;
-        width: 18px;
-        height: 18px;
-        margin-top: -6px;
-        border: none;
-        border-radius: 50%;
-        background: #2D9CE2;
-        cursor: pointer;
-        pointer-events: auto;
-    }
-
-    /* Firefox */
-    .month-slider::-moz-range-track {
-        height: 6px;
-        background: transparent;
-        border: none;
-    }
-
-    .month-slider::-moz-range-thumb {
-        width: 18px;
-        height: 18px;
-
-        border: none;
-        border-radius: 50%;
-
-        background: #374151;
-
-        cursor: pointer;
-        pointer-events: auto;
-    }
-
-    /*
-     * Month labels align with the actual
-     * slider track rather than the full container.
-     */
-    .month-labels {
-        display: grid;
-        grid-template-columns: repeat(12, 1fr);
-
-        margin-left: 9px;
-        margin-right: 9px;
-        margin-top: 5px;
-
-        font-size: 13px;
-        color: #6b7280;
-    }
-
-    .month-label {
-        text-align: center;
-    }
-
-    /*
-     * Align first and last numbers exactly
-     * with the track edges.
-     */
-    .month-label:first-child {
-        text-align: left;
-    }
-
-    .month-label:last-child {
-        text-align: right;
-    }
-</style>
-
 <div class="p-4 m-6 mx-auto w-1/2 flex flex-col justify-center">
 
     <h1 class="page-title">
@@ -156,7 +33,7 @@
                         <div id="selectedMonthRange" class="month-range-selected"></div>
                     </div>
                     <input required type="range" id="month" name="month" min="1" max="12" step="1" value="1" class="month-slider" aria-label="Reporting period start month">
-                    <input required type="range" id="month2" name="month2" min="1" max="12" step="1" value="3" class="month-slider" aria-label="Reporting period end month">
+                    <input required type="range" id="endmonth" name="endmonth" min="1" max="12" step="1" value="3" class="month-slider" aria-label="Reporting period end month">
                 </div>
 
                 <div class="month-labels">
@@ -405,75 +282,6 @@
 
     $("#region-select").prop("required", true);
 
-    const monthSlider = document.getElementById("month");
-    const month2Slider = document.getElementById("month2");
-
-    const startMonthLabel = document.getElementById("startMonthLabel");
-    const endMonthLabel = document.getElementById("endMonthLabel");
-
-    const selectedMonthRange = document.getElementById("selectedMonthRange");
-
-    function updateMonthRange(changedSlider) {
-
-        let startMonth = parseInt(monthSlider.value, 10);
-        let endMonth = parseInt(month2Slider.value, 10);
-
-        /*
-         * The start month must never be greater than
-         * the end month.
-         */
-        if (startMonth > endMonth) {
-
-            if (changedSlider === monthSlider) {
-                endMonth = startMonth;
-                month2Slider.value = endMonth;
-            } else {
-                startMonth = endMonth;
-                monthSlider.value = startMonth;
-            }
-
-        }
-
-        startMonthLabel.textContent = startMonth;
-        endMonthLabel.textContent = endMonth;
-
-        /*
-         * Update the highlighted range between
-         * the two slider handles.
-         */
-        const min = 1;
-        const max = 12;
-
-        const startPercentage =
-            ((startMonth - min) / (max - min)) * 100;
-
-        const endPercentage =
-            ((endMonth - min) / (max - min)) * 100;
-
-        selectedMonthRange.style.left =
-            startPercentage + "%";
-
-        selectedMonthRange.style.width =
-            (endPercentage - startPercentage) + "%";
-    }
-
-    monthSlider.addEventListener("input", function () {
-        updateMonthRange(monthSlider);
-    });
-
-    month2Slider.addEventListener("input", function () {
-        updateMonthRange(month2Slider);
-    });
-
-    /*
-     * Initialize the slider.
-     *
-     * Default:
-     * month  = 1
-     * month2 = 12
-     */
-    updateMonthRange(monthSlider);
-
     /*
      * Disable the submit button while
      * the report is being generated.
@@ -495,5 +303,6 @@
     };
 
 </script>
+{% include 'app/components/month_range_script.html' %}
 
 {% endblock %}

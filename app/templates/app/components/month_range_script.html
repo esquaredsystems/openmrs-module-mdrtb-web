@@ -1,0 +1,63 @@
+<script type="text/javascript">
+
+    const monthSlider = document.getElementById("month");
+    const endMonthSlider = document.getElementById("endmonth");
+
+    const selectedMonthRange = document.getElementById("selectedMonthRange");
+
+    function updateMonthRange(changedSlider) {
+
+        let startMonth = parseInt(monthSlider.value, 10);
+        let endMonth = parseInt(endMonthSlider.value, 10);
+
+        /*
+         * The start month must never be greater than
+         * the end month.
+         */
+        if (startMonth > endMonth) {
+
+            if (changedSlider === monthSlider) {
+                endMonth = startMonth;
+                endMonthSlider.value = endMonth;
+            } else {
+                startMonth = endMonth;
+                monthSlider.value = startMonth;
+            }
+
+        }
+
+        /*
+         * Update the highlighted range between
+         * the two slider handles.
+         */
+        const min = 1;
+        const max = 12;
+
+        const startPercentage =
+            ((startMonth - min) / (max - min)) * 100;
+
+        const endPercentage =
+            ((endMonth - min) / (max - min)) * 100;
+
+        selectedMonthRange.style.left =
+            startPercentage + "%";
+
+        selectedMonthRange.style.width =
+            (endPercentage - startPercentage) + "%";
+    }
+
+    monthSlider.addEventListener("input", function () {
+        updateMonthRange(monthSlider);
+    });
+
+    endMonthSlider.addEventListener("input", function () {
+        updateMonthRange(endMonthSlider);
+    });
+
+    /*
+     * Initialize the slider on page load using
+     * whatever start values the form rendered with.
+     */
+    updateMonthRange(monthSlider);
+
+</script>
