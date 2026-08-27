@@ -12,6 +12,31 @@ import logging
 
 logger = logging.getLogger("django")
 
+def _localized_program_name(req, program):
+    """
+    Program.name is a plain string column with no locale variants — the `lang`
+    REST param never translates it. Program.concept DOES have per-locale rows
+    in concept_name, reachable via concept:(names:(name, locale)) in the REST
+    representation. Resolve through that instead.
+
+    Order: exact locale match -> base-language match (e.g. "ru_RU" -> "ru")
+    -> raw program.name as last resort (covers a concept with no name yet
+    entered for this locale in Manage Concepts).
+    """
+    locale = req.session.get("locale", "en")
+    names = ((program.get("concept") or {}).get("names")) or []
+
+    for n in names:
+        if n.get("locale") == locale:
+            return n["name"]
+
+    base = locale.split("_")[0]
+    for n in names:
+        if (n.get("locale") or "").split("_")[0] == base:
+            return n["name"]
+
+    return program.get("name")
+
 
 def get_patient(req, uuid):
     """
@@ -461,7 +486,11 @@ def get_enrolled_programs_by_patient(req, uuid, enrollment_id=None):
         Exception: If an error occurs while retrieving the enrolled programs.
     """
     representation = (
-        "custom:(uuid,program,states,dateEnrolled,dateCompleted,location,outcome)"
+        "custom:(uuid,program:(uuid,name,"
+        "allWorkflows:(uuid,retired,concept:(uuid,display),"
+        "states:(uuid,concept:(uuid,display))),"
+        "concept:(uuid,names:(name,locale))),"
+        "states,dateEnrolled,dateCompleted,location,outcome)"
     )
     if enrollment_id:
         try:
@@ -507,7 +536,7 @@ def get_enrolled_programs_by_patient(req, uuid, enrollment_id=None):
                     "uuid": program["uuid"],
                     "program": {
                         "uuid": program["program"]["uuid"],
-                        "name": program["program"]["name"],
+                        "name": _localized_program_name(req, program["program"]),
                     },
                     "dateEnrolled": program["dateEnrolled"],
                     "dateCompleted": program["dateCompleted"],
