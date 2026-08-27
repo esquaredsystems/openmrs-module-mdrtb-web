@@ -498,7 +498,7 @@ def get_enrolled_programs_by_patient(req, uuid, enrollment_id=None):
                 req,
                 f"programenrollment/{enrollment_id}",
                 {
-                    "v": "custom:(uuid,program,states,dateEnrolled,dateCompleted,location,outcome)",
+                    "v": representation,
                     "lang": req.session["locale"],
                 },
             )
@@ -507,7 +507,7 @@ def get_enrolled_programs_by_patient(req, uuid, enrollment_id=None):
                     "uuid": response["uuid"],
                     "program": {
                         "uuid": response["program"]["uuid"],
-                        "name": response["program"]["name"],
+                        "name": _localized_program_name(req, program["program"]),
                     },
                     "dateEnrolled": response["dateEnrolled"],
                     "dateCompleted": response["dateCompleted"],
