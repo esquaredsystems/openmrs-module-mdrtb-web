@@ -507,7 +507,7 @@ def get_enrolled_programs_by_patient(req, uuid, enrollment_id=None):
                     "uuid": response["uuid"],
                     "program": {
                         "uuid": response["program"]["uuid"],
-                        "name": _localized_program_name(req, program["program"]),
+                        "name": _localized_program_name(req, response["program"][0]["program"]),
                     },
                     "dateEnrolled": response["dateEnrolled"],
                     "dateCompleted": response["dateCompleted"],
