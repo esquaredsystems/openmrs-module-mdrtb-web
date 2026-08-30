@@ -2,7 +2,7 @@
 
 {% block content %}
 {% include 'app/components/nav.html' %}
-<div class="mx-auto w-2/4">
+<div class="page-panel">
     <form target="_blank" id="report_form" action="{% url 'reportform' target=target %}" method="post"
         class="flex flex-col space-y-6">
         {% csrf_token %}

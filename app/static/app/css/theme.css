@@ -732,11 +732,14 @@ a .patient-result-row:hover {
 }
 
 /* ---------- Shared page panel ----------
-   Same width as the enrolled-programs window (75% on wide screens, full width
-   below 840px), so form pages stop spanning the whole monitor. */
+   Full width below 840px, 75% above, but never wider than the label/field row
+   itself (14rem label + 1rem gap + 32rem field). max-width keeps the form a
+   centred column instead of a left-aligned block adrift in a 75%-wide panel,
+   and it holds that column steady as the window shrinks from fullscreen. */
 
 .page-panel {
   width: 100%;
+  max-width: 47rem;
   margin: 2rem auto;
 }
 
