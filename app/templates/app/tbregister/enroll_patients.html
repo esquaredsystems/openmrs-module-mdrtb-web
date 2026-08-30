@@ -11,7 +11,7 @@
 {% else %}
 
 <form onsubmit="disableSubmit()" action="{% url 'enrollPatient' %}" method="post"
-      class="mx-auto responsive">
+      class="page-panel">
     {% csrf_token %}
     <div class="enrollform-sections-container patient-form-page">
         {% include 'app/components/breadcrumbs.html'%}

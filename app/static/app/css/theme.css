@@ -1680,6 +1680,18 @@ table tbody tr:hover {
  * both boxes lined up on the same left edge.
  */
 
+/*
+ * The enroll form's <form> now carries .page-panel, which caps it to a
+ * centred ~47rem column. The inner container's old 4rem all-round margin
+ * (from styles.css) then just eats into that narrow column and pushes the
+ * fields off-centre as the window shrinks from fullscreen. Trim it to a
+ * vertical-only margin so the panel alone controls the horizontal size.
+ * Scoped to .page-panel so edit_patient.html (no panel yet) is untouched.
+ */
+.page-panel > .enrollform-sections-container.patient-form-page {
+  margin: 1.5rem 0;
+}
+
 .patient-form-page .enrollform-section {
   display: grid;
   grid-template-columns: 1fr;
@@ -1725,8 +1737,10 @@ table tbody tr:hover {
   margin-left: 0;
 }
 
+/* 12rem basis matches the location/address box below, so the fields in
+   both boxes start on the same edge and end up the same width. */
 .patient-form-page .enrollform-section .input-container > .input-label {
-  flex: 0 0 8rem;
+  flex: 0 0 12rem;
   width: auto;
   white-space: nowrap;
 }
@@ -1788,20 +1802,35 @@ table tbody tr:hover {
   }
 
   .patient-form-page .enrollform-section .input-container > .input-label {
-    flex-basis: 6.5rem;
+    flex-basis: 8rem;
   }
 }
 
-/* Address row: label given a fixed basis so it stops fighting the input
-   for width and both rows (address / address2) line up on the same edge */
-.patient-form-page .enroll_form_bg > .input-container {
+/* Address row + the Country/Region/District/Facility rows from
+   locations.html: label given a fixed basis so it stops fighting the input
+   for width and every row in this box lines up on the same left edge. The
+   location rows sit one level deeper (inside #locations-container) and
+   otherwise fall back to the global 14rem label basis, which left their
+   selects ~2rem narrower than the address input below them. */
+.patient-form-page .enroll_form_bg > .input-container,
+.patient-form-page .enroll_form_bg > #locations-container > .input-container {
   align-items: center;
   gap: 1rem;
 }
 
-.patient-form-page .enroll_form_bg > .input-container > .input-label {
+.patient-form-page .enroll_form_bg > .input-container > .input-label,
+.patient-form-page .enroll_form_bg > #locations-container > .input-container > .input-label {
   flex: 0 0 12rem;
   width: auto;
+}
+
+/* styles.css adds margin-left:1rem to any 2nd+ child of .input-container;
+   combined with the gap above that double-spaced the controls and left the
+   location selects and the address input on slightly different edges.
+   Reset it so the 1rem gap is the only thing between label and control. */
+.patient-form-page .enroll_form_bg > .input-container > *,
+.patient-form-page .enroll_form_bg > #locations-container > .input-container > * {
+  margin-left: 0;
 }
 
 /*
@@ -1831,6 +1860,14 @@ table tbody tr:hover {
 .patient-form-page #suspect-container,
 .patient-form-page #deceased-fields {
   padding: 0 1rem 1rem;
+}
+
+/* Drop the 1rem side padding on the suspect body so its label + Identifier
+   field sit on the same left edge (and take the same width) as the fields
+   in the boxes above, rather than being indented an extra 1rem. */
+.patient-form-page #suspect-container {
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .patient-form-page #suspect-container > .input-container:first-child,
@@ -1887,21 +1924,26 @@ table tbody tr:hover {
   margin: 0;
 }
 
-/* Suspect identifier field had no visible label at all */
+/* Suspect identifier row: same 12rem label + 1rem gap as the boxes above,
+   so its field lines up with (and matches the width of) every other field
+   on the form. */
 .patient-form-page #suspect-container .input-container:last-child {
   margin-top: 0.5rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
-.patient-form-page #suspect-container .input-container:last-child::before {
-  display: block;
-  flex: 0 0 auto;
+.patient-form-page #suspect-container .input-container:last-child > * {
+  margin-left: 0;
+}
+
+.patient-form-page #suspect-container .input-container:last-child > .input-label {
+  flex: 0 0 12rem;
+  width: auto;
   font-weight: 600;
   font-size: 0.85rem;
   color: var(--brand-secondary);
-  margin-bottom: 0;
 }
 
 .patient-form-page #deceased-container {
