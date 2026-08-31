@@ -98,10 +98,6 @@
                     <label class="input-label"
                            for="suspect">{{'mdrtb.suspect.yes'|get_message:locale|default:"Yes, flag this patient as a suspect"}}</label>
                 </div>
-                <div class="input-container">
-                    <label class="input-label" for="patientidentifier">{{'mdrtb.Identifier'|get_message:locale|default:"Identifier"}}</label>
-                    <input class="input form-control" type="text" name="patientidentifier" id="patientidentifier"/>
-                </div>
             </div>
         </div>
         <div class="enroll_form_bg">
@@ -147,17 +143,6 @@
     let date = new Date();
     let maxDate = date.toISOString().substring(0, 10);
 
-    const getCurrentTimestamp = () => {
-        const date = new Date();
-        const year = date.getFullYear().toString().substr(-2); // Get last 2 digits of year
-        const month = ('0' + (date.getMonth() + 1)).slice(-2); // Add leading zero if needed
-        const day = ('0' + date.getDate()).slice(-2); // Add leading zero if needed
-        const hours = ('0' + date.getHours()).slice(-2); // Add leading zero if needed
-        const minutes = ('0' + date.getMinutes()).slice(-2); // Add leading zero if needed
-        const seconds = ('0' + date.getSeconds()).slice(-2); // Add leading zero if needed
-        return `${year}${month}${day}${hours}${minutes}${seconds}`;
-    };
-
     const disableSubmit = () => {
         $('#submitBtn').prop('disabled', true)
         $('#submitBtn').removeClass('button-primary')
@@ -200,15 +185,6 @@
             $("#voided-container").removeClass("flex");
         }
     });
-    $('#suspect').change(function () {
-        if ($(this).is(':checked')) {
-            // Set patientidentifier field to current timestamp in yyMMddhhmmss format and make it read-only
-            $('#patientidentifier').val(getCurrentTimestamp()).prop('readonly', true);
-        } else {
-            $('#patientidentifier').val('').prop('readonly', false);
-        }
-    });
-
     const toggleCollapsible = (headerId, contentId, chevronId) => {
         $(`#${headerId}`).click(function () {
             $(`#${contentId}`).toggleClass('hidden');

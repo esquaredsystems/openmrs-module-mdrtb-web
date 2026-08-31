@@ -107,8 +107,7 @@ def save_patient(req, data, uuid=None):
     Parameters:
         req (Request): The request object.
         data (dict): The data for creating or updating the patient:
-            - patientidentifier (str): The patient's identifier.
-            - patientidentifiertype (str): The type of the patient identifier.
+            - suspect (str): "on" if the patient is a suspect; controls the identifier type.
             - district (str): The location of the patient (district or facility).
             - givenname (str): The patient's given name.
             - familyname (str): The patient's family name.
@@ -182,9 +181,11 @@ def save_patient(req, data, uuid=None):
             # See if the patient is a Suspect or not
             if data.get("suspect") == 'on':
                 identifier_type = Constants.SUSPECT_IDENTIFIER.value
+            # OpenMRS requires a non-blank identifier. The enroll form no longer
+            # collects one, so generate a yyMMddHHmmss timestamp here.
             patient_info["identifiers"] = [
                 {
-                    "identifier": data["patientidentifier"],
+                    "identifier": datetime.now().strftime("%y%m%d%H%M%S"),
                     "identifierType": identifier_type,
                     "location": data["district"] if "facility" not in data else data["facility"],
                 }
@@ -507,7 +508,7 @@ def get_enrolled_programs_by_patient(req, uuid, enrollment_id=None):
                     "uuid": response["uuid"],
                     "program": {
                         "uuid": response["program"]["uuid"],
-                        "name": _localized_program_name(req, response["program"][0]["program"]),
+                        "name": _localized_program_name(req, response["program"]),
                     },
                     "dateEnrolled": response["dateEnrolled"],
                     "dateCompleted": response["dateCompleted"],
