@@ -88,39 +88,43 @@
             </div>
         </div>
         <div class="enroll_form_bg">
-            <div class="collapsible-header" id="suspect-toggle">
-                <label class="input-label">{{'mdrtb.suspect'|get_message:locale|default:"en"}}</label>
-                <span id="suspect-chevron" class="collapsible-chevron">&#9656;</span>
-            </div>
-            <div id="suspect-container" class="hidden">
+            <label class="section-title">{{'mdrtb.suspect'|get_message:locale|default:"en"}}</label>
+            <div id="suspect-container">
                 <div class="input-container">
                     <input id="suspect" type="checkbox" class="border-none shadow-sm cursor-pointer" name="suspect"/>
                     <label class="input-label"
                            for="suspect">{{'mdrtb.suspect.yes'|get_message:locale|default:"Yes, flag this patient as a suspect"}}</label>
                 </div>
+                <div class="input-container">
+                    <label class="input-label"
+                           for="patientidentifier">{{'mdrtb.Identifier'|get_message:locale|default:"Identifier"}}</label>
+                    <input required class="input form-control" type="text" name="patientidentifier"
+                           id="patientidentifier"/>
+                    <button type="button" id="copy-identifier-btn" class="copy-button"
+                            title="{{'general.copy'|get_message:locale|default:'Copy'}}">
+                        {{'general.copy'|get_message:locale|default:"Copy"}}
+                    </button>
+                </div>
             </div>
         </div>
         <div class="enroll_form_bg">
-            <div class="collapsible-header" id="deceased-toggle">
-                <label class="input-label">{{'mdrtb.deceased'|get_message:locale|default:"en"}}</label>
-                <span id="deceased-chevron" class="collapsible-chevron">&#9656;</span>
-            </div>
-            <div id="deceased-fields" class="hidden">
+            <label class="section-title">{{'mdrtb.deceased'|get_message:locale|default:"en"}}</label>
+            <div id="deceased-fields">
                 <div class="input-container">
                     <label class="input-label"
                            for="deceased">{{'mdrtb.deceased.yes'|get_message:locale|default:"Yes, this patient is deceased"}}</label>
                     <input id="deceased" type="checkbox" class="border-none shadow-sm cursor-pointer" name="deceased"/>
                 </div>
-                <div id="deceased-container" class="hidden items-center space-x-8">
+                <div id="deceased-container" class="hidden flex-col">
                     <div class="input-container">
                         <label class="text-[#9E9E9E] font-bold"
-                               for="deceased">{{'mdrtb.deathDate'|get_message:locale|default:"en"}}</label>
+                               for="deathdate">{{'mdrtb.deathDate'|get_message:locale|default:"en"}}</label>
                         <input type="date" class="input form-control" name="deathdate" id="deathdate"/>
                     </div>
                     <div class="input-container">
                         <label class="text-[#9E9E9E] font-bold"
-                               for="deceased">{{'mdrtb.causeOfDeath'|get_message:locale|default:"en"}}</label>
-                        <input type="text" class="input form-control" name="causeofdeath"/>
+                               for="causeofdeath">{{'mdrtb.causeOfDeath'|get_message:locale|default:"en"}}</label>
+                        <input type="text" class="input form-control" name="causeofdeath" id="causeofdeath"/>
                     </div>
                 </div>
             </div>
@@ -150,6 +154,28 @@
       <div class="app-spinner" role="status" aria-label="Loading"></div>`)
     }
     $('input[type="date"]').prop('max', maxDate)
+    const getCurrentTimestamp = () => {
+        const date = new Date();
+        const year = date.getFullYear().toString().substr(-2);
+        const month = ('0' + (date.getMonth() + 1)).slice(-2);
+        const day = ('0' + date.getDate()).slice(-2);
+        const hours = ('0' + date.getHours()).slice(-2);
+        const minutes = ('0' + date.getMinutes()).slice(-2);
+        const seconds = ('0' + date.getSeconds()).slice(-2);
+        return `${year}${month}${day}${hours}${minutes}${seconds}`;
+    };
+    $('#patientidentifier').val(getCurrentTimestamp());
+    $('#copy-identifier-btn').click(function () {
+        const $btn = $(this);
+        const originalLabel = $btn.data('originalLabel') || $btn.text();
+        $btn.data('originalLabel', originalLabel);
+        navigator.clipboard.writeText($('#patientidentifier').val()).then(function () {
+            $btn.text('{{"general.copied"|get_message:locale|default:"Copied!"}}');
+            setTimeout(function () {
+                $btn.text(originalLabel);
+            }, 1500);
+        });
+    });
     $("#dob").change(function () {
         if ($("#dob").val() != "") {
             $("#age").prop("disabled", true);
@@ -185,32 +211,6 @@
             $("#voided-container").removeClass("flex");
         }
     });
-    const toggleCollapsible = (headerId, contentId, chevronId) => {
-        $(`#${headerId}`).click(function () {
-            $(`#${contentId}`).toggleClass('hidden');
-            $(`#${chevronId}`).toggleClass('collapsible-chevron-open');
-        });
-    };
-    toggleCollapsible('suspect-toggle', 'suspect-container', 'suspect-chevron');
-    toggleCollapsible('deceased-toggle', 'deceased-fields', 'deceased-chevron');
 </script>
-
-<style>
-    .collapsible-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        cursor: pointer;
-    }
-
-    .collapsible-chevron {
-        display: inline-block;
-        transition: transform 150ms;
-    }
-
-    .collapsible-chevron-open {
-        transform: rotate(90deg);
-    }
-</style>
 
 {% endblock %}

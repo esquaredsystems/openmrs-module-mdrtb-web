@@ -1840,6 +1840,10 @@ table tbody tr:hover {
  * is kept in the DOM for click-to-toggle and screen readers, but its
  * visible text is swapped for a plain affirmation so the row reads as a
  * real sentence instead of an echo of the header above it.
+ *
+ * Still used by edit_patient.html's deceased section (a real collapsible).
+ * enroll_patients.html no longer has a clickable header for either section —
+ * see .section-title below — but keeps sharing everything past this point.
  */
 
 .patient-form-page .collapsible-header {
@@ -1855,6 +1859,15 @@ table tbody tr:hover {
 .patient-form-page .collapsible-header .input-label {
   font-weight: 700;
   color: var(--brand-secondary);
+}
+
+/* enroll_patients.html: static (non-clickable) section title replacing the
+   collapsible header, styled to match it. */
+.patient-form-page .section-title {
+  display: block;
+  font-weight: 700;
+  color: var(--brand-secondary);
+  padding: 0.75rem 1rem 0;
 }
 
 .patient-form-page #suspect-container,
@@ -1946,6 +1959,31 @@ table tbody tr:hover {
   color: var(--brand-secondary);
 }
 
+.patient-form-page #suspect-container .input-container:last-child input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Copy button next to the Identifier field. Fixed width so it doesn't get
+   squeezed by the input's flex-basis (from .input's width:100%). */
+.patient-form-page .copy-button {
+  flex: 0 0 auto;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--brand-primary);
+  border-radius: var(--brand-radius);
+  background-color: transparent;
+  color: var(--brand-primary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color var(--brand-transition), color var(--brand-transition);
+}
+
+.patient-form-page .copy-button:hover {
+  background-color: var(--brand-primary-tint);
+}
+
 .patient-form-page #deceased-container {
   gap: 2rem;
   margin-top: 0.75rem;
@@ -1959,4 +1997,35 @@ table tbody tr:hover {
 .patient-form-page #deceased-container .input-container label {
   font-weight: 600;
   font-size: 0.85rem;
+}
+
+/*
+ * enroll_patients.html only: its deceased-container additionally carries a
+ * static `.flex-col` class (edit_patient.html's does not), so this overrides
+ * the side-by-side rules above to stack the Death Date / Cause of Death
+ * fields as two full-width rows — each a single label-left/input-right line,
+ * matching every other row on the form — instead of two side-by-side
+ * columns. Scoped to `.flex-col` so edit_patient.html's layout is untouched.
+ */
+.patient-form-page #deceased-container.flex-col {
+  gap: 0.85rem;
+}
+
+.patient-form-page #deceased-container.flex-col .input-container {
+  align-items: center;
+  gap: 1rem;
+}
+
+.patient-form-page #deceased-container.flex-col .input-container > * {
+  margin-left: 0;
+}
+
+.patient-form-page #deceased-container.flex-col .input-container label {
+  flex: 0 0 12rem;
+  width: auto;
+}
+
+.patient-form-page #deceased-container.flex-col .input-container input {
+  flex: 1 1 auto;
+  min-width: 0;
 }

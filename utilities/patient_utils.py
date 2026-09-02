@@ -107,6 +107,8 @@ def save_patient(req, data, uuid=None):
     Parameters:
         req (Request): The request object.
         data (dict): The data for creating or updating the patient:
+            - patientidentifier (str): The patient's identifier. Falls back to a
+              generated timestamp if blank.
             - suspect (str): "on" if the patient is a suspect; controls the identifier type.
             - district (str): The location of the patient (district or facility).
             - givenname (str): The patient's given name.
@@ -178,14 +180,15 @@ def save_patient(req, data, uuid=None):
             status, response = ru.post(req, f"patient/{uuid}", patient_info)
         else:  # Otherwise, create a new record
             identifier_type = Constants.DOTS_IDENTIFIER.value
-            # See if the patient is a Suspect or not
+            # See if the patient is a Suspect or not; this only controls the
+            # identifier's type, not whether an identifier is collected.
             if data.get("suspect") == 'on':
                 identifier_type = Constants.SUSPECT_IDENTIFIER.value
-            # OpenMRS requires a non-blank identifier. The enroll form no longer
-            # collects one, so generate a yyMMddHHmmss timestamp here.
+            # OpenMRS requires a non-blank identifier. The enroll form collects
+            # one, defaulting to a yyMMddHHmmss timestamp if left blank.
             patient_info["identifiers"] = [
                 {
-                    "identifier": datetime.now().strftime("%y%m%d%H%M%S"),
+                    "identifier": data.get("patientidentifier") or datetime.now().strftime("%y%m%d%H%M%S"),
                     "identifierType": identifier_type,
                     "location": data["district"] if "facility" not in data else data["facility"],
                 }
