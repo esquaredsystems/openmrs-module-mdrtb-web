@@ -29,6 +29,18 @@
 </head>
 
 <style>
+	/*
+	 * Tailwind (styles.css) ships a `.collapse` utility that sets
+	 * `visibility: collapse`, which collides with Bootstrap's `.collapse`
+	 * component class. When Bootstrap expands a panel it never restores
+	 * visibility, so the content animates open and then vanishes ("shows
+	 * for a split second, then hides"). Restore visibility for the states
+	 * Bootstrap uses while a collapsible is open or animating.
+	 */
+	.collapse.show,
+	.collapsing {
+		visibility: visible;
+	}
 	.responsive {
 		width: 100%;
 	}
