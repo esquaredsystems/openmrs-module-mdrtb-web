@@ -675,6 +675,10 @@ def get_patient_program_enrollments(req, patient_uuid):
     often don't). Here a failure just means "no programs to attach" - the lab
     order is still allowed through, to be backfilled later.
 
+    program_name is resolved through _localized_program_name (same as
+    get_enrolled_programs_by_patient) rather than the raw Program.name column,
+    since that column has no locale variants of its own.
+
     Returns:
         list[dict]: each with uuid (the patientProgram uuid), program_uuid,
         program_name, date_enrolled, date_completed, location, outcome. Empty
@@ -689,8 +693,9 @@ def get_patient_program_enrollments(req, patient_uuid):
                 "v": (
                     "custom:(uuid,dateEnrolled,dateCompleted,"
                     "outcome:(display),location:(display),"
-                    "program:(uuid,name))"
+                    "program:(uuid,name,concept:(uuid,names:(name,locale))))"
                 ),
+                "lang": req.session.get("locale", "en"),
             },
         )
     except Exception as e:
@@ -702,7 +707,7 @@ def get_patient_program_enrollments(req, patient_uuid):
         {
             "uuid": p["uuid"],
             "program_uuid": (p.get("program") or {}).get("uuid", ""),
-            "program_name": (p.get("program") or {}).get("name", ""),
+            "program_name": _localized_program_name(req, p.get("program") or {}) or "",
             "date_enrolled": p.get("dateEnrolled"),
             "date_completed": p.get("dateCompleted"),
             "location": (p.get("location") or {}).get("display"),
