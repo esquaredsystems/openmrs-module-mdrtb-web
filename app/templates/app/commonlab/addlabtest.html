@@ -76,6 +76,54 @@
             </select>
         </div>
     </div>
+
+    <div class="input-container">
+        <label class="input-label" for="order-date">
+            {{'labtest.order.date'|get_message:locale|default:"en"}}
+        </label>
+        <input type="date" name="orderDate" id="order-date" class="input form-control" required
+            value="{% if state == 'edit' %}{{laborder.order.date_activated|slice:':10'}}{% else %}{{today}}{% endif %}">
+    </div>
+
+    {% comment %}
+    Program / episode this lab order belongs to. There is no program picker in
+    the source data model - the view resolves it to a single value (the episode
+    held in session, or the patient's only enrolment) and preselects it here.
+    Shown whenever the patient has at least one enrolment, whether active or
+    already completed - a lab order can be added as a historical event against
+    a closed episode, guarded only by the date check below. When the patient
+    has several enrolments and nothing to go on, no option is preselected and
+    the field is required so the user chooses. Hidden entirely when the
+    patient has no enrolment at all - the order is then created unlinked and
+    backfilled later.
+    {% endcomment %}
+    {% if patient_programs %}
+    <div class="input-container">
+        <label class="input-label" for="patient-program-select">
+            {{'Program.program'|get_message:locale|default:"en"}}
+        </label>
+        <select name="patientProgram" id="patient-program-select" class="input form-control"
+            {% if not selected_program %}required{% endif %}>
+            {% if not selected_program %}
+            <option value="" disabled selected>
+                {{'mdrtb.selectOption'|get_message:locale|default:"en"}}
+            </option>
+            {% endif %}
+            {% for p in patient_programs %}
+            <option value="{{ p.uuid }}" {% if p.uuid == selected_program %}selected{% endif %}>
+                {{ p.program_name }}{% if p.date_enrolled %} &mdash; {{'Program.dateEnrolled'|get_message:locale|default:"en"}}: {{ p.date_enrolled|iso_to_normal_date }}{% endif %}{% if p.date_completed %} &middot; {{'Program.dateCompleted'|get_message:locale|default:"en"}}: {{ p.date_completed|iso_to_normal_date }}{% endif %}{% if p.location %} &middot; {{ p.location }}{% endif %}{% if p.outcome %} &middot; {{ p.outcome }}{% endif %} &middot; {{ p.uuid }}
+            </option>
+            {% endfor %}
+        </select>
+        <p id="order-date-program-error" class="text-red-600 text-sm mt-1" style="display:none">
+            {{'mdrtb.labtestorder.errors.dateAfterProgramCompletion'|get_message:locale|default:"en"}}
+        </p>
+        <p class="text-xs text-gray-500 mt-1">
+            patientProgram: <span id="patient-program-uuid" class="font-mono">{{ selected_program|default:"—" }}</span>
+        </p>
+    </div>
+    {% endif %}
+
     <div class="input-container">
             <label class="input-label" for="">
                 {{'labtest.testGroup'|get_message:locale|default:"en"}}
@@ -167,6 +215,33 @@
 
 <script>
     let labtests = JSON.parse("{{labtests | escapejs}}")
+
+    // Mirror the chosen program enrolment uuid next to the field so it is
+    // visible without opening the dropdown.
+    $('#patient-program-select').on('change', function () {
+        $('#patient-program-uuid').text($(this).val() || '—');
+    });
+
+    // Completion date of each selectable program enrolment (YYYY-MM-DD, or
+    // null when still active), so a backdated order against a closed episode
+    // can be caught client-side before it ever reaches the server check.
+    const programCompletionDates = {
+        {% for p in patient_programs %}
+        "{{ p.uuid|escapejs }}": {% if p.date_completed %}"{{ p.date_completed|slice:':10'|escapejs }}"{% else %}null{% endif %},
+        {% endfor %}
+    }
+
+    function validateOrderDateAgainstProgram() {
+        let completionDate = programCompletionDates[$('#patient-program-select').val()]
+        let orderDate = $('#order-date').val()
+        let invalid = !!(completionDate && orderDate && orderDate > completionDate)
+        $('#order-date-program-error').toggle(invalid)
+        $('#submitBtn').prop('disabled', invalid)
+        return !invalid
+    }
+    $('#patient-program-select, #order-date').on('change', validateOrderDateAgainstProgram)
+    $(document).ready(validateOrderDateAgainstProgram)
+
     function setTestTypes() {
         $('#test-select').html('')
         let group = $('#group-select').val()

@@ -2615,12 +2615,34 @@ def render_add_lab_test(req, uuid):
     if patient:
         context["patientdata"] = patient
     if req.method == "POST":
+        order_date = req.POST.get("orderDate") or util.get_date_time_now()
+        # Which episode the order belongs to. The form resolves this to a
+        # single value (session episode or sole enrolment) or makes the user
+        # pick; if the patient has no enrolment the field is absent and the
+        # order is created unlinked, to be backfilled later. Checked before
+        # touching the API so a backdated order against a closed episode is
+        # rejected without creating a stray encounter for it.
+        patient_program = req.POST.get("patientProgram")
+        if patient_program:
+            programs = pu.get_patient_program_enrollments(req, uuid)
+            selected_program = next(
+                (p for p in programs if p["uuid"] == patient_program), None
+            )
+            if cu.lab_order_date_after_program_completion(order_date, selected_program):
+                log_and_show_error(
+                    mu.get_global_msgs(
+                        "mdrtb.labtestorder.errors.dateAfterProgramCompletion",
+                        locale=req.session["locale"],
+                    ),
+                    req,
+                )
+                return redirect("addlabtest", uuid=uuid)
+        order_datetime = util.date_to_sql_datetime(order_date)
         create = req.POST.get("createencounter")
         encounter = None
         if create:
-            encounter_datetime = util.iso_to_normal(util.get_date_time_now(), tajik=False)
             encounter_body = {
-              "encounterDatetime": encounter_datetime,
+              "encounterDatetime": order_datetime,
               "encounterType": EncounterType.SPECIMEN_COLLECTION.value,
               "patient": uuid,
               "encounterProviders": [
@@ -2633,7 +2655,7 @@ def render_add_lab_test(req, uuid):
                   {
                       "person": uuid,
                       "concept": Concepts.MONTH_OF_TREATMENT.value,
-                      "obsDatetime": encounter_datetime,
+                      "obsDatetime": order_datetime,
                       "value": 0
                   }
               ]
@@ -2660,8 +2682,11 @@ def render_add_lab_test(req, uuid):
                     "orderType": Constants.TEST_ORDER.value,
                     "orderer": req.session["logged_user"]["currentProvider"]["uuid"],
                     "careSetting": req.POST["careSetting"],
+                    "dateActivated": order_datetime,
                 },
             }
+            if patient_program:
+                body["patientProgram"] = patient_program
             status, response = ru.post(req, "commonlab/labtestorder", body)
             if status:
                 return redirect("managetestorders", uuid=uuid)
@@ -2677,6 +2702,18 @@ def render_add_lab_test(req, uuid):
         mu.add_url_to_breadcrumb(req, context["title"])
         encounters = pu.get_patient_encounters(req, uuid)
         labtests, testgroups = cu.get_test_groups_and_tests(req)
+        patient_programs = pu.get_patient_program_enrollments(req, uuid)
+        context["patient_programs"] = patient_programs
+        context["today"] = datetime.now().date().isoformat()
+        # A ?program= hint from the dashboard link wins, but only if it is one
+        # of the patient's enrolments (active or completed); otherwise fall
+        # back to the session episode / sole-enrolment resolution.
+        program_hint = req.GET.get("program")
+        if program_hint and not any(p["uuid"] == program_hint for p in patient_programs):
+            program_hint = None
+        context["selected_program"] = program_hint or cu.resolve_lab_order_program(
+            req, patient_programs
+        )
         if encounters:
             context["encounters"] = encounters["results"]
             context["testgroups"] = list(dict.fromkeys(testgroups))
@@ -2713,6 +2750,26 @@ def render_edit_lab_test(req, patientid, orderid):
         context["patientdata"] = patient
     try:
         if req.method == "POST":
+            order_date = req.POST.get("orderDate")
+            # Editable like any other field. Only touch it when the form
+            # actually carried the program select (patient has enrolments):
+            # an empty value then posts null and clears the link, while a form
+            # without the field leaves the existing link untouched.
+            patient_program = req.POST.get("patientProgram") or None
+            if patient_program and order_date:
+                programs = pu.get_patient_program_enrollments(req, patientid)
+                selected_program = next(
+                    (p for p in programs if p["uuid"] == patient_program), None
+                )
+                if cu.lab_order_date_after_program_completion(order_date, selected_program):
+                    log_and_show_error(
+                        mu.get_global_msgs(
+                            "mdrtb.labtestorder.errors.dateAfterProgramCompletion",
+                            locale=req.session["locale"],
+                        ),
+                        req,
+                    )
+                    return redirect("editlabtest", patientid=patientid, orderid=orderid)
             body = {
                 "labTestType": req.POST["testType"],
                 "labReferenceNumber": req.POST["labref"],
@@ -2730,6 +2787,10 @@ def render_edit_lab_test(req, patientid, orderid):
                     "careSetting": req.POST["careSetting"],
                 },
             }
+            if order_date:
+                body["order"]["dateActivated"] = util.date_to_sql_datetime(order_date)
+            if "patientProgram" in req.POST:
+                body["patientProgram"] = patient_program
             status, response = ru.post(req, f"commonlab/labtestorder/{orderid}", body)
             if status:
                 return redirect("managetestorders", uuid=patientid)
@@ -2753,6 +2814,33 @@ def render_edit_lab_test(req, patientid, orderid):
             )
             labtests, testgroups = cu.get_test_groups_and_tests(req)
             context["laborder"] = cu.get_custom_lab_order(response)
+            context["today"] = datetime.now().date().isoformat()
+            patient_programs = pu.get_patient_program_enrollments(
+                req, response["order"]["patient"]["uuid"]
+            )
+            # Keep the order's current episode selectable even if, for some
+            # other reason, it no longer comes back from the enrollments API.
+            current_pp = context["laborder"].get("patientProgram")
+            if current_pp and not any(
+                p["uuid"] == current_pp["uuid"] for p in patient_programs
+            ):
+                patient_programs = [
+                    {
+                        "uuid": current_pp["uuid"],
+                        "program_uuid": "",
+                        "program_name": current_pp["name"],
+                        "date_enrolled": None,
+                        "date_completed": None,
+                        "location": None,
+                        "outcome": None,
+                    }
+                ] + patient_programs
+            context["patient_programs"] = patient_programs
+            context["selected_program"] = (
+                current_pp["uuid"]
+                if current_pp
+                else cu.resolve_lab_order_program(req, patient_programs)
+            )
             context["encounters"] = util.remove_obj_from_objarr(
                 encounters["results"],
                 context["laborder"]["order"]["encounter"]["uuid"],
