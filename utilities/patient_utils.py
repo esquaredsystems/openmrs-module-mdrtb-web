@@ -659,6 +659,64 @@ def get_patient_dashboard_info(
         raise Exception(str(e))
 
 
+def get_patient_program_enrollments(req, patient_uuid):
+    """
+    Program enrollments for a patient - active and completed alike - newest
+    enrolled first, with only the fields the lab-order program picker needs to
+    let a user tell two enrolments of the same program apart.
+
+    A lab order may legitimately be entered against an already-completed
+    enrolment as a historical event, so completed enrolments are included
+    here too; callers that need to guard against backdating past the
+    enrolment's close use the date_completed field.
+
+    Kept separate from get_enrolled_programs_by_patient: that one pulls the full
+    workflow/state tree and assumes every enrolment has a location (old records
+    often don't). Here a failure just means "no programs to attach" - the lab
+    order is still allowed through, to be backfilled later.
+
+    program_name is resolved through _localized_program_name (same as
+    get_enrolled_programs_by_patient) rather than the raw Program.name column,
+    since that column has no locale variants of its own.
+
+    Returns:
+        list[dict]: each with uuid (the patientProgram uuid), program_name,
+        date_enrolled, date_completed, location, outcome. Empty on any error.
+    """
+    try:
+        status, response = ru.get(
+            req,
+            "programenrollment",
+            {
+                "patient": patient_uuid,
+                "v": (
+                    "custom:(uuid,dateEnrolled,dateCompleted,"
+                    "outcome:(display),location:(display),"
+                    "program:(name,concept:(uuid,names:(name,locale))))"
+                ),
+                "lang": req.session.get("locale", "en"),
+            },
+        )
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        return []
+    if not status or not response.get("results"):
+        return []
+    enrollments = [
+        {
+            "uuid": p["uuid"],
+            "program_name": _localized_program_name(req, p.get("program") or {}) or "",
+            "date_enrolled": p.get("dateEnrolled"),
+            "date_completed": p.get("dateCompleted"),
+            "location": (p.get("location") or {}).get("display"),
+            "outcome": (p.get("outcome") or {}).get("display"),
+        }
+        for p in response["results"]
+    ]
+    enrollments.sort(key=lambda p: p.get("date_enrolled") or "", reverse=True)
+    return enrollments
+
+
 def get_enrolled_program_by_uuid(req, programid):
     """
     Retrieves the enrolled program by its UUID.
