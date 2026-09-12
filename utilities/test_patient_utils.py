@@ -116,7 +116,6 @@ class TestGetPatientProgramEnrollments(TestCase):
             result[0],
             {
                 "uuid": "pp-1",
-                "program_uuid": "prog-pp-1",
                 "program_name": "DOTS PROGRAM",
                 "date_enrolled": "2024-01-02T00:00:00.000+0500",
                 "date_completed": None,

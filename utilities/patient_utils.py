@@ -680,9 +680,8 @@ def get_patient_program_enrollments(req, patient_uuid):
     since that column has no locale variants of its own.
 
     Returns:
-        list[dict]: each with uuid (the patientProgram uuid), program_uuid,
-        program_name, date_enrolled, date_completed, location, outcome. Empty
-        on any error.
+        list[dict]: each with uuid (the patientProgram uuid), program_name,
+        date_enrolled, date_completed, location, outcome. Empty on any error.
     """
     try:
         status, response = ru.get(
@@ -693,7 +692,7 @@ def get_patient_program_enrollments(req, patient_uuid):
                 "v": (
                     "custom:(uuid,dateEnrolled,dateCompleted,"
                     "outcome:(display),location:(display),"
-                    "program:(uuid,name,concept:(uuid,names:(name,locale))))"
+                    "program:(name,concept:(uuid,names:(name,locale))))"
                 ),
                 "lang": req.session.get("locale", "en"),
             },
@@ -706,7 +705,6 @@ def get_patient_program_enrollments(req, patient_uuid):
     enrollments = [
         {
             "uuid": p["uuid"],
-            "program_uuid": (p.get("program") or {}).get("uuid", ""),
             "program_name": _localized_program_name(req, p.get("program") or {}) or "",
             "date_enrolled": p.get("dateEnrolled"),
             "date_completed": p.get("dateCompleted"),

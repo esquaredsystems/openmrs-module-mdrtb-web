@@ -2704,7 +2704,6 @@ def render_add_lab_test(req, uuid):
         labtests, testgroups = cu.get_test_groups_and_tests(req)
         patient_programs = pu.get_patient_program_enrollments(req, uuid)
         context["patient_programs"] = patient_programs
-        context["today"] = datetime.now().date().isoformat()
         # A ?program= hint from the dashboard link wins, but only if it is one
         # of the patient's enrolments (active or completed); otherwise fall
         # back to the session episode / sole-enrolment resolution.
@@ -2814,7 +2813,6 @@ def render_edit_lab_test(req, patientid, orderid):
             )
             labtests, testgroups = cu.get_test_groups_and_tests(req)
             context["laborder"] = cu.get_custom_lab_order(response)
-            context["today"] = datetime.now().date().isoformat()
             patient_programs = pu.get_patient_program_enrollments(
                 req, response["order"]["patient"]["uuid"]
             )
@@ -2827,7 +2825,6 @@ def render_edit_lab_test(req, patientid, orderid):
                 patient_programs = [
                     {
                         "uuid": current_pp["uuid"],
-                        "program_uuid": "",
                         "program_name": current_pp["name"],
                         "date_enrolled": None,
                         "date_completed": None,
