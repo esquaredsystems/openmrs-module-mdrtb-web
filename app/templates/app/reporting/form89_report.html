@@ -139,7 +139,7 @@
                 </td>
                 <td>{{ row.tb03RegistrationDate }}</td>
                 <td>{{ row.personName.familyName }}, {{ row.personName.givenName }}</td>
-                <td align="center">{{ row.gender }}</td>
+                <td align="center">{{ row.gender|get_gender_message:locale }}</td>
                 <td align="center">{{row.ageAtTB03Registration }}</td>
                 <td>{{ row.dateOfBirth }}</td>
                 <td>{{ row.personAddress.stateProvince }} {{ row.personAddress.cityVillage|default:'' }}</td>

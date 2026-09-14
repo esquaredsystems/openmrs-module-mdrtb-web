@@ -29,7 +29,7 @@
         {% if state == 'edit' %}
         <div id="form-info" class="flex-center space-x-4">
             <h1 class="text-[#2D9CDB] text-3xl font-bold">
-                {{'labtest.order.edit'|get_message:locale|default:"en"}}
+                {{'commonlabtest.order.edit'|get_message:locale|default:"en"}}
             </h1>
             <button type="button" id="editbtn" title="{{'general.edit'|get_message:locale|default:"en"}}" aria-label="{{'general.edit'|get_message:locale|default:"en"}}">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -50,7 +50,7 @@
         </div>
         {% else %}
         <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
-            {{'labtest.order.add'|get_message:locale|default:"en"}}
+            {{'commonlabtest.order.add'|get_message:locale|default:"en"}}
         </h2>
         {% endif %}
     </div>
@@ -134,7 +134,7 @@
 
         <div class="input-container">
             <label class="input-label" for="">
-                {{'labtest.order.labReferenceNo'|get_message:locale|default:"en"}}
+                {{'commonlabtest.order.labReferenceNo'|get_message:locale|default:"en"}}
 
             </label>
             {% if state == 'edit' %}

@@ -80,7 +80,7 @@
                 <td><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}" target="_blank">{{row.patientName}}</a>
                 </td>
                 <td>{{ row.dateOfBirth | string_to_date }}</td>
-                <td align="center">{{ row.gender }}</td>
+                <td align="center">{{ row.gender|get_gender_message:locale }}</td>
                 <td>
                     {% for link in row.form89Links %}
                     <a href="{% url 'enrolledprograms' uuid=row.patientUuid %}"
@@ -112,7 +112,7 @@
                 <td><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}" target="_blank">{{row.patientName}}</a>
                 </td>
                 <td>{{ row.dateOfBirth | string_to_date }}</td>
-                <td align="center">{{ row.gender }}</td>
+                <td align="center">{{ row.gender|get_gender_message:locale }}</td>
                 <td>
                     {% for link in row.tb03Links %}
                     <a href="{{ pageContext.request.contextPath }}{{ link }}"
@@ -143,7 +143,7 @@
                 <td colspan="2"><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}"
                         target="_blank">{{row.patientName}}</td>
                 <td>{{ row.dateOfBirth | string_to_date }}</td>
-                <td align="center">{{ row.gender }}</td>
+                <td align="center">{{ row.gender|get_gender_message:locale }}</td>
             </tr>
             {% endfor %}
 
@@ -167,7 +167,7 @@
                 <td colspan="2"><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}"
                         target="_blank">{{row.patientName}}</a></td>
                 <td>{{ row.dateOfBirth | string_to_date }}</td>
-                <td align="center">{{ row.gender }}</td>
+                <td align="center">{{ row.gender|get_gender_message:locale }}</td>
             </tr>
 
             {% endfor %}
@@ -192,7 +192,7 @@
                 <td colspan="2"><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}"
                         target="_blank">{{row.patientName}}</a></td>
                 <td>{{ row.dateOfBirth | string_to_date }}</td>
-                <td align="center">{{ row.gender }}</td>
+                <td align="center">{{ row.gender|get_gender_message:locale }}</td>
             </tr>
 
             {% endfor %}
@@ -216,7 +216,7 @@
                 <td colspan="2"><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}"
                         target="_blank">{{row.patientName}}</a></td>
                 <td>{{ row.dateOfBirth | string_to_date }}</td>
-                <td align="center">{{ row.gender }}</td>
+                <td align="center">{{ row.gender|get_gender_message:locale }}</td>
             </tr>
 
             {% endfor %}
@@ -242,7 +242,7 @@
                         target="_blank">{{row.patientName}}</a>
                 </td>
                 <td>{{ row.dateOfBirth | string_to_date }}</td>
-                <td align="center">{{ row.gender }}</td>
+                <td align="center">{{ row.gender|get_gender_message:locale }}</td>
             </tr>
 
             {% endfor %}
@@ -266,7 +266,7 @@
                 <td colspan="2"><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}"
                         target="_blank">{{row.patientName}}</a></td>
                 <td>{{ row.dateOfBirth | string_to_date }}</td>
-                <td align="center">{{ row.gender }}</td>
+                <td align="center">{{ row.gender|get_gender_message:locale }}</td>
             </tr>
 
             {% endfor %}
@@ -290,7 +290,7 @@
                 <td colspan="2"><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}"
                         target="_blank">{{row.patientName}}</a></td>
                 <td>{{ row.dateOfBirth | string_to_date }}</td>
-                <td align="center">{{ row.gender }}</td>
+                <td align="center">{{ row.gender|get_gender_message:locale }}</td>
             </tr>
 
             {% endfor %}
@@ -314,7 +314,7 @@
                 <td colspan="2"><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}"
                         target="_blank">{{row.patientName}}</a></td>
                 <td>{{ row.dateOfBirth | string_to_date }}</td>
-                <td align="center">{{ row.gender }}</td>
+                <td align="center">{{ row.gender|get_gender_message:locale }}</td>
             </tr>
 
             {% endfor %}
@@ -338,7 +338,7 @@
                 <td colspan="2"><a href="{% url 'enrolledprograms' uuid=row.patientUuid %}"
                         target="_blank">{{row.patientName}}</a></td>
                 <td>{{ row.dateOfBirth | string_to_date }}</td>
-                <td align="center">{{ row.gender }}</td>
+                <td align="center">{{ row.gender|get_gender_message:locale }}</td>
             </tr>
             {% endfor %}
             <tr>
@@ -365,7 +365,7 @@
                 </td>
                 <td>{{ row.locName }}</td>
                 <td>{{ row.dateOfBirth | string_to_date }}</td>
-                <td align="center">{{ row.gender }}</td>
+                <td align="center">{{ row.gender|get_gender_message:locale }}</td>
             </tr>
             {% endfor %}
 
@@ -393,7 +393,7 @@
                 </td>
                 <td>{{ row.locName }}</td>
                 <td>{{ row.dateOfBirth | string_to_date }}</td>
-                <td align="center">{{ row.gender }}</td>
+                <td align="center">{{ row.gender|get_gender_message:locale }}</td>
             </tr>
             {% endfor %}
         </table>

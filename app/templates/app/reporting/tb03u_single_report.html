@@ -351,7 +351,7 @@
                 <td rowspan="1">{{ row.dotsYear }}</td>
                 <td rowspan="1">{{ row.identifierDOTS }}</td>
                 <td rowspan="1">{{ row.personName.familyName }}, {{ row.personName.givenName }}</td>
-                <td rowspan="1" align="center">{{ row.gender }}</td>
+                <td rowspan="1" align="center">{{ row.gender|get_gender_message:locale }}</td>
                 <td align="center" rowspan="1">{{row.ageAtTB03uRegistration }}</td>
                 <td rowspan="1">{{ row.dateOfBirth }}</td>
                 <td>

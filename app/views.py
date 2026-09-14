@@ -2201,7 +2201,7 @@ def render_manage_test_types(req):
     query = req.GET.get("q", "").strip()
     context = {
         "title": mu.get_global_msgs(
-            "labtest.labtesttype.manage", locale=req.session["locale"]
+            "commonlabtest.labtesttype.manage", locale=req.session["locale"]
         ),
         "query": query,
     }
@@ -2252,7 +2252,7 @@ def render_add_test_type(req):
         return redirect("login")
     context = {
         "title": mu.get_global_msgs(
-            "labtest.labtesttype.add", locale=req.session["locale"]
+            "commonlabtest.labtesttype.add", locale=req.session["locale"]
         )
     }
     if req.method == "POST":
@@ -2293,7 +2293,7 @@ def render_edit_test_type(req, uuid):
         return redirect("login")
     context = {
         "title": mu.get_global_msgs(
-            "labtest.labtesttype.edit", locale=req.session["locale"]
+            "commonlabtest.labtesttype.edit", locale=req.session["locale"]
         ),
         "state": "edit",
     }
@@ -2465,7 +2465,7 @@ def render_addattributes(req, uuid):
         "prefferedHandlers": cu.get_preffered_handler(),
         "dataTypes": cu.get_attributes_data_types(),
         "title": mu.get_global_msgs(
-            "labtest.labtestattributetype.add", locale=req.session["locale"]
+            "commonlabtest.labtestattributetype.add", locale=req.session["locale"]
         ),
     }
     if req.method == "POST":
@@ -2509,7 +2509,7 @@ def render_edit_attribute(req, testid, attrid):
         "state": "edit",
         "testid": testid,
         "title": mu.get_global_msgs(
-            "labtest.labtestattributetype.edit", locale=req.session["locale"]
+            "commonlabtest.labtestattributetype.edit", locale=req.session["locale"]
         ),
     }
     req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
@@ -2564,7 +2564,7 @@ def render_managetestorders(req, uuid):
     try:
         context = {
             "title": mu.get_global_msgs(
-                "labtest.labtest.manage", locale=req.session["locale"]
+                "commonlabtest.labtest.manage", locale=req.session["locale"]
             ),
             "patient": uuid,
         }
@@ -2702,7 +2702,7 @@ def render_edit_lab_test(req, patientid, orderid):
         return redirect("login")
     context = {
         "title": mu.get_global_msgs(
-            "labtest.order.edit", locale=req.session["locale"]
+            "commonlabtest.order.edit", locale=req.session["locale"]
         ),
         "state": "edit",
         "orderid": orderid,
@@ -2796,7 +2796,7 @@ def render_managetestsamples(req, orderid):
         return redirect("login")
     context = {
         "title": mu.get_global_msgs(
-            "labtest.labtestsample.manage", locale=req.session["locale"]
+            "commonlabtest.labtestsample.manage", locale=req.session["locale"]
         ),
         "orderid": orderid,
     }

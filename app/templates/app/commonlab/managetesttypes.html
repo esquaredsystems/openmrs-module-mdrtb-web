@@ -10,13 +10,13 @@
 <div class="loc-page">
   <div class="loc-header">
     <div>
-      <h1>{{'labtest.labtesttype.manage'|get_message:locale|default:"en"}}</h1>
+      <h1>{{'commonlabtest.labtesttype.manage'|get_message:locale|default:"en"}}</h1>
       {% if test_types %}
       <p class="loc-subtitle">{{ test_types|length }}</p>
       {% endif %}
     </div>
     <a class="btn btn-success btn-sm" href="{% url 'addtesttype' %}">
-      {{'labtest.labtesttype.add'|get_message:locale|default:"en"}}</a>
+      {{'commonlabtest.labtesttype.add'|get_message:locale|default:"en"}}</a>
   </div>
 
   <form method="get" class="user-search">
