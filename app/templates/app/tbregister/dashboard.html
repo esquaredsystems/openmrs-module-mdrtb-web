@@ -277,7 +277,7 @@
           {{'mdrtb.all'|get_message:locale|default:"en"}}
           {{'Order.header'|get_message:locale|default:"en"}}
         </a>
-        <a href="{% url 'addlabtest' uuid=uuid %}" class="cancel-button text-sm">
+        <a href="{% url 'addlabtest' uuid=uuid %}{% if program.uuid %}?program={{program.uuid}}{% endif %}" class="cancel-button text-sm">
           {{'general.add'|get_message:locale|default:"en"}}
           {{'general.new'|get_message:locale|default:"en"}}
         </a>

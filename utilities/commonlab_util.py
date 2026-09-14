@@ -296,6 +296,7 @@ def get_custom_lab_order(full_order):
                 "name": order["encounter"]["display"],
             },
             "instructions": "" if order["instructions"] is None else order["instructions"],
+            "date_activated": order.get("dateActivated"),
         },
         "labtesttype": {
             "uuid": full_order["labTestType"]["uuid"],
@@ -306,7 +307,59 @@ def get_custom_lab_order(full_order):
             "uuid": full_order["order"]["careSetting"]["uuid"],
             "name": full_order["order"]["careSetting"]["display"],
         },
+        "patientProgram": {
+            "uuid": full_order["patientProgram"]["uuid"],
+            "name": full_order["patientProgram"].get("display", ""),
+        }
+        if full_order.get("patientProgram")
+        else None,
     }
+
+
+def resolve_lab_order_program(req, patient_programs):
+    """
+    Pick, without prompting, the program enrollment a new lab order belongs to.
+
+    patient_programs may include completed enrollments - a lab order can be
+    added as a historical event against a program that has since closed - so
+    this only auto-selects, it never filters by completion status:
+      1. the episode the user is currently working in - the program enrollment
+         held in session by the dashboard / program flow - if it is still one
+         of the patient's enrollments;
+      2. otherwise, the patient's only enrollment.
+
+    Returns the patientProgram uuid, or None when the caller must show a picker
+    (several enrollments and no session hint) or omit the field entirely
+    (no enrollments at all).
+    """
+    if not patient_programs:
+        return None
+    flow = req.session.get("current_patient_program_flow") or {}
+    flow_uuid = (flow.get("current_program") or {}).get("uuid")
+    if flow_uuid and any(p["uuid"] == flow_uuid for p in patient_programs):
+        return flow_uuid
+    if len(patient_programs) == 1:
+        return patient_programs[0]["uuid"]
+    return None
+
+
+def lab_order_date_after_program_completion(order_date, patient_program):
+    """
+    True when order_date falls after the patient program's completion date,
+    i.e. this order could not have belonged to that already-closed episode.
+
+    Dates are compared as their first 10 characters ("YYYY-MM-DD"), which is
+    all an HTML date input ever supplies and sorts correctly as a plain
+    string against the ISO datetime the API returns for dateCompleted.
+
+    Parameters:
+        order_date (str): the lab order's date, "YYYY-MM-DD" or ISO datetime.
+        patient_program (dict | None): an entry from get_patient_program_enrollments,
+            or None when no program is selected.
+    """
+    if not order_date or not patient_program or not patient_program.get("date_completed"):
+        return False
+    return order_date[:10] > patient_program["date_completed"][:10]
 
 
 def _attribute_cache_key(uuid):

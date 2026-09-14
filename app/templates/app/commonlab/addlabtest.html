@@ -6,6 +6,59 @@
 
 {% block content %}
 
+<style>
+    /* Self-contained: don't lean on ambient utility classes that may not be
+       compiled into styles.css (this project only ships the subset actually
+       used elsewhere, so an unused Tailwind-style class name is silently a
+       no-op rather than an error). */
+    /* Replaces the outer .input-container's normal single field child with a
+       select + detail card stacked vertically. .input-container is a flex
+       ROW (label | field), so this can't reuse that class - it needs its own
+       flex:1 1 auto/max-width so it still fills the same field column, but
+       flex-direction:column so its own two children stack instead of
+       sitting side by side. */
+    .program-field-stack {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: 32rem;
+    }
+    .program-option-card {
+        margin-top: 0.5rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        background-color: #eaf5fc;
+        border-color: #2d9cdb;
+    }
+    .program-option-name {
+        font-weight: 600;
+    }
+    .program-option-meta {
+        display: flex;
+        flex-wrap: wrap;
+        column-gap: 0.75rem;
+        row-gap: 0.2rem;
+        font-size: 0.9rem;
+        color: #6b7280;
+        margin-top: 0.25rem;
+    }
+    /* Select2's default highlighted-row blue (#5897fb) leaves the gray
+       .program-option-meta text (#6b7280) with poor contrast on top of it.
+       Swap the highlight for the same light tint the detail card already
+       uses, where that gray is already proven readable, instead of trying
+       to find a gray that survives on a saturated blue. */
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #eaf5fc;
+        color: #1f2937;
+    }
+    .select2-container--default .select2-results__option--highlighted[aria-selected] .program-option-meta {
+        color: #6b7280;
+    }
+</style>
+
 <div class="patient-banner-container mt-4">
     <div class="patient-info-container">
         <div class="font-bold">
@@ -76,6 +129,56 @@
             </select>
         </div>
     </div>
+
+    {% comment %}
+    Program / episode this lab order belongs to. There is no program picker in
+    the source data model - the view resolves it to a single value (the episode
+    held in session, or the patient's only enrolment) and preselects it here.
+    Shown whenever the patient has at least one enrolment, whether active or
+    already completed - a lab order can be added as a historical event against
+    a closed episode, guarded only by the date field below (its max date is
+    the selected program's completion date). When the patient has several
+    enrolments and nothing to go on, no option is preselected and the field is
+    required so the user chooses. Hidden entirely when the patient has no
+    enrolment at all - the order is then created unlinked and backfilled
+    later.
+    {% endcomment %}
+    {% if patient_programs %}
+    <div class="input-container">
+        <label class="input-label" for="patient-program-select">
+            {{'Program.program'|get_message:locale|default:"en"}}
+        </label>
+        <div class="program-field-stack">
+            <select name="patientProgram" id="patient-program-select" class="input form-control"
+                {% if not selected_program %}required{% endif %}>
+                {% if not selected_program %}
+                <option value="" disabled selected>
+                    {{'mdrtb.selectOption'|get_message:locale|default:"en"}}
+                </option>
+                {% endif %}
+                {% for p in patient_programs %}
+                <option value="{{ p.uuid }}" {% if p.uuid == selected_program %}selected{% endif %}
+                    data-enrolled="{{ p.date_enrolled|slice:':10'|default:'' }}"
+                    data-completed="{{ p.date_completed|slice:':10'|default:'' }}"
+                    data-location="{{ p.location|default:'' }}"
+                    data-outcome="{{ p.outcome|default:'' }}">
+                    {{ p.program_name }}
+                </option>
+                {% endfor %}
+            </select>
+            <div id="selected-program-card" class="program-option-card" style="display:none"></div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="input-container">
+        <label class="input-label" for="order-date">
+            {{'labtest.order.date'|get_message:locale|default:"en"}}
+        </label>
+        <input type="date" name="orderDate" id="order-date" class="input form-control" required
+            {% if state == 'edit' %}value="{{laborder.order.date_activated|slice:':10'}}"{% endif %}>
+    </div>
+
     <div class="input-container">
             <label class="input-label" for="">
                 {{'labtest.testGroup'|get_message:locale|default:"en"}}
@@ -167,6 +270,83 @@
 
 <script>
     let labtests = JSON.parse("{{labtests | escapejs}}")
+
+    // Labels for the selected-program detail card below the dropdown.
+    const programFieldLabels = {
+        enrolled: "{{'Program.dateEnrolled'|get_message:locale|default:"en"|escapejs}}",
+        completed: "{{'Program.dateCompleted'|get_message:locale|default:"en"|escapejs}}",
+        location: "{{'Program.location'|get_message:locale|default:"en"|escapejs}}",
+        outcome: "{{'mdrtb.outcome'|get_message:locale|default:"en"|escapejs}}",
+    }
+
+    // "YYYY-MM-DD" -> "DD.MM.YYYY", matching this app's normal date display.
+    function isoToDisplayDate(iso) {
+        let parts = iso.split('-')
+        return parts.length === 3 ? [parts[2], parts[1], parts[0]].join('.') : iso
+    }
+
+    // Builds the "name + meta row" markup shared by the open dropdown list
+    // (Select2's templateResult) and the persistent detail card below it, so
+    // both look identical - built with jQuery text nodes, not string
+    // concatenation, since the location/outcome values come from patient data.
+    function renderProgramDetails(name, data) {
+        let $result = $('<div></div>')
+        $('<div class="program-option-name"></div>').text(name).appendTo($result)
+        let $meta = $('<div class="program-option-meta"></div>')
+        let addRow = (label, raw, isDate) => {
+            if (!raw) return
+            $('<span></span>').text(label + ': ' + (isDate ? isoToDisplayDate(raw) : raw)).appendTo($meta)
+        }
+        addRow(programFieldLabels.enrolled, data.enrolled, true)
+        addRow(programFieldLabels.completed, data.completed, true)
+        addRow(programFieldLabels.location, data.location, false)
+        addRow(programFieldLabels.outcome, data.outcome, false)
+        if ($meta.children().length) {
+            $meta.appendTo($result)
+        }
+        return $result
+    }
+
+    // Select2's per-option rendering in the open dropdown list.
+    function formatProgramOption(option) {
+        if (!option.id || !option.element) {
+            return option.text
+        }
+        return renderProgramDetails(option.text.trim(), option.element.dataset)
+    }
+    $('#patient-program-select').select2({
+        templateResult: formatProgramOption,
+        width: '100%',
+    })
+
+    // Renders the selected program's detail card below the dropdown and
+    // drives the order date field's "max" so a date past a closed episode's
+    // completion can't be picked from the calendar at all.
+    function updateSelectedProgramCard() {
+        let select = document.getElementById('patient-program-select')
+        let option = select && select.selectedOptions[0]
+        let $card = $('#selected-program-card')
+        let dateInput = $('#order-date')
+
+        if (!option || !option.value) {
+            $card.hide()
+            dateInput.removeAttr('max')
+            return
+        }
+
+        let data = option.dataset
+        $card.empty().append(renderProgramDetails(option.text.trim(), data).children())
+        $card.show()
+
+        if (data.completed) {
+            dateInput.attr('max', data.completed)
+        } else {
+            dateInput.removeAttr('max')
+        }
+    }
+    $('#patient-program-select').on('change', updateSelectedProgramCard)
+    $(document).ready(updateSelectedProgramCard)
+
     function setTestTypes() {
         $('#test-select').html('')
         let group = $('#group-select').val()
