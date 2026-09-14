@@ -1,6 +1,7 @@
 import json
 import datetime
 import logging
+import re
 import time as _time
 from datetime import datetime
 from django.shortcuts import render, redirect
@@ -1358,9 +1359,22 @@ def render_logout(req):
         ru.clear_session(req)
     return redirect("login")
 
+
+# OpenMRS's own Jackson/Hibernate conversion failures come back as a raw Java
+# reference-chain string, e.g. "[identifiers on class org.openmrs.Patient =>
+# location on class org.openmrs.PatientIdentifier]". The "on class org.openmrs.X"
+# segments are just Java package noise - the field names either side of "=>"
+# are the actual useful information (which field, nested how deep). Strip only
+# the noise so the real reason still reaches the user: "[identifiers =>
+# location]". Genuinely useful OpenMRS messages (e.g. "Identifier is in use")
+# don't contain this pattern and pass through unchanged.
+_OPENMRS_CLASS_NOISE = re.compile(r"\s*on class org\.openmrs\.\w+")
+
+
 def log_and_show_error(error, req):
-    messages.error(req, error)
     logger.error(error, exc_info=True)
+    message = _OPENMRS_CLASS_NOISE.sub("", str(error))
+    messages.error(req, message)
 
 
 def redirect_after_error(req, fallback="/"):
