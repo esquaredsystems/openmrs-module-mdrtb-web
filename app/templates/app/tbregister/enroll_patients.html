@@ -28,6 +28,12 @@
                            pattern="[^0-9!@#$%^&*()_+{}[\]:;<>,.?~\\/\-=|]+" title="Name cannont contain numbers"/>
                 </div>
                 <div class="input-container">
+                    <label class="input-label w-full"
+                           for="patronymicname">{{'mdrtb.patronymicName'|get_message:locale|default:"en"}}</label>
+                    <input class="input form-control" type="text" id="patronymicname" name="patronymicname"
+                           pattern="[^0-9!@#$%^&*()_+{}[\]:;<>,.?~\\/\-=|]+" title="Name cannont contain numbers"/>
+                </div>
+                <div class="input-container">
                     <label class="input-label w-full required"
                            for="familyname">{{'mdrtb.familyname'|get_message:locale|default:"en"}}</label>
                     <input required class="input form-control" type="text" id="familyname" name="familyname"
