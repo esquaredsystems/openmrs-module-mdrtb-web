@@ -1,9 +1,13 @@
+import logging
+
 import utilities.metadata_util as mu
 import utilities.restapi_utils as ru
 from datetime import datetime
 from resources.enums.mdrtbConcepts import Concepts
 from resources.enums.encounterType import EncounterType
 import utilities.common_utils as cu
+
+logger = logging.getLogger("django")
 
 
 def get_form_concepts(concept_ids, req):
@@ -22,24 +26,28 @@ def get_form_concepts(concept_ids, req):
         try:
             response = mu.get_concept(req, concept)
             if response:
-                answers = []
-                for answer in response["answers"]:
-                    for name in answer["names"]:
-                        if (
-                            name["conceptNameType"] == "FULLY_SPECIFIED"
-                            and name["locale"] == req.session["locale"]
-                        ):
-                            answers.append(
-                                {"uuid": answer["uuid"], "name": name["display"]}
-                            )
-                            break
-                # Sort answers by name
-                answers.sort(key=lambda x: x["name"])
+                # mu.get_concept already passes lang=<session locale> to OpenMRS,
+                # which makes the server resolve `display` to the best-matching
+                # name for that locale across the WHOLE response tree - including
+                # each answer. Answers only come back at ref level (uuid, display,
+                # links), with no per-name locale/conceptNameType to filter on, so
+                # trying to hand-pick a FULLY_SPECIFIED name in the current locale
+                # (the previous approach) hit a bare KeyError on every concept
+                # whose answers include one, silently dropping it - e.g.
+                # TUBERCULOSIS_PATIENT_CATEGORY, which never rendered any options.
+                answers = sorted(
+                    (
+                        {"uuid": answer["uuid"], "name": answer["display"]}
+                        for answer in response["answers"]
+                    ),
+                    key=lambda x: x["name"],
+                )
                 for name in response["names"]:
                     if name["locale"] == "en":
                         key = name["name"].lower().replace(" ", "").replace("-", "")
                         concept_dict[key] = answers
-        except Exception:
+        except Exception as e:
+            logger.warning(f"get_form_concepts: could not load concept {concept}: {e}")
             continue
     return concept_dict
 

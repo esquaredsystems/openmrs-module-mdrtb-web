@@ -93,7 +93,24 @@
             <span class="font-bold">
               {{'mdrtb.tb03.gender'|get_message:locale|default:"en"}}:
             </span>
-            <span class="tb03-form-label"> {{current_patient_program_flow.current_patient.gender}} </span>
+            <span class="tb03-form-label">
+              {% if current_patient_program_flow.current_patient.gender == 'M' %}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" class="w-4 h-4 inline-block align-text-bottom" style="color:#2D9CDB" aria-hidden="true">
+                <circle cx="10" cy="14" r="6" />
+                <line x1="14.5" y1="9.5" x2="20" y2="4" />
+                <polyline points="14 4 20 4 20 10" />
+              </svg>
+              {% elif current_patient_program_flow.current_patient.gender == 'F' %}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" class="w-4 h-4 inline-block align-text-bottom" style="color:#EB5757" aria-hidden="true">
+                <circle cx="12" cy="9" r="6" />
+                <line x1="12" y1="15" x2="12" y2="21" />
+                <line x1="9" y1="18" x2="15" y2="18" />
+              </svg>
+              {% endif %}
+              {{ current_patient_program_flow.current_patient.gender|get_gender_message:locale }}
+            </span>
           </div>
           <div class="space-x-3">
             <span class="font-bold">
@@ -245,30 +262,6 @@
           </div>
           <div class="input-container">
             <label class="tb03-form-label w-full "
-              for="artDate">{{'mdrtb.tb03.artStartDate'|get_message:locale|default:"en"}}</label>
-            {% if state == 'edit' and form.artStartDate %}
-            <input type="date" value="{{form.artStartDate|slice:':10'}}" class="input form-control" id="artDate"
-              name="{{'DATE_OF_ART_TREATMENT_START' | get_concept }}" />
-            {% else %}
-            <input type="date" class="input form-control" id="artDate"
-              name="{{'DATE_OF_ART_TREATMENT_START' | get_concept }}" />
-            {% endif %}
-          </div>
-        </div>
-        <div class="flex items-center justify-between space-x-6">
-          <div class="input-container">
-            <label class="tb03-form-label w-full "
-              for="pctDate">{{'mdrtb.tb03.pctStartDate'|get_message:locale|default:"en"}}</label>
-            {% if state == 'edit' and form.pctStartDate %}
-            <input type="date" value="{{form.pctStartDate|slice:':10'}}" class="input form-control" id="pctDate"
-              name="{{'DATE_OF_PCT_TREATMENT_START' | get_concept }}" />
-            {% else %}
-            <input type="date" class="input form-control"  id="pctDate"
-              name="{{'DATE_OF_PCT_TREATMENT_START' | get_concept }}" />
-            {% endif %}
-          </div>
-          <div class="input-container">
-            <label class="tb03-form-label w-full "
               for="xrayDate">{{'mdrtb.tb03.xrayDate'|get_message:locale|default:"en"}}</label>
             {% if state == 'edit' and form.xrayDate %}
             <input type="date" value="{{form.xrayDate|slice:':10'}}" class="input form-control"
@@ -277,6 +270,16 @@
             <input type="date" class="input form-control" name="{{'XRAY_DATE' | get_concept }}" />
             {% endif %}
           </div>
+        </div>
+        <div class="input-container" hidden>
+          <label class="tb03-form-label w-full "
+            for="artDate">{{'mdrtb.tb03.artStartDate'|get_message:locale|default:"en"}}</label>
+          <input type="date" class="input form-control" id="artDate" disabled />
+        </div>
+        <div class="input-container" hidden>
+          <label class="tb03-form-label w-full "
+            for="pctDate">{{'mdrtb.tb03.pctStartDate'|get_message:locale|default:"en"}}</label>
+          <input type="date" class="input form-control" id="pctDate" disabled />
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
@@ -397,15 +400,24 @@
     let outcome = e.target.value
     if (outcome === "{{'DIED' | get_concept}}") {
       $('#dateofDeath').prop('disabled', false)
-      $('#otherCauseOfDeath').prop('disabled', false)
       $('#causeOfDeath').prop('disabled', false)
       $('#causeOfDeath').prop('required', true)
+      // otherCauseOfDeath's own disabled state is driven entirely by which
+      // cause is selected below - re-check it now in case causeOfDeath
+      // already has a value (e.g. re-entering this branch after a change).
+      $('#causeOfDeath').trigger('change')
     } else {
       $('#otherCauseOfDeath').prop('disabled', true)
       $('#dateofDeath').prop('disabled', true)
       $('#causeOfDeath').prop('disabled', true)
       $('#causeOfDeath').prop('required', false)
     }
+  })
+  // Other Cause of Death is only meaningful - and only editable - when
+  // "Death by Other Diseases" is the selected cause of death.
+  $('#causeOfDeath').change((e) => {
+    let deathByOtherDiseases = "{{'DEATH_BY_OTHER_DISEASES' | get_concept}}"
+    $('#otherCauseOfDeath').prop('disabled', e.target.value !== deathByOtherDiseases)
   })
   let state = '{{state | escapejs}}'
   if (state === 'edit') {
@@ -422,6 +434,9 @@
     $('#canceleditbtn').prop('hidden', false)
     $('#artDate').prop('disabled', true)
     $('#pctDate').prop('disabled', true)
+    // Re-apply otherCauseOfDeath's rule - the blanket re-enable above just
+    // turned it on regardless of the saved causeOfDeath value.
+    $('#causeOfDeath').trigger('change')
   })
   $('#canceleditbtn').click(function () {
     $('input').prop('disabled', true)
@@ -436,12 +451,6 @@
       console.log("Treatment outcome date cannot be before the treatment start date.");
       $(this).val(startDate);
     }
-  });
-  $('#hivStatus').change(function() {
-    let positive = "{{ 'POSITIVE' | get_concept }}";
-    let hivValue = $('#hivStatus').val();
-    $('#artDate').prop('disabled', (hivValue != positive))
-    $('#pctDate').prop('disabled', (hivValue != positive))
   });
   const disableSubmit = () => {
     $('#submitBtn').prop('disabled', true)
