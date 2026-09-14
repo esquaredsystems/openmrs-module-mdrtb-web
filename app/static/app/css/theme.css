@@ -1841,12 +1841,21 @@ table tbody tr:hover {
  * visible text is swapped for a plain affirmation so the row reads as a
  * real sentence instead of an echo of the header above it.
  *
- * Still used by edit_patient.html's deceased section (a real collapsible).
- * enroll_patients.html no longer has a clickable header for either section —
- * see .section-title below — but keeps sharing everything past this point.
+ * Both enroll_patients.html and edit_patient.html now use a clickable
+ * .collapsible-header (body starts class="hidden", toggled open by the
+ * same $(...).click() + toggleClass('hidden') pattern in each template) so
+ * Suspect/Deceased stay collapsed until the user opts in. Header layout
+ * (flex row, chevron pinned right via justify-content: space-between) is
+ * shared here; the .collapsible-chevron rotation-on-open styles still live
+ * per-template (see each file's own <style> block) since the icon markup
+ * is inline in the header.
  */
 
 .patient-form-page .collapsible-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
   padding: 0.75rem 1rem;
   border-radius: var(--brand-radius);
   transition: background-color var(--brand-transition);
@@ -1859,15 +1868,6 @@ table tbody tr:hover {
 .patient-form-page .collapsible-header .input-label {
   font-weight: 700;
   color: var(--brand-secondary);
-}
-
-/* enroll_patients.html: static (non-clickable) section title replacing the
-   collapsible header, styled to match it. */
-.patient-form-page .section-title {
-  display: block;
-  font-weight: 700;
-  color: var(--brand-secondary);
-  padding: 0.75rem 1rem 0;
 }
 
 .patient-form-page #suspect-container,
