@@ -28,6 +28,12 @@
                            pattern="[^0-9!@#$%^&*()_+{}[\]:;<>,.?~\\/\-=|]+" title="Name cannont contain numbers"/>
                 </div>
                 <div class="input-container">
+                    <label class="input-label w-full"
+                           for="patronymicname">{{'mdrtb.patronymicName'|get_message:locale|default:"en"}}</label>
+                    <input class="input form-control" type="text" id="patronymicname" name="patronymicname"
+                           pattern="[^0-9!@#$%^&*()_+{}[\]:;<>,.?~\\/\-=|]+" title="Name cannont contain numbers"/>
+                </div>
+                <div class="input-container">
                     <label class="input-label w-full required"
                            for="familyname">{{'mdrtb.familyname'|get_message:locale|default:"en"}}</label>
                     <input required class="input form-control" type="text" id="familyname" name="familyname"
@@ -88,8 +94,11 @@
             </div>
         </div>
         <div class="enroll_form_bg">
-            <label class="section-title">{{'mdrtb.suspect'|get_message:locale|default:"en"}}</label>
-            <div id="suspect-container">
+            <div class="collapsible-header" id="suspect-toggle">
+                <label class="input-label">{{'mdrtb.suspect'|get_message:locale|default:"en"}}</label>
+                <span id="suspect-chevron" class="collapsible-chevron">&#9656;</span>
+            </div>
+            <div id="suspect-container" class="hidden">
                 <div class="input-container">
                     <input id="suspect" type="checkbox" class="border-none shadow-sm cursor-pointer" name="suspect"/>
                     <label class="input-label"
@@ -108,9 +117,12 @@
             </div>
         </div>
         <div class="enroll_form_bg">
-            <label class="section-title">{{'mdrtb.deceased'|get_message:locale|default:"en"}}</label>
-            <div id="deceased-fields">
-                <div class="input-container">
+            <div class="collapsible-header" id="deceased-toggle">
+                <label class="input-label">{{'mdrtb.deceased'|get_message:locale|default:"en"}}</label>
+                <span id="deceased-chevron" class="collapsible-chevron">&#9656;</span>
+            </div>
+            <div id="deceased-fields" class="hidden">
+                <div class="input-container">Ï
                     <label class="input-label"
                            for="deceased">{{'mdrtb.deceased.yes'|get_message:locale|default:"Yes, this patient is deceased"}}</label>
                     <input id="deceased" type="checkbox" class="border-none shadow-sm cursor-pointer" name="deceased"/>
@@ -211,6 +223,25 @@
             $("#voided-container").removeClass("flex");
         }
     });
+
+    const toggleCollapsible = (headerId, contentId, chevronId) => {
+        $(`#${headerId}`).click(function () {
+            $(`#${contentId}`).toggleClass('hidden');
+            $(`#${chevronId}`).toggleClass('collapsible-chevron-open');
+        });
+    };
+    toggleCollapsible('suspect-toggle', 'suspect-container', 'suspect-chevron');
+    toggleCollapsible('deceased-toggle', 'deceased-fields', 'deceased-chevron');
 </script>
+
+<style>
+    .collapsible-chevron {
+        display: inline-block;
+        transition: transform 150ms;
+    }
+    .collapsible-chevron-open {
+        transform: rotate(90deg);
+    }
+</style>
 
 {% endblock %}

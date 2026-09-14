@@ -112,6 +112,7 @@ def save_patient(req, data, uuid=None):
             - suspect (str): "on" if the patient is a suspect; controls the identifier type.
             - district (str): The location of the patient (district or facility).
             - givenname (str): The patient's given name.
+            - patronymicname (str, optional): The patient's patronymic name.
             - familyname (str): The patient's family name.
             - gender (str): The patient's gender.
             - address (str): The patient's address.
@@ -134,7 +135,9 @@ def save_patient(req, data, uuid=None):
         "person": {
             "names": [
                 {
-                    "givenName": data["givenname"], "familyName": data["familyname"]
+                    "givenName": data["givenname"],
+                    "patronymicname": data.get("patronymicname"),
+                    "familyName": data["familyname"],
                 }
             ],
             "gender": data["gender"],
