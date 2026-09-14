@@ -45,9 +45,22 @@
       </div>
       {% else %}
       <div class="input-container">
-          <label class="input-label w-1/6 required" for="identifier">{{ 'mdrtb.dotsIdentifier'|get_message:locale|default:"en" }}</label>
-          <input required class="input form-control" type="text" name="identifier" id="identifier"
-                 {% if dotsidentifier %} value="{{ dotsidentifier.identifier }}" disabled {% endif %}/>
+          <label class="input-label w-1/6 required" for="identifier">
+            {{ 'mdrtb.dotsIdentifier'|get_message:locale|default:"en" }}
+          </label>
+          <div class="field-edit-wrapper">
+            <input required class="input form-control" type="text" name="identifier" id="identifier"
+                   {% if dotsidentifier %} value="{{ dotsidentifier.identifier }}" disabled {% endif %}/>
+            {% if dotsidentifier %}
+            <button class="field-edit-btn" id="editIdentifier" type="button" title="{{'general.edit'|get_message:locale|default:"en"}}" aria-label="{{'general.edit'|get_message:locale|default:"en"}}">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+              </svg>
+            </button>
+            {% endif %}
+          </div>
           <input hidden type="text" name="identifierType" id="identifierType" value="{{ 'DOTS_IDENTIFIER'|get_constant }}">
       </div>
       <div hidden class="input-container">
@@ -79,20 +92,20 @@
       {% if state == 'edit' %}
       <div class="flex-column-center space-y-2">
         <div id="prefilledlocation" class="input-container">
-          <label class="input-label w-1/6 flex-center space-x-2" for="">
+          <label class="input-label w-1/6" for="">
             {{'mdrtb.location'|get_message:locale|default:"en"}}
-            <button class="ml-4" id="editLocations" type="button" title="{{'general.edit'|get_message:locale|default:"en"}}" aria-label="{{'general.edit'|get_message:locale|default:"en"}}">
+          </label>
+          <div class="field-edit-wrapper">
+            <input class="input form-control" type="text" name="location" id="location"
+              value="{{enrolled_program.location.name}}" />
+            <button class="field-edit-btn" id="editLocations" type="button" title="{{'general.edit'|get_message:locale|default:"en"}}" aria-label="{{'general.edit'|get_message:locale|default:"en"}}">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
                 <path stroke-linecap="round" stroke-linejoin="round"
                   d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
               </svg>
             </button>
-
-          </label>
-
-          <input class="input form-control" type="text" name="location" id="location"
-            value="{{enrolled_program.location.name}}" />
+          </div>
           <div hidden id="locations" class="flex-column-center space-y-4">
             {% include 'app/components/locations.html' %}
           </div>
@@ -102,19 +115,20 @@
       {% else %}
       <div class="flex-column-center space-y-2">
         <div id="prefilledlocation" class="input-container">
-          <label class="input-label w-1/6 flex-center space-x-2" for="">
+          <label class="input-label w-1/6" for="">
             {{'mdrtb.location'|get_message:locale|default:"en"}}
-            <button class="ml-4" id="changeLocation" type="button" title="{{'general.edit'|get_message:locale|default:"en"}}" aria-label="{{'general.edit'|get_message:locale|default:"en"}}">
+          </label>
+          <div class="field-edit-wrapper">
+            <input class="input form-control" type="text" readonly name="location" id="location"
+              value="{{enrolled_location.display}}" />
+            <button class="field-edit-btn" id="changeLocation" type="button" title="{{'general.edit'|get_message:locale|default:"en"}}" aria-label="{{'general.edit'|get_message:locale|default:"en"}}">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
                 <path stroke-linecap="round" stroke-linejoin="round"
                   d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
               </svg>
             </button>
-          </label>
-
-          <input class="input form-control" type="text" readonly name="location" id="location"
-            value="{{enrolled_location.display}}" />
+          </div>
           <div hidden id="locations" class="flex-column-center space-y-4">
             {% include 'app/components/locations.html' %}
           </div>
@@ -201,6 +215,26 @@
       $('input[name=csrfmiddlewaretoken]').prop('disabled', false)
     }
 
+    $('#editIdentifier').click(() => {
+      if ($('#identifier').prop('disabled')) {
+        $('#identifier').prop('disabled', false)
+        $('#editIdentifier').html(
+          `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>`
+        )
+      } else {
+        $('#identifier').prop('disabled', true)
+        $('#editIdentifier').html(
+          `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+            </svg>`
+        )
+      }
+    })
+
     $('#editEnrollmentDate').click(() => {
       if ($('#enrollmentdate').prop('disabled')) {
         $('button[type=submit]').prop('disabled', false)
@@ -245,12 +279,58 @@
       }
     })
 
+    // Walks the region -> district -> facility tree (locationByUuids, built by
+    // base.html) to find which region/district/facility a given location uuid
+    // belongs to, so the cascading selects can be pre-set to the location the
+    // patient/program already has instead of resetting to "Choose" every time
+    // the Location pencil is clicked.
+    const findLocationPath = (targetUuid) => {
+      if (!targetUuid || !locationByUuids) return null
+      for (const region of Object.values(locationByUuids)) {
+        if (region.uuid === targetUuid) return { region: region.uuid }
+        for (const district of (region.children || [])) {
+          if (district.uuid === targetUuid) return { region: region.uuid, district: district.uuid }
+          for (const facility of (district.children || [])) {
+            if (facility.uuid === targetUuid) return { region: region.uuid, district: district.uuid, facility: facility.uuid }
+          }
+        }
+      }
+      return null
+    }
+
+    // locationByUuids is filled by an async AJAX call in base.html, so it may
+    // not be ready yet the first time someone clicks the pencil right after
+    // the page loads. Retry briefly instead of silently giving up.
+    const prefillLocationSelects = (targetUuid, attempt = 0) => {
+      if (!targetUuid) return
+      if (!locationByUuids) {
+        if (attempt < 20) setTimeout(() => prefillLocationSelects(targetUuid, attempt + 1), 150)
+        return
+      }
+      const path = findLocationPath(targetUuid)
+      if (!path) return
+      if (path.region) {
+        $('#region-select').val(path.region).trigger('change')
+      }
+      if (path.district) {
+        $('#district-select').val(path.district).trigger('change')
+      }
+      if (path.facility) {
+        $('#facility-select').val(path.facility)
+      }
+    }
+
     $("#changeLocation").click(() => {
+      const $prefilled = $('#prefilledlocation')
       if ($('#locations').prop('hidden')) {
         $("#region-select").prop("required", true)
-        $('#prefilledlocation').removeClass('input-container').addClass('flex-column-center')
+        $prefilled.removeClass('input-container').addClass('flex-column-center')
         $('#location').prop('hidden', true)
         $('#locations').prop('hidden', false)
+        // While the picker is open the field itself is hidden, so the button
+        // has nothing to sit at the end of - move it next to the label instead.
+        $prefilled.children('.input-label').append($('#changeLocation'))
+        prefillLocationSelects("{{enrolled_location.uuid|default:''|escapejs}}")
         $('#changeLocation').html(
           `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -259,8 +339,10 @@
       } else {
         $("#region-select").prop("required", false)
         $('#location').prop('hidden', false)
-        $('#prefilledlocation').removeClass('flex-column-center').addClass('input-container')
+        $prefilled.removeClass('flex-column-center').addClass('input-container')
         $('#locations').prop('hidden', true)
+        // Move it back to the end of the (now visible again) field.
+        $prefilled.children('.field-edit-wrapper').append($('#changeLocation'))
         $('#changeLocation').html(
           `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
@@ -272,12 +354,15 @@
     })
 
     $('#editLocations').click(() => {
+      const $prefilledEdit = $('#prefilledlocation')
       if ($('#locations').prop('hidden')) {
         $('select').prop('disabled', false)
         $('button[type=submit]').prop('disabled', false)
-        $('#prefilledlocation').removeClass('input-container').addClass('flex-column-center')
+        $prefilledEdit.removeClass('input-container').addClass('flex-column-center')
         $('#location').prop('hidden', true)
         $('#locations').prop('hidden', false)
+        $prefilledEdit.children('.input-label').append($('#editLocations'))
+        prefillLocationSelects("{{enrolled_program.location.uuid|default:''|escapejs}}")
         $('#editLocations').html(
           `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -287,8 +372,9 @@
         $('select').prop('disabled', true)
         $('button[type=submit]').prop('disabled', true)
         $('#location').prop('hidden', false)
-        $('#prefilledlocation').removeClass('flex-column-center').addClass('input-container')
+        $prefilledEdit.removeClass('flex-column-center').addClass('input-container')
         $('#locations').prop('hidden', true)
+        $prefilledEdit.children('.field-edit-wrapper').append($('#editLocations'))
         $('#editLocations').html(
           `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="w-5 h-5 cursor-pointer text-black">
@@ -331,5 +417,41 @@
 
   </script>
 </div>
+
+<style>
+  /* Matches the flex-basis/max-width theme.css gives every other
+     .input-container field (enrollmentdate, completiondate, ...) so the
+     identifier and location fields are the same size as the rest of the form. */
+  .field-edit-wrapper {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 32rem;
+  }
+  /* Matches .input's rendered height, but only while the wrapper's field is
+     actually visible (identifier, or location when not being edited) - the
+     edit button lives here then, so the row needs room for it. Once
+     Location's picker opens, the button moves into the label instead and
+     this wrapper is genuinely empty, so it should not hold any height. */
+  .input-container .field-edit-wrapper {
+    min-height: 2.625rem;
+  }
+  .field-edit-wrapper .input {
+    padding-right: 2.5rem;
+  }
+  /* Default/closed position: pinned to the end of the field. */
+  .field-edit-wrapper .field-edit-btn {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+  }
+  /* While the location picker is open, #location is hidden so there is no
+     field to pin the button to - the click handler moves it into the label
+     instead so it stays next to "Location" rather than floating on its own. */
+  .input-label .field-edit-btn {
+    margin-left: 0.5rem;
+  }
+</style>
 
 {% endblock %}

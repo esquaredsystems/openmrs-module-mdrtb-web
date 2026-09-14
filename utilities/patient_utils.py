@@ -136,7 +136,7 @@ def save_patient(req, data, uuid=None):
             "names": [
                 {
                     "givenName": data["givenname"],
-                    "patronymicname": data.get("patronymicname"),
+                    "middleName": data.get("patronymicname") or None,
                     "familyName": data["familyname"],
                 }
             ],
@@ -193,7 +193,7 @@ def save_patient(req, data, uuid=None):
                 {
                     "identifier": data.get("patientidentifier") or datetime.now().strftime("%y%m%d%H%M%S"),
                     "identifierType": identifier_type,
-                    "location": data["district"] if "facility" not in data else data["facility"],
+                    "location": data.get("facility") or data["district"],
                 }
             ]
             status, response = ru.post(req, "patient", patient_info)

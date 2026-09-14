@@ -760,6 +760,19 @@ a .patient-result-row:hover {
   flex: 0 0 14rem;
 }
 
+/*
+ * flex: 0 0 14rem above assumes a ROW flex container, where 14rem is a WIDTH.
+ * Several program-enrollment pages (enroll_in_dots.html, enroll_in_mdrtb.html,
+ * ...) toggle their #prefilledlocation wrapper from .input-container (row) to
+ * .flex-column-center (column) when the Location pencil is clicked, to stack
+ * the label above the country/region/district/facility picker. In that column
+ * context flex-basis is a HEIGHT, so the "Location" label was stretching to a
+ * blank 14rem (224px) tall box instead of hugging its own text height.
+ */
+.flex-column-center > .input-label {
+  flex: 0 0 auto;
+}
+
 .input-container > .input,
 .input-container > .form-control,
 .input-container > .input-container,
