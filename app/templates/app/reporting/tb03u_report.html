@@ -345,7 +345,7 @@
                 <td rowspan="2" align="center">{{ 'CFZ RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
                 <td rowspan="2" align="center">{{ 'BDQ RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
                 <td rowspan="2" align="center">{{ 'DLM RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
-                <td colspan="3" text-align="center">{{row.xpertMTBResult }} {{row.xpertRIFResult }} </td>
+                <td colspan="3" text-align="center">{% if row.xpertMTBResult and row.xpertRIFResult %}{{row.xpertMTBResult }} / {{row.xpertRIFResult }}{% else %}{{row.xpertMTBResult }}{{row.xpertRIFResult }}{% endif %} </td>
                 <td text-align="center">{{row.hainTestDate }} </td>
                 <td colspan="3" text-align="center">{{row.hainMTBResult }}</td>
                 <td text-align="center">{{row.hain2TestDate }} </td>

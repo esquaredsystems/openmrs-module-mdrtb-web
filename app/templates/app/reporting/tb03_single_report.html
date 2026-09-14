@@ -474,7 +474,7 @@
                 <td>{{ row.diagnosticSmearDate }}</td>
                 <td>{{ row.diagnosticSmearTestNumber }}</td>
                 <td>{{ row.diagnosticSmearLab }}</td>
-                <td align="center">{{ row.xpertMTBResult }} {{ row.xpertRIFResult }}</td>
+                <td align="center">{% if row.xpertMTBResult and row.xpertRIFResult %}{{ row.xpertMTBResult }} / {{ row.xpertRIFResult }}{% else %}{{ row.xpertMTBResult }}{{ row.xpertRIFResult }}{% endif %}</td>
                 <td>{{ row.xpertTestDate }}</td>
                 <td>{{ row.xpertTestNumber }}</td>
                 <td>{{ row.xpertLab }}</td>

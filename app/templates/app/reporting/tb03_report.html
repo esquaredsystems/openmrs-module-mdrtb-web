@@ -327,7 +327,7 @@
                     <td rowspan="2">{{row.cpStartDate }}</td>
 
                     <td colspan="3" align="center">{{row.diagnosticSmearResult }}</td>
-                    <td colspan="3" align="center">{{row.xpertMTBResult }} {{row.xpertRIFResult }}</td>
+                    <td colspan="3" align="center">{% if row.xpertMTBResult and row.xpertRIFResult %}{{row.xpertMTBResult }} / {{row.xpertRIFResult }}{% else %}{{row.xpertMTBResult }}{{row.xpertRIFResult }}{% endif %}</td>
                     <td align="center">{{row.hainTestDate }}</td>
                     <td colspan="3" align="center">{{row.hainMTBResult }}</td>
                     <td align="center">{{row.hain2TestDate }}</td>

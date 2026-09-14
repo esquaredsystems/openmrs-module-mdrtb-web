@@ -391,7 +391,7 @@
                 <td rowspan="1" align="center">{{ row.dstResults.bdqresistance }}</td>
                 <td rowspan="1" align="center">{{ row.dstResults.dlmresistance }}</td>
 
-                <td colspan="1" align="center">{{row.xpertMTBResult }} / {{row.xpertRIFResult }} </td>
+                <td colspan="1" align="center">{% if row.xpertMTBResult and row.xpertRIFResult %}{{row.xpertMTBResult }} / {{row.xpertRIFResult }}{% else %}{{row.xpertMTBResult }}{{row.xpertRIFResult }}{% endif %} </td>
                 <td>{{row.xpertTestDate }}</td>
                 <td>{{row.xpertTestNumber }}</td>
                 <td>{{row.xpertLab }}</td>
