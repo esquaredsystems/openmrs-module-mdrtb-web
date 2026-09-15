@@ -2,12 +2,20 @@ import logging
 
 import utilities.metadata_util as mu
 import utilities.restapi_utils as ru
-from datetime import datetime
+from datetime import datetime, timezone
 from resources.enums.mdrtbConcepts import Concepts
 from resources.enums.encounterType import EncounterType
 import utilities.common_utils as cu
 
 logger = logging.getLogger("django")
+
+
+def _utcnow():
+    # OpenMRS expects encounter/obs datetimes in UTC. datetime.now() returns
+    # local server time, which on any server ahead of UTC (e.g. Tajikistan/
+    # Pakistan, UTC+5) produced a datetime OpenMRS saw as being in the future,
+    # failing its "encounter datetime should be before the current date" check.
+    return datetime.now(timezone.utc)
 
 
 def get_form_concepts(concept_ids, req):
@@ -55,7 +63,7 @@ def get_form_concepts(concept_ids, req):
 def update_existing_form(req, data, form_uuid, patient_uuid):
     try:
         patient_program_uuid = req.session["current_patient_program_flow"]["current_program"]["uuid"]
-        current_date_time_iso = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+        current_date_time_iso = _utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
         response = mu.get_encounter_by_uuid(req, form_uuid)
         form = {
             "patientProgramUuid": patient_program_uuid,
@@ -99,8 +107,8 @@ def update_existing_form(req, data, form_uuid, patient_uuid):
 
 def create_new_form(req, data, encounter_type, patient_uuid, keys_to_ignore):
     patient_program_uuid = req.session["current_patient_program_flow"]["current_program"]["uuid"]
-    form_date_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    form_date_time_iso = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+    form_date_time = _utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    form_date_time_iso = _utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
     current_location = req.session["current_patient_program_flow"]["current_program"]["location"]["uuid"]
     # Overwrite encounter datetime if it was already supplied in data
     try:
@@ -271,6 +279,58 @@ def remove_tb03_duplicates(concepts, form_data):
     for concept_key, form_data_key in concept_form_mapping.items():
         remove_duplicate_concepts(clone_concepts.get(concept_key, []), form_data.get(form_data_key, None))
     return clone_concepts
+
+
+# Maps each TB03 field's concept uuid (the POST key, since the template's
+# inputs are named via the `get_concept` filter) to the form key the
+# template's `state == 'edit'`/prefill branches read (matching the shape
+# get_tb03_by_uuid returns), and - for select fields only - the
+# get_form_concepts() key to resolve the submitted uuid's display text from.
+# None means a plain text/date field with no display lookup needed.
+TB03_PREFILL_FIELD_MAP = {
+    Concepts.TREATMENT_CENTER_FOR_IP.value: ("treatmentSiteIP", "treatmentcenterforip"),
+    Concepts.NAME_OF_IP_FACILITY.value: ("nameOfIPFacility", None),
+    Concepts.TREATMENT_CENTER_FOR_CP.value: ("treatmentSiteCP", "treatmentcenterforcp"),
+    Concepts.NAME_OF_CP_FACILITY.value: ("nameOfCPFacility", None),
+    Concepts.TUBERCULOSIS_PATIENT_CATEGORY.value: ("patientCategory", "tuberculosispatientcategory"),
+    Concepts.DOTS_TREATMENT_START_DATE.value: ("treatmentStartDate", None),
+    Concepts.ANATOMICAL_SITE_OF_TB.value: ("anatomicalSite", "siteoftbdisease"),
+    Concepts.DATE_OF_HIV_TEST.value: ("hivTestDate", None),
+    Concepts.RESULT_OF_HIV_TEST.value: ("hivStatus", "resultofhivtest"),
+    Concepts.XRAY_DATE.value: ("xrayDate", None),
+    Concepts.RESISTANCE_TYPE.value: ("resistanceType", "resistancetype"),
+    Concepts.TB_TREATMENT_OUTCOME.value: ("treatmentOutcome", "tuberculosistreatmentoutcome"),
+    Concepts.TREATMENT_OUTCOME_DATE.value: ("treatmentOutcomeDate", None),
+    Concepts.CAUSE_OF_DEATH.value: ("causeOfDeath", "causeofdeath"),
+    Concepts.OTHER_CAUSE_OF_DEATH.value: ("otherCauseOfDeath", None),
+    Concepts.DATE_OF_DEATH_AFTER_TREATMENT_OUTCOME.value: ("dateOfDeathAfterTreatmentOutcome", None),
+    Concepts.CLINICIAN_NOTES.value: ("clinicalNotes", None),
+}
+
+
+def build_tb03_prefill(post_data, concepts):
+    """
+    Rebuilds a form-shaped dict (matching what get_tb03_by_uuid returns) from
+    a failed TB03 POST submission, so tb03.html can re-render with the
+    user's entered values pre-filled instead of resetting to blank - the
+    same template branches that already prefill an existing encounter for
+    editing.
+    """
+    prefill = {}
+    for concept_uuid, (form_key, concepts_key) in TB03_PREFILL_FIELD_MAP.items():
+        value = post_data.get(concept_uuid)
+        if not value:
+            continue
+        if concepts_key:
+            match = next(
+                (c for c in concepts.get(concepts_key, []) if c["uuid"] == value),
+                None,
+            )
+            if match:
+                prefill[form_key] = {"uuid": match["uuid"], "display": match["name"]}
+        else:
+            prefill[form_key] = value
+    return prefill
 
 
 def get_tb03u_by_uuid(req, uuid):
@@ -648,8 +708,8 @@ def create_update_tranfer_out_form(req, patientuuid, data, formid=None):
         "current_program"
     ]["uuid"]
     encounter_type = EncounterType.TRANSFER_OUT.value
-    current_date_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    current_date_time_iso = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+    current_date_time = _utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    current_date_time_iso = _utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
     patient_location = req.session["current_patient_program_flow"]["current_program"][
         "location"
     ]["uuid"]
@@ -745,8 +805,8 @@ def get_obs_from_encounter(obs_set, concept_uuid):
 
 
 def create_specimen_encounter(req, data, patient_uuid):
-    form_date_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    form_date_time_iso = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+    form_date_time = _utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    form_date_time_iso = _utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
     patient_location = req.session["current_patient_program_flow"]["current_program"]["location"]["uuid"]
     encounter = {
         "patient": patient_uuid,

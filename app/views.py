@@ -546,6 +546,16 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
 def render_tb03_form(req, uuid):
     if not check_if_session_alive(req):
         return redirect("login")
+    tb03_concepts = [
+        Concepts.TREATMENT_CENTER_FOR_IP.value,
+        Concepts.TREATMENT_CENTER_FOR_CP.value,
+        Concepts.TUBERCULOSIS_PATIENT_CATEGORY.value,
+        Concepts.ANATOMICAL_SITE_OF_TB.value,
+        Concepts.RESULT_OF_HIV_TEST.value,
+        Concepts.RESISTANCE_TYPE.value,
+        Concepts.TB_TREATMENT_OUTCOME.value,
+        Concepts.CAUSE_OF_DEATH.value,
+    ]
     if req.method == "POST":
         try:
             response = fu.create_update_tb03(req, uuid, req.POST)
@@ -560,19 +570,28 @@ def render_tb03_form(req, uuid):
                 return redirect(redirect_to)
         except Exception as e:
             log_and_show_error(e, req)
-            return redirect("tb03", uuid=uuid)
+            # Re-render with what the user entered instead of redirecting
+            # (a redirect drops req.POST, so the whole form came back blank
+            # on any validation failure). Falls back to the old
+            # redirect-and-lose-it behaviour if even that re-render fails.
+            try:
+                title = mu.get_global_msgs("mdrtb.tb03", locale=req.session["locale"])
+                concepts = fu.get_form_concepts(tb03_concepts, req)
+                context = {
+                    "concepts": concepts,
+                    "title": title,
+                    "uuid": uuid,
+                    "current_patient_program_flow": req.session["current_patient_program_flow"],
+                    "identifiers": pu.get_patient_identifiers(req, uuid),
+                    "form": fu.build_tb03_prefill(req.POST, concepts),
+                    "resubmitted": True,
+                }
+                mu.add_url_to_breadcrumb(req, context["title"])
+                return render(req, "app/tbregister/dots/tb03.html", context=context)
+            except Exception:
+                return redirect("tb03", uuid=uuid)
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-        tb03_concepts = [
-            Concepts.TREATMENT_CENTER_FOR_IP.value,
-            Concepts.TREATMENT_CENTER_FOR_CP.value,
-            Concepts.TUBERCULOSIS_PATIENT_CATEGORY.value,
-            Concepts.ANATOMICAL_SITE_OF_TB.value,
-            Concepts.RESULT_OF_HIV_TEST.value,
-            Concepts.RESISTANCE_TYPE.value,
-            Concepts.TB_TREATMENT_OUTCOME.value,
-            Concepts.CAUSE_OF_DEATH.value,
-        ]
         title = mu.get_global_msgs("mdrtb.tb03", locale=req.session["locale"])
         concepts = fu.get_form_concepts(tb03_concepts, req)
         context = {
@@ -594,6 +613,16 @@ def render_edit_tb03_form(req, uuid, formid):
     if not check_if_session_alive(req):
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         return redirect("login")
+    tb03_concepts = [
+        Concepts.TREATMENT_CENTER_FOR_IP.value,
+        Concepts.TREATMENT_CENTER_FOR_CP.value,
+        Concepts.TUBERCULOSIS_PATIENT_CATEGORY.value,
+        Concepts.ANATOMICAL_SITE_OF_TB.value,
+        Concepts.RESULT_OF_HIV_TEST.value,
+        Concepts.RESISTANCE_TYPE.value,
+        Concepts.TB_TREATMENT_OUTCOME.value,
+        Concepts.CAUSE_OF_DEATH.value,
+    ]
     if req.method == "POST":
         try:
             response = fu.create_update_tb03(req, uuid, req.POST, formid=formid)
@@ -602,7 +631,37 @@ def render_edit_tb03_form(req, uuid, formid):
                 return redirect(req.session["redirect_url"])
         except Exception as e:
             log_and_show_error(e, req)
-            return redirect("edittb03", uuid=uuid, formid=formid)
+            # Re-render with what the user submitted instead of redirecting
+            # (a redirect drops req.POST and re-fetches the last-saved
+            # encounter, silently discarding the edit the user just made).
+            # Falls back to the old redirect-and-lose-it behaviour if even
+            # that re-render fails.
+            try:
+                title = (
+                    mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+                    + " "
+                    + mu.get_global_msgs("mdrtb.tb03", locale=req.session["locale"])
+                )
+                context = {
+                    "title": title,
+                    "state": "edit",
+                    "uuid": uuid,
+                    "current_patient_program_flow": req.session["current_patient_program_flow"],
+                    "identifiers": pu.get_patient_identifiers(req, uuid),
+                }
+                context.update(check_privileges(req, privileges_required))
+                mu.add_url_to_breadcrumb(req, context["title"])
+                concepts = fu.get_form_concepts(tb03_concepts, req)
+                form = fu.build_tb03_prefill(req.POST, concepts)
+                # tb03.html's form action is {% url 'edittb03' ... formid=form.uuid %},
+                # which build_tb03_prefill doesn't set since it isn't a POST field.
+                form["uuid"] = formid
+                fu.remove_tb03_duplicates(concepts, form)
+                context["form"] = form
+                context["concepts"] = concepts
+                return render(req, "app/tbregister/dots/tb03.html", context=context)
+            except Exception:
+                return redirect("edittb03", uuid=uuid, formid=formid)
     try:
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         title = (
@@ -618,16 +677,6 @@ def render_edit_tb03_form(req, uuid, formid):
             "identifiers": pu.get_patient_identifiers(req, uuid),
         }
         context.update(check_privileges(req, privileges_required))
-        tb03_concepts = [
-            Concepts.TREATMENT_CENTER_FOR_IP.value,
-            Concepts.TREATMENT_CENTER_FOR_CP.value,
-            Concepts.TUBERCULOSIS_PATIENT_CATEGORY.value,
-            Concepts.ANATOMICAL_SITE_OF_TB.value,
-            Concepts.RESULT_OF_HIV_TEST.value,
-            Concepts.RESISTANCE_TYPE.value,
-            Concepts.TB_TREATMENT_OUTCOME.value,
-            Concepts.CAUSE_OF_DEATH.value,
-        ]
         mu.add_url_to_breadcrumb(req, context["title"])
         form = fu.get_tb03_by_uuid(req, formid)
         concepts = fu.get_form_concepts(tb03_concepts, req)
@@ -1370,10 +1419,26 @@ def render_logout(req):
 # don't contain this pattern and pass through unchanged.
 _OPENMRS_CLASS_NOISE = re.compile(r"\s*on class org\.openmrs\.\w+")
 
+# Hibernate Validator failures come back as OpenMRS's whole in-memory entity
+# dump followed by the actual reason, e.g. "['Encounter: [(no ID) Tue Sep 15
+# ... num Obs: [obs id is null, obs id is null, ...] num Orders: 0 ]' failed
+# to validate with reason: encounterDatetime: The encounter datetime should
+# be before the current date.]". Everything before "failed to validate with
+# reason:" is just the entity's toString() and useless to a clinician; keep
+# only the reason that follows it.
+_OPENMRS_VALIDATION_FAILURE = re.compile(
+    r"^\[\s*'.*?'\s*failed to validate with reason:\s*(.*?)\s*\]\s*$", re.DOTALL
+)
+
 
 def log_and_show_error(error, req):
     logger.error(error, exc_info=True)
-    message = _OPENMRS_CLASS_NOISE.sub("", str(error))
+    message = str(error)
+    validation_failure = _OPENMRS_VALIDATION_FAILURE.match(message)
+    if validation_failure:
+        message = validation_failure.group(1)
+    else:
+        message = _OPENMRS_CLASS_NOISE.sub("", message)
     messages.error(req, message)
 
 
@@ -2629,7 +2694,7 @@ def render_add_lab_test(req, uuid):
     if patient:
         context["patientdata"] = patient
     if req.method == "POST":
-        order_date = req.POST.get("orderDate") or util.get_date_time_now()
+        order_date = req.POST.get("orderDate") or util.get_utc_date_time_now()
         # Which episode the order belongs to. The form resolves this to a
         # single value (session episode or sole enrolment) or makes the user
         # pick; if the patient has no enrolment the field is absent and the

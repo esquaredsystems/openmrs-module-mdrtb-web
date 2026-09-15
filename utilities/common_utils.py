@@ -1,5 +1,5 @@
 from pathlib import Path
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 from dateutil import parser
 import utilities.metadata_util as mu
 from bs4 import BeautifulSoup
@@ -401,7 +401,20 @@ def string_to_html(html_string):
 
 
 def get_date_time_now():
+    # Local server time - used for display (e.g. report_date, printed via
+    # get_report_date) where the viewer expects their own wall-clock time,
+    # not UTC. Do not feed this into an encounterDatetime/obsDatetime sent to
+    # OpenMRS - use get_utc_date_time_now() for that (see its docstring).
     return datetime.now().isoformat()
+
+
+def get_utc_date_time_now():
+    # For encounter/obs datetimes sent to OpenMRS, which expects UTC.
+    # datetime.now() returns local server time; on any server whose timezone
+    # is ahead of UTC (e.g. Tajikistan/Pakistan, UTC+5) that made OpenMRS see
+    # a "future" datetime and reject the save with "encounter datetime
+    # should be before the current date".
+    return datetime.now(timezone.utc).isoformat()
 
 
 def get_quarters_with_multiple_months(start_month, end_month):
