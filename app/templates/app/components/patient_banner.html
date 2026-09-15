@@ -27,7 +27,19 @@ hides the actual message.
         </div>
         <div class="font-bold">
             <div>{{patient.name}}</div>
-            <div>{{patient.age}} y ({{patient.dob | iso_to_normal_date}})</div>
+            <div class="flex items-center gap-1">
+                {% if show_gender_icon %}
+                {% comment %}
+                This banner's own background (.patient-banner-container) is
+                itself a light blue (rgb(157 198 222)), so the default
+                male_color (#2D9CDB, used for the Gender field further down
+                this same page) would nearly disappear into it - override
+                with a darker navy that keeps ~5.7:1 contrast here.
+                {% endcomment %}
+                {% include 'app/components/gender_avatar.html' with gender=patient.gender css_class='w-6 h-6 shrink-0' male_color='#1E3A8A' %}
+                {% endif %}
+                <span>{{patient.age}} y ({{patient.dob | iso_to_normal_date}})</span>
+            </div>
         </div>
     </div>
     <div class="space-y-2 flex flex-col justify-center font-bold text-base">

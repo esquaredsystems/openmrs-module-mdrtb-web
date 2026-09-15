@@ -9,7 +9,7 @@
 `patient` is used when the view fetched one, otherwise `flow_patient`, i.e. the patient cached in the program-flow session and put in every template's context.
 {% endcomment %}
 
-{% include 'app/components/patient_banner.html' with patient=patient|default:flow_patient %}
+{% include 'app/components/patient_banner.html' with patient=patient|default:flow_patient show_gender_icon=True %}
 
 
 <div>
@@ -94,21 +94,7 @@
               {{'mdrtb.tb03.gender'|get_message:locale|default:"en"}}:
             </span>
             <span class="tb03-form-label">
-              {% if current_patient_program_flow.current_patient.gender == 'M' %}
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" class="w-4 h-4 inline-block align-text-bottom" style="color:#2D9CDB" aria-hidden="true">
-                <circle cx="10" cy="14" r="6" />
-                <line x1="14.5" y1="9.5" x2="20" y2="4" />
-                <polyline points="14 4 20 4 20 10" />
-              </svg>
-              {% elif current_patient_program_flow.current_patient.gender == 'F' %}
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" class="w-4 h-4 inline-block align-text-bottom" style="color:#EB5757" aria-hidden="true">
-                <circle cx="12" cy="9" r="6" />
-                <line x1="12" y1="15" x2="12" y2="21" />
-                <line x1="9" y1="18" x2="15" y2="18" />
-              </svg>
-              {% endif %}
+              {% include 'app/components/gender_avatar.html' with gender=current_patient_program_flow.current_patient.gender css_class='w-5 h-5' %}
               {{ current_patient_program_flow.current_patient.gender|get_gender_message:locale }}
             </span>
           </div>

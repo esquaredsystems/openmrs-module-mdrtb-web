@@ -198,8 +198,16 @@
       setSelectValueByText("#country-select", country.trim());
       const region = "{{ patient.stateProvince }}".trim();
       setSelectValueByText("#region-select", region);
+      // .val() doesn't fire "change", so district/facility stayed disabled
+      // and got dropped from the POST entirely - trigger it explicitly.
+      $("#region-select").trigger("change");
       const district = "{{ patient.countyDistrict }}";
       setSelectValueByText("#district-select", district);
+      $("#district-select").trigger("change");
+      const facility = "{{ patient.facility }}".trim();
+      if (facility) {
+          setSelectValueByText("#facility-select", facility);
+      }
   });
 
   function setSelectValueByText(selectId, text) {

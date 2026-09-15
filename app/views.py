@@ -229,6 +229,7 @@ def render_edit_patient(req, uuid):
                 return redirect("enrolledprograms", uuid=uuid)
         except Exception as e:
             log_and_show_error(e, req)
+        return redirect("editpatient", uuid=uuid)
     else:
         privileges_required = [Privileges.ADD_PATIENTS]
         context.update(check_privileges(req, privileges_required))
