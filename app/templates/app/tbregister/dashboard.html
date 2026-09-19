@@ -446,6 +446,17 @@ data-bs-target="#collapse{{forloop.counter}}" aria-expanded="false"
   let itemsAppended = {}
   // jQuery's .data() already parses JSON, so this only handles the empty case.
   const getLabAttributes = (element) => $(element).data('attributes') || []
+  // Date attributes come back as "2020-09-04 00:00:00"; show them as dd.mm.yyyy like the rest of the app.
+  const formatAttributeValue = (attribute) => {
+    const value = attribute.valueReference
+    if ((attribute.attributeType.datatype || '').endsWith('DateDatatype')) {
+      const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value)
+      if (match) {
+        return `${match[3]}.${match[2]}.${match[1]}`
+      }
+    }
+    return value
+  }
   const showResults = (element, uuid) => {
     if (itemsAppended[uuid]) {
       return;
@@ -512,7 +523,7 @@ data-bs-target="#collapse{{forloop.counter}}" aria-expanded="false"
             $(`#${uuid}common`).append(
               `
               <div class="border w-full h-full p-2 border-gray-200">${attribute.attributeType.name}</div>
-              <div class="border w-full p-2 h-full border-gray-200">${attribute.valueReference}</div>
+              <div class="border w-full p-2 h-full border-gray-200">${formatAttributeValue(attribute)}</div>
               `
             )
           }
@@ -537,7 +548,7 @@ data-bs-target="#collapse{{forloop.counter}}" aria-expanded="false"
             $(`#${uuid}${attribute.attributeType.group.toLowerCase()}`).append(
               `
               <div class="border w-full h-full p-2 border-gray-200 ">${attribute.attributeType.name}</div>
-              <div class="border w-full h-full p-2 border-gray-200">${attribute.valueReference}</div>
+              <div class="border w-full h-full p-2 border-gray-200">${formatAttributeValue(attribute)}</div>
               `
             )
           }

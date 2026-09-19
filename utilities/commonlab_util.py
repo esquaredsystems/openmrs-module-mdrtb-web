@@ -743,8 +743,11 @@ def get_labtest_attributes(req, orderid, representation=None):
         return attributes_with_values
 
 
-# Attribute type codes (the raw English attribute name, not the localized display name)
-COLLECTION_DATE_CODE = "SPUTUM COLLECTION DATE"
+# Attribute type codes: the raw English attribute name, not the localized display name.
+# The collection date's code is "DATE COLLECTED" while its English display name is
+# "SPUTUM COLLECTION DATE"; attribute types cached before `code` existed only have the
+# display name (English), so both are accepted.
+COLLECTION_DATE_CODES = ("DATE COLLECTED", "SPUTUM COLLECTION DATE")
 INVESTIGATION_DATE_CODE = "INVESTIGATION DATE"
 # Result groups shown first, in this order. Any other group follows alphabetically.
 LAB_METHOD_ORDER = ["XPERT", "HAIN", "CULTURE", "DST"]
@@ -786,7 +789,7 @@ def summarize_lab_order(order):
         datatype = attribute_type.get("datatype") or ""
         if datatype.endswith("DateDatatype"):
             date = _lab_attribute_date(value)
-            if code == COLLECTION_DATE_CODE:
+            if code in COLLECTION_DATE_CODES:
                 collection_date = date
             elif code == INVESTIGATION_DATE_CODE:
                 investigation_date = date
