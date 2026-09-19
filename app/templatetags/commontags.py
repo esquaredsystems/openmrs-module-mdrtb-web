@@ -59,6 +59,15 @@ def get_id_from_name(name):
 
 
 @register.filter
+def to_json(value):
+    """
+    Real JSON for a data-* attribute. Template autoescaping makes it attribute-safe;
+    printing the Python repr instead breaks on apostrophes in free-text values.
+    """
+    return json.dumps(value, ensure_ascii=False)
+
+
+@register.filter
 def parse_json(jsonstring):
     parsed_json = json.loads(jsonstring)
     return list(parsed_json)

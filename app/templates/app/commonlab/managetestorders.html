@@ -42,15 +42,16 @@
               <tr>
                 <th
                   class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  {{'labtest.labTestType'|get_message:locale|default:"en"}}
-                </th>
-                <th
-                  class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  {{'ConceptProposal.encounter'|get_message:locale|default:"en"}}
+                  {{'commonlabtest.order.collection.date'|get_message:locale|default:"en"}}
                 </th>
                 <th
                   class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                   {{'labtest.resultDate'|get_message:locale|default:"en"}}
+                </th>
+
+                <th
+                  class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  {{'mdrtb.result'|get_message:locale|default:"en"}}
                 </th>
 
                 <th
@@ -68,27 +69,13 @@
               {% for order in orders %}
               <tr>
                 <td class="px-5 pt-3 border-b border-gray-200 bg-white text-sm">
-                  <div class="flex">
-                    <div class="ml-3">
-                      <p class="text-gray-900 whitespace-no-wrap">
-                        {{order.labTestType.referenceConcept.display}}
-                      </p>
-                    </div>
-                  </div>
+                  <p class="text-gray-900 whitespace-no-wrap">{{order.summary.collection_date|iso_to_normal_date|default:"—"}}</p>
                 </td>
                 <td class="px-5 pt-3 border-b border-gray-200 bg-white text-sm">
-                  <p class="text-gray-900 whitespace-no-wrap">
-                    {{order.order.encounter.display|get_encounter_name}}
-                    {{order.order.encounter.display|get_encounter_date}}</p>
+                  <p class="text-gray-900 whitespace-no-wrap">{{order.summary.result_date|iso_to_normal_date|default:"—"}}</p>
                 </td>
                 <td class="px-5 pt-3 border-b border-gray-200 bg-white text-sm">
-                  <p class="text-gray-900 whitespace-no-wrap">
-                    {% if order.auditInfo.dateChanged is not None %}
-                    {{order.auditInfo.dateChanged|iso_to_normal_date}}
-                    {% else %}
-                    {{order.auditInfo.dateCreated|iso_to_normal_date}}
-                    {% endif %}
-                  </p>
+                  {% with lab_result=order %}{% include 'app/components/lab_result_summary.html' %}{% endwith %}
                 </td>
 
                 <td class="px-5 pt-3 border-b border-gray-200 bg-white text-sm">

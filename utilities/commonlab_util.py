@@ -10,6 +10,7 @@ from resources.enums.mdrtbConcepts import Concepts
 from resources.enums.constants import Constants
 import zlib
 import pickle
+from datetime import datetime
 
 logger = logging.getLogger("django")
 
@@ -516,6 +517,7 @@ def get_custom_attribute_for_labresults(
                                         {
                                             "attributeType": {
                                                 "uuid": attribute["uuid"],
+                                                "code": attribute["name"],
                                                 "name": concept_full_name,
                                                 "datatype": attribute[
                                                     "datatypeClassname"
@@ -551,6 +553,7 @@ def get_custom_attribute_for_labresults(
                                         {
                                             "attributeType": {
                                                 "uuid": attribute["uuid"],
+                                                "code": attribute["name"],
                                                 "name": concept_full_name,
                                                 "datatype": attribute[
                                                     "datatypeClassname"
@@ -619,6 +622,7 @@ def get_custom_attribute_for_labresults(
                                     {
                                         "attributeType": {
                                             "uuid": attribute["uuid"],
+                                            "code": attribute["name"],
                                             "name": concept_full_name,
                                             "datatype": attribute["datatypeClassname"],
                                             "inputType": datatype["inputType"],
@@ -651,6 +655,7 @@ def get_custom_attribute_for_labresults(
                                     {
                                         "attributeType": {
                                             "uuid": attribute["uuid"],
+                                            "code": attribute["name"],
                                             "name": concept_full_name,
                                             "datatype": attribute["datatypeClassname"],
                                             "inputType": datatype["inputType"],
@@ -738,14 +743,111 @@ def get_labtest_attributes(req, orderid, representation=None):
         return attributes_with_values
 
 
+# Attribute type codes (the raw English attribute name, not the localized display name)
+COLLECTION_DATE_CODE = "SPUTUM COLLECTION DATE"
+INVESTIGATION_DATE_CODE = "INVESTIGATION DATE"
+# Result groups shown first, in this order. Any other group follows alphabetically.
+LAB_METHOD_ORDER = ["XPERT", "HAIN", "CULTURE", "DST"]
+DASHBOARD_LAB_ORDER_LIMIT = 5
+
+
+def _lab_attribute_date(value):
+    """ISO date (YYYY-MM-DD) from an attribute value like '2018-01-10 00:00:00', or None."""
+    try:
+        return datetime.strptime(str(value)[:10], "%Y-%m-%d").date().isoformat()
+    except ValueError:
+        return None
+
+
+def summarize_lab_order(order):
+    """
+    Pulls the fields specialists read first out of an order's attributes.
+
+    Returns a dict with:
+        collection_date / result_date (ISO date or None). The result date is the
+            investigation date, else the latest date recorded inside a result group.
+        sort_date: collection date, else result date, else the order's activation date.
+        dated: True when the collection or result date is known. Orders without one
+            sort after every dated order, whatever their activation date.
+        methods: one entry per result group (Xpert, Hain, Culture, DST ...) holding
+            the concept-coded and free-text results recorded in it.
+    """
+    collection_date = None
+    investigation_date = None
+    group_dates = []
+    methods = {}
+    for attribute in order.get("attributes") or []:
+        attribute_type = attribute["attributeType"]
+        value = attribute.get("valueReference")
+        if not value:
+            continue
+        code = (attribute_type.get("code") or attribute_type.get("name") or "").upper()
+        group = attribute_type.get("group")
+        datatype = attribute_type.get("datatype") or ""
+        if datatype.endswith("DateDatatype"):
+            date = _lab_attribute_date(value)
+            if code == COLLECTION_DATE_CODE:
+                collection_date = date
+            elif code == INVESTIGATION_DATE_CODE:
+                investigation_date = date
+            elif group and date:
+                group_dates.append(date)
+            continue
+        if not group or datatype.endswith("BooleanDatatype"):
+            continue
+        if attribute_type.get("answers") is not None:
+            value = next(
+                (a["display"] for a in attribute_type["answers"] if a["uuid"] == value),
+                None,
+            )
+            if value is None:
+                continue
+        result = {"name": attribute_type.get("name"), "value": value}
+        if result not in methods.setdefault(group, []):
+            methods[group].append(result)
+    result_date = investigation_date or (max(group_dates) if group_dates else None)
+    activated = _lab_attribute_date((order.get("order") or {}).get("dateActivated"))
+    ordered_groups = sorted(
+        methods,
+        key=lambda g: (
+            LAB_METHOD_ORDER.index(g.upper()) if g.upper() in LAB_METHOD_ORDER
+            else len(LAB_METHOD_ORDER),
+            g,
+        ),
+    )
+    return {
+        "collection_date": collection_date,
+        "result_date": result_date,
+        "sort_date": collection_date or result_date or activated,
+        "dated": bool(collection_date or result_date),
+        "methods": [{"group": g, "results": methods[g]} for g in ordered_groups],
+    }
+
+
+def add_lab_order_summaries(orders):
+    """Attaches `summary` to each order and sorts the list newest first, in place."""
+    for order in orders:
+        order["summary"] = summarize_lab_order(order)
+    orders.sort(
+        key=lambda o: (o["summary"]["dated"], o["summary"]["sort_date"] or ""),
+        reverse=True,
+    )
+    return orders
+
+
 def get_lab_test_orders_for_dashboard(req, patientuuid):
+    """
+    The patient's most recent lab orders for the dashboards.
+
+    The API has no useful ordering, so every order is fetched, sorted by the real
+    collection/result date (which lives in the attributes) and then cut to the limit.
+    """
     lab_results = None
     lab_results_status, lab_results_response = ru.get(
         req,
         f"commonlab/labtestorder",
         {
             "patient": patientuuid,
-            "limit": 5,
             "v": "custom:(uuid,labTestType,labReferenceNumber,order)",
         },
     )
@@ -758,5 +860,7 @@ def get_lab_test_orders_for_dashboard(req, patientuuid):
                 for ltt in response["results"]:
                     if ltt["uuid"] == lab_result["labTestType"]["uuid"]:
                         lab_result.update({"labTestType": ltt})
-        lab_results = lab_results_response["results"]
+        lab_results = add_lab_order_summaries(lab_results_response["results"])[
+            :DASHBOARD_LAB_ORDER_LIMIT
+        ]
     return lab_results

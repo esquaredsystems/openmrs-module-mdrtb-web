@@ -136,7 +136,7 @@ def save_patient(req, data, uuid=None):
             "names": [
                 {
                     "givenName": data["givenname"],
-                    "middleName": data.get("patronymicname") or None,
+                    "familyName2": data.get("patronymicname") or None,
                     "familyName": data["familyname"],
                 }
             ],

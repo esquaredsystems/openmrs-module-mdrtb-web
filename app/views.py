@@ -2667,7 +2667,7 @@ def render_managetestorders(req, uuid):
                     for ltt in lab_test_types["results"]:
                         if ltt["uuid"] == lab_result["labTestType"]["uuid"]:
                             lab_result.update({"labTestType": ltt})
-            orders = response["results"]
+            orders = cu.add_lab_order_summaries(response["results"])
             for order in orders:
                 sample_accepted = check_if_sample_exists(req, order["uuid"])
                 order.update({"sample_accepted": sample_accepted})

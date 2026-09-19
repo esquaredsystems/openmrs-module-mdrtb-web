@@ -112,12 +112,13 @@
         method="post" class="m-10 flex-column-center space-y-6" action="">
         {% csrf_token %}
 
-        <div class="input-container">
+        <div class="input-container" {% if state != 'edit' %}style="display:none"{% endif %}>
             <label class="input-label">
                 {{'ConceptProposal.encounter'|get_message:locale|default:"en"}}
             </label>
             <div class="input-container">
-                <input id="createencounter" name="createencounter" type="checkbox" class="check-input" />
+                <input id="createencounter" name="createencounter" type="checkbox" class="check-input"
+                    {% if state != 'edit' %}checked{% endif %} />
                 <label>{{'mdrtb.addANewSpecimen'|get_message:locale|default:"en"}}</label>
                 <select id="encounter" name="encounter" class="input form-control">
                     {% if state == 'edit' %}
@@ -173,13 +174,13 @@
 
     <div class="input-container">
         <label class="input-label" for="order-date">
-            {{'labtest.order.date'|get_message:locale|default:"en"}}
+            {{'commonlabtest.order.collection.date'|get_message:locale|default:"en"}}
         </label>
         <input type="date" name="orderDate" id="order-date" class="input form-control" required
             {% if state == 'edit' %}value="{{laborder.order.date_activated|slice:':10'}}"{% endif %}>
     </div>
 
-    <div class="input-container">
+    <div class="input-container" {% if state != 'edit' %}style="display:none"{% endif %}>
             <label class="input-label" for="">
                 {{'labtest.testGroup'|get_message:locale|default:"en"}}
             </label>
@@ -187,7 +188,7 @@
                 {% if state == 'edit' %}
                     <option selected value="{{laborder.labtesttype.testGroup}}">{{laborder.labtesttype.testGroup}}</option>
                 {% else %}
-                    <option selected value="None">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+                    <option selected value="MICROBIOLOGY">{{'labtest.testgroup.microbiology'|get_message:locale|default:"en"}}</option>
                 {% endif %}
 
                 {% for group in testgroups %}
@@ -195,7 +196,7 @@
                 {% endfor %}
             </select>
         </div>
-        <div class="input-container">
+        <div class="input-container" {% if state != 'edit' %}style="display:none"{% endif %}>
             <label class="input-label" for="">
                 {{'labtest.testType'|get_message:locale|default:"en"}}
             </label>
@@ -209,7 +210,7 @@
 
         </div>
 
-        <div class="input-container">
+        <div class="input-container" {% if state != 'edit' %}style="display:none"{% endif %}>
             <label class="input-label" for="name">
                 {{'labtest.careSetting'|get_message:locale|default:"en"}}
             </label>
@@ -229,7 +230,7 @@
                         <input {% if laborder.careSetting.uuid == care_setting.outpatient.value %} checked {% endif %}
                             name="careSetting" type="radio" value="{{ care_setting.outpatient.value }}" class="radio-input" />
                     {% else %}
-                        <input name="careSetting" type="radio" value="{{ care_setting.outpatient.value }}" class="radio-input" />
+                        <input checked name="careSetting" type="radio" value="{{ care_setting.outpatient.value }}" class="radio-input" />
                     {% endif %}
                 </div>
             </div>
@@ -361,6 +362,11 @@
                     })
                 )
             })
+            if (state !== 'edit') {
+                $('#test-select option').filter(function () {
+                    return $(this).text().trim() === 'MICROSCOPY TEST CONSTRUCT'
+                }).prop('selected', true)
+            }
         } else {
             $('#test-select').prop('disabled', true)
         }
