@@ -10,8 +10,8 @@
 <div class="loc-page loc-form-page">
   <div class="loc-header">
     <h1>
-      {% if state == 'edit' %}{{'labtest.labtesttype.edit'|get_message:locale|default:"en"}}
-      {% else %}{{'labtest.labtesttype.add'|get_message:locale|default:"en"}}{% endif %}
+      {% if state == 'edit' %}{{'commonlabtest.labtesttype.edit'|get_message:locale|default:"en"}}
+      {% else %}{{'commonlabtest.labtesttype.add'|get_message:locale|default:"en"}}{% endif %}
     </h1>
     <a class="cancel-button" href="{% url 'managetesttypes' %}">
       {{'general.cancel'|get_message:locale|default:"en"}}</a>
@@ -154,8 +154,8 @@
             <th></th>
             <th>{{'general.name'|get_message:locale|default:"en"}}</th>
             <th>{{'general.dataType'|get_message:locale|default:"en"}}</th>
-            <th>{{'labtest.labtestattributetype.groupName'|get_message:locale|default:"en"}}</th>
-            <th>{{'labtest.labtestattributetype.multisetName'|get_message:locale|default:"en"}}</th>
+            <th>{{'commonlabtest.labtestattributetype.groupName'|get_message:locale|default:"en"}}</th>
+            <th>{{'commonlabtest.labtestattributetype.multisetName'|get_message:locale|default:"en"}}</th>
             <th>{{'general.maxOccurs'|get_message:locale|default:"en"}}</th>
             <th></th>
           </tr>
@@ -200,15 +200,15 @@
 
     <div class="lab-attrs-actions">
       <a class="btn btn-success btn-sm" href="{% url 'edittesttype' uuid=testType.uuid %}?attribute=new">
-        {{'labtest.labtestattributetype.add'|get_message:locale|default:"en"}}</a>
+        {{'commonlabtest.labtestattributetype.add'|get_message:locale|default:"en"}}</a>
     </div>
 
     {% else %}
 
   <div class="page-panel">
     <h3>
-      {% if editingAttribute %}{{'labtest.labtestattributetype.edit'|get_message:locale|default:"en"}}
-      {% else %}{{'labtest.labtestattributetype.add'|get_message:locale|default:"en"}}{% endif %}
+      {% if editingAttribute %}{{'commonlabtest.labtestattributetype.edit'|get_message:locale|default:"en"}}
+      {% else %}{{'commonlabtest.labtestattributetype.add'|get_message:locale|default:"en"}}{% endif %}
     </h3>
     <form method="post"
       action="{% if editingAttribute %}{% url 'editattr' testid=testType.uuid attrid=editingAttribute.uuid %}{% else %}{% url 'addattr' uuid=testType.uuid %}{% endif %}">
@@ -249,12 +249,12 @@
 
       <div class="loc-row">
         <div class="loc-field">
-          <label for="attr-grpname">{{'labtest.labtestattributetype.groupName'|get_message:locale|default:"en"}}</label>
+          <label for="attr-grpname">{{'commonlabtest.labtestattributetype.groupName'|get_message:locale|default:"en"}}</label>
           <input type="text" id="attr-grpname" name="grpname" value="{{ editingAttribute.groupName|default:'' }}">
         </div>
         <div class="loc-field">
           <label
-            for="attr-mutname">{{'labtest.labtestattributetype.multisetName'|get_message:locale|default:"en"}}</label>
+            for="attr-mutname">{{'commonlabtest.labtestattributetype.multisetName'|get_message:locale|default:"en"}}</label>
           <input type="text" id="attr-mutname" name="mutname" value="{{ editingAttribute.multisetName|default:'' }}">
         </div>
       </div>

@@ -15,7 +15,7 @@
     {% if state == 'edit' %}
     <div id="form-info" class="flex-center space-x-4">
         <h1 class="text-[#2D9CDB] text-3xl font-bold">
-            {{'labtest.labtestsample.edit'|get_message:locale|default:"en"}}
+            {{'commonlabtest.labtestsample.edit'|get_message:locale|default:"en"}}
         </h1>
         <button type="button" id="editbtn" title="{{'general.edit'|get_message:locale|default:"en"}}" aria-label="{{'general.edit'|get_message:locale|default:"en"}}">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -38,7 +38,7 @@
     </div>
     {% else %}
     <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
-        {{'labtest.labtestsample.add'|get_message:locale|default:"en"}}
+        {{'commonlabtest.labtestsample.add'|get_message:locale|default:"en"}}
     </h2>
     {% endif %}
     <form onsubmit="disableSubmit()" class="m-10 flex-column-center space-y-6"
@@ -78,7 +78,7 @@
         </div>
         <div class="input-container">
             <label class="input-label">
-                {{'labtest.labtestsample.quantity'|get_message:locale|default:"en"}}
+                {{'commonlabtest.labtestsample.quantity'|get_message:locale|default:"en"}}
             </label>
             {% if state == 'edit' and sample.quantity %}
                 <input class="input form-control" value="{{sample.quantity}}" type="number" name="quantity">
@@ -89,7 +89,7 @@
         </div>
         <div class="input-container">
             <label class="input-label">
-                {{'labtest.labtestsample.unit'|get_message:locale|default:"en"}}
+                {{'commonlabtest.labtestsample.unit'|get_message:locale|default:"en"}}
             </label>
 
             <select name="units" class="input form-control">
@@ -106,7 +106,7 @@
         </div>
         <div class="input-container">
             <label class="input-label required">
-                {{'labtest.labtestsample.sampleIdentifier'|get_message:locale|default:"en"}}
+                {{'commonlabtest.labtestsample.sampleIdentifier'|get_message:locale|default:"en"}}
             </label>
             {% if state == 'edit' and sample.sampleIdentifier %}
                 <input class="input form-control" type="text" name="specimenid" value="{{sample.sampleIdentifier}}">
@@ -118,7 +118,7 @@
         </div>
         <div class="input-container">
             <label class="input-label required">
-                {{'labtest.labtestsample.collectionDate'|get_message:locale|default:"en"}}
+                {{'commonlabtest.labtestsample.collectionDate'|get_message:locale|default:"en"}}
             </label>
             {% if state == 'edit' and sample.collectionDate %}
                 <input required class="input form-control" type="date" name="collectedon"

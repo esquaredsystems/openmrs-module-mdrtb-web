@@ -1,0 +1,21 @@
+{% if gender == 'M' %}
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+  class="{{css_class|default:'w-5 h-5'}} inline-block align-middle" style="color:{{male_color|default:'#2D9CDB'}}" aria-hidden="true">
+  <circle cx="12" cy="4.5" r="2.3" />
+  <rect x="7.3" y="8.3" width="1.6" height="6" rx="0.8" />
+  <rect x="15.1" y="8.3" width="1.6" height="6" rx="0.8" />
+  <rect x="9" y="8" width="6" height="7.5" rx="1" />
+  <rect x="9.2" y="15.5" width="2.1" height="6.5" rx="0.6" />
+  <rect x="12.7" y="15.5" width="2.1" height="6.5" rx="0.6" />
+</svg>
+{% elif gender == 'F' %}
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+  class="{{css_class|default:'w-5 h-5'}} inline-block align-middle" style="color:{{female_color|default:'#EC4899'}}" aria-hidden="true">
+  <circle cx="12" cy="4.5" r="2.3" />
+  <rect x="8.6" y="8.3" width="1.5" height="5.5" rx="0.75" />
+  <rect x="13.9" y="8.3" width="1.5" height="5.5" rx="0.75" />
+  <path d="M10.2 8 L13.8 8 L16.1 15.3 Q16.4 16.5 15.2 16.5 L8.8 16.5 Q7.6 16.5 7.9 15.3 Z" />
+  <rect x="9.2" y="16.5" width="2.1" height="5.5" rx="0.6" />
+  <rect x="12.7" y="16.5" width="2.1" height="5.5" rx="0.6" />
+</svg>
+{% endif %}

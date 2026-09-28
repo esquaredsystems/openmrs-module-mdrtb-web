@@ -35,7 +35,7 @@
           <label class="input-label w-full required"
             for="givenname">{{'mdrtb.givenname'|get_message:locale|default:"en"}}</label>
           <input required class="input form-control" type="text" id="givenname" name="givenname"
-            pattern="[^0-9!@#$%^&*()_+{}[\]:;<>,.?~\\/\-=|]+" title="Name cannont contain numbers"
+            pattern="[^0-9!@#$%^&*()_+{}[\]:;<>,.?~\\/\-=|]+" title="Name cannot contain numbers"
             value="{{patient.givenName}}"
           />
         </div>
@@ -43,7 +43,7 @@
           <label class="input-label w-full required"
             for="familyname">{{'mdrtb.familyname'|get_message:locale|default:"en"}}</label>
           <input required class="input form-control" type="text" id="familyname" name="familyname"
-            pattern="[^0-9!@#$%^&*()_+{}[\]:;<>,.?~\\/\-=|]+" title="Name cannont contain numbers"
+            pattern="[^0-9!@#$%^&*()_+{}[\]:;<>,.?~\\/\-=|]+" title="Name cannot contain numbers"
             value="{{patient.familyName}}"
           />
         </div>
@@ -198,8 +198,16 @@
       setSelectValueByText("#country-select", country.trim());
       const region = "{{ patient.stateProvince }}".trim();
       setSelectValueByText("#region-select", region);
+      // .val() doesn't fire "change", so district/facility stayed disabled
+      // and got dropped from the POST entirely - trigger it explicitly.
+      $("#region-select").trigger("change");
       const district = "{{ patient.countyDistrict }}";
       setSelectValueByText("#district-select", district);
+      $("#district-select").trigger("change");
+      const facility = "{{ patient.facility }}".trim();
+      if (facility) {
+          setSelectValueByText("#facility-select", facility);
+      }
   });
 
   function setSelectValueByText(selectId, text) {
@@ -213,12 +221,6 @@
 </script>
 
 <style>
-  .collapsible-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-  }
   .collapsible-chevron {
     display: inline-block;
     transition: transform 150ms;

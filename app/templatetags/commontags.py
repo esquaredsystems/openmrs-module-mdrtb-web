@@ -17,13 +17,19 @@ from utilities import metadata_util as mu
 @register.filter
 def get_message(message_code, locale, default=None):
     """
-    The translated label for a message code: {{ 'mdrtb.save'|get_message:locale }}
-
-    The lookup itself lives in utilities/messages_util.py, which reads the
-    Redis-cached message_properties table. Falls back to English, then to the
-    code itself, so a missing translation shows on screen instead of a blank.
+    The lookup itself lives in utilities/messages_util.py, which reads the Redis-cached message_properties table. 
+    Falls back to English, then to the code itself, so a missing translation shows on screen instead of a blank.
     """
     return mu.get_global_msgs(message_code, locale=locale, default=default)
+
+
+@register.filter
+def get_gender_message(gender, locale):
+    """
+    The REST resources return the gender exactly as stored on the patient, "M" or "F", 
+    so the translation happens here. Builds the message key and defers to the same lookup get_message uses.
+    """
+    return mu.get_global_msgs("mdrtb.gender." + (gender or ""), locale=locale)
 
 
 @register.filter
@@ -50,6 +56,15 @@ def get_encounter_date(name):
 @register.filter
 def get_id_from_name(name):
     return name.split("-")[0]
+
+
+@register.filter
+def to_json(value):
+    """
+    Real JSON for a data-* attribute. Template autoescaping makes it attribute-safe;
+    printing the Python repr instead breaks on apostrophes in free-text values.
+    """
+    return json.dumps(value, ensure_ascii=False)
 
 
 @register.filter

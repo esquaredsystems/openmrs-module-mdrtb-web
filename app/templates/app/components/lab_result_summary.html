@@ -1,0 +1,9 @@
+{# Per-method result summary for a lab order. Expects `lab_result` (an order with `summary`). #}
+{% for method in lab_result.summary.methods %}
+<div class="mb-1">
+  <span class="font-semibold">{{method.group}}:</span>
+  {% for result in method.results %}{{result.name}}: {{result.value}}{% if not forloop.last %}; {% endif %}{% endfor %}
+</div>
+{% empty %}
+<span class="text-gray-400">&mdash;</span>
+{% endfor %}

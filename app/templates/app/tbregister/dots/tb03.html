@@ -9,7 +9,7 @@
 `patient` is used when the view fetched one, otherwise `flow_patient`, i.e. the patient cached in the program-flow session and put in every template's context.
 {% endcomment %}
 
-{% include 'app/components/patient_banner.html' with patient=patient|default:flow_patient %}
+{% include 'app/components/patient_banner.html' with patient=patient|default:flow_patient show_gender_icon=True %}
 
 
 <div>
@@ -93,7 +93,10 @@
             <span class="font-bold">
               {{'mdrtb.tb03.gender'|get_message:locale|default:"en"}}:
             </span>
-            <span class="tb03-form-label"> {{current_patient_program_flow.current_patient.gender}} </span>
+            <span class="tb03-form-label">
+              {% include 'app/components/gender_avatar.html' with gender=current_patient_program_flow.current_patient.gender css_class='w-5 h-5' %}
+              {{ current_patient_program_flow.current_patient.gender|get_gender_message:locale }}
+            </span>
           </div>
           <div class="space-x-3">
             <span class="font-bold">
@@ -125,7 +128,7 @@
               for="treatmentSiteIP">{{'mdrtb.tb03.treatmentSiteIP'|get_message:locale|default:"en"}}</label>
 
             <select class="input form-control" name="{{'TREATMENT_CENTER_FOR_IP' | get_concept }}" id="treatmentSiteIP">
-              {% if state == 'edit' and form.treatmentSiteIP %}
+              {% if form.treatmentSiteIP %}
                 <option selected value="{{form.treatmentSiteIP.uuid}}">{{form.treatmentSiteIP.display}}</option>
               {% else %}
                 <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
@@ -138,7 +141,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="ipCenterName">{{'mdrtb.tb03.nameOfIPFacility'|get_message:locale|default:"en"}}</label>
-            {% if state == 'edit' %}
+            {% if form %}
             <input type="text" class="input form-control" value="{{form.nameOfIPFacility|default:''}}" id="ipCenterName"
               name="{{'NAME_OF_IP_FACILITY' | get_concept }}">
             {% else %}
@@ -152,7 +155,7 @@
             <label class="tb03-form-label w-full "
               for="cpCenter">{{'mdrtb.tb03.treatmentSiteCP'|get_message:locale|default:"en"}}</label>
             <select class="input form-control" name="{{'TREATMENT_CENTER_FOR_CP' | get_concept }}" id="cpCenter">
-              {% if state == 'edit' and form.treatmentSiteCP %}
+              {% if form.treatmentSiteCP %}
               <option selected value="{{form.treatmentSiteCP.uuid}}">{{form.treatmentSiteCP.display}}</option>
               {% else %}
               <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
@@ -165,7 +168,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full "
               for="cpCenterName">{{'mdrtb.tb03.nameOfCPFacility'|get_message:locale|default:"en"}}</label>
-            {% if state == 'edit' %}
+            {% if form %}
             <input type="text" class="input form-control" value="{{form.nameOfCPFacility|default:''}}"
               name="{{'NAME_OF_CP_FACILITY' | get_concept }}">
             {% else %}
@@ -179,7 +182,7 @@
             <label class="tb03-form-label w-full "
               for="regimenType">{{'mdrtb.tb03.patientCategory'|get_message:locale|default:"en"}}</label>
             <select class="input form-control" name="{{'TUBERCULOSIS_PATIENT_CATEGORY' | get_concept }}" id="regimenType">
-              {% if state == 'edit' and form.patientCategory %}
+              {% if form.patientCategory %}
               <option selected value="{{form.patientCategory.uuid}}">{{form.patientCategory.display}}</option>
               {% else %}
               <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
@@ -192,7 +195,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full "
               for="treatmentStartDate">{{'mdrtb.tb03.treatmentStartDate'|get_message:locale|default:"en"}}</label>
-            {% if state == 'edit' and form.treatmentStartDate %}
+            {% if form.treatmentStartDate %}
             <input type="date" value="{{ form.treatmentStartDate|slice:':10' }}" class="input form-control"
               id="treatmentStartDate" name="{{'DOTS_TREATMENT_START_DATE' | get_concept }}" />
             {% else %}
@@ -206,7 +209,7 @@
             <label class="tb03-form-label w-full "
               for="siteOfTb">{{'mdrtb.tb03.siteOfDisease'|get_message:locale|default:"en"}}</label>
             <select class="input form-control" name="{{'ANATOMICAL_SITE_OF_TB' | get_concept }}" id="siteOfTb">
-              {% if state == 'edit' and form.anatomicalSite %}
+              {% if form.anatomicalSite %}
               <option selected value="{{form.anatomicalSite.uuid}}">{{form.anatomicalSite.display}}</option>
               {% else %}
               <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
@@ -219,7 +222,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full "
               for="hivDate">{{'mdrtb.tb03.hivTestDate'|get_message:locale|default:"en"}}</label>
-            {% if state == 'edit' and form.hivTestDate %}
+            {% if form.hivTestDate %}
             <input type="date" value="{{form.hivTestDate|slice:':10'}}" class="input form-control" id="hivDate"
               name="{{'DATE_OF_HIV_TEST' | get_concept }}" />
             {% else %}
@@ -233,7 +236,7 @@
             <label class="tb03-form-label w-full "
               for="hivStatus">{{'mdrtb.tb03.hivStatus'|get_message:locale|default:"en"}}</label>
             <select class="input form-control" name="{{'RESULT_OF_HIV_TEST' | get_concept }}" id="hivStatus">
-              {% if state == 'edit' and form.hivStatus %}
+              {% if form.hivStatus %}
               <option selected value="{{form.hivStatus.uuid}}">{{form.hivStatus.display}}</option>
               {% else %}
               <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
@@ -245,32 +248,8 @@
           </div>
           <div class="input-container">
             <label class="tb03-form-label w-full "
-              for="artDate">{{'mdrtb.tb03.artStartDate'|get_message:locale|default:"en"}}</label>
-            {% if state == 'edit' and form.artStartDate %}
-            <input type="date" value="{{form.artStartDate|slice:':10'}}" class="input form-control" id="artDate"
-              name="{{'DATE_OF_ART_TREATMENT_START' | get_concept }}" />
-            {% else %}
-            <input type="date" class="input form-control" id="artDate"
-              name="{{'DATE_OF_ART_TREATMENT_START' | get_concept }}" />
-            {% endif %}
-          </div>
-        </div>
-        <div class="flex items-center justify-between space-x-6">
-          <div class="input-container">
-            <label class="tb03-form-label w-full "
-              for="pctDate">{{'mdrtb.tb03.pctStartDate'|get_message:locale|default:"en"}}</label>
-            {% if state == 'edit' and form.pctStartDate %}
-            <input type="date" value="{{form.pctStartDate|slice:':10'}}" class="input form-control" id="pctDate"
-              name="{{'DATE_OF_PCT_TREATMENT_START' | get_concept }}" />
-            {% else %}
-            <input type="date" class="input form-control"  id="pctDate"
-              name="{{'DATE_OF_PCT_TREATMENT_START' | get_concept }}" />
-            {% endif %}
-          </div>
-          <div class="input-container">
-            <label class="tb03-form-label w-full "
               for="xrayDate">{{'mdrtb.tb03.xrayDate'|get_message:locale|default:"en"}}</label>
-            {% if state == 'edit' and form.xrayDate %}
+            {% if form.xrayDate %}
             <input type="date" value="{{form.xrayDate|slice:':10'}}" class="input form-control"
               name="{{'XRAY_DATE' | get_concept }}" id="xrayDate" />
             {% else %}
@@ -278,12 +257,22 @@
             {% endif %}
           </div>
         </div>
+        <div class="input-container" hidden>
+          <label class="tb03-form-label w-full "
+            for="artDate">{{'mdrtb.tb03.artStartDate'|get_message:locale|default:"en"}}</label>
+          <input type="date" class="input form-control" id="artDate" disabled />
+        </div>
+        <div class="input-container" hidden>
+          <label class="tb03-form-label w-full "
+            for="pctDate">{{'mdrtb.tb03.pctStartDate'|get_message:locale|default:"en"}}</label>
+          <input type="date" class="input form-control" id="pctDate" disabled />
+        </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label w-full "
               for="resistanceType">{{'mdrtb.tb03.resistanceType'|get_message:locale|default:"en"}}</label>
             <select class="input form-control" name="{{'RESISTANCE_TYPE' | get_concept }}" id="resistanceType">
-              {% if state == 'edit' and form.resistanceType %}
+              {% if form.resistanceType %}
               <option selected value="{{form.resistanceType.uuid}}">{{form.resistanceType.display}}</option>
               {% else %}
               <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
@@ -297,7 +286,7 @@
             <label class="tb03-form-label w-full "
               for="treatmentOutcome">{{'mdrtb.tb03.treatmentOutcome'|get_message:locale|default:"en"}}</label>
             <select id="treatmentOutcome" class="input form-control" name="{{'TB_TREATMENT_OUTCOME' | get_concept }}">
-              {% if state == 'edit' and form.treatmentOutcome %}
+              {% if form.treatmentOutcome %}
                 <option selected value="{{form.treatmentOutcome.uuid}}">{{form.treatmentOutcome.display}}</option>
               {% else %}
                 <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
@@ -315,7 +304,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full "
               for="treatmentOutcomeDate">{{'mdrtb.tb03.treatmentOutcomeDateOnly'|get_message:locale|default:"en"}}</label>
-            {% if state == 'edit' and form.treatmentOutcomeDate %}
+            {% if form.treatmentOutcomeDate %}
             <input type="date" value="{{form.treatmentOutcomeDate|slice:':10'}}" class="input form-control"
               id="treatmentOutcomeDate" name="{{'TREATMENT_OUTCOME_DATE' | get_concept }}">
             {% else %}
@@ -326,7 +315,7 @@
             <label class="tb03-form-label w-full"
               for="causeOfDeath">{{'mdrtb.causeOfDeath'|get_message:locale|default:"en"}}</label>
             <select disabled id="causeOfDeath" class="input form-control" name="{{'CAUSE_OF_DEATH' | get_concept }}">
-              {% if state == 'edit' and form.causeOfDeath %}
+              {% if form.causeOfDeath %}
               <option selected value="{{form.causeOfDeath.uuid}}">{{form.causeOfDeath.display}}</option>
               {% else %}
               <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
@@ -341,7 +330,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="otherCauseOfdeath">{{'mdrtb.tb03.otherCauseOfDeath'|get_message:locale|default:"en"}}</label>
-            {% if state == 'edit' %}
+            {% if form %}
             <input disabled id="otherCauseOfDeath" type="text" class="input form-control"
               value="{{form.otherCauseOfDeath|default:''}}" name="{{'OTHER_CAUSE_OF_DEATH' | get_concept }}" />
             {% else %}
@@ -352,7 +341,7 @@
           <div class="input-container">
             <label class="tb03-form-label w-full"
               for="dateofDeath">{{'mdrtb.tb03.afterOutcomeDeathDate'|get_message:locale|default:"en"}}</label>
-            {% if state == 'edit' and form.dateOfDeathAfterTreatmentOutcome %}
+            {% if form.dateOfDeathAfterTreatmentOutcome %}
             <input id="dateofDeath" type="date" class="input form-control"
               value="{{form.dateOfDeathAfterTreatmentOutcome|slice:':10'}}"
               name="{{'DATE_OF_DEATH_AFTER_TREATMENT_OUTCOME' | get_concept }}" />
@@ -367,7 +356,7 @@
           <div class="input-container">
             <label style="width: 8rem;" class="tb03-form-label "
               for="clinicalNotes">{{'mdrtb.tb03.clinicalNotes'|get_message:locale|default:"en"}}</label>
-            {% if state == 'edit' %}
+            {% if form %}
             <textarea rows="4" class="input form-control" id="clinicalNotes"
               name="{{'CLINICIAN_NOTES' | get_concept }}">{{form.clinicalNotes|default:''}}</textarea>
             {% else %}
@@ -397,15 +386,24 @@
     let outcome = e.target.value
     if (outcome === "{{'DIED' | get_concept}}") {
       $('#dateofDeath').prop('disabled', false)
-      $('#otherCauseOfDeath').prop('disabled', false)
       $('#causeOfDeath').prop('disabled', false)
       $('#causeOfDeath').prop('required', true)
+      // otherCauseOfDeath's own disabled state is driven entirely by which
+      // cause is selected below - re-check it now in case causeOfDeath
+      // already has a value (e.g. re-entering this branch after a change).
+      $('#causeOfDeath').trigger('change')
     } else {
       $('#otherCauseOfDeath').prop('disabled', true)
       $('#dateofDeath').prop('disabled', true)
       $('#causeOfDeath').prop('disabled', true)
       $('#causeOfDeath').prop('required', false)
     }
+  })
+  // Other Cause of Death is only meaningful - and only editable - when
+  // "Death by Other Diseases" is the selected cause of death.
+  $('#causeOfDeath').change((e) => {
+    let deathByOtherDiseases = "{{'DEATH_BY_OTHER_DISEASES' | get_concept}}"
+    $('#otherCauseOfDeath').prop('disabled', e.target.value !== deathByOtherDiseases)
   })
   let state = '{{state | escapejs}}'
   if (state === 'edit') {
@@ -415,6 +413,14 @@
     $('textarea').prop('disabled', true).prop('', false)
     $('#canceleditbtn').prop('hidden', true)
   }
+  {% if resubmitted %}
+  // Re-rendered with the values from a failed "Add TB03" submission - the
+  // death fields above default to disabled in markup, so re-derive their
+  // enabled state from the prefilled treatmentOutcome/causeOfDeath the same
+  // way a live user interaction would, otherwise a disabled field is left
+  // out of the resubmit entirely.
+  $('#treatmentOutcome').trigger('change')
+  {% endif %}
   $('#editbtn').click(function () {
     $('input').prop('disabled', false)
     $('select').prop('disabled', false)
@@ -422,6 +428,9 @@
     $('#canceleditbtn').prop('hidden', false)
     $('#artDate').prop('disabled', true)
     $('#pctDate').prop('disabled', true)
+    // Re-apply otherCauseOfDeath's rule - the blanket re-enable above just
+    // turned it on regardless of the saved causeOfDeath value.
+    $('#causeOfDeath').trigger('change')
   })
   $('#canceleditbtn').click(function () {
     $('input').prop('disabled', true)
@@ -436,12 +445,6 @@
       console.log("Treatment outcome date cannot be before the treatment start date.");
       $(this).val(startDate);
     }
-  });
-  $('#hivStatus').change(function() {
-    let positive = "{{ 'POSITIVE' | get_concept }}";
-    let hivValue = $('#hivStatus').val();
-    $('#artDate').prop('disabled', (hivValue != positive))
-    $('#pctDate').prop('disabled', (hivValue != positive))
   });
   const disableSubmit = () => {
     $('#submitBtn').prop('disabled', true)

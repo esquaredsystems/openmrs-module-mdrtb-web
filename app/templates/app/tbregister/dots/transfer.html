@@ -10,7 +10,7 @@
 `patient` is used when the view fetched one, otherwise `flow_patient`, i.e. the patient cached in the program-flow session and put in every template's context.
 {% endcomment %}
 
-{% include 'app/components/patient_banner.html' with patient=patient|default:flow_patient %}
+{% include 'app/components/patient_banner.html' with patient=patient|default:flow_patient show_gender_icon=True %}
 
 
 

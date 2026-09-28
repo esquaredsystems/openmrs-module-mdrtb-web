@@ -200,6 +200,23 @@ def reload_files():
     _files.clear()
 
 
+def _prefer_shipped_translation(lang, code, value):
+    """
+    The text to show when the stored value for a non-English language may just be
+    English that was never translated.
+
+    Some rows in message_properties hold the English text under the ru/tj
+    language, so the label stayed in English even though the .properties file
+    shipped with the app has a real translation. When the stored value is
+    identical to the English one and the shipped file has a different text for
+    the language, the shipped text is used. Otherwise the stored value stands.
+    """
+    if value != (get_cached(DEFAULT_LANG) or {}).get(code):
+        return value
+    shipped = _file_messages(lang).get(code)
+    return shipped if shipped and shipped != value else value
+
+
 def lookup(code, locale=None, default=None):
     """
     The translated label for a code.
@@ -218,6 +235,8 @@ def lookup(code, locale=None, default=None):
     lang = normalise_lang(locale)
 
     value = (get_cached(lang) or {}).get(code)
+    if value and lang != DEFAULT_LANG:
+        value = _prefer_shipped_translation(lang, code, value)
     if not value and lang != DEFAULT_LANG:
         value = (get_cached(DEFAULT_LANG) or {}).get(code)
     if not value:
@@ -388,5 +407,6 @@ def all_messages(locale=None):
     merged = dict(get_cached(DEFAULT_LANG) or {})
     lang = normalise_lang(locale)
     if lang != DEFAULT_LANG:
-        merged.update(get_cached(lang) or {})
+        for code, value in (get_cached(lang) or {}).items():
+            merged[code] = _prefer_shipped_translation(lang, code, value)
     return merged

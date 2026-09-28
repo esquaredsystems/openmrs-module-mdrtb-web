@@ -96,7 +96,7 @@
                 <td><a href="/patient/{{row.patientUuid}}/enrolledprograms" target="_blank">{{row.patient.name}}</a>
                 </td>
                 <td>{{ row.dateOfBirth }}</td>
-                <td align="center">{{ row.patient.gender }}</td>
+                <td align="center">{{ row.patient.gender|get_gender_message:locale }}</td>
             </tr>
             {% endfor %}
 
