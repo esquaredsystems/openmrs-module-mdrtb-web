@@ -180,36 +180,6 @@
             {% if state == 'edit' %}value="{{laborder.order.date_activated|slice:':10'}}"{% endif %}>
     </div>
 
-    <div class="input-container" {% if state != 'edit' %}style="display:none"{% endif %}>
-            <label class="input-label" for="">
-                {{'labtest.testGroup'|get_message:locale|default:"en"}}
-            </label>
-            <select name="testGroup" id="group-select" class="input form-control">
-                {% if state == 'edit' %}
-                    <option selected value="{{laborder.labtesttype.testGroup}}">{{laborder.labtesttype.testGroup}}</option>
-                {% else %}
-                    <option selected value="OTHER">{{'labtest.testgroup.other'|get_message:locale|default:"en"}}</option>
-                {% endif %}
-
-                {% for group in testgroups %}
-                    <option value="{{ group }}">{{'labtest.testgroup.'|add:group|lower|get_message:locale|default:"en"}}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="input-container" {% if state != 'edit' %}style="display:none"{% endif %}>
-            <label class="input-label" for="">
-                {{'labtest.testType'|get_message:locale|default:"en"}}
-            </label>
-            {% if state == 'edit' %}
-            <select name="testType" id="test-select" class="input form-control">
-                <option selected value="{{laborder.labtesttype.uuid}}">{{laborder.labtesttype.name}}</option>
-            </select>
-            {% else %}
-                <select disabled name="testType" id="test-select" class="input form-control"></select>
-            {% endif %}
-
-        </div>
-
         <div class="input-container" {% if state != 'edit' %}style="display:none"{% endif %}>
             <label class="input-label" for="name">
                 {{'labtest.careSetting'|get_message:locale|default:"en"}}
@@ -270,7 +240,6 @@
 </div>
 
 <script>
-    let labtests = JSON.parse("{{labtests | escapejs}}")
 
     // Labels for the selected-program detail card below the dropdown.
     const programFieldLabels = {
@@ -348,30 +317,6 @@
     $('#patient-program-select').on('change', updateSelectedProgramCard)
     $(document).ready(updateSelectedProgramCard)
 
-    function setTestTypes() {
-        $('#test-select').html('')
-        let group = $('#group-select').val()
-        if (group != 'None') {
-            let testsByGroup = labtests.filter(test => test.testGroup === group)
-            $('#test-select').prop('disabled', false)
-            testsByGroup.forEach(item => {
-                $('#test-select').append(
-                    $("<option>", {
-                        value: item.uuid,
-                        text: item.referenceConcept.display,
-                    })
-                )
-            })
-            if (state !== 'edit') {
-                $('#test-select option').filter(function () {
-                    return $(this).text().trim() === 'MICROSCOPY TEST CONSTRUCT'
-                }).prop('selected', true)
-            }
-        } else {
-            $('#test-select').prop('disabled', true)
-        }
-    }
-    $('#group-select').change(setTestTypes)
 
     const disableSubmit = () => {
         $('#submitBtn').prop('disabled', true)
@@ -400,9 +345,6 @@
         $('textarea').prop('disabled', false)
         $('#canceleditbtn').prop('hidden', false)
         $('#referenceConcept').prop('disabled', true)
-        let selectedType = $('#test-select').val()
-        setTestTypes()
-        $('#test-select').val(selectedType)
     })
     $('#canceleditbtn').click(function () {
         $('input').prop('disabled', true)
@@ -417,10 +359,6 @@
         } else {
             $('#encounter').prop('disabled', false);
         }
-    });
-
-    $(document).ready(function() {
-        setTestTypes();
     });
     
 </script>

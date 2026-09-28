@@ -767,8 +767,10 @@ def summarize_lab_order(order):
     Pulls the fields specialists read first out of an order's attributes.
 
     Returns a dict with:
-        collection_date / result_date (ISO date or None). The result date is the
-            investigation date, else the latest date recorded inside a result group.
+        collection_date / result_date (ISO date or None). The collection date is
+            the DATE COLLECTED attribute, else the order's activation date. The
+            result date is the investigation date, else the latest date recorded
+            inside a result group.
         sort_date: collection date, else result date, else the order's activation date.
         dated: True when the collection or result date is known. Orders without one
             sort after every dated order, whatever their activation date.
@@ -819,7 +821,10 @@ def summarize_lab_order(order):
         ),
     )
     return {
-        "collection_date": collection_date,
+        # The add lab test form saves its "Collection Date" as the order's
+        # activation date; DATE COLLECTED only exists once results are entered
+        # (and not at all on some test types), so fall back to the order date.
+        "collection_date": collection_date or activated,
         "result_date": result_date,
         "sort_date": collection_date or result_date or activated,
         "dated": bool(collection_date or result_date),

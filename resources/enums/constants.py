@@ -69,6 +69,11 @@ class Constants(enum.Enum):
         "ce49756b-929b-3920-f1a1-3fd205440576"
     )
     COMMON_TEST = "05aaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+    # Lab test type every new lab order gets: "COMMON TEST" (reference concept
+    # MICROSCOPY TEST CONSTRUCT). Users never pick it: the add lab test form does
+    # not show type or group. The lab order API has no group field; the group
+    # comes from the test type (set it under Manage Test Types).
+    LAB_ORDER_TEST_TYPE = "4e81d04f-bdc0-11ed-9c1c-00155d694c4d"
     DST_MGIT = "07aaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
     DST_LJ = "08aaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
 
