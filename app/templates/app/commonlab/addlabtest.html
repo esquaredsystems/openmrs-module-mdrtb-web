@@ -188,7 +188,7 @@
                 {% if state == 'edit' %}
                     <option selected value="{{laborder.labtesttype.testGroup}}">{{laborder.labtesttype.testGroup}}</option>
                 {% else %}
-                    <option selected value="MICROBIOLOGY">{{'labtest.testgroup.microbiology'|get_message:locale|default:"en"}}</option>
+                    <option selected value="OTHER">{{'labtest.testgroup.other'|get_message:locale|default:"en"}}</option>
                 {% endif %}
 
                 {% for group in testgroups %}
