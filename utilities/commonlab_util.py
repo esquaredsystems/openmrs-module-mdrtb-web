@@ -821,6 +821,9 @@ def summarize_lab_order(order):
         ),
     )
     return {
+        # The add lab test form saves its "Collection Date" as the order's
+        # activation date; DATE COLLECTED only exists once results are entered
+        # (and not at all on some test types), so fall back to the order date.
         "collection_date": collection_date or activated,
         "result_date": result_date,
         "sort_date": collection_date or result_date or activated,
