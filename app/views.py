@@ -2747,12 +2747,12 @@ def render_add_lab_test(req, uuid):
             encounter = req.POST["encounter"]
         try:
             body = {
-                "labTestType": req.POST["testType"],
+                "labTestType": Constants.LAB_ORDER_TEST_TYPE.value,
                 "labReferenceNumber": req.POST["labref"],
                 "order": {
                     "patient": uuid,
                     "concept": cu.get_reference_concept_of_labtesttype(
-                        req, req.POST["testType"]
+                        req, Constants.LAB_ORDER_TEST_TYPE.value
                     ),
                     "encounter": encounter,
                     "type": "order",
@@ -2781,7 +2781,6 @@ def render_add_lab_test(req, uuid):
         req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
         mu.add_url_to_breadcrumb(req, context["title"])
         encounters = pu.get_patient_encounters(req, uuid)
-        labtests, testgroups = cu.get_test_groups_and_tests(req)
         patient_programs = pu.get_patient_program_enrollments(req, uuid)
         context["patient_programs"] = patient_programs
         # A ?program= hint from the dashboard link wins, but only if it is one
@@ -2795,8 +2794,6 @@ def render_add_lab_test(req, uuid):
         )
         if encounters:
             context["encounters"] = encounters["results"]
-            context["testgroups"] = list(dict.fromkeys(testgroups))
-            context["labtests"] = json.dumps(labtests)
             context["care_setting"] = {
                 "inpatient": {
                     "name": Constants.INPATIENT.name.title(),
@@ -2849,19 +2846,25 @@ def render_edit_lab_test(req, patientid, orderid):
                         req,
                     )
                     return redirect("editlabtest", patientid=patientid, orderid=orderid)
+            # The form no longer carries the test type; keep the order's own.
+            _, current = ru.get(
+                req,
+                f"commonlab/labtestorder/{orderid}",
+                {"v": "custom:(labTestType:(uuid))"},
+            )
+            test_type = current["labTestType"]["uuid"]
             body = {
-                "labTestType": req.POST["testType"],
+                "labTestType": test_type,
                 "labReferenceNumber": req.POST["labref"],
                 "order": {
                     "patient": patientid,
-                    "concept": cu.get_reference_concept_of_labtesttype(
-                        req, req.POST["testType"]
-                    ),
+                    "concept": cu.get_reference_concept_of_labtesttype(req, test_type),
                     "encounter": req.POST["encounter"],
                     "type": "order",
                     "instructions": None
                     if "instructions" not in req.POST
                     else req.POST["instructions"],
+                    "orderType": Constants.TEST_ORDER.value,
                     "orderer": req.session["logged_user"]["currentProvider"]["uuid"],
                     "careSetting": req.POST["careSetting"],
                 },
@@ -2878,7 +2881,7 @@ def render_edit_lab_test(req, patientid, orderid):
                 return render(req, "app/commonlab/addlabtest.html", context=context)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect("editlabtest", uuid=patientid, orderid=orderid)
+        return redirect("editlabtest", patientid=patientid, orderid=orderid)
     try:
         status, response = ru.get(
             req,
@@ -2891,7 +2894,6 @@ def render_edit_lab_test(req, patientid, orderid):
             encounters = pu.get_patient_encounters(
                 req, response["order"]["patient"]["uuid"]
             )
-            labtests, testgroups = cu.get_test_groups_and_tests(req)
             context["laborder"] = cu.get_custom_lab_order(response)
             patient_programs = pu.get_patient_program_enrollments(
                 req, response["order"]["patient"]["uuid"]
@@ -2923,11 +2925,6 @@ def render_edit_lab_test(req, patientid, orderid):
                 context["laborder"]["order"]["encounter"]["uuid"],
                 "uuid",
             )
-            testgroups = list(dict.fromkeys(testgroups))
-            context["testgroups"] = util.remove_given_str_from_arr(
-                testgroups, context["laborder"]["labtesttype"]["testGroup"]
-            )
-            context["labtests"] = json.dumps(labtests)
             context["care_setting"] = {
                 "inpatient": {
                     "name": Constants.INPATIENT.name.title(),

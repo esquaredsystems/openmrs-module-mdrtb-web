@@ -142,3 +142,23 @@ class TestGetCustomLabOrder(TestCase):
         self.assertEqual(
             result["order"]["date_activated"], "2024-03-15T00:00:00.000+0500"
         )
+
+
+class SummarizeLabOrderCollectionDateTest(TestCase):
+    DATE_COLLECTED = {"code": "DATE COLLECTED", "datatype": "org.openmrs.customdatatype.datatype.DateDatatype"}
+
+    def test_uses_the_date_collected_attribute(self):
+        order = {
+            "order": {"dateActivated": "2026-09-10T00:00:00.000+0500"},
+            "attributes": [{"attributeType": self.DATE_COLLECTED, "valueReference": "2026-09-08 00:00:00"}],
+        }
+        self.assertEqual(cu.summarize_lab_order(order)["collection_date"], "2026-09-08")
+
+    def test_falls_back_to_the_order_date_without_the_attribute(self):
+        order = {"order": {"dateActivated": "2026-09-10T00:00:00.000+0500"}, "attributes": []}
+        summary = cu.summarize_lab_order(order)
+        self.assertEqual(summary["collection_date"], "2026-09-10")
+        self.assertFalse(summary["dated"])
+
+    def test_none_without_attribute_or_order_date(self):
+        self.assertIsNone(cu.summarize_lab_order({"attributes": []})["collection_date"])

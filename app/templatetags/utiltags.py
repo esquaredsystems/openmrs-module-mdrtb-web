@@ -39,6 +39,17 @@ def iso_to_normal_date(date):
 
 
 @register.filter
+def iso_to_input_date(date):
+    """
+    YYYY-MM-DD for an <input type="date"> value. The browser treats anything
+    else (e.g. iso_to_normal_date's DD.MM.YYYY, or "None") as empty.
+    """
+    if date:
+        return str(parser.isoparse(date)).split(" ")[0]
+    return ""
+
+
+@register.filter
 def to_date(date_str):
     if date_str:
         yyyy_mm_dd_pattern = r'^\d{4}-\d{2}-\d{2}$'

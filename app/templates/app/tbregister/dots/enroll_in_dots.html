@@ -82,7 +82,7 @@
           </svg>
         </button>
         <input class="input form-control" type="date" name="enrollmentdate" id="enrollmentdate" required
-          value="{{enrolled_program.dateEnrolled | iso_to_normal_date}}" />
+          value="{{enrolled_program.dateEnrolled | iso_to_input_date}}" />
 
         {% else %}
         <input class="input form-control" type="date" name="enrollmentdate" id="enrollmentdate" required />
@@ -148,7 +148,7 @@
           </svg>
         </button>
         <input class="input form-control" type="date" name="completiondate" id="completiondate"
-          value="{{enrolled_program.dateCompleted | iso_to_normal_date}}" />
+          value="{{enrolled_program.dateCompleted | iso_to_input_date}}" />
         {% else %}
         <input class="input form-control" type="date" name="completiondate" id="completiondate" />
         {% endif %}

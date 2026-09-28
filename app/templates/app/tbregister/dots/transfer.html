@@ -57,7 +57,7 @@
           </svg>
         </button>
         <input class="input form-control" type="date" id="encounterDateTime" name="encounterDatetime"
-          value="{{form.encounter.encounterDatetime | iso_to_normal_date }}" />
+          value="{{form.encounter.encounterDatetime | iso_to_input_date }}" />
 
         {% else %}
         <input class="input form-control" type="date" name="encounterDatetime" />
