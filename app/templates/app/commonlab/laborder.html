@@ -16,7 +16,6 @@ switched in the browser, so moving between tabs costs no request.
 </div>
 
 <div class="lab-order">
-  <a class="lab-order__back" href="{% url 'managetestorders' uuid=patient %}">&larr; {{'commonlabtest.labtest.manage'|get_message:locale|default:"en"}}</a>
 
   <header class="lab-order__header">
     <h1 class="lab-order__title">{{ laborder.labref }}</h1>
@@ -91,7 +90,7 @@ switched in the browser, so moving between tabs costs no request.
         {% endif %}
 
         {% if earlier_samples %}
-        <h3 class="lab-result-group__title lab-earlier">{{'mdrtb.labOrder.earlierSamples'|get_message:locale|default:"en"}}</h3>
+        <h3 class="lab-result-group__title lab-earlier">{{'mdrtb.labOrder.otherSamples'|get_message:locale|default:"en"}}</h3>
         <div class="lab-table-wrap">
           <table class="lab-table">
             <thead>
@@ -100,6 +99,7 @@ switched in the browser, so moving between tabs costs no request.
                 <th>{{'labtest.specimenSite'|get_message:locale|default:"en"}}</th>
                 <th>{{'commonlabtest.labtestsample.collectionDate'|get_message:locale|default:"en"}}</th>
                 <th>{{'labtest.status'|get_message:locale|default:"en"}}</th>
+                <th><span class="visually-hidden">{{'ActiveLists.actions'|get_message:locale|default:"en"}}</span></th>
               </tr>
             </thead>
             <tbody>
@@ -109,6 +109,16 @@ switched in the browser, so moving between tabs costs no request.
                 <td>{{ sample.specimen_site_name|default:"—" }}</td>
                 <td>{{ sample.collectionDate|iso_to_normal_date }}</td>
                 <td>{% include 'app/commonlab/partials/sample_row_status.html' %}</td>
+                <td>
+                  {% if sample.status == 'COLLECTED' %}
+                  {# A further sample still waiting for a decision can be accepted or rejected here too. #}
+                  <form method="post" action="{% url 'changesamplestatus' orderid=orderid sampleid=sample.uuid %}" class="lab-row-actions js-busy-form">
+                    {% csrf_token %}
+                    <button type="submit" name="status" value="Accept" class="button-primary lab-button lab-button--sm">{{'mdrtb.labOrder.accept'|get_message:locale|default:"en"}}</button>
+                    <button type="submit" name="status" value="Reject" class="cancel-button lab-button--sm">{{'mdrtb.labOrder.reject'|get_message:locale|default:"en"}}</button>
+                  </form>
+                  {% endif %}
+                </td>
               </tr>
               {% endfor %}
             </tbody>

@@ -19,7 +19,6 @@ Results open once the order is saved, which lands the user on its screen.
 </div>
 
 <div class="lab-order">
-    <a class="lab-order__back" href="{% url 'managetestorders' uuid=patient %}">&larr; {{'commonlabtest.labtest.manage'|get_message:locale|default:"en"}}</a>
     <header class="lab-order__header">
         <h1 class="lab-order__title">{{'commonlabtest.order.add'|get_message:locale|default:"en"}}</h1>
     </header>

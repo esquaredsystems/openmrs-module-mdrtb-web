@@ -7,8 +7,11 @@ it behaves correctly under load and when requests take too long.
 Before running, start the server and set credentials in the .env file:
     MDRTB_WEB_URL, MDRTB_TEST_USERNAME, MDRTB_TEST_PASSWORD
 
+They are skipped unless RUN_GUNICORN_TESTS=1 is set, so an ordinary unit
+test run (manage.py test) does not depend on a live gunicorn server.
+
 Run with:
-    python -m pytest tests/test_gunicorn_performance.py -v
+    RUN_GUNICORN_TESTS=1 python -m pytest tests/test_gunicorn_performance.py -v
 """
 
 import os
@@ -30,6 +33,12 @@ TEST_PASSWORD  = os.getenv("MDRTB_TEST_PASSWORD",    "Admin123")
 SLOW_ENDPOINT  = f"{BASE_URL}/test/slow"
 PROBE_ENDPOINT = f"{BASE_URL}/concepts"
 LOGIN_ENDPOINT = f"{BASE_URL}/login"
+
+# Opt-in: these need a running gunicorn server and a valid login in .env.
+requires_live_server = unittest.skipUnless(
+    os.getenv("RUN_GUNICORN_TESTS") == "1",
+    "Live-server performance test; set RUN_GUNICORN_TESTS=1 to run it",
+)
 
 GUNICORN_TIMEOUT      = 60    # seconds — must match gunicorn_config.py
 GUNICORN_MAX_REQUESTS = 1000  # must match gunicorn_config.py
@@ -75,6 +84,7 @@ def _authenticate() -> requests.Session:
     return s
 
 
+@requires_live_server
 class TestGunicornTimeout(unittest.TestCase):
     """
     Checks that the server cuts off requests that take too long.
@@ -154,6 +164,7 @@ class TestGunicornTimeout(unittest.TestCase):
         )
 
 
+@requires_live_server
 class TestGunicornMaxRequests(unittest.TestCase):
     """
     Checks that the server stays healthy while worker processes are being recycled.
