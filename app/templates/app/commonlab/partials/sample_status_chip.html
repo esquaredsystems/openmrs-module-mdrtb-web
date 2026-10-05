@@ -1,0 +1,8 @@
+{# An order's overall sample state (cu.lab_order_sample_status) as a coloured chip. Expects `status`. #}
+<span class="status-chip status-chip--{% if status == 'notRequired' %}none{% else %}{{ status }}{% endif %}">
+  {% if status == 'accepted' %}{{'mdrtb.labOrder.sampleStatus.accepted'|get_message:locale|default:"en"}}
+  {% elif status == 'collected' %}{{'mdrtb.labOrder.sampleStatus.collected'|get_message:locale|default:"en"}}
+  {% elif status == 'rejected' %}{{'mdrtb.labOrder.sampleStatus.rejected'|get_message:locale|default:"en"}}
+  {% elif status == 'notRequired' %}{{'mdrtb.labOrder.sampleStatus.notRequired'|get_message:locale|default:"en"}}
+  {% else %}{{'mdrtb.labOrder.sampleStatus.none'|get_message:locale|default:"en"}}{% endif %}
+</span>

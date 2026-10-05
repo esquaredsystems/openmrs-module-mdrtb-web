@@ -1,0 +1,54 @@
+{% comment %}
+The fields of an order's sample, part of the one order form on both the
+new-order page (addlabtest.html) and the Order tab (laborder.html). Pass
+`sample` to edit it; without it a new sample starts on default_specimen_type /
+default_specimen_site (sputum, induced). The collection date is left out
+unless with_collection_date is set: the sample takes the order's own date.
+A stored identifier that is only a UUID (older samples) is offered as a fresh
+generated identifier instead, like a new sample's.
+{% endcomment %}
+<div class="lab-fields">
+  <div class="input-container">
+    <label class="input-label required">{{'labtest.specimenType'|get_message:locale|default:"en"}}</label>
+    <select required name="specimentype" class="input form-control">
+      <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+      {% for type in specimentype %}
+      <option value="{{ type.uuid }}" {% if sample %}{% if sample.specimenType.uuid == type.uuid %}selected{% endif %}{% elif type.uuid == default_specimen_type %}selected{% endif %}>{{ type.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="input-container">
+    <label class="input-label required">{{'labtest.specimenSite'|get_message:locale|default:"en"}}</label>
+    <select required name="specimensite" class="input form-control">
+      <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+      {% for site in specimensite %}
+      <option value="{{ site.uuid }}" {% if sample %}{% if sample.specimenSite.uuid == site.uuid %}selected{% endif %}{% elif site.uuid == default_specimen_site %}selected{% endif %}>{{ site.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="input-container">
+    <label class="input-label">{{'commonlabtest.labtestsample.quantity'|get_message:locale|default:"en"}}</label>
+    <input class="input form-control" type="number" name="quantity" value="{{ sample.quantity|default:'' }}">
+  </div>
+  <div class="input-container">
+    <label class="input-label">{{'commonlabtest.labtestsample.unit'|get_message:locale|default:"en"}}</label>
+    <select name="units" class="input form-control">
+      <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+      {% for unit in units %}
+      <option value="{{ unit.uuid }}" {% if sample.units == unit.uuid %}selected{% endif %}>{{ unit.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="input-container">
+    <label class="input-label required">{{'commonlabtest.labtestsample.sampleIdentifier'|get_message:locale|default:"en"}}</label>
+    <input required class="input form-control" type="text" name="specimenid"
+      value="{% if sample.display_identifier %}{{ sample.display_identifier }}{% else %}{{'placeholder'|get_specimem_identifier}}{% endif %}">
+  </div>
+  {% if with_collection_date %}
+  <div class="input-container">
+    <label class="input-label required">{{'commonlabtest.labtestsample.collectionDate'|get_message:locale|default:"en"}}</label>
+    <input required class="input form-control js-max-today" type="date" name="collectedon"
+      value="{% if sample %}{{ sample.collectionDate|slice:':10' }}{% else %}{{ default_date|default:''|slice:':10' }}{% endif %}">
+  </div>
+  {% endif %}
+</div>

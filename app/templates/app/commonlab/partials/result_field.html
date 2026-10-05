@@ -1,0 +1,34 @@
+{% comment %}
+One lab result input on the Results tab. Expects `attribute`: an attribute type
+wrapper from get_labtest_attributes / get_custom_attribute_for_labresults, with
+valueReference set when a value is already saved. The field name is the
+attribute type uuid, which is what render_add_test_results reads back.
+{% endcomment %}
+{% with at=attribute.attributeType %}
+<div class="input-container">
+  <label class="input-label" for="attr-{{ at.uuid }}">{{ at.name }}</label>
+  {% if at.inputType == 'date' %}
+    {# Saved as "2020-09-04 00:00:00"; the date input wants the first ten characters. #}
+    <input type="date" class="input form-control js-max-today" name="{{ at.uuid }}" id="attr-{{ at.uuid }}"
+      value="{{ attribute.valueReference|default:''|slice:':10' }}">
+  {% elif at.inputType == 'select' %}
+    <select class="input form-control" name="{{ at.uuid }}" id="attr-{{ at.uuid }}">
+      <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+      {% for answer in at.answers %}
+      <option value="{{ answer.uuid }}" {% if attribute.valueReference == answer.uuid %}selected{% endif %}>{{ answer.display }}</option>
+      {% endfor %}
+    </select>
+  {% elif at.inputType == 'checkbox' %}
+    <input type="checkbox" class="check-input" name="{{ at.uuid }}" id="attr-{{ at.uuid }}"
+      {% if attribute.display_value == '✓' %}checked{% endif %}>
+  {% elif at.inputType == 'textarea' %}
+    <textarea class="input form-control" name="{{ at.uuid }}" id="attr-{{ at.uuid }}">{{ attribute.valueReference|default:'' }}</textarea>
+  {% elif at.inputType == 'number' %}
+    <input type="number" step="any" class="input form-control" name="{{ at.uuid }}" id="attr-{{ at.uuid }}"
+      value="{{ attribute.valueReference|default:'' }}">
+  {% else %}
+    <input type="text" class="input form-control" name="{{ at.uuid }}" id="attr-{{ at.uuid }}"
+      value="{{ attribute.valueReference|default:'' }}">
+  {% endif %}
+</div>
+{% endwith %}

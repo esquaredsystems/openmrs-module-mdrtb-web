@@ -239,6 +239,11 @@ urlpatterns = [
         name="managetestorders",
     ),
     path(
+        "commonlab/order/<str:orderid>",
+        views.render_lab_order,
+        name="laborder",
+    ),
+    path(
         "commonlab/order/<str:orderid>/managesamples",
         views.render_managetestsamples,
         name="managetestsamples",
