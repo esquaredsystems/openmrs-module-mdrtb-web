@@ -6,6 +6,7 @@ import time as _time
 from datetime import datetime
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from urllib.parse import urlencode
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.contrib import messages
@@ -2655,7 +2656,7 @@ def render_managetestorders(req, uuid):
             f"commonlab/labtestorder",
             {
                 "patient": uuid,
-                "v": "custom:(uuid,labTestType,labReferenceNumber,order,auditInfo,labTestSamples)",
+                "v": "custom:(uuid,labTestType,labReferenceNumber,order,auditInfo)",
             },
         )
         if status:
@@ -2669,10 +2670,18 @@ def render_managetestorders(req, uuid):
                             lab_result.update({"labTestType": ltt})
             orders = cu.add_lab_order_summaries(response["results"])
             for order in orders:
-                sample_accepted = check_if_sample_exists(req, order["uuid"])
-                order.update({"sample_accepted": sample_accepted})
-            context["orders"] = response["results"]
-            context["json_orders"] = json.dumps(response["results"])
+                # The by-patient search leaves labTestSamples empty, so each
+                # order's samples come from the order itself.
+                _, samples = ru.get(
+                    req,
+                    f"commonlab/labtestorder/{order['uuid']}",
+                    {"v": "custom:(labTestSamples)"},
+                )
+                order["sample_status"] = cu.lab_order_sample_status(
+                    (samples or {}).get("labTestSamples"),
+                    order["labTestType"].get("requiresSpecimen", False),
+                )
+            context["orders"] = orders
         patient = pu.get_patient(req, uuid)
         if patient:
             context["patientdata"] = patient
@@ -2680,6 +2689,191 @@ def render_managetestorders(req, uuid):
     except Exception as e:
         log_and_show_error(e, req)
         return redirect(req.session["redirect_url"])
+
+
+LAB_ORDER_TABS = ("order", "results")
+UUID_PATTERN = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", re.I)
+
+
+def lab_order_redirect(orderid, tab=None, anchor=None, **params):
+    """
+    Back to the lab order screen, on the tab the user was working in. Without
+    a tab the screen picks one itself; anchor scrolls to a section of it.
+    """
+    url = reverse("laborder", kwargs={"orderid": orderid})
+    query = urlencode({"tab": tab, **params} if tab else params)
+    if query:
+        url = f"{url}?{query}"
+    return redirect(f"{url}#{anchor}" if anchor else url)
+
+
+def render_lab_order(req, orderid):
+    """
+    One screen per lab order with two tabs, Order & Sample and Results, each
+    viewable and editable in place. The forms post to the existing add/edit views, which
+    redirect back here with ?tab= so the user lands where they were working.
+
+    ?edit= opens a form straight away: "order", "results", "new_sample" or a
+    sample uuid. Without ?tab= the screen opens on what needs doing next: the
+    Order & Sample tab while results are still locked behind sample
+    acceptance, otherwise Results.
+    """
+    if not check_if_session_alive(req):
+        return redirect("login")
+    locale = req.session["locale"]
+    context = {
+        "title": mu.get_global_msgs("commonlabtest.order.detail", locale=locale),
+        "orderid": orderid,
+    }
+    try:
+        status, response = ru.get(req, f"commonlab/labtestorder/{orderid}", {"v": "full"})
+        if not status:
+            log_and_show_error(response["error"]["message"], req)
+            return redirect_after_error(req)
+        _, extra = ru.get(
+            req,
+            f"commonlab/labtestorder/{orderid}",
+            {"v": "custom:(attributes,auditInfo,labTestSamples)"},
+        )
+        patientid = response["order"]["patient"]["uuid"]
+        # The page this screen fails back to. Not the referer: that is this
+        # screen itself after every save.
+        req.session["redirect_url"] = reverse("managetestorders", kwargs={"uuid": patientid})
+        mu.add_url_to_breadcrumb(req, context["title"])
+        context["patient"] = patientid
+        context["patientdata"] = pu.get_patient(req, patientid)
+
+        # Order tab
+        laborder = cu.get_custom_lab_order(response)
+        context["laborder"] = laborder
+        context["labAuditInfo"] = extra["auditInfo"]
+        patient_programs = pu.get_patient_program_enrollments(req, patientid)
+        # Keep the order's current episode selectable even if it no longer
+        # comes back from the enrollments API.
+        current_pp = laborder.get("patientProgram")
+        if current_pp and not any(p["uuid"] == current_pp["uuid"] for p in patient_programs):
+            patient_programs = [
+                {
+                    "uuid": current_pp["uuid"],
+                    "program_name": current_pp["name"],
+                    "date_enrolled": None,
+                    "date_completed": None,
+                    "location": None,
+                    "outcome": None,
+                }
+            ] + patient_programs
+        context["patient_programs"] = patient_programs
+        context["selected_program"] = (
+            current_pp["uuid"] if current_pp
+            else cu.resolve_lab_order_program(req, patient_programs)
+        )
+        # The order only carries the program's untranslated name; the
+        # enrolment list has it in the user's language.
+        if current_pp:
+            current_pp["name"] = next(
+                (p["program_name"] for p in patient_programs if p["uuid"] == current_pp["uuid"]),
+                current_pp["name"],
+            ) or current_pp["name"]
+        # Test type names have no translations of their own (their reference
+        # concepts name something else, e.g. COMMON TEST -> MICROSCOPY TEST
+        # CONSTRUCT), so they are translated as messages keyed by test type.
+        laborder["labtesttype"]["name"] = mu.get_global_msgs(
+            f"mdrtb.labTestType.{laborder['labtesttype']['uuid']}",
+            locale=locale,
+            default=laborder["labtesttype"]["name"],
+        )
+        encounters = pu.get_patient_encounters(req, patientid)
+        # The order's own encounter is the select's first option already.
+        context["encounters"] = [
+            e for e in (encounters or {}).get("results", [])
+            if e["uuid"] != laborder["order"]["encounter"]["uuid"]
+        ]
+        context["care_setting"] = {
+            "inpatient": {"name": Constants.INPATIENT.name.title(), "value": Constants.INPATIENT.value},
+            "outpatient": {"name": Constants.OUTPATIENT.name.title(), "value": Constants.OUTPATIENT.value},
+        }
+
+        # Sample tab
+        lab_test_type = cu.get_commonlab_labtesttype(req, laborder["labtesttype"]["uuid"]) or {}
+        requires_specimen = lab_test_type.get("requiresSpecimen", False)
+        samples = extra["labTestSamples"]
+        context["requires_specimen"] = requires_specimen
+        context["samples"] = samples
+        context["sample_status"] = cu.lab_order_sample_status(samples, requires_specimen)
+        context.update(sample_form_context(req))
+        # Samples come back with English concept names; show the names the
+        # (translated) dropdowns use.
+        type_names = {c["uuid"]: c["name"] for c in context["specimentype"]}
+        site_names = {c["uuid"]: c["name"] for c in context["specimensite"]}
+        unit_names = {u["uuid"]: u["name"] for u in context["units"]}
+        for sample in samples:
+            specimen_type = sample.get("specimenType") or {}
+            specimen_site = sample.get("specimenSite") or {}
+            sample["specimen_type_name"] = type_names.get(specimen_type.get("uuid"), specimen_type.get("display"))
+            sample["specimen_site_name"] = site_names.get(specimen_site.get("uuid"), specimen_site.get("display"))
+            sample["unit_name"] = unit_names.get(sample.get("units"))
+            # Some older samples carry a UUID as their identifier; it means
+            # nothing to a specialist, so it is not shown.
+            identifier = sample.get("sampleIdentifier") or ""
+            sample["display_identifier"] = "" if UUID_PATTERN.match(identifier) else identifier
+        # The Order tab is one form: the order plus its current sample. Other
+        # samples (rejected ones, say) are listed read-only beneath it.
+        current_sample = cu.current_lab_sample(samples)
+        context["current_sample"] = current_sample
+        context["earlier_samples"] = [s for s in samples if s is not current_sample]
+        context["show_sample_fields"] = requires_specimen or bool(samples)
+        # Sending to QuaLIS: only accepted samples qualify. Once the lab has a
+        # sample it comes back PROCESSED, and there is nothing left to send.
+        # The site list is only needed (and only loaded) when there is one to send.
+        context["submittable_samples"] = [
+            sample for sample in samples if sample["status"] == Constants.ACCEPTED.value
+        ]
+        if context["submittable_samples"]:
+            context["sitecodes"] = lu.get_location_site_codes(req)
+
+        # Results tab. Same rule as before: results need an accepted sample,
+        # but only for test types that take a specimen at all.
+        if extra["attributes"]:
+            attributes = cu.get_labtest_attributes(req, orderid, representation="FULL")
+        else:
+            attributes = cu.get_custom_attribute_for_labresults(
+                req, orderid, lab_test_type=response["labTestType"]
+            )
+        for attribute in attributes:
+            attribute["display_value"] = cu.format_lab_attribute_value(attribute)
+        common, grouped = cu.group_lab_result_attributes(attributes)
+        context["labCommonAttributes"] = common
+        context["labGroupedAttributes"] = grouped
+        # Read-only view: only what was filled in, ungrouped fields first.
+        filled_groups = []
+        for group, group_attributes in [(None, common)] + list(grouped.items()):
+            filled = [a for a in group_attributes if a["display_value"] is not None]
+            if filled:
+                filled_groups.append((group, filled))
+        context["labFilledResultGroups"] = filled_groups
+        has_results = any(a["display_value"] is not None for a in attributes)
+        results_locked = requires_specimen and context["sample_status"] != "accepted"
+        context["has_results"] = has_results
+        context["has_result_fields"] = bool(attributes)
+        context["results_locked"] = results_locked
+
+        tab = req.GET.get("tab")
+        if tab == "sample":  # links from before Order and Sample were merged
+            tab = "order"
+        if tab not in LAB_ORDER_TABS:
+            tab = "order" if results_locked else "results"
+        edit = req.GET.get("edit", "")
+        context["tab"] = tab
+        # Opens straight into the form when asked to, or when the test still
+        # needs a sample to be entered.
+        context["editing_order"] = edit == "order" or (
+            requires_specimen and current_sample is None
+        )
+        context["editing_results"] = not results_locked and (edit == "results" or not has_results)
+        return render(req, "app/commonlab/laborder.html", context=context)
+    except Exception as e:
+        log_and_show_error(e, req)
+        return redirect_after_error(req)
 
 
 def render_add_lab_test(req, uuid):
@@ -2769,6 +2963,28 @@ def render_add_lab_test(req, uuid):
                 body["patientProgram"] = patient_program
             status, response = ru.post(req, "commonlab/labtestorder", body)
             if status:
+                # Straight on to the new order's screen, which opens on the
+                # Sample tab when the test needs one, else on Results. The
+                # "uuid" in the create response is not the one the module
+                # stores, so the order is found again through its Order.
+                new_order = cu.find_lab_order_by_order_uuid(
+                    req, uuid, response["order"]["uuid"]
+                )
+                if new_order:
+                    # The same form carries the order's first sample, collected
+                    # on the order's collection date. Saved as COLLECTED: it is
+                    # accepted or rejected separately, on the order screen.
+                    sample = _sample_body(req, new_order, collection_date=order_date[:10])
+                    sample["status"] = Constants.COLLECTED.value
+                    sample_status, sample_response = ru.post(req, "commonlab/labtestsample", sample)
+                    if not sample_status:
+                        log_and_show_error(sample_response["error"]["message"], req)
+                        return lab_order_redirect(new_order, "order", edit="order")
+                    return lab_order_redirect(new_order)
+                messages.success(
+                    req,
+                    mu.get_global_msgs("mdrtb.labOrder.created", locale=req.session["locale"]),
+                )
                 return redirect("managetestorders", uuid=uuid)
             else:
                 log_and_show_error(response["error"]["message"], req)
@@ -2792,6 +3008,7 @@ def render_add_lab_test(req, uuid):
         context["selected_program"] = program_hint or cu.resolve_lab_order_program(
             req, patient_programs
         )
+        context.update(sample_form_context(req))
         if encounters:
             context["encounters"] = encounters["results"]
             context["care_setting"] = {
@@ -2811,274 +3028,183 @@ def render_add_lab_test(req, uuid):
 
 
 def render_edit_lab_test(req, patientid, orderid):
+    """
+    Saves the Order tab of the lab order screen: the order and its current
+    sample, in one form. A GET just opens that form.
+    """
     if not check_if_session_alive(req):
         return redirect("login")
-    context = {
-        "title": mu.get_global_msgs(
-            "commonlabtest.order.edit", locale=req.session["locale"]
-        ),
-        "state": "edit",
-        "orderid": orderid,
-        "patientid": patientid,
-    }
-    patient = pu.get_patient(req, patientid)
-    if patient:
-        context["patientdata"] = patient
+    if req.method != "POST":
+        return lab_order_redirect(orderid, "order", edit="order")
     try:
-        if req.method == "POST":
-            order_date = req.POST.get("orderDate")
-            # Editable like any other field. Only touch it when the form
-            # actually carried the program select (patient has enrolments):
-            # an empty value then posts null and clears the link, while a form
-            # without the field leaves the existing link untouched.
-            patient_program = req.POST.get("patientProgram") or None
-            if patient_program and order_date:
-                programs = pu.get_patient_program_enrollments(req, patientid)
-                selected_program = next(
-                    (p for p in programs if p["uuid"] == patient_program), None
-                )
-                if cu.lab_order_date_after_program_completion(order_date, selected_program):
-                    log_and_show_error(
-                        mu.get_global_msgs(
-                            "mdrtb.labtestorder.errors.dateAfterProgramCompletion",
-                            locale=req.session["locale"],
-                        ),
-                        req,
-                    )
-                    return redirect("editlabtest", patientid=patientid, orderid=orderid)
-            # The form no longer carries the test type; keep the order's own.
-            _, current = ru.get(
-                req,
-                f"commonlab/labtestorder/{orderid}",
-                {"v": "custom:(labTestType:(uuid))"},
+        order_date = req.POST.get("orderDate")
+        # Editable like any other field. Only touch it when the form
+        # actually carried the program select (patient has enrolments):
+        # an empty value then posts null and clears the link, while a form
+        # without the field leaves the existing link untouched.
+        patient_program = req.POST.get("patientProgram") or None
+        if patient_program and order_date:
+            programs = pu.get_patient_program_enrollments(req, patientid)
+            selected_program = next(
+                (p for p in programs if p["uuid"] == patient_program), None
             )
-            test_type = current["labTestType"]["uuid"]
-            body = {
-                "labTestType": test_type,
-                "labReferenceNumber": req.POST["labref"],
-                "order": {
-                    "patient": patientid,
-                    "concept": cu.get_reference_concept_of_labtesttype(req, test_type),
-                    "encounter": req.POST["encounter"],
-                    "type": "order",
-                    "instructions": None
-                    if "instructions" not in req.POST
-                    else req.POST["instructions"],
-                    "orderType": Constants.TEST_ORDER.value,
-                    "orderer": req.session["logged_user"]["currentProvider"]["uuid"],
-                    "careSetting": req.POST["careSetting"],
-                },
-            }
-            if order_date:
-                body["order"]["dateActivated"] = util.date_to_sql_datetime(order_date)
-            if "patientProgram" in req.POST:
-                body["patientProgram"] = patient_program
-            status, response = ru.post(req, f"commonlab/labtestorder/{orderid}", body)
-            if status:
-                return redirect("managetestorders", uuid=patientid)
-            else:
-                log_and_show_error("Error creating test order", req)
-                return render(req, "app/commonlab/addlabtest.html", context=context)
-    except Exception as e:
-        log_and_show_error(e, req)
-        return redirect("editlabtest", patientid=patientid, orderid=orderid)
-    try:
-        status, response = ru.get(
+            if cu.lab_order_date_after_program_completion(order_date, selected_program):
+                log_and_show_error(
+                    mu.get_global_msgs(
+                        "mdrtb.labtestorder.errors.dateAfterProgramCompletion",
+                        locale=req.session["locale"],
+                    ),
+                    req,
+                )
+                return lab_order_redirect(orderid, "order", edit="order")
+        # The form no longer carries the test type; keep the order's own.
+        _, current = ru.get(
             req,
             f"commonlab/labtestorder/{orderid}",
-            {"v": "full"},
+            {"v": "custom:(labTestType:(uuid))"},
         )
-        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-        mu.add_url_to_breadcrumb(req, context["title"])
-        if status:
-            encounters = pu.get_patient_encounters(
-                req, response["order"]["patient"]["uuid"]
-            )
-            context["laborder"] = cu.get_custom_lab_order(response)
-            patient_programs = pu.get_patient_program_enrollments(
-                req, response["order"]["patient"]["uuid"]
-            )
-            # Keep the order's current episode selectable even if, for some
-            # other reason, it no longer comes back from the enrollments API.
-            current_pp = context["laborder"].get("patientProgram")
-            if current_pp and not any(
-                p["uuid"] == current_pp["uuid"] for p in patient_programs
-            ):
-                patient_programs = [
-                    {
-                        "uuid": current_pp["uuid"],
-                        "program_name": current_pp["name"],
-                        "date_enrolled": None,
-                        "date_completed": None,
-                        "location": None,
-                        "outcome": None,
-                    }
-                ] + patient_programs
-            context["patient_programs"] = patient_programs
-            context["selected_program"] = (
-                current_pp["uuid"]
-                if current_pp
-                else cu.resolve_lab_order_program(req, patient_programs)
-            )
-            context["encounters"] = util.remove_obj_from_objarr(
-                encounters["results"],
-                context["laborder"]["order"]["encounter"]["uuid"],
-                "uuid",
-            )
-            context["care_setting"] = {
-                "inpatient": {
-                    "name": Constants.INPATIENT.name.title(),
-                    "value": Constants.INPATIENT.value,
-                },
-                "outpatient": {
-                    "name": Constants.OUTPATIENT.name.title(),
-                    "value": Constants.OUTPATIENT.value,
-                },
-            }
-            return render(req, "app/commonlab/addlabtest.html", context=context)
-        else:
-            log_and_show_error("Error getting lab test", req)
-            return redirect("managetestorders", uuid=patientid)
+        test_type = current["labTestType"]["uuid"]
+        body = {
+            "labTestType": test_type,
+            "labReferenceNumber": req.POST["labref"],
+            "order": {
+                "patient": patientid,
+                "concept": cu.get_reference_concept_of_labtesttype(req, test_type),
+                "encounter": req.POST["encounter"],
+                "type": "order",
+                "instructions": None
+                if "instructions" not in req.POST
+                else req.POST["instructions"],
+                "orderType": Constants.TEST_ORDER.value,
+                "orderer": req.session["logged_user"]["currentProvider"]["uuid"],
+                "careSetting": req.POST["careSetting"],
+            },
+        }
+        if order_date:
+            body["order"]["dateActivated"] = util.date_to_sql_datetime(order_date)
+        if "patientProgram" in req.POST:
+            body["patientProgram"] = patient_program
+        status, response = ru.post(req, f"commonlab/labtestorder/{orderid}", body)
+        if not status:
+            log_and_show_error(response["error"]["message"], req)
+            return lab_order_redirect(orderid, "order", edit="order")
+        # The same form carries the order's current sample (or a new one when
+        # it has none), collected on the order's collection date. Saving it
+        # never changes whether it was accepted or rejected.
+        if "specimentype" in req.POST:
+            sample = _sample_body(req, orderid, collection_date=order_date)
+            sampleid = req.POST.get("sampleid")
+            if sampleid:
+                sample.setdefault("quantity", "")
+                sample.setdefault("units", "")
+                status, response = ru.post(req, f"commonlab/labtestsample/{sampleid}", sample)
+            else:
+                sample["status"] = Constants.COLLECTED.value
+                status, response = ru.post(req, "commonlab/labtestsample", sample)
+            if not status:
+                log_and_show_error(response["error"]["message"], req)
+                return lab_order_redirect(orderid, "order", edit="order")
+        return lab_order_redirect(orderid, "order")
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect_after_error(req)
+    return lab_order_redirect(orderid, "order", edit="order")
 
 
 def render_delete_lab_test(req, patientid, orderid):
     if not check_if_session_alive(req):
         return redirect("login")
     status, response = ru.delete(req, f"commonlab/labtestorder/{orderid}")
-    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
     if status:
         return redirect("managetestorders", uuid=patientid)
+    log_and_show_error(response["error"]["message"], req)
+    return lab_order_redirect(orderid, "order")
 
 
 def render_managetestsamples(req, orderid):
-    if not check_if_session_alive(req):
-        return redirect("login")
-    context = {
-        "title": mu.get_global_msgs(
-            "commonlabtest.labtestsample.manage", locale=req.session["locale"]
+    """Old Manage Test Samples page; now the Sample tab of the lab order screen."""
+    return lab_order_redirect(orderid, "order", anchor="samples")
+
+
+def sample_form_context(req):
+    """
+    Choices for the sample fields, and what a new sample starts with: sputum,
+    induced, which is what nearly every TB sample is.
+    """
+    return {
+        "specimentype": cu.get_commonlab_concepts_by_type(
+            req, "commonlabtest.specimenTypeConceptUuid"
         ),
-        "orderid": orderid,
+        "specimensite": cu.get_commonlab_concepts_by_type(
+            req, "commonlabtest.specimenSiteConceptUuid"
+        ),
+        "units": cu.get_sample_units(req),
+        "default_specimen_type": Concepts.SPUTUM.value,
+        "default_specimen_site": Concepts.INDUCED_SPUTUM.value,
     }
-    status, response = ru.get(
-        req, f"commonlab/labtestorder/{orderid}", {"v": "custom:(labTestSamples,order:(uuid,patient:(uuid))"}
-    )
-    req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-    mu.add_url_to_breadcrumb(req, context["title"])
-    if status:
-        context["samples"] = response["labTestSamples"]
-        patientid = response["order"]["patient"]["uuid"]
-        patient = pu.get_patient(req, patientid)
-        if patient:
-            context["patientdata"] = patient
-    context["sitecodes"] = lu.get_location_site_codes(req)
-    return render(req, "app/commonlab/managetestsamples.html", context=context)
+
+
+def _sample_body(req, orderid, collection_date=None):
+    """
+    The sample fields as the labtestsample API takes them. collection_date
+    replaces the form's own field (the new-order form uses the order's date).
+    """
+    body = {
+        "labTest": orderid,
+        "specimenType": req.POST["specimentype"],
+        "specimenSite": req.POST["specimensite"],
+        "sampleIdentifier": req.POST["specimenid"],
+        "collectionDate": collection_date or req.POST["collectedon"],
+        "collector": req.session["logged_user"]["currentProvider"]["uuid"],
+    }
+    if req.POST.get("quantity"):
+        body["quantity"] = req.POST["quantity"]
+    if req.POST.get("units"):
+        body["units"] = req.POST["units"]
+    return body
 
 
 def render_add_test_sample(req, orderid):
+    """
+    Saves a new sample from the Sample tab. It is saved as COLLECTED and is
+    accepted or rejected separately, from its row on the same tab.
+    """
     if not check_if_session_alive(req):
         return redirect("login")
-    context = {
-        "title": mu.get_global_msgs("mdrtb.add", locale=req.session["locale"])
-                 + mu.get_global_msgs("mdrtb.sample", locale=req.session["locale"]),
-        "orderid": orderid,
-    }
-    if req.method == "POST":
-        body = {
-            "labTest": orderid,
-            "specimenType": req.POST["specimentype"],
-            "specimenSite": req.POST["specimensite"],
-            "sampleIdentifier": req.POST["specimenid"],
-            "collectionDate": req.POST["collectedon"],
-            "status": "COLLECTED",
-            "collector": req.session["logged_user"]["currentProvider"]["uuid"],
-        }
-        if "quantity" in req.POST and req.POST["quantity"]:
-            body["quantity"] = req.POST["quantity"]
-        if "units" in req.POST and req.POST["units"]:
-            body["units"] = req.POST["units"]
+    if req.method != "POST":
+        return lab_order_redirect(orderid, "order", edit="order")
+    try:
+        body = _sample_body(req, orderid)
+        body["status"] = Constants.COLLECTED.value
         status, response = ru.post(req, "commonlab/labtestsample", body)
         if status:
-            return redirect("managetestsamples", orderid=orderid)
-        else:
-            log_and_show_error("Error adding samples", req)
-            return redirect("addtestsample", orderid=orderid)
-    try:
-        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-        mu.add_url_to_breadcrumb(req, context["title"])
-        context["specimentype"] = cu.get_commonlab_concepts_by_type(
-            req, "commonlabtest.specimenTypeConceptUuid"
-        )
-        context["specimensite"] = cu.get_commonlab_concepts_by_type(
-            req, "commonlabtest.specimenSiteConceptUuid"
-        )
-        context["units"] = cu.get_sample_units(req)
-        return render(req, "app/commonlab/addsample.html", context=context)
+            return lab_order_redirect(orderid, "order", anchor="samples")
+        log_and_show_error(response["error"]["message"], req)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect_after_error(req)
+    return lab_order_redirect(orderid, "order", edit="order")
 
 
 def render_edit_test_sample(req, orderid, sampleid):
+    """
+    Saves an edited sample from the Sample tab. Editing the details does not
+    change whether it was accepted or rejected.
+    """
     if not check_if_session_alive(req):
         return redirect("login")
-    context = {
-        "title": mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
-                 + mu.get_global_msgs("mdrtb.sample", locale=req.session["locale"]),
-        "orderid": orderid,
-        "sampleid": sampleid,
-        "state": "edit",
-    }
-    if req.method == "POST":
-        body = {
-            "labTest": orderid,
-            "specimenType": req.POST["specimentype"],
-            "specimenSite": req.POST["specimensite"],
-            "sampleIdentifier": req.POST["specimenid"],
-            "quantity": "" if "quantity" not in req.POST else req.POST["quantity"],
-            "units": "" if "units" not in req.POST else req.POST["units"],
-            "collectionDate": req.POST["collectedon"],
-            "status": "COLLECTED",
-            "collector": req.session["logged_user"]["currentProvider"]["uuid"],
-        }
+    if req.method != "POST":
+        return lab_order_redirect(orderid, "order", edit="order")
+    try:
+        body = _sample_body(req, orderid)
+        # Cleared on purpose: these are optional, and an emptied field must clear.
+        body.setdefault("quantity", "")
+        body.setdefault("units", "")
         status, response = ru.post(req, f"commonlab/labtestsample/{sampleid}", body)
         if status:
-            return redirect("managetestsamples", orderid=orderid)
-        else:
-            log_and_show_error("Error adding samples", req)
-            return redirect("edittestsample", orderid=orderid, sampleid=sampleid)
-    try:
-        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-        mu.add_url_to_breadcrumb(req, context["title"])
-        status, response = ru.get(
-            req, f"commonlab/labtestsample/{sampleid}", {"v": "full"}
-        )
-        if status:
-            sample = response
-            specimen_type = cu.get_commonlab_concepts_by_type(
-                req, "commonlabtest.specimenTypeConceptUuid"
-            )
-            specimen_site = cu.get_commonlab_concepts_by_type(
-                req, "commonlabtest.specimenSiteConceptUuid"
-            )
-            context["specimentype"] = util.remove_obj_from_objarr(
-                specimen_type, sample["specimenType"]["uuid"], "uuid"
-            )
-            context["specimensite"] = util.remove_obj_from_objarr(
-                specimen_site, sample["specimenSite"]["uuid"], "uuid"
-            )
-            units = cu.get_sample_units(req)
-            context["units"] = util.remove_obj_from_objarr(
-                units, sample["units"], "uuid"
-            )
-            context["sample"] = sample
-            # context["sample"] = response
-            return render(req, "app/commonlab/addsample.html", context=context)
+            return lab_order_redirect(orderid, "order", anchor="samples")
+        log_and_show_error(response["error"]["message"], req)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect_after_error(req)
+    return lab_order_redirect(orderid, "order", edit="order")
 
 
 def render_change_sample_status(req, orderid, sampleid):
@@ -3096,99 +3222,55 @@ def render_change_sample_status(req, orderid, sampleid):
                     messages.warning(req, f"Sample {sample_status}")
         except Exception:
             log_and_show_error(f"Sample {sample_status}", req)
-    return redirect("managetestsamples", orderid=orderid)
+    return lab_order_redirect(orderid, "order", anchor="samples")
 
 
 def render_delete_sample(req, orderid, sampleid):
     if not check_if_session_alive(req):
         return redirect("login")
-    status, reponse = ru.delete(req, f"commonlab/labtestsample/{sampleid}")
-    if status:
-        return redirect(req.session["redirect_url"])
+    status, response = ru.delete(req, f"commonlab/labtestsample/{sampleid}")
+    if not status:
+        log_and_show_error(response["error"]["message"], req)
+    return lab_order_redirect(orderid, "order", anchor="samples")
 
 
 def render_add_test_results(req, orderid):
+    """Saves the Results tab of the lab order screen; a GET just opens that tab."""
     if not check_if_session_alive(req):
         return redirect("login")
-    context = {
-        "title": mu.get_global_msgs("mdrtb.addTestResults", locale=req.session["locale"]),
-        "orderid": orderid,
-    }
-    if req.method == "POST":
-        status, laborder = ru.get(req, f"commonlab/labtestorder/{orderid}", {})
-        if status:
-            body = {
-                "order": laborder["order"]["uuid"],
-                "labReferenceNumber": laborder["labReferenceNumber"],
-                "labTestType": laborder["labTestType"]["uuid"],
-                "attributes": [],
-            }
-            for key, value in req.POST.items():
-                if key in ("csrfmiddlewaretoken", "state") or not value:
-                    continue
-                obj = {
-                    "labTest": laborder["uuid"],
-                    "attributeType": key,
-                    "valueReference": value,
-                }
-                if req.POST.get("state"):
-                    for attribute in laborder["attributes"]:
-                        if attribute["attributeType"]["uuid"] == key:
-                            obj["uuid"] = attribute["uuid"]
-                body["attributes"].append(obj)
-            try:
-                status, response = ru.post(
-                    req, f"commonlab/labtestorder/{orderid}", body
-                )
-                if status:
-                    return redirect(req.session["redirect_url"])
-            except Exception as e:
-                log_and_show_error(e, req)
-                return redirect("addtestresults", orderid=orderid)
-        else:
-            log_and_show_error("Error creating the results", req)
-            return redirect("addtestresults", orderid=orderid)
-
+    if req.method != "POST":
+        return lab_order_redirect(orderid, "results", edit="results")
     try:
-        req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
-        mu.add_url_to_breadcrumb(req, context["title"])
-        status, response = ru.get(
-            req,
-            f"commonlab/labtestorder/{orderid}",
-            {"v": "custom:(attributes,auditInfo,labReferenceNumber,labTestSamples)"},
-        )
+        status, laborder = ru.get(req, f"commonlab/labtestorder/{orderid}", {})
+        if not status:
+            log_and_show_error(laborder["error"]["message"], req)
+            return lab_order_redirect(orderid, "results", edit="results")
+        body = {
+            "order": laborder["order"]["uuid"],
+            "labReferenceNumber": laborder["labReferenceNumber"],
+            "labTestType": laborder["labTestType"]["uuid"],
+            "attributes": [],
+        }
+        for key, value in req.POST.items():
+            if key in ("csrfmiddlewaretoken", "state") or not value:
+                continue
+            obj = {
+                "labTest": laborder["uuid"],
+                "attributeType": key,
+                "valueReference": value,
+            }
+            # Update the attribute already saved for this type instead of adding a second one.
+            for attribute in laborder["attributes"]:
+                if attribute["attributeType"]["uuid"] == key:
+                    obj["uuid"] = attribute["uuid"]
+            body["attributes"].append(obj)
+        status, response = ru.post(req, f"commonlab/labtestorder/{orderid}", body)
         if status:
-            context["labAuditInfo"] = response["auditInfo"]
-            context["labReferenceNumber"] = response["labReferenceNumber"]
-            for sample in response["labTestSamples"]:
-                if sample["status"] in [Constants.ACCEPTED.value, Constants.PROCESSED.value]:
-                    context["labSample"] = sample
-                    break
-
-            if len(response["attributes"]) > 0:
-                context["state"] = "edit"
-                attributes = cu.get_labtest_attributes(req, orderid, representation="FULL")
-            else:
-                attributes = cu.get_custom_attribute_for_labresults(req, orderid)
-            context["labAttributes"] = attributes
-            # Separate out common attributes from groups
-            common = []
-            grouped = {}
-            for attribute in attributes:
-                if attribute["attributeType"]["group"]:
-                    group = attribute["attributeType"]["group"]
-                    if group not in grouped:
-                        grouped[group] = []  # Initialize an empty list for the group if it doesn't exist
-                    grouped[group].append(attribute)
-                else:
-                    common.append(attribute)
-            context["labCommonAttributes"] = common
-            context["labGroupedAttributes"] = grouped
-            context["sample"] = context["labSample"]
-            return render(req, "app/commonlab/addtestresults.html", context=context)
+            return lab_order_redirect(orderid, "results")
+        log_and_show_error(response["error"]["message"], req)
     except Exception as e:
         log_and_show_error(e, req)
-        return redirect_after_error(req)
+    return lab_order_redirect(orderid, "results", edit="results")
 
 
 def check_if_sample_exists(req, orderid):
@@ -3328,7 +3410,7 @@ def submit_order_to_lab(req, orderid):
             message = mu.get_global_msgs("qualis.message.duplicate", locale=req.session["locale"])
             error_message = f"Error! {ex}: {message}"
             log_and_show_error(error_message, req)
-    return redirect("managetestsamples", orderid=orderid)
+    return lab_order_redirect(orderid, "order", anchor="samples")
 
 #######################
 # CommonLab Views END #

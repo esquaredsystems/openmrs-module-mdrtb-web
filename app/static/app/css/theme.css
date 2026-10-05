@@ -2042,3 +2042,451 @@ table tbody tr:hover {
   flex: 1 1 auto;
   min-width: 0;
 }
+/* ---------- Lab order screen ----------
+   commonlab/laborder.html (Order | Sample | Results tabs), the Add Test Order
+   page and the Manage Lab Tests list. Self-contained on purpose: styles.css is a
+   pruned Tailwind build, so utility classes not already used elsewhere are
+   silently missing. */
+
+.lab-order {
+  max-width: 96rem;
+  margin: 0 auto 4rem;
+  padding: 0 2.5rem;
+}
+
+@media screen and (max-width: 640px) {
+  .lab-order {
+    padding: 0 1rem;
+  }
+}
+
+.lab-order__back {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--brand-secondary);
+}
+
+.lab-order__header {
+  margin-bottom: 1.5rem;
+}
+
+.lab-order__title {
+  font-size: 2.25rem;
+  margin: 0;
+}
+
+.lab-order__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 3.5rem;
+  margin: 1.25rem 0 0;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  background: var(--brand-primary-tint);
+}
+
+.lab-order__meta dt,
+.lab-details dt {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--brand-text-muted);
+}
+
+.lab-order__meta dd,
+.lab-details dd {
+  margin: 0.3rem 0 0;
+  font-size: 1.05rem;
+}
+
+/* Tabs */
+.lab-tabs {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--brand-border);
+  overflow-x: auto;
+}
+
+/* The three tabs share the width evenly. */
+.lab-tab {
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: none;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--brand-text-muted);
+  white-space: nowrap;
+  transition: color var(--brand-transition), border-color var(--brand-transition);
+}
+
+.lab-tab:hover:not(:disabled) {
+  color: var(--brand-secondary);
+}
+
+.lab-tab[aria-selected="true"] {
+  color: var(--brand-secondary);
+  border-bottom-color: var(--brand-primary);
+}
+
+.lab-tab:disabled {
+  color: #b6c0ca;
+  cursor: not-allowed;
+}
+
+.lab-tab:focus-visible,
+.lab-subtab:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+.lab-tab__count {
+  min-width: 1.4rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--brand-primary-tint-strong);
+  color: var(--brand-secondary);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.lab-tab__lock {
+  font-size: 0.8rem;
+}
+
+.lab-panel {
+  padding: 2rem 0;
+}
+
+/* A second titled group inside one form (the new-order form's Sample part). */
+.lab-form-section {
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--brand-border);
+}
+
+.lab-panel__heading.lab-section__heading {
+  margin-bottom: 1.25rem;
+}
+
+/* Accept / Reject under a sample that is waiting for a decision. */
+.lab-decision {
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid #fcd34d;
+  border-radius: var(--brand-radius);
+  background: #fffbeb;
+}
+
+.lab-earlier {
+  margin-top: 1rem;
+}
+
+/* The order's sample, below the order details on the Order tab. */
+.lab-section {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--brand-border);
+  scroll-margin-top: 1rem;
+}
+
+.lab-panel__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.lab-panel__heading {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+/* Read-only label/value grid */
+.lab-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  gap: 1.5rem 3rem;
+  margin: 0 0 2rem;
+}
+
+.lab-result-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lab-result-groups {
+  gap: 1.5rem;
+}
+
+.lab-result-group {
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  padding: 1.5rem 2rem 0.25rem;
+}
+
+.lab-result-group__title {
+  font-size: 1.15rem;
+  margin: 0 0 1.25rem;
+}
+
+/* Forms opened in place of a read-only view */
+.lab-inline-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem 2.5rem;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  background: #fff;
+  box-shadow: var(--brand-shadow);
+  margin-bottom: 1.5rem;
+}
+
+.lab-inline-form__title {
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+/* Form fields in two columns on wide screens, one on narrow ones. */
+.lab-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(32rem, 1fr));
+  gap: 1.25rem 3rem;
+  align-items: center;
+}
+
+.lab-fields[hidden] {
+  display: none;
+}
+
+.lab-fields > .input-container {
+  margin: 0;
+}
+
+@media screen and (max-width: 640px) {
+  .lab-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+.lab-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.lab-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.lab-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 7rem;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  border: 0;
+}
+
+a.lab-button:hover {
+  color: #fff;
+  text-decoration: none;
+}
+
+.lab-actions .button-danger {
+  margin-left: auto;
+}
+
+.lab-button--sm {
+  min-width: 0;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.lab-icon-button {
+  display: inline-flex;
+  padding: 0.35rem;
+  border: 0;
+  border-radius: var(--brand-radius);
+  background: none;
+  color: var(--brand-text);
+}
+
+.lab-icon-button:hover {
+  background: var(--brand-primary-tint);
+}
+
+/* Result group sub-tabs inside the results form */
+.lab-subtabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--brand-border);
+}
+
+.lab-subtab {
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--brand-border);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--brand-secondary);
+}
+
+.lab-subtab[aria-selected="true"] {
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: #fff;
+}
+
+
+/* Tables */
+.lab-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  margin-bottom: 1.5rem;
+}
+
+.lab-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+
+.lab-table th {
+  padding: 1rem 1.5rem;
+  background: var(--brand-primary-tint);
+  border-bottom: 1px solid var(--brand-border);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--brand-text-muted);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.lab-table td {
+  padding: 1.1rem 1.5rem;
+  border-bottom: 1px solid var(--brand-border);
+  vertical-align: middle;
+}
+
+.lab-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.lab-table--clickable tbody tr {
+  cursor: pointer;
+  transition: background-color var(--brand-transition);
+}
+
+.lab-table--clickable tbody tr:hover {
+  background: var(--brand-primary-tint);
+}
+
+.lab-table__action {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.lab-table__edit-row > td {
+  background: #f8fafc;
+}
+
+.lab-table__edit-row .lab-inline-form {
+  margin: 0.25rem 0;
+}
+
+.lab-row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.lab-lims {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--brand-border);
+}
+
+/* Status chips */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-chip--accepted,
+.status-chip--processed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-chip--collected {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-chip--rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-chip--none {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.lab-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid #fcd34d;
+  border-radius: var(--brand-radius);
+  background: #fffbeb;
+}
+
+.lab-notice p {
+  margin: 0;
+}
+
+.lab-empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--brand-text-muted);
+}
+
+.lab-muted {
+  color: var(--brand-text-muted);
+  font-size: 0.875rem;
+}

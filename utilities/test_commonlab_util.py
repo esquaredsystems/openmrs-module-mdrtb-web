@@ -1,6 +1,7 @@
 import django
 import os
 from django.test import TestCase, RequestFactory
+from unittest.mock import patch
 import utilities.commonlab_util as cu
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "settings.settings"
@@ -162,3 +163,92 @@ class SummarizeLabOrderCollectionDateTest(TestCase):
 
     def test_none_without_attribute_or_order_date(self):
         self.assertIsNone(cu.summarize_lab_order({"attributes": []})["collection_date"])
+
+
+class LabOrderSampleStatusTest(TestCase):
+    def test_accepted_wins_over_other_statuses(self):
+        samples = [{"status": "REJECTED"}, {"status": "COLLECTED"}, {"status": "ACCEPTED"}]
+        self.assertEqual(cu.lab_order_sample_status(samples, True), "accepted")
+
+    def test_processed_counts_as_accepted(self):
+        self.assertEqual(cu.lab_order_sample_status([{"status": "PROCESSED"}], True), "accepted")
+
+    def test_collected_is_waiting_for_acceptance(self):
+        samples = [{"status": "REJECTED"}, {"status": "COLLECTED"}]
+        self.assertEqual(cu.lab_order_sample_status(samples, True), "collected")
+
+    def test_rejected_when_every_sample_was_rejected(self):
+        self.assertEqual(cu.lab_order_sample_status([{"status": "REJECTED"}], True), "rejected")
+
+    def test_none_without_samples(self):
+        self.assertEqual(cu.lab_order_sample_status([], True), "none")
+        self.assertEqual(cu.lab_order_sample_status(None, False), "notRequired")
+
+
+class FormatLabAttributeValueTest(TestCase):
+    def _attribute(self, input_type, value, **extra):
+        return {"attributeType": {"inputType": input_type, **extra}, "valueReference": value}
+
+    def test_empty_values_are_none(self):
+        self.assertIsNone(cu.format_lab_attribute_value(self._attribute("text", "")))
+        self.assertIsNone(cu.format_lab_attribute_value({"attributeType": {"inputType": "text"}}))
+
+    def test_coded_answer_shows_its_display_name(self):
+        attribute = self._attribute("select", "a-2", answers=[
+            {"uuid": "a-1", "display": "Negative"}, {"uuid": "a-2", "display": "Positive"}])
+        self.assertEqual(cu.format_lab_attribute_value(attribute), "Positive")
+
+    def test_date_is_day_month_year(self):
+        attribute = self._attribute("date", "2020-09-04 00:00:00")
+        self.assertEqual(cu.format_lab_attribute_value(attribute), "04.09.2020")
+
+    def test_checkbox(self):
+        self.assertEqual(cu.format_lab_attribute_value(self._attribute("checkbox", "on")), "✓")
+
+    def test_text_is_unchanged(self):
+        self.assertEqual(cu.format_lab_attribute_value(self._attribute("text", "3+")), "3+")
+
+
+class GroupLabResultAttributesTest(TestCase):
+    def test_splits_common_from_grouped_keeping_order(self):
+        a = {"attributeType": {"group": None, "name": "a"}}
+        b = {"attributeType": {"group": "XPERT", "name": "b"}}
+        c = {"attributeType": {"group": "XPERT", "name": "c"}}
+        common, grouped = cu.group_lab_result_attributes([a, b, c])
+        self.assertEqual(common, [a])
+        self.assertEqual(grouped, {"XPERT": [b, c]})
+
+
+class FindLabOrderByOrderUuidTest(TestCase):
+    RESULTS = {"results": [
+        {"uuid": "lab-1", "order": {"uuid": "order-1"}},
+        {"uuid": "lab-2", "order": {"uuid": "order-2"}},
+    ]}
+
+    def test_finds_the_lab_order_for_the_order(self):
+        with patch.object(cu.ru, "get", return_value=(True, self.RESULTS)):
+            self.assertEqual(cu.find_lab_order_by_order_uuid(None, "patient", "order-2"), "lab-2")
+
+    def test_none_when_not_found_or_request_fails(self):
+        with patch.object(cu.ru, "get", return_value=(True, self.RESULTS)):
+            self.assertIsNone(cu.find_lab_order_by_order_uuid(None, "patient", "other"))
+        with patch.object(cu.ru, "get", return_value=(False, {})):
+            self.assertIsNone(cu.find_lab_order_by_order_uuid(None, "patient", "order-1"))
+
+
+class CurrentLabSampleTest(TestCase):
+    def test_prefers_the_accepted_sample(self):
+        samples = [{"uuid": "a", "status": "COLLECTED"}, {"uuid": "b", "status": "ACCEPTED"}]
+        self.assertEqual(cu.current_lab_sample(samples)["uuid"], "b")
+
+    def test_processed_counts_as_accepted(self):
+        samples = [{"uuid": "a", "status": "REJECTED"}, {"uuid": "b", "status": "PROCESSED"}]
+        self.assertEqual(cu.current_lab_sample(samples)["uuid"], "b")
+
+    def test_falls_back_to_the_waiting_sample(self):
+        samples = [{"uuid": "a", "status": "REJECTED"}, {"uuid": "b", "status": "COLLECTED"}]
+        self.assertEqual(cu.current_lab_sample(samples)["uuid"], "b")
+
+    def test_none_when_only_rejected_or_empty(self):
+        self.assertIsNone(cu.current_lab_sample([{"uuid": "a", "status": "REJECTED"}]))
+        self.assertIsNone(cu.current_lab_sample(None))

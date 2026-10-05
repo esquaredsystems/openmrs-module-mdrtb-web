@@ -832,6 +832,108 @@ def summarize_lab_order(order):
     }
 
 
+def find_lab_order_by_order_uuid(req, patient_uuid, order_uuid):
+    """
+    The lab test order (labtestorder) uuid for a given underlying Order, or None.
+
+    Creating a labtestorder returns a uuid that is not the one the MDR-TB
+    module stores for it, so a fresh order can't be opened by that uuid
+    (GET answers 500, NullPointerException). The Order's own uuid is saved as
+    returned, so the new lab test is looked up through it.
+    """
+    status, response = ru.get(
+        req,
+        "commonlab/labtestorder",
+        {"patient": patient_uuid, "v": "custom:(uuid,order)"},
+    )
+    if not status:
+        return None
+    return next(
+        (
+            lab_order["uuid"]
+            for lab_order in response["results"]
+            if (lab_order.get("order") or {}).get("uuid") == order_uuid
+        ),
+        None,
+    )
+
+
+SAMPLE_STATUSES_ALLOWING_RESULTS = (Constants.ACCEPTED.value, Constants.PROCESSED.value)
+
+
+def lab_order_sample_status(samples, requires_specimen):
+    """
+    The order's sample state in one word, for the status column and the tabs.
+
+    accepted: a sample was accepted (or already processed), so results can be entered.
+    collected: a sample is waiting for someone to accept or reject it.
+    rejected: every sample so far was rejected.
+    none / notRequired: no samples yet, depending on whether the test type needs one.
+    """
+    statuses = {sample.get("status") for sample in samples or []}
+    if statuses & set(SAMPLE_STATUSES_ALLOWING_RESULTS):
+        return "accepted"
+    if Constants.COLLECTED.value in statuses:
+        return "collected"
+    if Constants.REJECTED.value in statuses:
+        return "rejected"
+    return "none" if requires_specimen else "notRequired"
+
+
+def current_lab_sample(samples):
+    """
+    The sample the order form edits: the accepted (or processed) one, else the
+    one still waiting to be accepted or rejected. None when there is no sample
+    or every sample was rejected, in which case the form adds a new one.
+    """
+    samples = samples or []
+    for statuses in (SAMPLE_STATUSES_ALLOWING_RESULTS, (Constants.COLLECTED.value,)):
+        found = next((s for s in samples if s.get("status") in statuses), None)
+        if found:
+            return found
+    return None
+
+
+def format_lab_attribute_value(attribute):
+    """
+    A result attribute's value as the specialist should read it, or None when empty.
+
+    Coded answers show their display name, dates come out as dd.mm.yyyy like the
+    rest of the app, and checkboxes (stored as "on") as a tick.
+    """
+    value = attribute.get("valueReference")
+    if value in (None, ""):
+        return None
+    attribute_type = attribute["attributeType"]
+    input_type = attribute_type.get("inputType")
+    if input_type == "select":
+        return next(
+            (a["display"] for a in attribute_type.get("answers") or [] if a["uuid"] == value),
+            value,
+        )
+    if input_type == "checkbox":
+        return "✓" if str(value).lower() in ("on", "true") else "✗"
+    if input_type == "date":
+        date = _lab_attribute_date(value)
+        if date:
+            year, month, day = date.split("-")
+            return f"{day}.{month}.{year}"
+    return value
+
+
+def group_lab_result_attributes(attributes):
+    """Splits result attributes into the ungrouped ones and {group name: attributes}."""
+    common = []
+    grouped = {}
+    for attribute in attributes:
+        group = attribute["attributeType"].get("group")
+        if group:
+            grouped.setdefault(group, []).append(attribute)
+        else:
+            common.append(attribute)
+    return common, grouped
+
+
 def add_lab_order_summaries(orders):
     """Attaches `summary` to each order and sorts the list newest first, in place."""
     for order in orders:

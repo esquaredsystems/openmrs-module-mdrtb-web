@@ -5,362 +5,56 @@
 {% endblock %}
 
 {% block content %}
+{% comment %}
+New lab order and its first sample, saved together by one button
+(render_add_lab_test). Editing happens on the Order tab of the lab order screen
+(laborder.html), which shares partials/order_fields.html and sample_fields.html.
+Results open once the order is saved, which lands the user on its screen.
+{% endcomment %}
 
-<style>
-    /* Self-contained: don't lean on ambient utility classes that may not be
-       compiled into styles.css (this project only ships the subset actually
-       used elsewhere, so an unused Tailwind-style class name is silently a
-       no-op rather than an error). */
-    /* Replaces the outer .input-container's normal single field child with a
-       select + detail card stacked vertically. .input-container is a flex
-       ROW (label | field), so this can't reuse that class - it needs its own
-       flex:1 1 auto/max-width so it still fills the same field column, but
-       flex-direction:column so its own two children stack instead of
-       sitting side by side. */
-    .program-field-stack {
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        flex: 1 1 auto;
-        min-width: 0;
-        max-width: 32rem;
-    }
-    .program-option-card {
-        margin-top: 0.5rem;
-        padding: 0.75rem 1rem;
-        border: 1px solid #d1d5db;
-        border-radius: 0.375rem;
-        background-color: #eaf5fc;
-        border-color: #2d9cdb;
-    }
-    .program-option-name {
-        font-weight: 600;
-    }
-    .program-option-meta {
-        display: flex;
-        flex-wrap: wrap;
-        column-gap: 0.75rem;
-        row-gap: 0.2rem;
-        font-size: 0.9rem;
-        color: #6b7280;
-        margin-top: 0.25rem;
-    }
-    /* Select2's default highlighted-row blue (#5897fb) leaves the gray
-       .program-option-meta text (#6b7280) with poor contrast on top of it.
-       Swap the highlight for the same light tint the detail card already
-       uses, where that gray is already proven readable, instead of trying
-       to find a gray that survives on a saturated blue. */
-    .select2-container--default .select2-results__option--highlighted[aria-selected] {
-        background-color: #eaf5fc;
-        color: #1f2937;
-    }
-    .select2-container--default .select2-results__option--highlighted[aria-selected] .program-option-meta {
-        color: #6b7280;
-    }
-</style>
-
-<div class="patient-banner-container mt-4">
-    <div class="patient-info-container">
-        <div class="font-bold">
-            <div>{{patientdata.name}}</div>
-            <div>{{patientdata.age}} y ({{patientdata.dob | iso_to_normal_date}})</div>
-        </div>
-    </div>
-    <div class="space-y-2 flex flex-col justify-center font-bold text-base">
-        {% for identifier in patientdata.identifiers %}
-        <span>{{identifier.identifierType.display}}: {{identifier.identifier}}</span>
-        {% endfor %}
-    </div>
-</div>
+{% include 'app/components/patient_banner.html' with patient=patientdata show_gender_icon=True %}
 
 <div class="m-4">
     {% include 'app/components/breadcrumbs.html'%}
 </div>
 
-<div class="page-panel">
-    <div class="flex items-center justify-between">
-        {% if state == 'edit' %}
-        <div id="form-info" class="flex-center space-x-4">
-            <h1 class="text-[#2D9CDB] text-3xl font-bold">
-                {{'commonlabtest.order.edit'|get_message:locale|default:"en"}}
-            </h1>
-            <button type="button" id="editbtn" title="{{'general.edit'|get_message:locale|default:"en"}}" aria-label="{{'general.edit'|get_message:locale|default:"en"}}">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-                </svg>
+<div class="lab-order">
+    <a class="lab-order__back" href="{% url 'managetestorders' uuid=patient %}">&larr; {{'commonlabtest.labtest.manage'|get_message:locale|default:"en"}}</a>
+    <header class="lab-order__header">
+        <h1 class="lab-order__title">{{'commonlabtest.order.add'|get_message:locale|default:"en"}}</h1>
+    </header>
 
-            </button>
-            <button hidden type="button" id="canceleditbtn" class="cancel-button">Cancel</button>
-            <a href="{% url 'dellabtest' patientid=patientid orderid=orderid %}" type="button" id="dellabtest" title="{{'general.delete'|get_message:locale|default:"en"}}" aria-label="{{'general.delete'|get_message:locale|default:"en"}}">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                </svg>
-            </a>
-        </div>
-        {% else %}
-        <h2 class="text-4xl font-bold leading-tight text-[#2d9cdb]">
-            {{'commonlabtest.order.add'|get_message:locale|default:"en"}}
-        </h2>
-        {% endif %}
-    </div>
-    <form onsubmit="disableSubmit()"
-        action="{% if state == 'edit' %} {% url 'editlabtest' orderid=orderid patientid=patientid %}{% else %}{% url 'addlabtest' uuid=patient %}{% endif %}"
-        method="post" class="m-10 flex-column-center space-y-6" action="">
-        {% csrf_token %}
-
-        <div class="input-container" {% if state != 'edit' %}style="display:none"{% endif %}>
-            <label class="input-label">
-                {{'ConceptProposal.encounter'|get_message:locale|default:"en"}}
-            </label>
-            <div class="input-container">
-                <input id="createencounter" name="createencounter" type="checkbox" class="check-input"
-                    {% if state != 'edit' %}checked{% endif %} />
-                <label>{{'mdrtb.addANewSpecimen'|get_message:locale|default:"en"}}</label>
-                <select id="encounter" name="encounter" class="input form-control">
-                    {% if state == 'edit' %}
-                    <option selected value="{{laborder.order.encounter.uuid}}">{{laborder.order.encounter.name}}</option>
-                {% endif %}
-                {% for encounter in encounters %}
-                    <option value="{{ encounter.uuid }}">{{ encounter.display }}</option>
-                {% endfor %}
-            </select>
-        </div>
+    <div class="lab-tabs" role="tablist">
+        <button type="button" class="lab-tab" role="tab" aria-selected="true">{{'mdrtb.labOrder.tab.order'|get_message:locale|default:"en"}}</button>
+        <button type="button" class="lab-tab" role="tab" aria-selected="false" disabled title="{{'mdrtb.labOrder.saveFirst'|get_message:locale|default:"en"}}">{{'mdrtb.labOrder.tab.results'|get_message:locale|default:"en"}}</button>
     </div>
 
-    {% comment %}
-    Program / episode this lab order belongs to. There is no program picker in
-    the source data model - the view resolves it to a single value (the episode
-    held in session, or the patient's only enrolment) and preselects it here.
-    Shown whenever the patient has at least one enrolment, whether active or
-    already completed - a lab order can be added as a historical event against
-    a closed episode, guarded only by the date field below (its max date is
-    the selected program's completion date). When the patient has several
-    enrolments and nothing to go on, no option is preselected and the field is
-    required so the user chooses. Hidden entirely when the patient has no
-    enrolment at all - the order is then created unlinked and backfilled
-    later.
-    {% endcomment %}
-    {% if patient_programs %}
-    <div class="input-container">
-        <label class="input-label" for="patient-program-select">
-            {{'Program.program'|get_message:locale|default:"en"}}
-        </label>
-        <div class="program-field-stack">
-            <select name="patientProgram" id="patient-program-select" class="input form-control"
-                {% if not selected_program %}required{% endif %}>
-                {% if not selected_program %}
-                <option value="" disabled selected>
-                    {{'mdrtb.selectOption'|get_message:locale|default:"en"}}
-                </option>
-                {% endif %}
-                {% for p in patient_programs %}
-                <option value="{{ p.uuid }}" {% if p.uuid == selected_program %}selected{% endif %}
-                    data-enrolled="{{ p.date_enrolled|slice:':10'|default:'' }}"
-                    data-completed="{{ p.date_completed|slice:':10'|default:'' }}"
-                    data-location="{{ p.location|default:'' }}"
-                    data-outcome="{{ p.outcome|default:'' }}">
-                    {{ p.program_name }}
-                </option>
-                {% endfor %}
-            </select>
-            <div id="selected-program-card" class="program-option-card" style="display:none"></div>
-        </div>
-    </div>
-    {% endif %}
+    <section class="lab-panel">
+        <form method="post" action="{% url 'addlabtest' uuid=patient %}" class="lab-inline-form js-busy-form">
+            {% csrf_token %}
+            {% include 'app/commonlab/partials/order_fields.html' %}
 
-    <div class="input-container">
-        <label class="input-label" for="order-date">
-            {{'commonlabtest.order.collection.date'|get_message:locale|default:"en"}}
-        </label>
-        <input type="date" name="orderDate" id="order-date" class="input form-control" required
-            {% if state == 'edit' %}value="{{laborder.order.date_activated|slice:':10'}}"{% endif %}>
-    </div>
-
-        <div class="input-container" {% if state != 'edit' %}style="display:none"{% endif %}>
-            <label class="input-label" for="name">
-                {{'labtest.careSetting'|get_message:locale|default:"en"}}
-            </label>
-            <div class="flex items-center justify-start space-x-4 w-full">
-                <div class="flex-center space-x-2">
-                    <label for="inpatient">{{'labtest.careSetting.inpatient'|get_message:locale|default:"en"}}</label>
-                    {% if state == 'edit' %}
-                        <input {% if laborder.careSetting.uuid == care_setting.inpatient.value %} checked {% endif %}
-                            name="careSetting" type="radio" value="{{ care_setting.inpatient.value }}" class="radio-input" />
-                    {% else %}
-                        <input name="careSetting" type="radio" value="{{ care_setting.inpatient.value }}" class="radio-input" />
-                    {% endif %}
-                </div>
-                <div class="flex-center space-x-2">
-                    <label for="outpatient">{{'labtest.careSetting.outpatient'|get_message:locale|default:"en"}}</label>
-                    {% if state == 'edit' %}
-                        <input {% if laborder.careSetting.uuid == care_setting.outpatient.value %} checked {% endif %}
-                            name="careSetting" type="radio" value="{{ care_setting.outpatient.value }}" class="radio-input" />
-                    {% else %}
-                        <input checked name="careSetting" type="radio" value="{{ care_setting.outpatient.value }}" class="radio-input" />
-                    {% endif %}
-                </div>
+            {# The order's first sample, saved by the same button. It takes the order's collection date. #}
+            <h3 class="lab-inline-form__title lab-form-section">{{'mdrtb.sample'|get_message:locale|default:"en"}}</h3>
+            {% include 'app/commonlab/partials/sample_fields.html' with sample=None %}
+            <p class="lab-muted">{{'mdrtb.labOrder.saveFirst'|get_message:locale|default:"en"}}</p>
+            <div class="lab-actions">
+                <button type="submit" class="button-primary lab-button">{{'general.save'|get_message:locale|default:"en"}}</button>
+                <a href="{% url 'managetestorders' uuid=patient %}" class="cancel-button">{{'general.cancel'|get_message:locale|default:"en"}}</a>
             </div>
-        </div>
-
-        <div class="input-container">
-            <label class="input-label" for="">
-                {{'commonlabtest.order.labReferenceNo'|get_message:locale|default:"en"}}
-
-            </label>
-            {% if state == 'edit' %}
-            <input name="labref" id="labref" class="input form-control" type="text" value="{{laborder.labref}}">
-            {% else %}
-            <input name="labref" id="labref" class="input form-control" type="text"
-                value="{{'placeholder' | get_lab_reference_num}}">
-            {% endif %}
-        </div>
-        <div class="input-container">
-            <label class="input-label" for="">
-                {{'general.instructions'|get_message:locale|default:"en"}}
-
-            </label>
-            {% if state == 'edit' %}
-                <textarea name="instructions" class="input form-control">{{laborder.order.instructions}}</textarea>
-            {% else %}
-                <textarea name="instructions" id="" class="input form-control"></textarea>
-            {% endif %}
-        </div>
-        <div class="flex-center space-x-4">
-            <button type="submit" id="submitBtn"
-                class="button-primary w-1/5">{{'general.save'|get_message:locale|default:"en"}}</button>
-            <a href="javascript:history.go(-1)"
-                class="cancel-button">{{'general.cancel'|get_message:locale|default:"en"}}</a>
-        </div>
-
-    </form>
+        </form>
+    </section>
 </div>
 
 <script>
-
-    // Labels for the selected-program detail card below the dropdown.
-    const programFieldLabels = {
-        enrolled: "{{'Program.dateEnrolled'|get_message:locale|default:"en"|escapejs}}",
-        completed: "{{'Program.dateCompleted'|get_message:locale|default:"en"|escapejs}}",
-        location: "{{'Program.location'|get_message:locale|default:"en"|escapejs}}",
-        outcome: "{{'mdrtb.outcome'|get_message:locale|default:"en"|escapejs}}",
-    }
-
-    // "YYYY-MM-DD" -> "DD.MM.YYYY", matching this app's normal date display.
-    function isoToDisplayDate(iso) {
-        let parts = iso.split('-')
-        return parts.length === 3 ? [parts[2], parts[1], parts[0]].join('.') : iso
-    }
-
-    // Builds the "name + meta row" markup shared by the open dropdown list
-    // (Select2's templateResult) and the persistent detail card below it, so
-    // both look identical - built with jQuery text nodes, not string
-    // concatenation, since the location/outcome values come from patient data.
-    function renderProgramDetails(name, data) {
-        let $result = $('<div></div>')
-        $('<div class="program-option-name"></div>').text(name).appendTo($result)
-        let $meta = $('<div class="program-option-meta"></div>')
-        let addRow = (label, raw, isDate) => {
-            if (!raw) return
-            $('<span></span>').text(label + ': ' + (isDate ? isoToDisplayDate(raw) : raw)).appendTo($meta)
-        }
-        addRow(programFieldLabels.enrolled, data.enrolled, true)
-        addRow(programFieldLabels.completed, data.completed, true)
-        addRow(programFieldLabels.location, data.location, false)
-        addRow(programFieldLabels.outcome, data.outcome, false)
-        if ($meta.children().length) {
-            $meta.appendTo($result)
-        }
-        return $result
-    }
-
-    // Select2's per-option rendering in the open dropdown list.
-    function formatProgramOption(option) {
-        if (!option.id || !option.element) {
-            return option.text
-        }
-        return renderProgramDetails(option.text.trim(), option.element.dataset)
-    }
-    $('#patient-program-select').select2({
-        templateResult: formatProgramOption,
-        width: '100%',
+    document.querySelectorAll('.js-busy-form').forEach((form) => {
+        form.addEventListener('submit', (event) => {
+            const button = event.submitter
+            if (!button) return
+            button.disabled = true
+            button.innerHTML = '<div class="app-spinner app-spinner--sm app-spinner--light" role="status" aria-label="Loading"></div>'
+        })
     })
-
-    // Renders the selected program's detail card below the dropdown and
-    // drives the order date field's "max" so a date past a closed episode's
-    // completion can't be picked from the calendar at all.
-    function updateSelectedProgramCard() {
-        let select = document.getElementById('patient-program-select')
-        let option = select && select.selectedOptions[0]
-        let $card = $('#selected-program-card')
-        let dateInput = $('#order-date')
-
-        if (!option || !option.value) {
-            $card.hide()
-            dateInput.removeAttr('max')
-            return
-        }
-
-        let data = option.dataset
-        $card.empty().append(renderProgramDetails(option.text.trim(), data).children())
-        $card.show()
-
-        if (data.completed) {
-            dateInput.attr('max', data.completed)
-        } else {
-            dateInput.removeAttr('max')
-        }
-    }
-    $('#patient-program-select').on('change', updateSelectedProgramCard)
-    $(document).ready(updateSelectedProgramCard)
-
-
-    const disableSubmit = () => {
-        $('#submitBtn').prop('disabled', true)
-        $('#submitBtn').removeClass('button-primary')
-        $('#submitBtn').html(`
-        <div class="app-spinner" role="status" aria-label="Loading"></div>`)
-        if (state === 'edit') {
-            $('#updateBtn').prop('disabled', true)
-            $('#updateBtn').removeClass('button-primary')
-            $('#updateBtn').html(`
-          <div class="app-spinner" role="status" aria-label="Loading"></div>`)
-        }
-    }
-    let state = '{{state | escapejs}}'
-    if (state === 'edit') {
-        $('input').prop('disabled', true)
-        $('input[name=csrfmiddlewaretoken]').prop('disabled', false)
-        $('select').prop('disabled', true).prop('', false)
-        $('textarea').prop('disabled', true).prop('', false)
-        $('#canceleditbtn').prop('hidden', true)
-        $('#retireTestType').prop('disabled', false)
-    }
-    $('#editbtn').click(function () {
-        $('input').prop('disabled', false)
-        $('select').prop('disabled', false)
-        $('textarea').prop('disabled', false)
-        $('#canceleditbtn').prop('hidden', false)
-        $('#referenceConcept').prop('disabled', true)
-    })
-    $('#canceleditbtn').click(function () {
-        $('input').prop('disabled', true)
-        $('select').prop('disabled', true)
-        $('textarea').prop('disabled', true)
-        $('#canceleditbtn').prop('hidden', true)
-        $('#retireTestType').prop('disabled', false)
-    })
-    $('#createencounter').change(function() {
-        if ($(this).is(':checked')) {
-            $('#encounter').prop('disabled', true);
-        } else {
-            $('#encounter').prop('disabled', false);
-        }
-    });
-    
 </script>
 
 {% endblock %}

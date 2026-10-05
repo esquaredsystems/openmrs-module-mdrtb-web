@@ -1,0 +1,318 @@
+{% extends 'app/base/base.html' %}
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+{% comment %}
+One lab order with Order | Results tabs (the order's sample is part of the Order tab) (render_lab_order). Every tab
+reads first and edits in place; the forms post to the existing add/edit views,
+which come back here with ?tab=. All three panels are rendered up front and
+switched in the browser, so moving between tabs costs no request.
+{% endcomment %}
+
+{% include 'app/components/patient_banner.html' with patient=patientdata show_gender_icon=True %}
+
+<div class="m-4">
+  {% include 'app/components/breadcrumbs.html'%}
+</div>
+
+<div class="lab-order">
+  <a class="lab-order__back" href="{% url 'managetestorders' uuid=patient %}">&larr; {{'commonlabtest.labtest.manage'|get_message:locale|default:"en"}}</a>
+
+  <header class="lab-order__header">
+    <h1 class="lab-order__title">{{ laborder.labref }}</h1>
+    <dl class="lab-order__meta">
+      <div><dt>{{'mdrtb.labOrder.testType'|get_message:locale|default:"en"}}</dt><dd>{{ laborder.labtesttype.name }}</dd></div>
+      <div><dt>{{'commonlabtest.order.collection.date'|get_message:locale|default:"en"}}</dt><dd>{{ laborder.order.date_activated|iso_to_normal_date|default:"—" }}</dd></div>
+      {% if laborder.patientProgram %}
+      <div><dt>{{'Program.program'|get_message:locale|default:"en"}}</dt><dd>{{ laborder.patientProgram.name }}</dd></div>
+      {% endif %}
+      <div><dt>{{'mdrtb.sample'|get_message:locale|default:"en"}}</dt><dd>{% include 'app/commonlab/partials/sample_status_chip.html' with status=sample_status %}</dd></div>
+      <div><dt>{{'mdrtb.result'|get_message:locale|default:"en"}}</dt><dd>
+        {% if has_results %}<span class="status-chip status-chip--accepted">{{'mdrtb.labOrder.resultsEntered'|get_message:locale|default:"en"}}</span>
+        {% else %}<span class="status-chip status-chip--none">{{'mdrtb.pending'|get_message:locale|default:"en"}}</span>{% endif %}
+      </dd></div>
+    </dl>
+  </header>
+
+  <div class="lab-tabs" role="tablist">
+    <button type="button" class="lab-tab" role="tab" id="tab-order" data-tab="order" aria-controls="panel-order"
+      aria-selected="{% if tab == 'order' %}true{% else %}false{% endif %}">
+      {{'mdrtb.labOrder.tab.order'|get_message:locale|default:"en"}}
+    </button>
+    <button type="button" class="lab-tab" role="tab" id="tab-results" data-tab="results" aria-controls="panel-results"
+      aria-selected="{% if tab == 'results' %}true{% else %}false{% endif %}">
+      {{'mdrtb.labOrder.tab.results'|get_message:locale|default:"en"}}
+      {% if results_locked %}<span class="lab-tab__lock" aria-hidden="true">&#128274;</span>{% endif %}
+    </button>
+  </div>
+
+  {# ------------------------------- ORDER ------------------------------- #}
+  {% comment %}
+  One read-only view and one form for the order and its current sample: a
+  single Edit, a single Save. Accept/Reject and sending to the lab are actions
+  on the view, not part of the form.
+  {% endcomment %}
+  <section class="lab-panel" role="tabpanel" id="panel-order" aria-labelledby="tab-order" {% if tab != 'order' %}hidden{% endif %}>
+    <div id="order-view" {% if editing_order %}hidden{% endif %}>
+      <dl class="lab-details">
+        <div><dt>{{'Program.program'|get_message:locale|default:"en"}}</dt><dd>{{ laborder.patientProgram.name|default:"—" }}</dd></div>
+        <div><dt>{{'commonlabtest.order.collection.date'|get_message:locale|default:"en"}}</dt><dd>{{ laborder.order.date_activated|iso_to_normal_date|default:"—" }}</dd></div>
+        <div><dt>{{'commonlabtest.order.labReferenceNo'|get_message:locale|default:"en"}}</dt><dd>{{ laborder.labref }}</dd></div>
+        <div><dt>{{'general.instructions'|get_message:locale|default:"en"}}</dt><dd>{{ laborder.order.instructions|default:"—" }}</dd></div>
+        <div><dt>{{'labtest.careSetting'|get_message:locale|default:"en"}}</dt><dd>{% if laborder.careSetting.uuid == care_setting.inpatient.value %}{{'labtest.careSetting.inpatient'|get_message:locale|default:"en"}}{% elif laborder.careSetting.uuid == care_setting.outpatient.value %}{{'labtest.careSetting.outpatient'|get_message:locale|default:"en"}}{% else %}{{ laborder.careSetting.name }}{% endif %}</dd></div>
+        <div><dt>{{'ConceptProposal.encounter'|get_message:locale|default:"en"}}</dt><dd>{{ laborder.order.encounter.name }}</dd></div>
+        <div><dt>{{'general.createdBy'|get_message:locale|default:"en"}}</dt><dd>{{ labAuditInfo.creator.display }}, {{ labAuditInfo.dateCreated|iso_to_normal_date }}</dd></div>
+      </dl>
+
+      <div id="samples" class="lab-section">
+        <h2 class="lab-panel__heading lab-section__heading">{{'mdrtb.sample'|get_message:locale|default:"en"}}</h2>
+        {% if current_sample %}
+        <dl class="lab-details">
+          <div><dt>{{'labtest.specimenType'|get_message:locale|default:"en"}}</dt><dd>{{ current_sample.specimen_type_name }}</dd></div>
+          <div><dt>{{'labtest.specimenSite'|get_message:locale|default:"en"}}</dt><dd>{{ current_sample.specimen_site_name|default:"—" }}</dd></div>
+          <div><dt>{{'commonlabtest.labtestsample.quantity'|get_message:locale|default:"en"}}</dt><dd>{% if current_sample.quantity %}{{ current_sample.quantity }} {{ current_sample.unit_name|default:"" }}{% else %}—{% endif %}</dd></div>
+          <div><dt>{{'commonlabtest.labtestsample.sampleIdentifier'|get_message:locale|default:"en"}}</dt><dd>{{ current_sample.display_identifier|default:"—" }}</dd></div>
+          <div><dt>{{'commonlabtest.labtestsample.collectionDate'|get_message:locale|default:"en"}}</dt><dd>{{ current_sample.collectionDate|iso_to_normal_date }}</dd></div>
+          <div><dt>{{'labtest.status'|get_message:locale|default:"en"}}</dt><dd>{% include 'app/commonlab/partials/sample_row_status.html' with sample=current_sample %}</dd></div>
+        </dl>
+        {% if current_sample.status == 'COLLECTED' %}
+        {# Accept/Reject stay a separate, deliberate step: saving a sample never accepts it. #}
+        <form method="post" action="{% url 'changesamplestatus' orderid=orderid sampleid=current_sample.uuid %}" class="lab-actions lab-decision js-busy-form">
+          {% csrf_token %}
+          <span class="lab-muted">{{'mdrtb.labOrder.sampleStatus.collected'|get_message:locale|default:"en"}}</span>
+          <button type="submit" name="status" value="Accept" class="button-primary lab-button">{{'mdrtb.labOrder.accept'|get_message:locale|default:"en"}}</button>
+          <button type="submit" name="status" value="Reject" class="cancel-button">{{'mdrtb.labOrder.reject'|get_message:locale|default:"en"}}</button>
+        </form>
+        {% endif %}
+        {% elif show_sample_fields %}
+        <p class="lab-muted">{{'mdrtb.labOrder.noSamples'|get_message:locale|default:"en"}}</p>
+        {% else %}
+        <p class="lab-muted">{{'mdrtb.labOrder.sampleNotRequired'|get_message:locale|default:"en"}}</p>
+        {% endif %}
+
+        {% if earlier_samples %}
+        <h3 class="lab-result-group__title lab-earlier">{{'mdrtb.labOrder.earlierSamples'|get_message:locale|default:"en"}}</h3>
+        <div class="lab-table-wrap">
+          <table class="lab-table">
+            <thead>
+              <tr>
+                <th>{{'labtest.specimenType'|get_message:locale|default:"en"}}</th>
+                <th>{{'labtest.specimenSite'|get_message:locale|default:"en"}}</th>
+                <th>{{'commonlabtest.labtestsample.collectionDate'|get_message:locale|default:"en"}}</th>
+                <th>{{'labtest.status'|get_message:locale|default:"en"}}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for sample in earlier_samples %}
+              <tr>
+                <td>{{ sample.specimen_type_name }}</td>
+                <td>{{ sample.specimen_site_name|default:"—" }}</td>
+                <td>{{ sample.collectionDate|iso_to_normal_date }}</td>
+                <td>{% include 'app/commonlab/partials/sample_row_status.html' %}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="lab-actions lab-section">
+        <button type="button" class="button-primary lab-button" data-show="#order-edit" data-hide="#order-view">{{'general.edit'|get_message:locale|default:"en"}}</button>
+        <a class="button-danger lab-button" href="{% url 'dellabtest' patientid=patient orderid=orderid %}">{{'general.delete'|get_message:locale|default:"en"}}</a>
+      </div>
+
+      {% if submittable_samples %}
+      {# Integration with LIMS (QuaLIS): an action on a saved, accepted sample. #}
+      <form method="post" action="{% url 'submittolab' orderid=orderid %}" class="lab-lims js-busy-form">
+        {% csrf_token %}
+        <h2 class="lab-panel__heading">{{'mdrtb.submitOrderToLab'|get_message:locale|default:"en"}}</h2>
+        <div class="lab-fields">
+          <div class="input-container">
+            <label class="input-label">{{'labtest.specimenType'|get_message:locale|default:"en"}}</label>
+            <select name="accepted_sample" class="input form-control" required>
+              {% for sample in submittable_samples %}
+              <option value="{{ sample.uuid }}">{{ sample.specimen_type_name }}, {{ sample.collectionDate|iso_to_normal_date }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-container">
+            <label class="input-label">{{'mdrtb.site'|get_message:locale|default:"en"}}</label>
+            {% if sitecodes %}
+            <select name="site_code" class="input form-control" required>
+              {% for sitecode in sitecodes %}
+              <option value="{{ sitecode.sitecode }}">{{ sitecode.sitecode }} | {{ sitecode.name }}</option>
+              {% endfor %}
+            </select>
+            {% else %}
+            <p class="lab-muted">{{'mdrtb.labOrder.noSiteCodes'|get_message:locale|default:"en"}}</p>
+            {% endif %}
+          </div>
+        </div>
+        <div class="lab-actions">
+          <button type="submit" class="button-primary lab-button" {% if not sitecodes %}disabled{% endif %}>{{'mdrtb.submitOrderToLab'|get_message:locale|default:"en"}}</button>
+        </div>
+      </form>
+      {% endif %}
+    </div>
+
+    <form id="order-edit" method="post" class="lab-inline-form js-busy-form" {% if not editing_order %}hidden{% endif %}
+      action="{% url 'editlabtest' orderid=orderid patientid=patient %}">
+      {% csrf_token %}
+      <h3 class="lab-inline-form__title">{{'commonlabtest.order.edit'|get_message:locale|default:"en"}}</h3>
+      {% include 'app/commonlab/partials/order_fields.html' with state='edit' %}
+
+      {% if show_sample_fields %}
+      {# The order's current sample, or a new one when it has none. It takes the order's collection date. #}
+      <h3 class="lab-inline-form__title lab-form-section">{{'mdrtb.sample'|get_message:locale|default:"en"}}</h3>
+      {% if current_sample %}<input type="hidden" name="sampleid" value="{{ current_sample.uuid }}">{% endif %}
+      {% include 'app/commonlab/partials/sample_fields.html' with sample=current_sample %}
+      {% endif %}
+
+      <div class="lab-actions">
+        <button type="submit" class="button-primary lab-button">{{'general.save'|get_message:locale|default:"en"}}</button>
+        <button type="button" class="cancel-button" data-show="#order-view" data-hide="#order-edit">{{'general.cancel'|get_message:locale|default:"en"}}</button>
+      </div>
+    </form>
+  </section>
+
+  {# ------------------------------- RESULTS ----------------------------- #}
+  <section class="lab-panel" role="tabpanel" id="panel-results" aria-labelledby="tab-results" {% if tab != 'results' %}hidden{% endif %}>
+    {% if not has_result_fields %}
+      <p class="lab-empty">{{'mdrtb.labOrder.noResultFields'|get_message:locale|default:"en"}}</p>
+    {% elif results_locked %}
+      <div class="lab-notice">
+        <p>{{'mdrtb.labOrder.sampleRequired'|get_message:locale|default:"en"}}</p>
+        <button type="button" class="button-primary lab-button" data-goto-tab="order" data-scroll-to="#samples">{{'mdrtb.labOrder.goToSample'|get_message:locale|default:"en"}}</button>
+      </div>
+    {% else %}
+      <div id="results-view" {% if editing_results %}hidden{% endif %}>
+        <div class="lab-panel__toolbar">
+          <h2 class="lab-panel__heading">{{'mdrtb.labResults'|get_message:locale|default:"en"}}</h2>
+          <button type="button" class="button-primary lab-button" data-show="#results-edit" data-hide="#results-view">{{'commonlabtest.result.edit'|get_message:locale|default:"en"}}</button>
+        </div>
+        {% if has_results %}
+          <div class="lab-result-groups">
+            {% for group, attributes in labFilledResultGroups %}
+            <div class="lab-result-group">
+              {% if group %}<h3 class="lab-result-group__title">{{ group }}</h3>{% endif %}
+              <dl class="lab-details">
+                {% for attribute in attributes %}
+                <div><dt>{{ attribute.attributeType.name }}</dt><dd>{{ attribute.display_value }}</dd></div>
+                {% endfor %}
+              </dl>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="lab-empty">{{'commonlabtest.result.notFound'|get_message:locale|default:"en"}}</p>
+        {% endif %}
+      </div>
+
+      <form id="results-edit" method="post" class="lab-inline-form js-busy-form" {% if not editing_results %}hidden{% endif %}
+        action="{% url 'addtestresults' orderid=orderid %}">
+        {% csrf_token %}
+        <h3 class="lab-inline-form__title">
+          {% if has_results %}{{'commonlabtest.result.edit'|get_message:locale|default:"en"}}{% else %}{{'commonlabtest.result.add'|get_message:locale|default:"en"}}{% endif %}
+        </h3>
+        <div class="lab-fields">
+        {% for attribute in labCommonAttributes %}
+          {% include 'app/commonlab/partials/result_field.html' %}
+        {% endfor %}
+        </div>
+
+        {% if labGroupedAttributes %}
+        <div class="lab-subtabs" role="tablist">
+          {% for group, attributes in labGroupedAttributes.items %}
+          <button type="button" class="lab-subtab" role="tab" data-subtab="{{ forloop.counter }}"
+            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">{{ group }}</button>
+          {% endfor %}
+        </div>
+        {% for group, attributes in labGroupedAttributes.items %}
+        <div class="lab-subpanel lab-fields" data-subpanel="{{ forloop.counter }}" {% if not forloop.first %}hidden{% endif %}>
+          {% for attribute in attributes %}
+            {% include 'app/commonlab/partials/result_field.html' %}
+          {% endfor %}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <div class="lab-actions">
+          <button type="submit" class="button-primary lab-button">{{'commonlabtest.result.save'|get_message:locale|default:"en"}}</button>
+          {% if has_results %}
+          <button type="button" class="cancel-button" data-show="#results-view" data-hide="#results-edit">{{'general.cancel'|get_message:locale|default:"en"}}</button>
+          {% endif %}
+        </div>
+      </form>
+    {% endif %}
+  </section>
+</div>
+
+<script>
+  (function () {
+    // Tabs: switched in the page; the URL keeps ?tab= so a reload stays put.
+    const tabs = document.querySelectorAll('.lab-tab')
+    const showTab = (name) => {
+      tabs.forEach((tab) => {
+        const selected = tab.dataset.tab === name
+        tab.setAttribute('aria-selected', selected)
+        document.getElementById(tab.getAttribute('aria-controls')).hidden = !selected
+      })
+      const url = new URL(window.location)
+      url.searchParams.set('tab', name)
+      url.searchParams.delete('edit')
+      url.hash = ''
+      history.replaceState(null, '', url)
+    }
+    tabs.forEach((tab) => tab.addEventListener('click', () => showTab(tab.dataset.tab)))
+    document.querySelectorAll('[data-goto-tab]').forEach((button) =>
+      button.addEventListener('click', () => {
+        showTab(button.dataset.gotoTab)
+        if (button.dataset.scrollTo) document.querySelector(button.dataset.scrollTo).scrollIntoView({behavior: 'smooth'})
+      }))
+
+    // View <-> edit toggles: data-show / data-hide take CSS selectors.
+    document.querySelectorAll('[data-show], [data-hide]').forEach((button) => {
+      button.addEventListener('click', () => {
+        if (button.dataset.hide) document.querySelectorAll(button.dataset.hide).forEach((el) => el.hidden = true)
+        if (button.dataset.show) document.querySelectorAll(button.dataset.show).forEach((el) => el.hidden = false)
+      })
+    })
+
+    // Result groups (XPERT, HAIN, ...) as sub-tabs inside the results form.
+    // Opens on the first group that already has a value, so editing lands on it.
+    const subtabs = document.querySelectorAll('.lab-subtab')
+    const showSubtab = (key) => {
+      subtabs.forEach((tab) => tab.setAttribute('aria-selected', tab.dataset.subtab === key))
+      document.querySelectorAll('.lab-subpanel').forEach((panel) => panel.hidden = panel.dataset.subpanel !== key)
+    }
+    subtabs.forEach((tab) => tab.addEventListener('click', () => showSubtab(tab.dataset.subtab)))
+    const filled = [...document.querySelectorAll('.lab-subpanel')].find((panel) =>
+      [...panel.querySelectorAll('input, select, textarea')].some((field) =>
+        field.type === 'checkbox' ? field.checked : field.value))
+    if (filled) showSubtab(filled.dataset.subpanel)
+
+    // Dates can't be in the future.
+    const today = new Date().toISOString().substring(0, 10)
+    document.querySelectorAll('.js-max-today').forEach((input) => input.max = today)
+
+    // One click per save: lock the submit button and show a spinner.
+    document.querySelectorAll('.js-busy-form').forEach((form) => {
+      form.addEventListener('submit', (event) => {
+        const button = event.submitter
+        if (!button) return
+        // A disabled button isn't posted, so carry its name/value (Accept/Reject) across.
+        if (button.name) {
+          const carried = document.createElement('input')
+          carried.type = 'hidden'
+          carried.name = button.name
+          carried.value = button.value
+          form.appendChild(carried)
+        }
+        form.querySelectorAll('button[type=submit]').forEach((b) => b.disabled = true)
+        button.innerHTML = '<div class="app-spinner app-spinner--sm app-spinner--light" role="status" aria-label="Loading"></div>'
+      })
+    })
+  })()
+</script>
+{% endblock %}
