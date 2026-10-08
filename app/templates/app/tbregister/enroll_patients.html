@@ -94,17 +94,23 @@
             </div>
         </div>
         <div class="enroll_form_bg">
-            <div class="collapsible-header" id="suspect-toggle">
-                <label class="input-label">{{'mdrtb.suspect'|get_message:locale|default:"en"}}</label>
-                <span id="suspect-chevron" class="collapsible-chevron">&#9656;</span>
+            <div class="collapsible-header" id="more-options-toggle" role="button" tabindex="0"
+                 aria-expanded="false" aria-controls="more-options-body" aria-label="More options" title="More options">
+                <span class="input-label" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                        <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
+                    </svg>
+                </span>
+                <span id="more-options-chevron" class="collapsible-chevron">&#9656;</span>
             </div>
-            <div id="suspect-container" class="hidden">
+            <div id="more-options-body" class="hidden">
+            <div id="suspect-container">
                 <div class="input-container">
                     <input id="suspect" type="checkbox" class="border-none shadow-sm cursor-pointer" name="suspect"/>
                     <label class="input-label"
-                           for="suspect">{{'mdrtb.suspect.yes'|get_message:locale|default:"Yes, flag this patient as a suspect"}}</label>
+                           for="suspect">{{'mdrtb.suspect'|get_message:locale|default:"Suspect"}}</label>
                 </div>
-                <div class="input-container">
+                <div class="input-container" id="identifier-row" style="display: none;">
                     <label class="input-label"
                            for="patientidentifier">{{'mdrtb.Identifier'|get_message:locale|default:"Identifier"}}</label>
                     <input required class="input form-control" type="text" name="patientidentifier"
@@ -115,16 +121,10 @@
                     </button>
                 </div>
             </div>
-        </div>
-        <div class="enroll_form_bg">
-            <div class="collapsible-header" id="deceased-toggle">
-                <label class="input-label">{{'mdrtb.deceased'|get_message:locale|default:"en"}}</label>
-                <span id="deceased-chevron" class="collapsible-chevron">&#9656;</span>
-            </div>
-            <div id="deceased-fields" class="hidden">
-                <div class="input-container">Ï
+            <div id="deceased-fields">
+                <div class="input-container">
                     <label class="input-label"
-                           for="deceased">{{'mdrtb.deceased.yes'|get_message:locale|default:"Yes, this patient is deceased"}}</label>
+                           for="deceased">{{'mdrtb.deceased'|get_message:locale|default:"Deceased"}}</label>
                     <input id="deceased" type="checkbox" class="border-none shadow-sm cursor-pointer" name="deceased"/>
                 </div>
                 <div id="deceased-container" class="hidden flex-col">
@@ -139,6 +139,7 @@
                         <input type="text" class="input form-control" name="causeofdeath" id="causeofdeath"/>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
 
@@ -205,6 +206,16 @@
             $("#dob").prop("disabled", false);
         }
     });
+    // Identifier row is only shown for suspects. The value is still submitted when the row
+    // is hidden (it is pre-filled above, and the backend falls back to a timestamp anyway);
+    // "required" only applies while the field is visible so a hidden field can't block submit.
+    const syncIdentifierRow = () => {
+        const isSuspect = $("#suspect").prop("checked");
+        $("#identifier-row").toggle(isSuspect);
+        $("#patientidentifier").prop("required", isSuspect);
+    };
+    $("#suspect").change(syncIdentifierRow);
+    syncIdentifierRow();
     $("#deceased").change(function () {
         if ($("#deceased").prop("checked")) {
             $("#deceased-container").removeClass("hidden");
@@ -224,14 +235,17 @@
         }
     });
 
-    const toggleCollapsible = (headerId, contentId, chevronId) => {
-        $(`#${headerId}`).click(function () {
-            $(`#${contentId}`).toggleClass('hidden');
-            $(`#${chevronId}`).toggleClass('collapsible-chevron-open');
-        });
+    const toggleMoreOptions = () => {
+        const open = $('#more-options-body').toggleClass('hidden').hasClass('hidden') === false;
+        $('#more-options-chevron').toggleClass('collapsible-chevron-open', open);
+        $('#more-options-toggle').attr('aria-expanded', open);
     };
-    toggleCollapsible('suspect-toggle', 'suspect-container', 'suspect-chevron');
-    toggleCollapsible('deceased-toggle', 'deceased-fields', 'deceased-chevron');
+    $('#more-options-toggle').on('click', toggleMoreOptions).on('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleMoreOptions();
+        }
+    });
 </script>
 
 <style>
@@ -241,6 +255,26 @@
     }
     .collapsible-chevron-open {
         transform: rotate(90deg);
+    }
+    /* Identifier label: same size as the field labels above (theme.css sets 0.85rem). */
+    .patient-form-page #more-options-body #suspect-container .input-container:last-child > .input-label {
+        font-size: 1rem;
+    }
+    /* Divider between the Suspect/Identifier block and the Deceased block. */
+    .patient-form-page #more-options-body #deceased-fields {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--brand-border);
+        /* No side padding, so the Deceased checkbox starts on the same edge as the Suspect one. */
+        padding-left: 0;
+        padding-right: 0;
+    }
+    /* Both checkbox rows: same left edge and same checkbox-to-text gap. styles.css puts
+       margin-left:1rem on every 2nd+ child of .input-container, which pushed the
+       Suspect text (and, because of the reordered DOM, the Deceased checkbox) sideways. */
+    .patient-form-page #more-options-body #suspect-container > .input-container:first-child > *,
+    .patient-form-page #more-options-body #deceased-fields > .input-container:first-child > * {
+        margin-left: 0;
     }
 </style>
 

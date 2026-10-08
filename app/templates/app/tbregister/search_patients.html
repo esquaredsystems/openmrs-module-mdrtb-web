@@ -30,6 +30,14 @@
 
     </div>
 
+    {% comment %}
+    Gender icons for the result rows, which are built in JS. Rendered from the same
+    component as the patient banner so both places always show the identical icon.
+    data-label is the translated word (Male/Female...) used as tooltip + accessible name.
+    {% endcomment %}
+    <template id="gender-icon-M" data-label="{{ 'M'|get_gender_message:locale }}">{% include 'app/components/gender_avatar.html' with gender='M' css_class='w-5 h-5' %}</template>
+    <template id="gender-icon-F" data-label="{{ 'F'|get_gender_message:locale }}">{% include 'app/components/gender_avatar.html' with gender='F' css_class='w-5 h-5' %}</template>
+
     {% if add_patients_privilege %}
     <div class="patient-create-new">
       <span>{{'PatientSearch.noneFound'|get_message:locale|default:"en"}}?</span>
@@ -42,6 +50,14 @@
   <script>
     // "{{minSearchCharacters}}" arrives as a string; compare numbers, not text.
     const minSearchCharacters = Number("{{minSearchCharacters}}") || 2
+
+    // Same male/female icon as the patient banner. Anything else (missing/other) shows as before.
+    const genderCell = (gender) => {
+      const tpl = document.getElementById('gender-icon-' + gender)
+      if (!tpl) return gender || ""
+      const label = tpl.dataset.label || gender
+      return `<span title="${label}" role="img" aria-label="${label}">${tpl.innerHTML}</span>`
+    }
 
     const handleSearch = (searchQuery) => {
       if (searchQuery.length < minSearchCharacters) {
@@ -121,7 +137,7 @@
                       <p>${identifierToShow}</p>
                       <p>${person.display || ""}</p>
                       <p>${person.age != null ? person.age : ""}</p>
-                      <p>${person.gender || ""}</p>
+                      <p>${genderCell(person.gender)}</p>
                   </div>
                   </a>`)
           })

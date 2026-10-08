@@ -2,7 +2,7 @@
 # Django 4.1.1 frontend — communicates with OpenMRS via REST only, NO direct DB access.
 # Shared facts (domain model, concept/encounter-type/identifier UUIDs, topology): ../.agents/graph.md
 # Usage + notation legend + maintenance rules: ../.agents/instructions.md
-# Last updated: 2026-08-20 (patient banner fallback -> flow_patient context processor)
+# Last updated: 2026-10-07 (new-patient form: "More options" box)
 
 ## § MODULE LAYOUT
 ```
@@ -326,6 +326,11 @@ Migrated pages (no Tailwind classes):  login.html (.login-* classes), search_pat
   new msg keys  → mdrtb.manageTranslations, mdrtb.setDefaults, mdrtb.underConstruction (en/ru/tj)
   search page   → .patient-search-* / .patient-result-* classes (defined in theme.css only)
                   JS toggles .is-open on #search-results (no more Tailwind hidden/flex)
+new-patient form → enroll_patients.html: Suspect (+ Identifier) and Deceased sit inside ONE collapsed
+                  box whose header is an ellipsis (three dots) SVG icon + the usual chevron — no text, so no
+                  new message key (ids more-options-toggle/-body/-chevron). The old #suspect-container /
+                  #deceased-fields blocks and their theme.css rules are unchanged, only their own
+                  per-block headers were removed. edit_patient.html keeps its own Deceased box.
 NOT migrated: enrolled_programs.html still uses styles.css classes (search-page-container etc.) — do not
               remove styles.css or its classes until all pages migrated.
 Prod static: Dockerfile runs collectstatic; repo static/ (STATIC_ROOT) may be stale in dev.

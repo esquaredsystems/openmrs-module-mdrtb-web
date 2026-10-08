@@ -138,6 +138,26 @@
 	</main>
 	<script>
 		let locationByUuids;
+		// Location descriptions look like "ru:...|tj:...|en:..."; pick the one for the UI language.
+		const LOCATION_LOCALE = "{{locale|default:'en'}}".split('_')[0];
+		const locationTranslation = (location) => {
+			const translations = {};
+			(location.description || '').split('|').forEach(part => {
+				const sep = part.indexOf(':');
+				if (sep > 0) translations[part.slice(0, sep).trim()] = part.slice(sep + 1).trim();
+			});
+			return translations[LOCATION_LOCALE] || '';
+		}
+		const locationOption = (location) =>
+			$('<option>').val(location.uuid).text(location.name).attr('data-translation', locationTranslation(location));
+		// Shows the translated name of each selected location in the label under its dropdown.
+		const refreshLocationTranslations = () => {
+			$('.location-translation').each(function () {
+				const selected = $('#' + $(this).data('for') + ' option:selected');
+				$(this).text(selected.val() ? (selected.attr('data-translation') || '') : '');
+			});
+		}
+		$('#region-select, #subregion-select, #district-select, #facility-select').on('change', () => setTimeout(refreshLocationTranslations, 0));
 		const getLocations = async () => {
 			await $.ajax(
 				{
@@ -152,7 +172,7 @@
 
 							locations.forEach(location => {
 								if (location.level === "region".toUpperCase()) {
-									$('#region-select').append(`<option value=${location.uuid}>${location.name}</option>`)
+									$('#region-select').append(locationOption(location))
 								}
 							})
 							$("#region-select").prop("disabled", false);
@@ -193,7 +213,7 @@
 						for (facility of district.children) {
 							$(insertInto).prop('disabled', false)
 							if (facility.level === level.toUpperCase()) {
-								$(insertInto).append(`<option value=${facility.uuid}>${facility.name}</option>`)
+								$(insertInto).append(locationOption(facility))
 							}
 						}
 					}
@@ -201,6 +221,7 @@
 			}
 		}
 		const clearFacilities = () => {
+			setTimeout(refreshLocationTranslations, 0)
 			$('#facility-select').prop('disabled', true)
 			$('#facility-select').prop('required', false)
 			$("#facility-select").html(`<option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>`)
@@ -213,12 +234,12 @@
 				for (district of children) {
 					if (district.level === 'district'.toUpperCase()) {
 						$('#district-select').prop('disabled', false)
-						$('#district-select').append(`<option value=${district.uuid}>${district.name}</option>`)
+						$('#district-select').append(locationOption(district))
 					}
 					if (district.level === 'subregion'.toUpperCase()) {
 						$('#subregion-container').removeClass('hidden')
 						$('#subregion-select').prop('disabled', false)
-						$('#subregion-select').append(`<option value=${district.uuid}>${district.name}</option>`)
+						$('#subregion-select').append(locationOption(district))
 					}
 				}
 			}

@@ -11,28 +11,40 @@
     </div>
     <div class="input-container" id="region-container">
         <label class="input-label w-1/6" for="region-select">{{'mdrtb.region'|get_message:locale|default:"en"}}</label>
-        <select required class="input form-control" name="region" id="region-select">
-            <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
-        </select>
+        <div class="location-field">
+            <select required class="input form-control" name="region" id="region-select">
+                <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+            </select>
+            <small class="location-translation" data-for="region-select" aria-live="polite"></small>
+        </div>
     </div>
     <div id="subregion-container" class="input-container hidden">
         <label id="subregion-label" class="input-label w-1/6" for="subregion-select">Sub region</label>
-        <select disabled class="input form-control" name="subregion" id="subregion-select">
-            <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
-        </select>
+        <div class="location-field">
+            <select disabled class="input form-control" name="subregion" id="subregion-select">
+                <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+            </select>
+            <small class="location-translation" data-for="subregion-select" aria-live="polite"></small>
+        </div>
     </div>
     <div class="input-container" id="district-container">
         <label id="district-label" class="input-label w-1/6"
             for="district-select">{{'mdrtb.district'|get_message:locale|default:"en"}}</label>
-        <select disabled class="input form-control" name="district" id="district-select">
-            <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
-        </select>
+        <div class="location-field">
+            <select disabled class="input form-control" name="district" id="district-select">
+                <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+            </select>
+            <small class="location-translation" data-for="district-select" aria-live="polite"></small>
+        </div>
     </div>
     <div class="input-container" id="facility-container">
         <label id="facility-label" class="input-label w-1/6"
             for="facility-select">{{'mdrtb.facility'|get_message:locale|default:"en"}}</label>
-        <select disabled class="input form-control" name="facility" id="facility-select">
-            <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
-        </select>
+        <div class="location-field">
+            <select disabled class="input form-control" name="facility" id="facility-select">
+                <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+            </select>
+            <small class="location-translation" data-for="facility-select" aria-live="polite"></small>
+        </div>
     </div>
 </div>

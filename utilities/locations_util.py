@@ -169,7 +169,7 @@ def create_location_hierarchy(req):
     The REGION -> DISTRICT -> FACILITY tree used by the patient-facing
     dropdowns. Cached; any admin write below clears it.
     """
-    locations = metadata_cache.get("locations")
+    locations = metadata_cache.get("locations_v2")
     if locations:
         return locations
     locations = get_locations(req)
@@ -182,11 +182,15 @@ def create_location_hierarchy(req):
                 {
                     "uuid": location["uuid"],
                     "name": location["name"],
+                    "description": location.get("description"),
                     "level": get_location_level(location["uuid"], location_by_uuids),
                     "children": [
                         {
                             "uuid": child["uuid"],
                             "name": child["name"],
+                            "description": location_by_uuids.get(child["uuid"], {}).get(
+                                "description"
+                            ),
                             "level": get_location_level(
                                 child["uuid"], location_by_uuids
                             ),
@@ -194,6 +198,9 @@ def create_location_hierarchy(req):
                                 {
                                     "uuid": subchild["uuid"],
                                     "name": subchild.get("name", subchild["display"]),
+                                    "description": location_by_uuids.get(
+                                        subchild["uuid"], {}
+                                    ).get("description"),
                                     "level": get_location_level(
                                         subchild["uuid"], location_by_uuids
                                     ),
@@ -221,7 +228,7 @@ def create_location_hierarchy(req):
                     else [],
                 }
             )
-    metadata_cache.set("locations", location_hierarchy)
+    metadata_cache.set("locations_v2", location_hierarchy)
     return location_hierarchy
 
 
@@ -398,7 +405,7 @@ def _invalidate_location_cache():
     call this, or the patient-facing dropdowns keep showing pre-edit names.
     """
     try:
-        metadata_cache.delete("locations")
+        metadata_cache.delete("locations_v2")
     except Exception as e:  # a cache outage must not fail an otherwise good save
         logger.warning(f"Could not invalidate location cache: {e}")
 

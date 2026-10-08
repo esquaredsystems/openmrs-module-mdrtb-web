@@ -2483,3 +2483,20 @@ a.lab-button:hover {
   color: var(--brand-text-muted);
   font-size: 0.875rem;
 }
+
+/* Wrapper for a location <select> plus the translated name shown beneath it. */
+.location-field {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 32rem;
+}
+
+.location-field > select {
+  width: 100%;
+}
+
+.location-translation {
+  display: block;
+  margin-top: 0.25rem;
+  opacity: 0.75;
+}
