@@ -3948,7 +3948,7 @@ def _user_form_context(req, existing, submitted=None):
 def render_manage_translations(req):
     """
     All labels as a sheet: a row per code, a column per language, 50 to a page. The search is applied server-side
-    (OpenMRS filters on the code) so it spans every label, not just the page on screen.
+    (on the code and on the text in every language) so it spans every label, not just the page on screen.
     """
     blocked = route_non_system_developer(req)
     if blocked:

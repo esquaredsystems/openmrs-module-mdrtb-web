@@ -1,11 +1,9 @@
 """
 UI translations, read from OpenMRS and cached in Redis.
 
-Until 2026-08-04 every label was read from .properties files shipped inside this
-app: get_global_msgs() opened a file and scanned it line by line on EVERY
+Until 2026-08-04 every label was read from .properties files shipped inside this app: get_global_msgs() opened a file and scanned it line by line on EVERY 
 lookup, and a single page performs over a thousand lookups. Those files are gone.
-Messages now live in the MDR-TB module's message_properties table and are
-reached through /ws/rest/v1/mdrtb/messageproperty.
+Messages now live in the MDR-TB module's message_properties table and are reached through /ws/rest/v1/mdrtb/messageproperty.
 
 Caching, so the change does not cost read time:
 
@@ -14,10 +12,6 @@ Caching, so the change does not cost read time:
           Filled at login (see warm()) and whenever a page finds it missing.
   Browser the same map is handed to the browser at login and kept in local
           storage, so client-side code does not call back for labels.
-
-lookup() deliberately takes NO request: it only ever reads Redis, so a template
-rendering a thousand labels cannot trigger a REST call. Filling the cache needs
-a request and happens in warm().
 """
 
 import logging
@@ -286,18 +280,30 @@ def _bump_sheet_version():
 
 def table(req, q=None):
     """
-    Every code with its text in all languages, for the editing sheet:
+    OpenMRS can only filter on the code, so the whole sheet is fetched and cached once and the search runs here.
+    Each row looks like:
 
         [{"code": "mdrtb.yes", "text": {"en": "Yes", "ru": "Да", "tj": ""}}, ...]
-
-    The per-language dict is called "text", not "values": in a Django template
-    `row.values` would be ambiguous with dict.values().
 
     Read straight from OpenMRS rather than the Redis cache: this is the screen
     where the values are edited, so it must show what is actually stored, not a
     copy that can be up to a minute old.
     """
-    key = f"messages_sheet_{_sheet_version()}_{(q or '').lower()}"
+    rows = _full_sheet(req)
+    needle = (q or "").strip().casefold()
+    if not needle:
+        return rows
+    return [
+        row
+        for row in rows
+        if needle in row["code"].casefold()
+        or any(needle in (text or "").casefold() for text in row["text"].values())
+    ]
+
+
+def _full_sheet(req):
+    """The unfiltered sheet, from the cache when it is still current."""
+    key = f"messages_sheet_{_sheet_version()}_"
     cached = metadata_cache.get(key)
     if cached:
         try:
@@ -307,7 +313,7 @@ def table(req, q=None):
 
     by_code = {}
     for lang in SUPPORTED_LANGS:
-        for row in search(req, lang=lang, q=q):
+        for row in search(req, lang=lang):
             code = (row or {}).get("code")
             if not code:
                 continue
@@ -326,12 +332,7 @@ def table(req, q=None):
 
 def save_row(req, code, values, originals=None):
     """
-    Saves one code across languages, spreadsheet style.
-
-    Only languages whose text actually changed are written. Clearing a box
-    deletes that language's row, so the screen falls back to English (or to the
-    code) rather than storing an empty string that would render as a blank label.
-
+    Saves one code across languages, spreadsheet style. Only languages whose text actually changed are written.
     Returns (saved, removed) counts.
     """
     code = (code or "").strip()
