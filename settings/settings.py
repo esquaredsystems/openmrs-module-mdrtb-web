@@ -79,6 +79,10 @@ WSGI_APPLICATION = "settings.wsgi.application"
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+# Log the user out after this many seconds of inactivity. Saving on every
+# request restarts the countdown, so it's an idle timeout, not a hard cap.
+SESSION_COOKIE_AGE = int(os.getenv("SESSION_COOKIE_AGE", 60 * 60))
+SESSION_SAVE_EVERY_REQUEST = True
 
 CACHES = {
     "default": {
