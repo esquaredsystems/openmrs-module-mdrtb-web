@@ -164,6 +164,13 @@ class SummarizeLabOrderCollectionDateTest(TestCase):
     def test_none_without_attribute_or_order_date(self):
         self.assertIsNone(cu.summarize_lab_order({"attributes": []})["collection_date"])
 
+    def test_order_date_ignores_the_date_collected_attribute(self):
+        order = {
+            "order": {"dateActivated": "2026-09-10T00:00:00.000+0500"},
+            "attributes": [{"attributeType": self.DATE_COLLECTED, "valueReference": "2026-09-08 00:00:00"}],
+        }
+        self.assertEqual(cu.summarize_lab_order(order)["order_date"], "2026-09-10")
+
 
 class LabOrderSampleStatusTest(TestCase):
     def test_accepted_wins_over_other_statuses(self):

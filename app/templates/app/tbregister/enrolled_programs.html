@@ -193,7 +193,7 @@
             <tr>
               <th
                 class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                {{'commonlabtest.order.collection.date'|get_message:locale|default:"en"}}
+                {{'mdrtb.dateOrdered'|get_message:locale|default:"en"}}
               </th>
               <th
                 class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
@@ -218,7 +218,7 @@
             {% for lab_result in lab_results %}
             <tr>
               <td class="px-5 py-4 border-b border-gray-200 w-fit  text-sm">
-                {{lab_result.summary.collection_date|iso_to_normal_date|default:"—"}}
+                {{lab_result.summary.order_date|iso_to_normal_date|default:"—"}}
               </td>
               <td class="px-5 py-4 border-b border-gray-200 w-fit  text-sm">
                 {{lab_result.summary.result_date|iso_to_normal_date|default:"—"}}

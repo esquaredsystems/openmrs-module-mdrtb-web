@@ -264,7 +264,7 @@
   </div>
   {% endif %}
   {% endif %}
-  {% if view_commonlabtest_results_privilege %}
+  {% if view_labtest_results_privilege %}
   <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
     <div class="flex items-center justify-between space-x-4">
       <div class="flex-center space-x-2">
@@ -284,30 +284,35 @@
       </div>
 
     </div>
-    <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
-      <div class="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
+    {% comment %}
+    No px-*/py-* utilities on this table: Bootstrap defines the same class names
+    at 3rem with !important, which made every row about 120px tall. Cell
+    spacing comes from theme.css instead.
+    {% endcomment %}
+    <div class="overflow-x-auto">
+      <div class="lab-dashboard-table">
         <table class="min-w-full leading-normal">
           <thead>
             <tr>
               <th
-                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                {{'commonlabtest.order.collection.date'|get_message:locale|default:"en"}}
+                class="text-left text-xs font-semibold uppercase tracking-wider">
+                {{'mdrtb.dateOrdered'|get_message:locale|default:"en"}}
               </th>
               <th
-                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                class="text-left text-xs font-semibold uppercase tracking-wider">
                 {{'labtest.resultDate'|get_message:locale|default:"en"}}
               </th>
               <th
-                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                class="text-left text-xs font-semibold uppercase tracking-wider">
                 {{'mdrtb.result'|get_message:locale|default:"en"}}
               </th>
               <th
-                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                class="text-left text-xs font-semibold uppercase tracking-wider">
                 {{'commonlabtest.order.labReferenceNo'|get_message:locale|default:"en"}}
               </th>
 
               <th
-                class="px-5 py-3 border-b-2 border-gray-800 bg-[#9DC6DE] text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                class="text-left text-xs font-semibold uppercase tracking-wider">
                 {{'ActiveLists.actions'|get_message:locale|default:"en"}}
               </th>
             </tr>
@@ -315,20 +320,20 @@
           <tbody>
             {% for lab_result in lab_results %}
             <tr>
-              <td class="px-5 border-b border-gray-200 bg-white text-sm">
-                {{lab_result.summary.collection_date|iso_to_normal_date|default:"—"}}
+              <td class="text-sm">
+                {{lab_result.summary.order_date|iso_to_normal_date|default:"—"}}
               </td>
-              <td class="px-5 border-b border-gray-200 bg-white text-sm">
+              <td class="text-sm">
                 {{lab_result.summary.result_date|iso_to_normal_date|default:"—"}}
               </td>
-              <td class="px-5 border-b border-gray-200 bg-white text-sm">
+              <td class="text-sm">
                 {% include 'app/components/lab_result_summary.html' %}
               </td>
-              <td class="px-5 border-b border-gray-200 bg-white text-sm">
+              <td class="text-sm">
                 {{lab_result.labReferenceNumber}}
 
               </td>
-              <td id="accordion{{forloop.counter}}" class="px-5 py-5 border-b w-1/5 border-gray-200 bg-white text-sm">
+              <td id="accordion{{forloop.counter}}" class="text-sm">
                 <div class="flex space-x-4">
                   <div onclick="showResults(this,'{{lab_result.uuid}}')" id="heading{{forloop.counter}}"
                     data-attributes="{{lab_result.attributes|to_json}}" data-bs-toggle="collapse"
@@ -351,8 +356,13 @@ data-bs-target="#collapse{{forloop.counter}}" aria-expanded="false"
                 </div>
               </td>
             </tr>
-            <tr>
-              <td colspan="5" class="px-4 text-black w-full">
+            {% comment %}
+            The details row stays in the table while collapsed, so its cell
+            carries no padding or border of its own - otherwise every order is
+            followed by an empty strip.
+            {% endcomment %}
+            <tr class="lab-detail-row">
+              <td colspan="5" class="text-black">
                 <div class="collapse" id="collapse{{forloop.counter}}"
                   aria-labelledby="heading{{forloop.counter}}">
                   <div>

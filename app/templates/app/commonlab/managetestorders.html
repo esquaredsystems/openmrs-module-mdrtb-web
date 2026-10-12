@@ -25,7 +25,7 @@ where the order, its samples and its results are all viewed and edited.
     <table class="lab-table lab-table--clickable">
       <thead>
         <tr>
-          <th>{{'commonlabtest.order.collection.date'|get_message:locale|default:"en"}}</th>
+          <th>{{'mdrtb.dateOrdered'|get_message:locale|default:"en"}}</th>
           <th>{{'commonlabtest.order.labReferenceNo'|get_message:locale|default:"en"}}</th>
           <th>{{'mdrtb.sample'|get_message:locale|default:"en"}}</th>
           <th>{{'labtest.resultDate'|get_message:locale|default:"en"}}</th>
@@ -37,7 +37,7 @@ where the order, its samples and its results are all viewed and edited.
         {% for order in orders %}
         {% url 'laborder' orderid=order.uuid as order_url %}
         <tr data-href="{{ order_url }}">
-          <td>{{order.summary.collection_date|iso_to_normal_date|default:"—"}}</td>
+          <td>{{order.summary.order_date|iso_to_normal_date|default:"—"}}</td>
           <td>{{order.labReferenceNumber}}</td>
           <td>{% include 'app/commonlab/partials/sample_status_chip.html' with status=order.sample_status %}</td>
           <td>{{order.summary.result_date|iso_to_normal_date|default:"—"}}</td>

@@ -640,6 +640,32 @@ a .patient-result-row:hover {
   background-color: var(--brand-surface, #f6f9fb);
 }
 
+/*
+ * Lab orders table on the patient dashboard: one white panel, and the
+ * collapsed details row under each order takes no space at all.
+ */
+.lab-dashboard-table {
+  background-color: #fff;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  overflow: hidden;
+}
+
+.lab-dashboard-table td {
+  background-color: #fff;
+  vertical-align: middle;
+}
+
+.lab-dashboard-table tr.lab-detail-row > td {
+  padding: 0;
+  border-bottom: 0;
+}
+
+.lab-dashboard-table tr.lab-detail-row .collapse.show {
+  border-bottom: 1px solid #e7edf1;
+  padding: 0 0.75rem;
+}
+
 /* Reorderable attribute rows. */
 .lab-attr-table tbody tr {
   cursor: grab;
