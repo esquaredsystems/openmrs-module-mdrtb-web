@@ -434,17 +434,116 @@ a .patient-result-row:hover {
   background-color: var(--brand-surface, #f6f9fb);
 }
 
-.lab-attrs > table,
 .lab-attrs > p,
-.lab-attrs > .page-panel {
+.lab-attrs > form,
+.lab-attrs > .lab-attr-form {
   margin: 0 1rem 1rem;
-  width: calc(100% - 2rem);
 }
 
-.lab-attrs-actions {
+/*
+ * The attribute table needs more room than a form column: the page is widened
+ * here, while the test type form keeps its own centred .page-panel width.
+ */
+.loc-form-page.lab-type-page {
+  max-width: 64rem;
+}
+
+/* Search on the left, Save order and Add on the right, above the list. */
+.lab-attrs-toolbar {
   display: flex;
-  justify-content: flex-end;
-  padding: 0 1rem 1rem;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0 1rem 0.75rem;
+}
+
+.lab-attrs-toolbar .lab-attrs-filter {
+  flex: 1 1 14rem;
+  max-width: 22rem;
+  margin-right: auto;
+}
+
+.lab-attrs-toolbar .btn,
+.lab-attrs-toolbar .button-primary {
+  white-space: nowrap;
+}
+
+/*
+ * A test type can have 100+ attribute types: the list scrolls inside the panel
+ * with its header pinned, instead of stretching the page. overflow-x keeps a
+ * narrow window from pushing the table out of the panel.
+ */
+.lab-attr-scroll {
+  max-height: 65vh;
+  overflow: auto;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+}
+
+.lab-attr-table {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.lab-attr-table th,
+.lab-attr-table td {
+  padding: 0.45rem 0.6rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.lab-attr-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #eef5fb;
+  color: var(--brand-secondary);
+  white-space: nowrap;
+  font-size: 0.8rem;
+}
+
+.lab-attr-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.lab-attr-table tbody tr:hover {
+  background-color: var(--brand-primary-tint);
+}
+
+.lab-attr-name {
+  font-weight: 500;
+  min-width: 14rem;
+}
+
+.lab-attr-table .loc-badge {
+  white-space: nowrap;
+}
+
+/* Reordering is off while filtered (see the template's script). */
+.lab-attr-table.is-filtered tbody tr {
+  cursor: default;
+}
+
+.lab-attr-table.is-filtered .lab-attr-up,
+.lab-attr-table.is-filtered .lab-attr-down,
+.lab-attr-table.is-filtered .lab-attr-grip {
+  visibility: hidden;
+}
+
+/* Add/edit attribute form inside the panel. */
+.lab-attr-form {
+  padding-top: 0.25rem;
+}
+
+.lab-attr-form h2 {
+  font-size: 1.15rem;
+  margin: 0 0 1rem;
+  color: var(--brand-secondary);
+}
+
+.lab-attr-form .loc-field input[type="number"] {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* ---------- Lab test type form ---------- */
@@ -1064,6 +1163,23 @@ a .patient-result-row:hover {
 .loc-field select {
   width: 100%;
   box-sizing: border-box;
+}
+
+/*
+ * The native arrow ignores padding and sits against the right border, which
+ * looks misplaced once a select is stretched to the full field width. Drawn
+ * here instead, inset like the text, with room reserved so long options never
+ * run under it. Multi-line lists keep the native look - they have no arrow.
+ */
+.loc-field select:not([multiple]):not([size]) {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 0.75rem;
+  padding-right: 2.25rem;
 }
 
 .loc-field input:disabled {

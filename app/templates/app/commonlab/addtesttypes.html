@@ -7,7 +7,7 @@
 {%block content%}
 {% include 'app/components/nav.html' %}
 
-<div class="loc-page loc-form-page">
+<div class="loc-page loc-form-page lab-type-page">
   <div class="loc-header">
     <h1>
       {% if state == 'edit' %}{{'commonlabtest.labtesttype.edit'|get_message:locale|default:"en"}}
@@ -34,7 +34,7 @@
       <div class="lab-grid lab-grid-name">
         <div class="loc-field">
           <label for="testname">{{'general.name'|get_message:locale|default:"en"}}</label>
-          <input type="text" id="testname" name="testname" required autofocus value="{{ testType.name|default:'' }}">
+          <input type="text" id="testname" name="testname" required {% if not editingAttribute and not addingAttribute %}autofocus {% endif %}value="{{ testType.name|default:'' }}">
         </div>
         <div class="loc-field">
           <label for="shortname">{{'general.shortName'|get_message:locale|default:"en"}}</label>
@@ -138,6 +138,22 @@
     {% endcomment %}
     {% if not editingAttribute and not addingAttribute %}
 
+    {% comment %}
+    Add and Save order sit above the list, not below it: a test type can have
+    over a hundred attribute types, and the buttons were a long scroll away.
+    {% endcomment %}
+    <div class="lab-attrs-toolbar">
+      {% if attributes %}
+      <input type="search" id="attr-filter" class="lab-attrs-filter" autocomplete="off"
+        placeholder="{{'general.search'|get_message:locale|default:"en"}}"
+        aria-label="{{'general.search'|get_message:locale|default:"en"}}">
+      {% endif %}
+      <button type="submit" form="attr-order-form" class="button-primary" id="attr-order-save" hidden>
+        {{'mdrtb.labtest.saveOrder'|get_message:locale|default:"en"}}</button>
+      <a class="btn btn-success btn-sm" href="{% url 'edittesttype' uuid=testType.uuid %}?attribute=new">
+        {{'commonlabtest.labtestattributetype.add'|get_message:locale|default:"en"}}</a>
+    </div>
+
     {% if attributes %}
     {% comment %}
     Sort weight is an ordering, so the rows are moved rather than numbered:
@@ -148,68 +164,63 @@
     <form method="post" action="{% url 'reorderattr' uuid=testType.uuid %}" id="attr-order-form">
       {% csrf_token %}
       <input type="hidden" name="order" id="attr-order">
-      <table class="user-table lab-attr-table" id="attr-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>{{'general.name'|get_message:locale|default:"en"}}</th>
-            <th>{{'general.dataType'|get_message:locale|default:"en"}}</th>
-            <th>{{'commonlabtest.labtestattributetype.groupName'|get_message:locale|default:"en"}}</th>
-            <th>{{'commonlabtest.labtestattributetype.multisetName'|get_message:locale|default:"en"}}</th>
-            <th>{{'general.maxOccurs'|get_message:locale|default:"en"}}</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for attribute in attributes %}
-          <tr draggable="true" data-uuid="{{ attribute.uuid }}"{% if attribute.retired %} class="user-disabled"{% endif %}>
-            <td class="lab-attr-handle">
-              <span class="lab-attr-grip" aria-hidden="true">⠿</span>
-              <button type="button" class="loc-linkbtn lab-attr-up"
-                title="{{'mdrtb.labtest.moveUp'|get_message:locale|default:"en"}}"
-                aria-label="{{'mdrtb.labtest.moveUp'|get_message:locale|default:"en"}}">&#9650;</button>
-              <button type="button" class="loc-linkbtn lab-attr-down"
-                title="{{'mdrtb.labtest.moveDown'|get_message:locale|default:"en"}}"
-                aria-label="{{'mdrtb.labtest.moveDown'|get_message:locale|default:"en"}}">&#9660;</button>
-            </td>
-            <td>{{ attribute.name }}</td>
-            {% comment %}
-            datatypeClassname is a fully qualified Java class name; show only the
-            readable tail, e.g. "FreeTextDatatype".
-            {% endcomment %}
-            <td><span class="loc-badge">{{ attribute.datatypeClassname|cut:"org.openmrs.customdatatype.datatype."|cut:".name" }}</span></td>
-            <td>{{ attribute.groupName|default:"—" }}</td>
-            <td>{{ attribute.multisetName|default:"—" }}</td>
-            <td>{{ attribute.maxOccurs|default:"—" }}</td>
-            <td class="user-row-actions">
-              <a class="loc-linkbtn" href="{% url 'edittesttype' uuid=testType.uuid %}?attribute={{ attribute.uuid }}">
-                {{'general.edit'|get_message:locale|default:"en"}}</a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      <div class="lab-attrs-actions">
-        <button type="submit" class="button-primary" id="attr-order-save" hidden>
-          {{'mdrtb.labtest.saveOrder'|get_message:locale|default:"en"}}</button>
+      <div class="lab-attr-scroll">
+        <table class="user-table lab-attr-table" id="attr-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>{{'general.name'|get_message:locale|default:"en"}}</th>
+              <th>{{'general.dataType'|get_message:locale|default:"en"}}</th>
+              <th>{{'commonlabtest.labtestattributetype.groupName'|get_message:locale|default:"en"}}</th>
+              <th>{{'commonlabtest.labtestattributetype.multisetName'|get_message:locale|default:"en"}}</th>
+              <th>{{'general.maxOccurs'|get_message:locale|default:"en"}}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for attribute in attributes %}
+            <tr draggable="true" data-uuid="{{ attribute.uuid }}"{% if attribute.retired %} class="user-disabled"{% endif %}>
+              <td class="lab-attr-handle">
+                <span class="lab-attr-grip" aria-hidden="true">⠿</span>
+                <button type="button" class="loc-linkbtn lab-attr-up"
+                  title="{{'mdrtb.labtest.moveUp'|get_message:locale|default:"en"}}"
+                  aria-label="{{'mdrtb.labtest.moveUp'|get_message:locale|default:"en"}}">&#9650;</button>
+                <button type="button" class="loc-linkbtn lab-attr-down"
+                  title="{{'mdrtb.labtest.moveDown'|get_message:locale|default:"en"}}"
+                  aria-label="{{'mdrtb.labtest.moveDown'|get_message:locale|default:"en"}}">&#9660;</button>
+              </td>
+              <td class="lab-attr-name">{{ attribute.name }}</td>
+              {% comment %}
+              datatypeClassname is a fully qualified Java class name; show only the
+              readable part, e.g. "FreeText" - the same names the Data Type
+              dropdown uses.
+              {% endcomment %}
+              <td><span class="loc-badge">{{ attribute.datatypeClassname|cut:"org.openmrs.customdatatype.datatype."|cut:".name"|cut:"Datatype" }}</span></td>
+              <td>{{ attribute.groupName|default:"—" }}</td>
+              <td>{{ attribute.multisetName|default:"—" }}</td>
+              <td>{{ attribute.maxOccurs|default:"—" }}</td>
+              <td class="user-row-actions">
+                <a class="loc-linkbtn" href="{% url 'edittesttype' uuid=testType.uuid %}?attribute={{ attribute.uuid }}">
+                  {{'general.edit'|get_message:locale|default:"en"}}</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
     </form>
+    <p class="loc-empty" id="attr-filter-empty" hidden>{{'mdrtb.none'|get_message:locale|default:"en"}}</p>
     {% else %}
     <p class="loc-empty">{{'mdrtb.none'|get_message:locale|default:"en"}}</p>
     {% endif %}
 
-    <div class="lab-attrs-actions">
-      <a class="btn btn-success btn-sm" href="{% url 'edittesttype' uuid=testType.uuid %}?attribute=new">
-        {{'commonlabtest.labtestattributetype.add'|get_message:locale|default:"en"}}</a>
-    </div>
-
     {% else %}
 
-  <div class="page-panel">
-    <h3>
+  <div class="lab-attr-form">
+    <h2>
       {% if editingAttribute %}{{'commonlabtest.labtestattributetype.edit'|get_message:locale|default:"en"}}
       {% else %}{{'commonlabtest.labtestattributetype.add'|get_message:locale|default:"en"}}{% endif %}
-    </h3>
+    </h2>
     <form method="post"
       action="{% if editingAttribute %}{% url 'editattr' testid=testType.uuid attrid=editingAttribute.uuid %}{% else %}{% url 'addattr' uuid=testType.uuid %}{% endif %}">
       {% csrf_token %}
@@ -217,13 +228,14 @@
       {% comment %}
       No Sort Weight field: it is the row's position, set by reordering the list
       rather than typed. A new attribute is appended to the end.
+      Each configuration field sits under the dropdown it configures.
       {% endcomment %}
       <div class="loc-field">
         <label for="attr-name">{{'general.name'|get_message:locale|default:"en"}}</label>
-        <input type="text" id="attr-name" name="name" required value="{{ editingAttribute.name|default:'' }}">
+        <input type="text" id="attr-name" name="name" required autofocus value="{{ editingAttribute.name|default:'' }}">
       </div>
 
-      <div class="loc-row">
+      <div class="loc-grid">
         <div class="loc-field">
           <label for="attr-datatype">{{'general.dataType'|get_message:locale|default:"en"}}</label>
           <select id="attr-datatype" name="datatype" required>
@@ -245,31 +257,6 @@
             {% endfor %}
           </select>
         </div>
-      </div>
-
-      <div class="loc-row">
-        <div class="loc-field">
-          <label for="attr-grpname">{{'commonlabtest.labtestattributetype.groupName'|get_message:locale|default:"en"}}</label>
-          <input type="text" id="attr-grpname" name="grpname" value="{{ editingAttribute.groupName|default:'' }}">
-        </div>
-        <div class="loc-field">
-          <label
-            for="attr-mutname">{{'commonlabtest.labtestattributetype.multisetName'|get_message:locale|default:"en"}}</label>
-          <input type="text" id="attr-mutname" name="mutname" value="{{ editingAttribute.multisetName|default:'' }}">
-        </div>
-      </div>
-
-      {% comment %}
-      No Min Occurs field: the REST resource exposes neither a representation
-      property nor a creatable one for it, so it could never be saved or shown.
-      {% endcomment %}
-      <div class="loc-field">
-        <label for="attr-maxoccur">{{'general.maxOccurs'|get_message:locale|default:"en"}}</label>
-        <input type="number" step="1" id="attr-maxoccur" name="maxoccur"
-          value="{{ editingAttribute.maxOccurs|default:'' }}">
-      </div>
-
-      <div class="loc-row">
         <div class="loc-field">
           <label for="attr-datatypeconfig">{{'general.datatypeConfiguration'|get_message:locale|default:"en"}}</label>
           <input type="text" id="attr-datatypeconfig" name="datatypeconfig"
@@ -280,11 +267,28 @@
           <input type="text" id="attr-handleconfig" name="handleconfig"
             value="{{ editingAttribute.handlerConfig|default:'' }}">
         </div>
-      </div>
-
-      <div class="loc-field">
-        <label for="attr-hint">{{'mdrtb.labtest.hint'|get_message:locale|default:"en"}}</label>
-        <input type="text" id="attr-hint" name="hint" value="{{ editingAttribute.hint|default:'' }}">
+        <div class="loc-field">
+          <label for="attr-grpname">{{'commonlabtest.labtestattributetype.groupName'|get_message:locale|default:"en"}}</label>
+          <input type="text" id="attr-grpname" name="grpname" value="{{ editingAttribute.groupName|default:'' }}">
+        </div>
+        <div class="loc-field">
+          <label
+            for="attr-mutname">{{'commonlabtest.labtestattributetype.multisetName'|get_message:locale|default:"en"}}</label>
+          <input type="text" id="attr-mutname" name="mutname" value="{{ editingAttribute.multisetName|default:'' }}">
+        </div>
+        {% comment %}
+        No Min Occurs field: the REST resource exposes neither a representation
+        property nor a creatable one for it, so it could never be saved or shown.
+        {% endcomment %}
+        <div class="loc-field">
+          <label for="attr-maxoccur">{{'general.maxOccurs'|get_message:locale|default:"en"}}</label>
+          <input type="number" step="1" min="0" id="attr-maxoccur" name="maxoccur"
+            value="{{ editingAttribute.maxOccurs|default:'' }}">
+        </div>
+        <div class="loc-field">
+          <label for="attr-hint">{{'general.hint'|get_message:locale|default:"en"}}</label>
+          <input type="text" id="attr-hint" name="hint" value="{{ editingAttribute.hint|default:'' }}">
+        </div>
       </div>
 
       <div class="loc-field">
@@ -451,6 +455,25 @@
     });
 
     orderField.value = original;
+
+    // Filter by name, data type or group. Reordering is switched off while a
+    // filter is on: an arrow would swap with a hidden neighbour, and a drag
+    // could land between rows the user cannot see.
+    var filter = document.getElementById('attr-filter');
+    var empty = document.getElementById('attr-filter-empty');
+    if (!filter) return;
+    filter.addEventListener('input', function () {
+      var q = filter.value.trim().toLowerCase();
+      var shown = 0;
+      Array.prototype.forEach.call(body.rows, function (r) {
+        var match = !q || r.textContent.toLowerCase().indexOf(q) !== -1;
+        r.hidden = !match;
+        r.draggable = !q;
+        if (match) shown++;
+      });
+      table.classList.toggle('is-filtered', !!q);
+      empty.hidden = shown > 0;
+    });
   })();
 </script>
 {% endblock %}
