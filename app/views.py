@@ -3037,7 +3037,19 @@ def render_edit_lab_test(req, patientid, orderid):
     if req.method != "POST":
         return lab_order_redirect(orderid, "order", edit="order")
     try:
-        order_date = req.POST.get("orderDate")
+        # The order itself can't be edited: OpenMRS's ImmutableOrderInterceptor
+        # rejects changes to a saved order's date, encounter, orderer, care
+        # setting and instructions, and a revised order gets a new order id,
+        # which the lab test (keyed by that id) can't follow. So only the lab
+        # test's own fields and the sample are saved here, against the order
+        # as it is. Passing the order as a nested object instead makes OpenMRS
+        # create a second order, and the save then fails.
+        _, current = ru.get(
+            req,
+            f"commonlab/labtestorder/{orderid}",
+            {"v": "custom:(labTestType:(uuid),order:(uuid,dateActivated))"},
+        )
+        order_date = (current["order"].get("dateActivated") or "")[:10] or None
         # Editable like any other field. Only touch it when the form
         # actually carried the program select (patient has enrolments):
         # an empty value then posts null and clears the link, while a form
@@ -3058,30 +3070,12 @@ def render_edit_lab_test(req, patientid, orderid):
                 )
                 return lab_order_redirect(orderid, "order", edit="order")
         # The form no longer carries the test type; keep the order's own.
-        _, current = ru.get(
-            req,
-            f"commonlab/labtestorder/{orderid}",
-            {"v": "custom:(labTestType:(uuid))"},
-        )
         test_type = current["labTestType"]["uuid"]
         body = {
             "labTestType": test_type,
             "labReferenceNumber": req.POST["labref"],
-            "order": {
-                "patient": patientid,
-                "concept": cu.get_reference_concept_of_labtesttype(req, test_type),
-                "encounter": req.POST["encounter"],
-                "type": "order",
-                "instructions": None
-                if "instructions" not in req.POST
-                else req.POST["instructions"],
-                "orderType": Constants.TEST_ORDER.value,
-                "orderer": req.session["logged_user"]["currentProvider"]["uuid"],
-                "careSetting": req.POST["careSetting"],
-            },
+            "order": current["order"]["uuid"],
         }
-        if order_date:
-            body["order"]["dateActivated"] = util.date_to_sql_datetime(order_date)
         if "patientProgram" in req.POST:
             body["patientProgram"] = patient_program
         status, response = ru.post(req, f"commonlab/labtestorder/{orderid}", body)
