@@ -3037,13 +3037,6 @@ def render_edit_lab_test(req, patientid, orderid):
     if req.method != "POST":
         return lab_order_redirect(orderid, "order", edit="order")
     try:
-        # The order itself can't be edited: OpenMRS's ImmutableOrderInterceptor
-        # rejects changes to a saved order's date, encounter, orderer, care
-        # setting and instructions, and a revised order gets a new order id,
-        # which the lab test (keyed by that id) can't follow. So only the lab
-        # test's own fields and the sample are saved here, against the order
-        # as it is. Passing the order as a nested object instead makes OpenMRS
-        # create a second order, and the save then fails.
         _, current = ru.get(
             req,
             f"commonlab/labtestorder/{orderid}",
