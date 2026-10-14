@@ -2411,6 +2411,46 @@ table tbody tr:hover {
   margin: 0;
 }
 
+/* Coded results with 2-3 answers: radios on one line instead of a dropdown.
+   They never wrap; laborder.html drops a group of fields to one column when
+   its radios don't fit in half the width (long answers, Russian names).
+   .radio-input floats with a negative margin for the report forms; undone here. */
+.lab-fields.lab-fields--single {
+  grid-template-columns: 1fr;
+}
+
+.lab-radio-group {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.lab-radio {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.lab-radio .radio-input {
+  float: none;
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+/* Phones: wrapping beats running off the screen. */
+@media screen and (max-width: 640px) {
+  .lab-radio-group {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+  }
+}
+
 @media screen and (max-width: 640px) {
   .lab-fields {
     grid-template-columns: 1fr;

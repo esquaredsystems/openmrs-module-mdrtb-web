@@ -299,8 +299,27 @@ switched in the browser, so moving between tabs costs no request.
     subtabs.forEach((tab) => tab.addEventListener('click', () => showSubtab(tab.dataset.subtab)))
     const filled = [...document.querySelectorAll('.lab-subpanel')].find((panel) =>
       [...panel.querySelectorAll('input, select, textarea')].some((field) =>
-        field.type === 'checkbox' ? field.checked : field.value))
+        field.type === 'checkbox' || field.type === 'radio' ? field.checked : field.value))
     if (filled) showSubtab(filled.dataset.subpanel)
+
+    // Result radios stay on one line: a group of fields whose radios don't fit
+    // in half the width drops to one column. Rechecked whenever a group's width
+    // changes, which also covers a sub-tab or the edit form being shown.
+    const fitRadios = (panel) => {
+      panel.classList.remove('lab-fields--single')
+      const tooWide = [...panel.querySelectorAll('.lab-radio-group')].some((group) =>
+        group.scrollWidth > group.clientWidth)
+      panel.classList.toggle('lab-fields--single', tooWide)
+    }
+    const panelWidths = new WeakMap()
+    const radioObserver = new ResizeObserver((entries) => entries.forEach(({target, contentRect}) => {
+      if (!contentRect.width || panelWidths.get(target) === contentRect.width) return
+      panelWidths.set(target, contentRect.width)
+      fitRadios(target)
+    }))
+    document.querySelectorAll('#results-edit .lab-fields').forEach((panel) => {
+      if (panel.querySelector('.lab-radio-group')) radioObserver.observe(panel)
+    })
 
     // Dates can't be in the future.
     const today = new Date().toISOString().substring(0, 10)

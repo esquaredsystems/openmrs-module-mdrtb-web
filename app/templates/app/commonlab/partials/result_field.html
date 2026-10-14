@@ -3,9 +3,23 @@ One lab result input on the Results tab. Expects `attribute`: an attribute type
 wrapper from get_labtest_attributes / get_custom_attribute_for_labresults, with
 valueReference set when a value is already saved. The field name is the
 attribute type uuid, which is what render_add_test_results reads back.
+A coded question with only 2 or 3 answers renders as one-click radio buttons
+instead of a dropdown; any other answer count keeps the dropdown.
 {% endcomment %}
 {% with at=attribute.attributeType %}
 <div class="input-container">
+  {% if at.inputType == 'select' and at.answers|length >= 2 and at.answers|length <= 3 %}
+    <span class="input-label" id="attr-{{ at.uuid }}-label">{{ at.name }}</span>
+    <div class="lab-radio-group" role="radiogroup" aria-labelledby="attr-{{ at.uuid }}-label">
+      {% for answer in at.answers %}
+      <label class="lab-radio">
+        <input type="radio" class="radio-input" name="{{ at.uuid }}" value="{{ answer.uuid }}"
+          {% if attribute.valueReference == answer.uuid %}checked{% endif %}>
+        <span>{{ answer.display }}</span>
+      </label>
+      {% endfor %}
+    </div>
+  {% else %}
   <label class="input-label" for="attr-{{ at.uuid }}">{{ at.name }}</label>
   {% if at.inputType == 'date' %}
     {# Saved as "2020-09-04 00:00:00"; the date input wants the first ten characters. #}
@@ -29,6 +43,7 @@ attribute type uuid, which is what render_add_test_results reads back.
   {% else %}
     <input type="text" class="input form-control" name="{{ at.uuid }}" id="attr-{{ at.uuid }}"
       value="{{ attribute.valueReference|default:'' }}">
+  {% endif %}
   {% endif %}
 </div>
 {% endwith %}
