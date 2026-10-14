@@ -2972,7 +2972,7 @@ def render_add_lab_test(req, uuid):
                 )
                 if new_order:
                     # The same form carries the order's first sample, collected
-                    # on the order's collection date. Saved as COLLECTED: it is
+                    # on the order date. Saved as COLLECTED: it is
                     # accepted or rejected separately, on the order screen.
                     sample = _sample_body(req, new_order, collection_date=order_date[:10])
                     sample["status"] = Constants.COLLECTED.value
@@ -3083,14 +3083,14 @@ def render_edit_lab_test(req, patientid, orderid):
             log_and_show_error(response["error"]["message"], req)
             return lab_order_redirect(orderid, "order", edit="order")
         # The same form carries the order's current sample (or a new one when
-        # it has none), collected on the order's collection date. Saving it
+        # it has none), collected on the order date. Saving it
         # never changes whether it was accepted or rejected.
         if "specimentype" in req.POST:
             sample = _sample_body(req, orderid, collection_date=order_date)
             sampleid = req.POST.get("sampleid")
             if sampleid:
-                sample.setdefault("quantity", "")
-                sample.setdefault("units", "")
+                sample.setdefault("quantity", None)
+                sample.setdefault("units", None)
                 status, response = ru.post(req, f"commonlab/labtestsample/{sampleid}", sample)
             else:
                 sample["status"] = Constants.COLLECTED.value
@@ -3190,8 +3190,8 @@ def render_edit_test_sample(req, orderid, sampleid):
     try:
         body = _sample_body(req, orderid)
         # Cleared on purpose: these are optional, and an emptied field must clear.
-        body.setdefault("quantity", "")
-        body.setdefault("units", "")
+        body.setdefault("quantity", None)
+        body.setdefault("units", None)
         status, response = ru.post(req, f"commonlab/labtestsample/{sampleid}", body)
         if status:
             return lab_order_redirect(orderid, "order", anchor="samples")

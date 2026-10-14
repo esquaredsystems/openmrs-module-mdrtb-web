@@ -57,24 +57,32 @@ selected_program, encounters, care_setting and, when editing, laborder.
     }
 </style>
 
-    <div class="input-container" {% if state != 'edit' %}style="display:none"{% endif %}>
+{% if state == 'edit' %}
+<p class="lab-muted">{{'mdrtb.labOrder.fixedOrderFields'|get_message:locale|default:"en"}}</p>
+<div class="input-container">
+    <label class="input-label" for="encounter">
+        {{'ConceptProposal.encounter'|get_message:locale|default:"en"}}
+    </label>
+    <select id="encounter" class="input form-control" disabled>
+        <option selected>{{laborder.order.encounter.name}}</option>
+    </select>
+</div>
+{% else %}
+    <div class="input-container" style="display:none">
         <label class="input-label">
             {{'ConceptProposal.encounter'|get_message:locale|default:"en"}}
         </label>
         <div class="input-container">
-            <input id="createencounter" name="createencounter" type="checkbox" class="check-input"
-                {% if state != 'edit' %}checked{% endif %} />
+            <input id="createencounter" name="createencounter" type="checkbox" class="check-input" checked />
             <label>{{'mdrtb.addANewSpecimen'|get_message:locale|default:"en"}}</label>
             <select id="encounter" name="encounter" class="input form-control">
-                {% if state == 'edit' %}
-                <option selected value="{{laborder.order.encounter.uuid}}">{{laborder.order.encounter.name}}</option>
-            {% endif %}
             {% for encounter in encounters %}
                 <option value="{{ encounter.uuid }}">{{ encounter.display }}</option>
             {% endfor %}
         </select>
     </div>
 </div>
+{% endif %}
 
 {% comment %}
 Program / episode this lab order belongs to. There is no program picker in
@@ -119,10 +127,14 @@ later.
 
 <div class="input-container">
     <label class="input-label" for="order-date">
-        {{'commonlabtest.order.collection.date'|get_message:locale|default:"en"}}
+        {{'mdrtb.dateOrdered'|get_message:locale|default:"en"}}
     </label>
-    <input type="date" name="orderDate" id="order-date" class="input form-control" required
-        {% if state == 'edit' %}value="{{laborder.order.date_activated|slice:':10'}}"{% endif %}>
+    {% if state == 'edit' %}
+    <input type="date" id="order-date" class="input form-control" disabled
+        value="{{laborder.order.date_activated|slice:':10'}}">
+    {% else %}
+    <input type="date" name="orderDate" id="order-date" class="input form-control" required>
+    {% endif %}
 </div>
 
     <div class="input-container" {% if state != 'edit' %}style="display:none"{% endif %}>
@@ -134,7 +146,7 @@ later.
                 <label for="inpatient">{{'labtest.careSetting.inpatient'|get_message:locale|default:"en"}}</label>
                 {% if state == 'edit' %}
                     <input {% if laborder.careSetting.uuid == care_setting.inpatient.value %} checked {% endif %}
-                        name="careSetting" type="radio" value="{{ care_setting.inpatient.value }}" class="radio-input" />
+                        type="radio" value="{{ care_setting.inpatient.value }}" class="radio-input" disabled />
                 {% else %}
                     <input name="careSetting" type="radio" value="{{ care_setting.inpatient.value }}" class="radio-input" />
                 {% endif %}
@@ -143,7 +155,7 @@ later.
                 <label for="outpatient">{{'labtest.careSetting.outpatient'|get_message:locale|default:"en"}}</label>
                 {% if state == 'edit' %}
                     <input {% if laborder.careSetting.uuid == care_setting.outpatient.value %} checked {% endif %}
-                        name="careSetting" type="radio" value="{{ care_setting.outpatient.value }}" class="radio-input" />
+                        type="radio" value="{{ care_setting.outpatient.value }}" class="radio-input" disabled />
                 {% else %}
                     <input checked name="careSetting" type="radio" value="{{ care_setting.outpatient.value }}" class="radio-input" />
                 {% endif %}
@@ -169,7 +181,7 @@ later.
 
         </label>
         {% if state == 'edit' %}
-            <textarea name="instructions" class="input form-control">{{laborder.order.instructions}}</textarea>
+            <textarea class="input form-control" disabled>{{laborder.order.instructions}}</textarea>
         {% else %}
             <textarea name="instructions" id="" class="input form-control"></textarea>
         {% endif %}

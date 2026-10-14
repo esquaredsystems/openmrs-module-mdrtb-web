@@ -4,8 +4,6 @@ new-order page (addlabtest.html) and the Order tab (laborder.html). Pass
 `sample` to edit it; without it a new sample starts on default_specimen_type /
 default_specimen_site (sputum, induced). The collection date is left out
 unless with_collection_date is set: the sample takes the order's own date.
-A stored identifier that is only a UUID (older samples) is offered as a fresh
-generated identifier instead, like a new sample's.
 {% endcomment %}
 <div class="lab-fields">
   <div class="input-container">
@@ -28,7 +26,7 @@ generated identifier instead, like a new sample's.
   </div>
   <div class="input-container">
     <label class="input-label">{{'commonlabtest.labtestsample.quantity'|get_message:locale|default:"en"}}</label>
-    <input class="input form-control" type="number" name="quantity" value="{{ sample.quantity|default:'' }}">
+    <input class="input form-control" type="number" step="any" min="0" name="quantity" value="{{ sample.quantity|default:'' }}">
   </div>
   <div class="input-container">
     <label class="input-label">{{'commonlabtest.labtestsample.unit'|get_message:locale|default:"en"}}</label>
@@ -42,7 +40,7 @@ generated identifier instead, like a new sample's.
   <div class="input-container">
     <label class="input-label required">{{'commonlabtest.labtestsample.sampleIdentifier'|get_message:locale|default:"en"}}</label>
     <input required class="input form-control" type="text" name="specimenid"
-      value="{% if sample.display_identifier %}{{ sample.display_identifier }}{% else %}{{'placeholder'|get_specimem_identifier}}{% endif %}">
+      value="{% if sample.sampleIdentifier %}{{ sample.sampleIdentifier }}{% else %}{{'placeholder'|get_specimem_identifier}}{% endif %}">
   </div>
   {% if with_collection_date %}
   <div class="input-container">

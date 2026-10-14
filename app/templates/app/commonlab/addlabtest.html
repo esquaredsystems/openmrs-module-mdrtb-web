@@ -33,7 +33,7 @@ Results open once the order is saved, which lands the user on its screen.
             {% csrf_token %}
             {% include 'app/commonlab/partials/order_fields.html' %}
 
-            {# The order's first sample, saved by the same button. It takes the order's collection date. #}
+            {# The order's first sample, saved by the same button. Its collection date is the order date. #}
             <h3 class="lab-inline-form__title lab-form-section">{{'mdrtb.sample'|get_message:locale|default:"en"}}</h3>
             {% include 'app/commonlab/partials/sample_fields.html' with sample=None %}
             <p class="lab-muted">{{'mdrtb.labOrder.saveFirst'|get_message:locale|default:"en"}}</p>

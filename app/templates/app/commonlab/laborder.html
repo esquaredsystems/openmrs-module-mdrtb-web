@@ -21,7 +21,7 @@ switched in the browser, so moving between tabs costs no request.
     <h1 class="lab-order__title">{{ laborder.labref }}</h1>
     <dl class="lab-order__meta">
       <div><dt>{{'mdrtb.labOrder.testType'|get_message:locale|default:"en"}}</dt><dd>{{ laborder.labtesttype.name }}</dd></div>
-      <div><dt>{{'commonlabtest.order.collection.date'|get_message:locale|default:"en"}}</dt><dd>{{ laborder.order.date_activated|iso_to_normal_date|default:"—" }}</dd></div>
+      <div><dt>{{'mdrtb.dateOrdered'|get_message:locale|default:"en"}}</dt><dd>{{ laborder.order.date_activated|iso_to_normal_date|default:"—" }}</dd></div>
       {% if laborder.patientProgram %}
       <div><dt>{{'Program.program'|get_message:locale|default:"en"}}</dt><dd>{{ laborder.patientProgram.name }}</dd></div>
       {% endif %}
@@ -55,7 +55,7 @@ switched in the browser, so moving between tabs costs no request.
     <div id="order-view" {% if editing_order %}hidden{% endif %}>
       <dl class="lab-details">
         <div><dt>{{'Program.program'|get_message:locale|default:"en"}}</dt><dd>{{ laborder.patientProgram.name|default:"—" }}</dd></div>
-        <div><dt>{{'commonlabtest.order.collection.date'|get_message:locale|default:"en"}}</dt><dd>{{ laborder.order.date_activated|iso_to_normal_date|default:"—" }}</dd></div>
+        <div><dt>{{'mdrtb.dateOrdered'|get_message:locale|default:"en"}}</dt><dd>{{ laborder.order.date_activated|iso_to_normal_date|default:"—" }}</dd></div>
         <div><dt>{{'commonlabtest.order.labReferenceNo'|get_message:locale|default:"en"}}</dt><dd>{{ laborder.labref }}</dd></div>
         <div><dt>{{'general.instructions'|get_message:locale|default:"en"}}</dt><dd>{{ laborder.order.instructions|default:"—" }}</dd></div>
         <div><dt>{{'labtest.careSetting'|get_message:locale|default:"en"}}</dt><dd>{% if laborder.careSetting.uuid == care_setting.inpatient.value %}{{'labtest.careSetting.inpatient'|get_message:locale|default:"en"}}{% elif laborder.careSetting.uuid == care_setting.outpatient.value %}{{'labtest.careSetting.outpatient'|get_message:locale|default:"en"}}{% else %}{{ laborder.careSetting.name }}{% endif %}</dd></div>
@@ -173,7 +173,7 @@ switched in the browser, so moving between tabs costs no request.
       {% include 'app/commonlab/partials/order_fields.html' with state='edit' %}
 
       {% if show_sample_fields %}
-      {# The order's current sample, or a new one when it has none. It takes the order's collection date. #}
+      {# The order's current sample, or a new one when it has none. Its collection date is the order date. #}
       <h3 class="lab-inline-form__title lab-form-section">{{'mdrtb.sample'|get_message:locale|default:"en"}}</h3>
       {% if current_sample %}<input type="hidden" name="sampleid" value="{{ current_sample.uuid }}">{% endif %}
       {% include 'app/commonlab/partials/sample_fields.html' with sample=current_sample %}
