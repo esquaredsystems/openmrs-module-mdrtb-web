@@ -276,10 +276,10 @@ def render_enrolled_programs(req, uuid):
             context["patient"] = patient
         if programs:
             context["programs"] = programs
-            lab_results = cu.get_lab_test_orders_for_dashboard(req, uuid)
-            if lab_results:
-                context["lab_results"] = lab_results
-                context["lab_json"] = json.dumps(lab_results)
+        lab_results = cu.get_lab_test_orders_for_dashboard(req, uuid)
+        if lab_results:
+            context["lab_results"] = lab_results
+            context["lab_json"] = json.dumps(lab_results)
     except Exception as e:
         log_and_show_error(e, req)
     finally:
