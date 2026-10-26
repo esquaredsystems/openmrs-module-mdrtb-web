@@ -248,6 +248,9 @@
               class="input form-control">
             {% endif %}
           </div>
+          <div class="input-container"></div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.methodOfDetection'|get_message:locale|default:"en"}}</label>
@@ -262,8 +265,6 @@
               {% endfor %}
             </select>
           </div>
-        </div>
-        <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.otherMethodOfDetection'|get_message:locale|default:"en"}}</label>
@@ -275,6 +276,8 @@
             <input name="{{'OTHER_METHOD_OF_DETECTION' | get_concept }}" type="text" class="input form-control" />
             {% endif %}
           </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label class="tb03-form-label w-full">{{'mdrtb.tb03.siteOfDisease'|get_message:locale|default:"en"}}</label>
             <!-- Issue: Autopopulate from TB03 form -->
@@ -292,8 +295,6 @@
             </select>
 
           </div>
-        </div>
-        <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label
               class="tb03-form-label w-full">{{'mdrtb.forms.ptbSite'|get_message:locale|default:"en"}}</label>
@@ -320,6 +321,8 @@
               {% endfor %}
             </select>
           </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.presenceOfDecay'|get_message:locale|default:"en"}}</label>
@@ -357,8 +360,6 @@
             </div>
 
           </div>
-        </div>
-        <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.dateOfDecaySurvey'|get_message:locale|default:"en"}}</label>
@@ -370,6 +371,8 @@
             {% endif %}
 
           </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.complication'|get_message:locale|default:"en"}}</label>
@@ -381,6 +384,7 @@
             {% endif %}
 
           </div>
+          <div class="input-container"></div>
         </div>
 
         <div class="flex items-center justify-between space-x-6">
