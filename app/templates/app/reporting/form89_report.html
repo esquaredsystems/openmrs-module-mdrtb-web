@@ -163,7 +163,8 @@
                 <td>{{ row.circumstancesOfDetection.display }}</td>
                 <td>{{ row.cityOfOrigin }}</td>
                 <td>{{ row.dateOfReturn }}</td>
-                <td>{{ row.methodOfDetection.display }}</td>
+                {# Method of detection is multi-select, so the cell lists every method recorded. #}
+                <td>{% for method in row.methodOfDetection %}{{ method.display }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
                 <td>{{ row.otherMethodOfDetection }}</td>
                 <td>{{ row.anatomicalSite.display }}</td>
                 <td>{{ row.eptbSite.display }}</td>

@@ -2,7 +2,7 @@
 # Django 4.1.1 frontend — communicates with OpenMRS via REST only, NO direct DB access.
 # Shared facts (domain model, concept/encounter-type/identifier UUIDs, topology): ../.agents/graph.md
 # Usage + notation legend + maintenance rules: ../.agents/instructions.md
-# Last updated: 2026-10-07 (new-patient form: "More options" box)
+# Last updated: 2026-10-26 (§ TB FORM SUBMISSION; Form 89 multi-select method of detection)
 
 ## § MODULE LAYOUT
 ```
@@ -42,6 +42,31 @@ views.py → mu (metadata_util)    # concept/location/privilege lookup + caching
 views.py → lu (locations_util)   # location hierarchy queries
 views.py → common_utils          # date formatting, report name resolution
 metadata_util → redis            # concept/location cache
+```
+
+## § TB FORM SUBMISSION (how a TB form reaches OpenMRS — forms_util.py)
+```
+THE CONVENTION: an input's name attribute IS a concept UUID.
+  form89.html: name="{{'METHOD_OF_DETECTION' | get_concept }}"  (get_enums.py -> Concepts enum)
+  so req.POST is {concept_uuid: answer} and the encoders need no per-field knowledge.
+
+CREATE  view -> fu.create_update_form89 -> fu.create_new_form -> ru.post("mdrtb/form89")
+  body {patientProgramUuid, encounter:{patient, encounterType, encounterDatetime, location, obs[]}}
+  PATIENT_PROGRAM_ID obs is sent with NO value; the module fills it from patientProgramUuid.
+  Datetimes use _utcnow(): local time on a UTC+n server read as "future" and OpenMRS rejected it.
+
+EDIT    view -> fu.create_update_form89 -> fu.update_existing_form -> ru.post("mdrtb/form89/{uuid}")
+  body {patientProgramUuid, encounter:{uuid, obs[]}}   # only the obs being written
+  Re-fetches the encounter and reuses each existing obs uuid so obs history survives.
+
+MULTI-VALUED ANSWERS (2026-10-26): both encoders iterate fu._post_items(data), NOT data.items().
+  A multi-select posts its key once per option and QueryDict.items() keeps only the LAST value,
+  which silently reduced a multi-select to one obs. _post_items() uses .lists() and yields every
+  value; get_obs_list_from_encounter() pairs them with the existing obs on edit.
+  Only methodOfDetection is multi-valued today (<select multiple> in form89.html).
+
+CLEARING DOES NOT DELETE: a blank/deselected answer is simply left out of the POST, and nothing
+  voids the obs already stored, so the old value survives. Affects every TB form, not just 89.
 ```
 
 ## § REST ROUTES (Django — METHOD path → view_function [→ utility alias])
