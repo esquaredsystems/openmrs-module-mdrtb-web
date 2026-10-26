@@ -384,6 +384,67 @@
         </div>
 
         <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label
+              class="tb03-form-label w-full">{{'mdrtb.form89.contactWithTbPatient'|get_message:locale|default:"en"}}</label>
+            <select name="{{'CONTACT_WITH_TB_PATIENT' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.contactWithTbPatient %}
+                <option selected value="{{form.contactWithTbPatient.uuid}}">{{form.contactWithTbPatient.display}}</option>
+              {% else %}
+                <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              {% endif %}
+              {% for concept in concepts.contactwithatbpatient %}
+                <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-container">
+            <label
+              class="tb03-form-label w-full">{{'mdrtb.form89.laborMigration'|get_message:locale|default:"en"}}</label>
+            <select name="{{'LABOR_MIGRATION' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.laborMigration %}
+                <option selected value="{{form.laborMigration.uuid}}">{{form.laborMigration.display}}</option>
+              {% else %}
+                <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              {% endif %}
+              {% for concept in concepts.labormigration %}
+                <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
+          <div class="input-container">
+            <label
+              class="tb03-form-label w-full">{{'mdrtb.form89.afterReleaseFromPrison'|get_message:locale|default:"en"}}</label>
+            <select name="{{'AFTER_RELEASE_FROM_PRISON' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.afterReleaseFromPrison %}
+                <option selected value="{{form.afterReleaseFromPrison.uuid}}">{{form.afterReleaseFromPrison.display}}</option>
+              {% else %}
+                <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              {% endif %}
+              {% for concept in concepts.afterreleasefromprison %}
+                <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-container">
+            <label
+              class="tb03-form-label w-full">{{'mdrtb.form89.riskyBehaviorFactors'|get_message:locale|default:"en"}}</label>
+            <select name="{{'RISKY_BEHAVIOR_FACTORS' | get_concept }}" class="input form-control">
+              {% if state == 'edit' and form.riskyBehaviorFactors %}
+                <option selected value="{{form.riskyBehaviorFactors.uuid}}">{{form.riskyBehaviorFactors.display}}</option>
+              {% else %}
+                <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              {% endif %}
+              {% for concept in concepts.riskybehaviorfactors %}
+                <option value="{{concept.uuid}}">{{concept.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between space-x-6">
         {% if form.isChildbearingAge or isEligibleForPregnancy %}
           <div class="input-container">
             <label class="tb03-form-label w-full">{{'mdrtb.pregnant'|get_message:locale|default:"en"}}</label>

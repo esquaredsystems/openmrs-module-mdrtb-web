@@ -539,6 +539,10 @@ def remove_form89_duplicates(concepts, form_data):
         "prescribedtreatment": "prescribedTreatment",
         "profession": "profession",
         "anatomicalsite": "anatomicalSite",
+        "contactwithatbpatient": "contactWithTbPatient",
+        "labormigration": "laborMigration",
+        "afterreleasefromprison": "afterReleaseFromPrison",
+        "riskybehaviorfactors": "riskyBehaviorFactors",
     }
     for concept_key, form_data_key in concept_form_mapping.items():
         remove_duplicate_concepts(clone_concepts.get(concept_key, []), form_data.get(form_data_key, None))

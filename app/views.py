@@ -1166,6 +1166,10 @@ def render_form_89(req, uuid):
             Concepts.LOCATION_OF_PTB.value,
             Concepts.PRESCRIBED_TREATMENT.value,
             Concepts.PLACE_OF_CENTRAL_COMMISSION.value,
+            Concepts.CONTACT_WITH_TB_PATIENT.value,
+            Concepts.LABOR_MIGRATION.value,
+            Concepts.AFTER_RELEASE_FROM_PRISON.value,
+            Concepts.RISKY_BEHAVIOR_FACTORS.value,
         ]
         concepts = fu.get_form_concepts(form89_concepts, req)
         context["concepts"] = concepts
@@ -1228,6 +1232,10 @@ def render_edit_form_89(req, uuid, formid):
             Concepts.LOCATION_OF_EPTB.value,
             Concepts.PRESCRIBED_TREATMENT.value,
             Concepts.PLACE_OF_CENTRAL_COMMISSION.value,
+            Concepts.CONTACT_WITH_TB_PATIENT.value,
+            Concepts.LABOR_MIGRATION.value,
+            Concepts.AFTER_RELEASE_FROM_PRISON.value,
+            Concepts.RISKY_BEHAVIOR_FACTORS.value,
         ]
         form = fu.get_form89_by_uuid(req, formid)
         concepts = fu.remove_form89_duplicates(
