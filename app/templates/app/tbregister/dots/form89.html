@@ -383,25 +383,14 @@
           </div>
         </div>
 
-        <!-- Issue: Add pregnancy option for eligible female patients -->
         <div class="flex items-center justify-between space-x-6">
         {% if form.isChildbearingAge or isEligibleForPregnancy %}
           <div class="input-container">
             <label class="tb03-form-label w-full">{{'mdrtb.pregnant'|get_message:locale|default:"en"}}</label>
-            <select class="input form-control" id="pregnant">
-              {% if form.pregnant %}
-                {% if form.pregnant.uuid == constants.YES %}
-                  <option selected value="{{ constants.YES }}">{{'mdrtb.yes'|get_message:locale|default:"en"}}</option>
-                  <option value="{{ constants.NO }}">{{'mdrtb.no'|get_message:locale|default:"en"}}</option>
-                {% elif form.pregnant.uuid == constants.NO %}
-                  <option value="{{ constants.YES }}">{{'mdrtb.yes'|get_message:locale|default:"en"}}</option>
-                  <option selected value="{{ constants.NO }}">{{'mdrtb.no'|get_message:locale|default:"en"}}</option>
-                {% endif %}
-              {% else %}
-                <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
-                <option value="{{ constants.YES }}">{{'mdrtb.yes'|get_message:locale|default:"en"}}</option>
-                <option value="{{ constants.NO }}">{{'mdrtb.no'|get_message:locale|default:"en"}}</option>
-              {% endif %}
+            <select name="{{'PREGNANT' | get_concept }}" class="input form-control" id="pregnant">
+              <option value="" {% if not form.pregnant %}selected{% endif %}>{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              <option value="{{ constants.YES }}" {% if form.pregnant.uuid == constants.YES %}selected{% endif %}>{{'mdrtb.yes'|get_message:locale|default:"en"}}</option>
+              <option value="{{ constants.NO }}" {% if form.pregnant.uuid == constants.NO %}selected{% endif %}>{{'mdrtb.no'|get_message:locale|default:"en"}}</option>
             </select>
           </div>
           <div class="input-container"></div>
