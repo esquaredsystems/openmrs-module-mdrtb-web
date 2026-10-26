@@ -75,6 +75,13 @@
                 <th class="normal" rowspan="2">{{"mdrtb.form89.dateOfDecaySurvey"|get_message:locale|default:"en"}}
                 </th>
                 <th class="normal" rowspan="2">{{"mdrtb.form89.complication"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.contactWithTbPatient"|get_message:locale|default:"en"}}
+                </th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.laborMigration"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.afterReleaseFromPrison"|get_message:locale|default:"en"}}
+                </th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.riskyBehaviorFactors"|get_message:locale|default:"en"}}
+                </th>
                 <th class="normal" rowspan="1" colspan="4">{{"mdrtb.smear"|get_message:locale|default:"en"}}</th>
                 <th class="normal" rowspan="1" colspan="4">{{"mdrtb.tb03.genexpert"|get_message:locale|default:"en"}}
                 </th>
@@ -156,7 +163,8 @@
                 <td>{{ row.circumstancesOfDetection.display }}</td>
                 <td>{{ row.cityOfOrigin }}</td>
                 <td>{{ row.dateOfReturn }}</td>
-                <td>{{ row.methodOfDetection.display }}</td>
+                {# Method of detection is multi-select, so the cell lists every method recorded. #}
+                <td>{% for method in row.methodOfDetection %}{{ method.display }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
                 <td>{{ row.otherMethodOfDetection }}</td>
                 <td>{{ row.anatomicalSite.display }}</td>
                 <td>{{ row.eptbSite.display }}</td>
@@ -165,6 +173,10 @@
                 <td>{{ row.presenceOfDecay.display }}</td>
                 <td>{{ row.dateOfDecaySurvey }}</td>
                 <td>{{ row.complication }}</td>
+                <td>{{ row.contactWithTbPatient.display }}</td>
+                <td>{{ row.laborMigration.display }}</td>
+                <td>{{ row.afterReleaseFromPrison.display }}</td>
+                <td>{{ row.riskyBehaviorFactors.display }}</td>
 
                 <td align="center">{{row.diagnosticSmearResult }}</td>
                 <td>{{row.diagnosticSmearDate }}</td>

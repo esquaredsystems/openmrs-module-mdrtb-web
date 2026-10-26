@@ -60,6 +60,28 @@ def get_form_concepts(concept_ids, req):
     return concept_dict
 
 
+def _post_items(data):
+    """
+    (key, [values]) for posted form data, keeping every value of a repeated key.
+
+    A multi-select posts its name once per selected option. Django's QueryDict
+    models that with getlist(), but .items() returns only the LAST value, which
+    silently reduced a multi-select to a single obs. Plain dicts (used by tests
+    and by callers that build data by hand) are accepted too.
+    """
+    if hasattr(data, "lists"):
+        return list(data.lists())
+    return [(k, v if isinstance(v, (list, tuple)) else [v]) for k, v in data.items()]
+
+
+def get_obs_list_from_encounter(obs_set, concept_uuid):
+    """
+    Every obs in the encounter for a concept, for questions answered more than
+    once. get_obs_from_encounter() returns only the first.
+    """
+    return [obs for obs in obs_set if concept_uuid == obs["concept"]["uuid"]]
+
+
 def update_existing_form(req, data, form_uuid, patient_uuid):
     try:
         patient_program_uuid = req.session["current_patient_program_flow"]["current_program"]["uuid"]
@@ -79,9 +101,17 @@ def update_existing_form(req, data, form_uuid, patient_uuid):
                 "value": program_obs["value"],
             }
         )
-        for key, value in data.items():
-            if cu.is_uuid(key) and value:
-                existing = get_obs_from_encounter(response["obs"], key)
+        # _post_items(), not data.items(): a multi-select posts its key once per
+        # selected option, and QueryDict.items() would keep only the last one.
+        for key, values in _post_items(data):
+            if not cu.is_uuid(key):
+                continue
+            # One obs per selected value, reusing the obs already holding each
+            # answer so its history survives. Answers that are no longer selected
+            # are simply left out, and the module voids their obs.
+            existing_obs = get_obs_list_from_encounter(response["obs"], key)
+            for index, value in enumerate([v for v in values if v]):
+                existing = existing_obs[index] if index < len(existing_obs) else None
                 if existing:
                     obs = {
                         "uuid": existing["uuid"],
@@ -134,10 +164,14 @@ def create_new_form(req, data, encounter_type, patient_uuid, keys_to_ignore):
             ],
         },
     }
-    for key, value in data.items():
+    # _post_items(), not data.items(): a multi-select posts its key once per
+    # selected option, and QueryDict.items() would keep only the last one.
+    for key, values in _post_items(data):
         if key in keys_to_ignore:
             continue
-        if value:
+        for value in values:
+            if not value:
+                continue
             form["encounter"]["obs"].append(
                 {
                     "person": patient_uuid,
@@ -189,10 +223,14 @@ def remove_duplicate_concepts(concept_field, form_field):
     Returns:
         None
     """
-    if form_field:
-        for concept in concept_field:
-            if form_field["uuid"] == concept["uuid"]:
-                concept_field.remove(concept)
+    if not form_field:
+        return
+    # form_field is one concept for a question answered once, or a list of them
+    # for a multi-select such as method of detection.
+    selected = form_field if isinstance(form_field, list) else [form_field]
+    already_shown = {c["uuid"] for c in selected if c}
+    # Rebuilt in place rather than removed while iterating, which skips entries.
+    concept_field[:] = [c for c in concept_field if c["uuid"] not in already_shown]
 
 
 def get_patient_tb03_forms(req, patient_uuid):
@@ -539,6 +577,10 @@ def remove_form89_duplicates(concepts, form_data):
         "prescribedtreatment": "prescribedTreatment",
         "profession": "profession",
         "anatomicalsite": "anatomicalSite",
+        "contactwithatbpatient": "contactWithTbPatient",
+        "labormigration": "laborMigration",
+        "afterreleasefromprison": "afterReleaseFromPrison",
+        "riskybehaviorfactors": "riskyBehaviorFactors",
     }
     for concept_key, form_data_key in concept_form_mapping.items():
         remove_duplicate_concepts(clone_concepts.get(concept_key, []), form_data.get(form_data_key, None))
