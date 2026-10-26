@@ -141,6 +141,10 @@
       </li>
       <li>
         <a class="dropdown-item"
+          href="{% url 'manageConcepts' %}">{{'mdrtb.concepts.manage'|get_message:locale|default:"en"}}</a>
+      </li>
+      <li>
+        <a class="dropdown-item"
           href="{% url 'managetesttypes' %}">{{'commonlabtest.labtesttype.manage'|get_message:locale|default:"en"}}</a>
       </li>
       {% comment %}Set Defaults stays disabled until it is implemented.{% endcomment %}

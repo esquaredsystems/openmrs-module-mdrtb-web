@@ -306,6 +306,9 @@ urlpatterns = [
     path("administration/translations", views.render_manage_translations, name="manageTranslations"),
     path("administration/translations/save", views.save_translation, name="saveTranslation"),
     path("administration/translations/delete", views.delete_translation, name="deleteTranslation"),
+    path("administration/concepts", views.render_manage_concepts, name="manageConcepts"),
+    path("administration/concepts/search", views.search_concepts_json, name="searchConceptsJson"),
+    path("administration/concepts/<str:uuid>", views.render_edit_concept, name="editConcept"),
     path("administration/defaults", views.render_set_defaults, name="setDefaults"),
     path("logout", views.render_logout, name="logout"),
 ]

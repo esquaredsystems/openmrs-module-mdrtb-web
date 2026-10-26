@@ -20,6 +20,7 @@ import utilities.forms_util as fu
 import utilities.common_utils as util
 import utilities.locations_util as lu
 import utilities.users_util as uau
+import utilities.concepts_util as cau
 import utilities.messages_util as msg
 from resources.enums.mdrtbConcepts import Concepts
 from resources.enums.privileges import Privileges
@@ -4025,6 +4026,200 @@ def delete_translation(req):
         f"{reverse('manageTranslations')}?q={req.POST.get('q', '')}"
         f"&page={req.POST.get('page', '')}"
     )
+
+
+def render_manage_concepts(req):
+    """Find a concept by name (any language) or UUID. Concepts cannot be created here."""
+    blocked = route_non_system_developer(req)
+    if blocked:
+        return blocked
+    if not check_if_session_alive(req):
+        return redirect("login")
+    locale = util.get_locale(req, "ru")
+    query = req.GET.get("q", "").strip()
+    context = {
+        "title": mu.get_global_msgs("mdrtb.concepts.manage", locale=locale),
+        "query": query,
+        "searched": bool(query),
+        "concepts": [],
+        "truncated": False,
+    }
+    try:
+        if query:
+            context["concepts"], context["truncated"] = cau.search_concepts(req, query, locale)
+            # A pasted UUID has exactly one answer: open it straight away.
+            if UUID_PATTERN.match(query) and len(context["concepts"]) == 1:
+                return redirect("editConcept", uuid=context["concepts"][0]["uuid"])
+    except cau.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+    return render(req, "app/admin/manage_concepts.html", context=context)
+
+
+def search_concepts_json(req):
+    """The 'Add answer' picker on the edit page. JSON, System Developer only."""
+    if not req.session.get("session_id"):
+        return JsonResponse({"results": []}, status=401)
+    if not mu.is_system_developer(req):
+        return JsonResponse({"results": []}, status=403)
+    try:
+        results, truncated = cau.search_concepts(
+            req, req.GET.get("q", ""), util.get_locale(req, "ru")
+        )
+    except cau.SessionExpired:
+        return JsonResponse({"results": []}, status=401)
+    except Exception as e:
+        logger.error(f"Concept search failed: {e}", exc_info=True)
+        return JsonResponse({"results": [], "error": str(e)}, status=502)
+    return JsonResponse(
+        {
+            "truncated": truncated,
+            "results": [
+                {
+                    "uuid": c["uuid"],
+                    "display": c.get("display") or "",
+                    "datatype": (c.get("datatype") or {}).get("display") or "",
+                    "retired": bool(c.get("retired")),
+                }
+                for c in results
+            ],
+        }
+    )
+
+
+def render_edit_concept(req, uuid):
+    """
+    Edit one existing concept: translations, class/datatype, answers, a new mapping - one form, one Save.
+    All rules live in utilities/concepts_util.py (save_concept checks everything before writing anything).
+    """
+    blocked = route_non_system_developer(req)
+    if blocked:
+        return blocked
+    if not check_if_session_alive(req):
+        return redirect("login")
+    locale = util.get_locale(req, "ru")
+    try:
+        concept = cau.get_concept(req, uuid, locale)
+    except cau.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+        return redirect("manageConcepts")
+    if not concept:
+        messages.error(req, mu.get_global_msgs("mdrtb.concepts.notFound", locale=locale))
+        return redirect("manageConcepts")
+
+    try:
+        reference = cau.get_reference_data(req)
+    except cau.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+        reference = {"classes": [], "datatypes": [], "sources": [], "map_types": []}
+
+    if req.method != "POST":
+        return render(
+            req, "app/admin/edit_concept.html",
+            context=_concept_form_context(req, concept, reference),
+        )
+
+    problems, changes = [], 0
+    try:
+        problems, changes = cau.save_concept(req, concept, req.POST, reference)
+    except cau.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        # Some changes may already be saved, so the concept is read again; the typed values are kept on screen.
+        log_and_show_error(e, req)
+        mu.refresh_cached_concept(req, uuid)
+        try:
+            concept = cau.get_concept(req, uuid, locale) or concept
+        except cau.SessionExpired:
+            return redirect("login")
+        except Exception as reload_error:
+            logger.warning(f"Could not reload concept {uuid}: {reload_error}")
+        return render(
+            req, "app/admin/edit_concept.html",
+            context=_concept_form_context(req, concept, reference, submitted=req.POST),
+        )
+
+    if problems:
+        for problem in problems:
+            messages.error(req, mu.get_global_msgs(problem, locale=locale))
+        return render(
+            req, "app/admin/edit_concept.html",
+            context=_concept_form_context(req, concept, reference, submitted=req.POST),
+        )
+
+    if changes:
+        mu.refresh_cached_concept(req, uuid)
+        messages.success(req, mu.get_global_msgs("mdrtb.concepts.saved", locale=locale))
+    else:
+        messages.info(req, mu.get_global_msgs("mdrtb.concepts.noChanges", locale=locale))
+    return redirect("editConcept", uuid=uuid)
+
+
+def _concept_form_context(req, concept, reference, submitted=None):
+    """
+    Current values for the edit page. `submitted` re-shows what was typed after a refused save, so nothing has to be
+    retyped.
+    """
+    translations = cau.translation_rows(concept)
+    selected_class = (concept.get("conceptClass") or {}).get("uuid")
+    selected_datatype = (concept.get("datatype") or {}).get("uuid")
+    mapping_values = {"map_type": "", "source": "", "code": ""}
+    answers = [dict(a, keep=True) for a in concept.get("answers") or []]
+    added_answers = []
+    if submitted:
+        for row in translations:
+            for field in ("full_name", "short_name", "description"):
+                row[field] = submitted.get(f"{field}_{row['locale']}", row[field])
+        selected_class = submitted.get("concept_class") or selected_class
+        selected_datatype = submitted.get("datatype") or selected_datatype
+        mapping_values = {key: submitted.get(key, "") for key in mapping_values}
+        if submitted.get("answers_shown"):
+            kept = submitted.getlist("keep_answers")
+            for answer in answers:
+                answer["keep"] = answer["uuid"] in kept
+            # Answers picked in the search carry their label in add_answer_label_<uuid> (set by the page's script).
+            added_answers = [
+                {"uuid": u, "display": submitted.get(f"add_answer_label_{u}", u)}
+                for u in submitted.getlist("add_answers")
+                if u not in {a["uuid"] for a in answers}  # already saved before a failure
+            ]
+    if not mapping_values["map_type"]:
+        # SAME-AS is what almost every mapping on this server uses.
+        same_as = next(
+            (t for t in reference["map_types"] if (t.get("display") or "").upper() == "SAME-AS"), None
+        )
+        mapping_values["map_type"] = (same_as or {}).get("uuid", "")
+
+    # A concept whose class is outside Constants.ALLOWED_CONCEPT_CLASSES still shows its own class, or the dropdown would
+    # silently pick another one on the next save.
+    classes = list(reference["classes"])
+    current_class = concept.get("conceptClass") or {}
+    if current_class.get("uuid") and not any(c.get("uuid") == current_class["uuid"] for c in classes):
+        classes.insert(0, current_class)
+
+    datatype = concept.get("datatype") or {}
+    return {
+        "title": concept.get("display") or concept.get("uuid"),
+        "concept": concept,
+        "translations": translations,
+        "answers": answers,
+        "added_answers": added_answers,
+        "classes": classes,
+        "datatypes": reference["datatypes"],
+        "sources": reference["sources"],
+        "map_types": reference["map_types"],
+        "selected_class": selected_class,
+        "selected_datatype": selected_datatype,
+        "datatype_locked": cau.is_datatype_locked(datatype),
+        "locked_datatypes": Constants.LOCKED_DATATYPES.value,
+        "is_coded": datatype.get("name") == Constants.CODED_DATATYPE.value,
+        "mapping_values": mapping_values,
+    }
 
 
 def render_set_defaults(req):

@@ -1,0 +1,62 @@
+{% extends 'app/base/base.html' %}
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+{%block content%}
+{% include 'app/components/nav.html' %}
+
+<div class="loc-page">
+  <div class="loc-header">
+    <div>
+      <h1>{{'mdrtb.concepts.manage'|get_message:locale|default:"en"}}</h1>
+      {% if concepts %}
+      <p class="loc-subtitle">{{ concepts|length }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  {# Search only: concepts are never created or deleted from this app. #}
+  <form method="get" class="user-search">
+    <div class="loc-field">
+      <label for="q">{{'mdrtb.concepts.searchPrompt'|get_message:locale|default:"en"}}</label>
+      <input type="text" id="q" name="q" value="{{ query }}" autocomplete="off" autofocus>
+    </div>
+    <button type="submit" class="btn btn-primary btn-sm">
+      {{'general.search'|get_message:locale|default:"en"}}</button>
+  </form>
+
+  {% if searched %}
+  {% if truncated %}
+  <p class="loc-hint">{{'mdrtb.concepts.tooManyResults'|get_message:locale|default:"en"}}</p>
+  {% endif %}
+  {% if concepts %}
+  <table class="user-table">
+    <thead>
+      <tr>
+        <th>{{'general.name'|get_message:locale|default:"en"}}</th>
+        <th>{{'mdrtb.concepts.class'|get_message:locale|default:"en"}}</th>
+        <th>{{'mdrtb.concepts.datatype'|get_message:locale|default:"en"}}</th>
+        <th>{{'general.uuid'|get_message:locale|default:"en"}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for concept in concepts %}
+      <tr{% if concept.retired %} class="user-disabled"{% endif %}>
+        <td><a href="{% url 'editConcept' uuid=concept.uuid %}">{{ concept.display }}</a></td>
+        <td>{{ concept.conceptClass.display|default:"—" }}</td>
+        <td>{{ concept.datatype.display|default:"—" }}</td>
+        <td><code>{{ concept.uuid }}</code></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="loc-empty">{{'general.noResults'|get_message:locale|default:"en"}}</p>
+  {% endif %}
+  {% else %}
+  <p class="loc-empty">{{'mdrtb.concepts.searchPrompt'|get_message:locale|default:"en"}}</p>
+  {% endif %}
+</div>
+{% endblock %}

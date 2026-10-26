@@ -1,0 +1,296 @@
+{% extends 'app/base/base.html' %}
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+{%block content%}
+{% include 'app/components/nav.html' %}
+
+{% comment %}
+ONE form, ONE Save: cau.save_concept checks every part before it writes anything. Rules are in
+utilities/concepts_util.py. There is no delete: concepts are only changed here.
+{% endcomment %}
+<div class="loc-page concept-page">
+  <div class="loc-header">
+    <div>
+      <h1>{{ title }}</h1>
+      <p class="loc-subtitle"><code>{{ concept.uuid }}</code></p>
+      {% if concept.retired %}
+      <p class="loc-subtitle loc-retired-note">{{'mdrtb.concepts.retired'|get_message:locale|default:"en"}}</p>
+      {% endif %}
+    </div>
+    <a class="loc-linkbtn" href="{% url 'manageConcepts' %}">
+      &larr; {{'mdrtb.concepts.manage'|get_message:locale|default:"en"}}</a>
+  </div>
+
+  {# ---------------------------------------------------------------- translations #}
+  <form method="post" action="{% url 'editConcept' uuid=concept.uuid %}" id="concept-form">
+    {% csrf_token %}
+    <h2 class="loc-section">{{'mdrtb.concepts.translations'|get_message:locale|default:"en"}}</h2>
+    <p class="loc-hint">{{'mdrtb.concepts.translationsNote'|get_message:locale|default:"en"}}</p>
+
+    <table class="tr-table concept-tr-table">
+      {# Language column fixed; the rest split 60/40 between full name and short name. #}
+      <colgroup>
+        <col class="concept-col-lang">
+        <col class="concept-col-full">
+        <col class="concept-col-short">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>{{'mdrtb.concepts.language'|get_message:locale|default:"en"}}</th>
+          <th>{{'mdrtb.concepts.fullName'|get_message:locale|default:"en"}}</th>
+          <th>{{'general.shortName'|get_message:locale|default:"en"}}</th>
+        </tr>
+      </thead>
+      {# One block per language: names on the first row, the description on its own row below. #}
+      {% for row in translations %}
+      <tbody class="concept-tr-lang">
+        <tr>
+          <th scope="rowgroup" rowspan="2">
+            {{ 'mdrtb.language.'|add:row.locale|get_message:locale|default:"en" }} <small>({{ row.locale }})</small>
+          </th>
+          <td>
+            <input type="text" name="full_name_{{ row.locale }}" value="{{ row.full_name }}" maxlength="255"
+              aria-label="{{'mdrtb.concepts.fullName'|get_message:locale|default:"en"}} ({{ row.locale }})"
+              {% if row.full_name_uuid %}required{% endif %}>
+          </td>
+          <td>
+            <input type="text" name="short_name_{{ row.locale }}" value="{{ row.short_name }}" maxlength="255"
+              aria-label="{{'general.shortName'|get_message:locale|default:"en"}} ({{ row.locale }})">
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <label class="concept-desc-label" for="description_{{ row.locale }}">
+              {{'general.description'|get_message:locale|default:"en"}}</label>
+            <textarea id="description_{{ row.locale }}" name="description_{{ row.locale }}" rows="2">{{ row.description }}</textarea>
+          </td>
+        </tr>
+      </tbody>
+      {% endfor %}
+    </table>
+
+
+    {# ---------------------------------------------------------------- class and datatype #}
+    <h2 class="loc-section">{{'mdrtb.concepts.classAndDatatype'|get_message:locale|default:"en"}}</h2>
+
+    <div class="loc-grid">
+      <div class="loc-field">
+        <label for="concept_class">{{'mdrtb.concepts.class'|get_message:locale|default:"en"}}</label>
+        <select id="concept_class" name="concept_class">
+          {% for item in classes %}
+          <option value="{{ item.uuid }}" {% if item.uuid == selected_class %}selected{% endif %}>{{ item.display }}</option>
+          {% endfor %}
+        </select>
+        <small class="loc-hint">{{'mdrtb.concepts.classNote'|get_message:locale|default:"en"}}</small>
+      </div>
+      <div class="loc-field">
+        <label for="datatype">{{'mdrtb.concepts.datatype'|get_message:locale|default:"en"}}</label>
+        {# A locked datatype is shown but not submitted; the server re-checks every rule anyway. #}
+        <select id="datatype" name="datatype" {% if datatype_locked %}disabled{% endif %}>
+          {% for item in datatypes %}
+          <option value="{{ item.uuid }}" {% if item.uuid == selected_datatype %}selected{% endif %}
+            {% if item.display in locked_datatypes and item.uuid != selected_datatype %}disabled{% endif %}>{{ item.display }}</option>
+          {% endfor %}
+        </select>
+        <small class="loc-hint">{{'mdrtb.concepts.datatypeNote'|get_message:locale|default:"en"}}</small>
+      </div>
+    </div>
+
+
+    {# ---------------------------------------------------------------- answers (Coded only) #}
+    {% if is_coded %}
+    {# Tells the server the answer list was on the page, so an empty list means "remove all", not "not shown". #}
+    <input type="hidden" name="answers_shown" value="1">
+    <h2 class="loc-section">{{'mdrtb.concepts.answers'|get_message:locale|default:"en"}}</h2>
+    <p class="loc-hint">{{'mdrtb.concepts.answersNote'|get_message:locale|default:"en"}}</p>
+
+    <ol class="concept-answers" id="answer-list">
+      {% for answer in answers %}
+      <li>
+        <label class="loc-check">
+          <input type="checkbox" name="keep_answers" value="{{ answer.uuid }}" {% if answer.keep %}checked{% endif %}>
+          <span>{{ answer.display }}</span>
+        </label>
+      </li>
+      {% endfor %}
+      {% for answer in added_answers %}
+      <li>
+        <label class="loc-check">
+          <input type="checkbox" name="add_answers" value="{{ answer.uuid }}" checked>
+          <span>{{ answer.display }} </span><span class="loc-badge">{{'mdrtb.new'|get_message:locale|default:"en"}}</span>
+        </label>
+        <input type="hidden" name="add_answer_label_{{ answer.uuid }}" value="{{ answer.display }}">
+      </li>
+      {% endfor %}
+    </ol>
+    <p class="loc-empty" id="answer-empty" {% if answers or added_answers %}hidden{% endif %}>
+      {{'mdrtb.concepts.noAnswers'|get_message:locale|default:"en"}}</p>
+
+    <div class="concept-answer-search">
+      <input type="search" id="answer-q" autocomplete="off"
+        placeholder="{{'mdrtb.concepts.searchPrompt'|get_message:locale|default:"en"}}"
+        aria-label="{{'mdrtb.concepts.addAnswer'|get_message:locale|default:"en"}}">
+      <button type="button" class="btn btn-outline-secondary btn-sm" id="answer-search-btn">
+        {{'general.search'|get_message:locale|default:"en"}}</button>
+    </div>
+    <ul class="concept-answer-results" id="answer-results"></ul>
+    {% endif %}
+
+    {# ---------------------------------------------------------------- mappings (add only) #}
+    <h2 class="loc-section">{{'mdrtb.concepts.mappings'|get_message:locale|default:"en"}}</h2>
+  {% if concept.mappings %}
+  <table class="user-table concept-map-table">
+    <thead>
+      <tr>
+        <th>{{'mdrtb.concepts.relationship'|get_message:locale|default:"en"}}</th>
+        <th>{{'mdrtb.concepts.source'|get_message:locale|default:"en"}}</th>
+        <th>{{'mdrtb.translations.code'|get_message:locale|default:"en"}}</th>
+        <th>{{'general.name'|get_message:locale|default:"en"}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for mapping in concept.mappings %}
+      <tr>
+        <td>{{ mapping.conceptMapType.display }}</td>
+        <td>{{ mapping.conceptReferenceTerm.conceptSource.display }}</td>
+        <td>{{ mapping.conceptReferenceTerm.code }}</td>
+        <td>{{ mapping.conceptReferenceTerm.name|default:"" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="loc-empty">{{'mdrtb.concepts.noMappings'|get_message:locale|default:"en"}}</p>
+  {% endif %}
+
+    {# Optional: a mapping is added on Save only when Source or Code is filled in. #}
+    <p class="loc-field-label">{{'mdrtb.concepts.addMapping'|get_message:locale|default:"en"}}</p>
+    <div class="concept-map-add">
+    <div class="loc-field">
+      <label for="map_type">{{'mdrtb.concepts.relationship'|get_message:locale|default:"en"}}</label>
+      <select id="map_type" name="map_type">
+        {% for item in map_types %}
+        <option value="{{ item.uuid }}" {% if item.uuid == mapping_values.map_type %}selected{% endif %}>{{ item.display }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="loc-field">
+      <label for="source">{{'mdrtb.concepts.source'|get_message:locale|default:"en"}}</label>
+      <select id="source" name="source">
+        <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+        {% for item in sources %}
+        <option value="{{ item.uuid }}" {% if item.uuid == mapping_values.source %}selected{% endif %}>{{ item.display }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="loc-field">
+      <label for="code">{{'mdrtb.translations.code'|get_message:locale|default:"en"}}</label>
+      <input type="text" id="code" name="code" maxlength="255" autocomplete="off" value="{{ mapping_values.code }}">
+    </div>
+    </div>
+
+    <div class="loc-form-actions">
+      <button type="submit" class="btn btn-primary">{{'general.save'|get_message:locale|default:"en"}}</button>
+    </div>
+  </form>
+</div>
+
+{% if is_coded %}
+<script>
+  // "Add answer": searches through searchConceptsJson and appends the pick to the list as a ticked, NEW answer.
+  // Nothing is saved until the page's Save button is pressed.
+  (function () {
+    var searchUrl = "{% url 'searchConceptsJson' %}";
+    var selfUuid = "{{ concept.uuid }}";
+    var addLabel = "{{'general.add'|get_message:locale|default:"en"|escapejs}}";
+    var newLabel = "{{'mdrtb.new'|get_message:locale|default:"en"|escapejs}}";
+    var noneLabel = "{{'general.noResults'|get_message:locale|default:"en"|escapejs}}";
+    var list = document.getElementById("answer-list");
+    var empty = document.getElementById("answer-empty");
+    var input = document.getElementById("answer-q");
+    var button = document.getElementById("answer-search-btn");
+    var results = document.getElementById("answer-results");
+
+    function inList(uuid) {
+      return list.querySelector('input[value="' + uuid + '"]') !== null;
+    }
+
+    function addAnswer(item) {
+      if (inList(item.uuid)) return;
+      var li = document.createElement("li");
+      var label = document.createElement("label");
+      label.className = "loc-check";
+      var box = document.createElement("input");
+      box.type = "checkbox";
+      box.name = "add_answers";
+      box.value = item.uuid;
+      box.checked = true;
+      var text = document.createElement("span");
+      text.textContent = item.display + " ";
+      var badge = document.createElement("span");
+      badge.className = "loc-badge";
+      badge.textContent = newLabel;
+      var hidden = document.createElement("input");
+      hidden.type = "hidden";
+      hidden.name = "add_answer_label_" + item.uuid;
+      hidden.value = item.display;
+      label.appendChild(box);
+      label.appendChild(text);
+      label.appendChild(badge);
+      li.appendChild(label);
+      li.appendChild(hidden);
+      list.appendChild(li);
+      empty.hidden = true;
+      search();  // refresh the result list so the pick disappears from it
+    }
+
+    function show(items) {
+      results.textContent = "";
+      var shown = items.filter(function (item) {
+        return item.uuid !== selfUuid && !item.retired && !inList(item.uuid);
+      });
+      if (!shown.length) {
+        var li = document.createElement("li");
+        li.className = "loc-empty";
+        li.textContent = noneLabel;
+        results.appendChild(li);
+        return;
+      }
+      shown.forEach(function (item) {
+        var li = document.createElement("li");
+        var text = document.createElement("span");
+        text.textContent = item.display + (item.datatype ? " (" + item.datatype + ")" : "");
+        var add = document.createElement("button");
+        add.type = "button";
+        add.className = "btn btn-success btn-sm";
+        add.textContent = addLabel;
+        add.addEventListener("click", function () { addAnswer(item); });
+        li.appendChild(text);
+        li.appendChild(add);
+        results.appendChild(li);
+      });
+    }
+
+    function search() {
+      var q = input.value.trim();
+      if (!q) { results.textContent = ""; return; }
+      button.disabled = true;
+      fetch(searchUrl + "?q=" + encodeURIComponent(q), { credentials: "same-origin" })
+        .then(function (r) { return r.json(); })
+        .then(function (body) { show(body.results || []); })
+        .catch(function () { show([]); })
+        .finally(function () { button.disabled = false; });
+    }
+
+    button.addEventListener("click", search);
+    // Enter in the search box searches; it must not submit the page.
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); search(); }
+    });
+  })();
+</script>
+{% endif %}
+{% endblock %}
