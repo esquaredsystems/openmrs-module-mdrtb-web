@@ -7,6 +7,7 @@ import re
 
 
 date_regex = re.compile(r'\b(?:\d{8}|\d{4}-\d{2}-\d{2}|\d{2}-\d{2}-\d{4}|\d{2}/\d{2}/\d{4}|\d{2}/\d{2}/\d{2})\b')
+uuid_regex = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
 
 
 def get_locale(request, default='en'):
@@ -205,7 +206,6 @@ def date_to_sql_datetime(date):
 
 def is_uuid(string):
     if isinstance(string, str):
-        uuid_regex = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
         return uuid_regex.match(string)
     return False
 

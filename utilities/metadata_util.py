@@ -1,16 +1,10 @@
-import re
-from utilities import common_utils as u
 from utilities import restapi_utils as ru
 from utilities import messages_util as msg
-from utilities import commonlab_util as clu
-from resources.enums.constants import Constants
 from django.core.cache import caches
-from django.utils.safestring import SafeString as ss
 from urllib.parse import urlencode
 import logging
 import zlib
 import pickle
-from datetime import datetime
 
 
 logger = logging.getLogger("django")
@@ -18,6 +12,12 @@ logger = logging.getLogger("django")
 metadata_cache = caches["metadata"]
 
 SYSTEM_DEVELOPER_ROLE = "System Developer"
+
+# Shape of every concept in the cached concept lists (get_all_concepts, refresh_cached_concept).
+CONCEPT_CACHE_REP = "custom:(uuid,display,name:(display,uuid,locale,conceptNameType),names:(display,name,uuid,locale,conceptNameType),answers:(uuid,display,name:(display,uuid,locale,conceptNameType),names:(display,uuid,locale,conceptNameType)))"
+
+# Languages that can have a cached concept list ("concepts_<locale>").
+CONCEPT_CACHE_LOCALES = ("en", "en_GB", "ru", "tj")
 
 
 def get_global_msgs(message_code, locale=None, default=None, source=None):
@@ -64,7 +64,7 @@ def get_all_concepts(req):
             req,
             "concept",
             {
-                "v": "custom:(uuid,display,name:(display,uuid,locale,conceptNameType),names:(display,name,uuid,locale,conceptNameType),answers:(uuid,display,name:(display,uuid,locale,conceptNameType),names:(display,uuid,locale,conceptNameType)))",
+                "v": CONCEPT_CACHE_REP,
                 "lang": locale,
             },
         )
@@ -73,6 +73,66 @@ def get_all_concepts(req):
             _set_cached_concepts(locale, response["results"])
     except Exception:
         pass
+
+
+def refresh_cached_concept(req, uuid):
+    """
+    Called after Administration -> Manage Concepts changes a concept. In every cached concept list it replaces that
+    concept AND its copy inside the answers of every question that offers it, so the clinical forms show the new
+    names now instead of after the cache expires (up to an hour).
+
+    The list holds two shapes: CONCEPT_CACHE_REP entries from get_all_concepts() and v=full entries appended by
+    get_concept(). The fresh copy is read in the SAME shape as the entry it replaces, so callers find the fields they
+    expect. A concept that was not cached is left out; get_concept() fetches it when needed.
+
+    A language whose fresh copy cannot be read has its whole list DROPPED instead - a slower page is acceptable, a
+    stale clinical label is not. The session's own language is read last because `lang` also switches the locale of
+    the OpenMRS session.
+    """
+    session_locale = req.session.get("locale", "ru")
+    locales = [lang for lang in CONCEPT_CACHE_LOCALES if lang != session_locale]
+    locales.append(session_locale)
+    name_keys = ("display", "uuid", "locale", "conceptNameType")
+    for locale in locales:
+        concepts = _get_cached_concepts(locale)
+        if concepts is None:
+            continue
+        try:
+            cached = next((c for c in concepts if c.get("uuid") == uuid), None)
+            fresh = None
+            if cached is not None:
+                rep = "full" if "datatype" in cached else CONCEPT_CACHE_REP
+                status, fresh = ru.get(req, f"concept/{uuid}", {"v": rep, "lang": locale})
+                if not status or not fresh:
+                    raise Exception("empty response")
+            # The answer copy is built from a CONCEPT_CACHE_REP read, the shape get_all_concepts() stores in answers.
+            status, short = ru.get(req, f"concept/{uuid}", {"v": CONCEPT_CACHE_REP, "lang": locale})
+            if not status or not short:
+                raise Exception("empty response")
+        except Exception as e:
+            logger.warning(f"Dropping cached concepts for {locale}; could not refresh {uuid}: {e}")
+            metadata_cache.delete(_concepts_cache_key(locale))
+            continue
+
+        as_answer = {
+            "uuid": short.get("uuid"),
+            "display": short.get("display"),
+            "name": {k: (short.get("name") or {}).get(k) for k in name_keys},
+            "names": [{k: n.get(k) for k in name_keys} for n in short.get("names") or []],
+        }
+        updated = []
+        for concept in concepts:
+            if concept.get("uuid") == uuid:
+                updated.append(fresh)
+                continue
+            answers = concept.get("answers") or []
+            if any((a or {}).get("uuid") == uuid for a in answers):
+                # Merged, not replaced: v=full entries carry extra answer fields that a rename does not change.
+                concept["answers"] = [
+                    {**a, **as_answer} if (a or {}).get("uuid") == uuid else a for a in answers
+                ]
+            updated.append(concept)
+        _set_cached_concepts(locale, updated)
 
 
 def get_concept_from_cache(locale, uuid=None, name=None):
@@ -117,8 +177,7 @@ def get_concept(req, uuid, lang=None):
     Raises:
     - Exception: If an error occurs while retrieving the concept.
 
-    Example:
-    >>> get_concept(request, "abc123")
+    Example: >> get_concept(request, "abc123")
     {"uuid": "abc123", "name": "Concept Name", ...}
     """
     locale = req.session["locale"]
@@ -396,23 +455,3 @@ def add_url_to_breadcrumb(req, name, query_params=None):
         req.session["breadcrumbs"] = breadcrumbs
     except Exception as e:
         raise Exception(e)
-
-
-# def get_all_attribute_types(req):
-#     common_test_attribute_types = zlib.compress(
-#         pickle.dumps(
-#             clu.get_attributes_of_labtest(req, {"uuid": Constants.COMMON_TEST.value})
-#         )
-#     )
-#     dst_lj_attribute_types = zlib.compress(
-#         pickle.dumps(clu.get_all_attribute_types(req, {"uuid": Constants.DST_LJ.value}))
-#     )
-#     dst_mgit_attribute_types = zlib.compress(
-#         pickle.dumps(
-#             clu.get_all_attribute_types(req, {"uuid": Constants.DST_MGIT.value})
-#         )
-#     )
-
-#     cache.set("COMMONTEST_attribute_types", common_test_attribute_types, timeout=None)
-#     cache.set("DST_LJ_attribute_types", common_test_attribute_types, timeout=None)
-#     cache.set("DST_MGIT_attribute_types", common_test_attribute_types, timeout=None)

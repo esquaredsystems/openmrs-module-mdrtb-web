@@ -2682,3 +2682,118 @@ a.lab-button:hover {
   margin-top: 0.25rem;
   opacity: 0.75;
 }
+
+/* ---------- Manage Concepts ---------- */
+
+.concept-page .loc-section {
+  margin-top: 2rem;
+}
+
+/* Translation grid: one row per language */
+.concept-tr-table thead th {
+  position: static;
+}
+
+/* Fixed layout so the 60/40 split holds whatever the text length. The language column is fixed; the browser
+   shares the rest 60/40 (calc() on <col> widths is ignored by browsers, so plain percentages are used). */
+.concept-tr-table {
+  table-layout: fixed;
+}
+
+.concept-col-lang {
+  width: 9rem;
+}
+
+.concept-col-full {
+  width: 60%;
+}
+
+.concept-col-short {
+  width: 40%;
+}
+
+.concept-tr-table th[scope="rowgroup"] {
+  white-space: nowrap;
+  padding: 0.4rem 0.6rem;
+  vertical-align: top;
+  font-weight: 600;
+}
+
+.concept-tr-table td {
+  vertical-align: top;
+  padding: 0.35rem 0.4rem;
+}
+
+/* Each language is its own block: no line between its names row and its description row */
+.concept-tr-table .concept-tr-lang tr:first-child td {
+  border-bottom: none;
+}
+
+.concept-tr-table .concept-tr-lang tr:last-child td,
+.concept-tr-table .concept-tr-lang th {
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.concept-desc-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--brand-text-muted);
+  margin-bottom: 0.15rem;
+}
+
+.concept-tr-table textarea {
+  width: 100%;
+  min-height: 2.4rem;
+  padding: 0.25rem 0.4rem;
+  font-size: 0.9rem;
+}
+
+.concept-answers {
+  margin: 0.5rem 0 0.75rem;
+  padding-left: 1.5rem;
+}
+
+.concept-answer-search {
+  display: flex;
+  gap: 0.5rem;
+  max-width: 32rem;
+}
+
+.concept-answer-search input[type="search"] {
+  flex: 1 1 auto;
+}
+
+.concept-answer-results {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  max-width: 32rem;
+}
+
+.concept-answer-results li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.concept-map-table {
+  margin-bottom: 1rem;
+}
+
+.concept-map-add {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+}
+
+.concept-map-add .loc-field {
+  margin-bottom: 0;
+  flex: 1 1 10rem;
+}

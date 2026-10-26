@@ -1,0 +1,2764 @@
+/*
+ * Clinical-white minimalist theme. Loaded last (after styles.css, bootstrap.min.css,
+ * select2.min.css) so it can restyle without editing compiled CSS.
+ * Design rules: one background colour (white), 1px borders instead of grey boxes,
+ * brand blue #2D9CDB as the only accent, 150ms transitions everywhere.
+ */
+
+:root {
+  --brand-primary: #2D9CDB;
+  --brand-primary-rgb: 45, 156, 219;
+  --brand-primary-hover: #2686bd;
+  --brand-primary-active: #1f70a1;
+  --brand-primary-tint: rgba(45, 156, 219, 0.08);
+  --brand-primary-tint-strong: rgba(45, 156, 219, 0.18);
+  --brand-secondary: #044062;
+  --brand-border: #e2e8ee;
+  --brand-text: #1f2d3a;
+  --brand-text-muted: #64748b;
+  --brand-radius: 0.5rem;
+  --brand-shadow: 0 2px 8px rgba(4, 64, 98, 0.06);
+  --brand-shadow-strong: 0 8px 24px rgba(4, 64, 98, 0.10);
+  --brand-transition: 150ms ease-in-out;
+
+  /* Bootstrap re-theme: root-level tokens */
+  --bs-primary: var(--brand-primary);
+  --bs-primary-rgb: var(--brand-primary-rgb);
+  --bs-link-color: var(--brand-primary);
+  --bs-link-color-rgb: var(--brand-primary-rgb);
+  --bs-link-hover-color: var(--brand-primary-active);
+  --bs-focus-ring-color: rgba(45, 156, 219, 0.25);
+}
+
+/* ---------- Base document ---------- */
+
+body {
+  background-color: #fff;
+  color: var(--brand-text);
+  line-height: 1.55;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--brand-secondary);
+  font-weight: 700;
+}
+
+a {
+  text-decoration: none;
+  transition: color var(--brand-transition);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+::selection {
+  background-color: var(--brand-primary-tint-strong);
+}
+
+/* ---------- Scrollbars ----------
+   styles.css (the Tailwind build) hides every scrollbar app-wide with a bare
+   `::-webkit-scrollbar { display: none }`, so long pages scroll but give no
+   visual indication that there is more content. Put them back, themed.
+   Loaded after styles.css, so these win.
+   NOTE: the .scrollbar-hide utility still works — a class selector outranks
+   these element-less pseudo-element rules regardless of order. */
+
+::-webkit-scrollbar {
+  display: block;
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-track-piece {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  height: auto;
+  background-color: #c3ced8;
+  border-radius: 999px;
+  border: 3px solid #fff;
+  transition: background-color var(--brand-transition);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #9aabba;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+/* Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #c3ced8 transparent;
+}
+
+/* Entry animation for page content */
+@keyframes theme-fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+main {
+  animation: theme-fade-up 240ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main { animation: none; }
+  * { transition-duration: 0.01ms !important; }
+}
+
+/* ---------- Bootstrap component re-theme ---------- */
+
+.btn-primary {
+  --bs-btn-bg: var(--brand-primary);
+  --bs-btn-border-color: var(--brand-primary);
+  --bs-btn-hover-bg: var(--brand-primary-hover);
+  --bs-btn-hover-border-color: var(--brand-primary-hover);
+  --bs-btn-active-bg: var(--brand-primary-active);
+  --bs-btn-active-border-color: var(--brand-primary-active);
+  --bs-btn-focus-shadow-rgb: var(--brand-primary-rgb);
+  --bs-btn-disabled-bg: var(--brand-primary);
+  --bs-btn-disabled-border-color: var(--brand-primary);
+}
+
+.btn {
+  transition: background-color var(--brand-transition),
+              border-color var(--brand-transition),
+              box-shadow var(--brand-transition),
+              color var(--brand-transition);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 0.25rem var(--brand-primary-tint-strong);
+}
+
+.dropdown-menu {
+  --bs-dropdown-link-active-bg: var(--brand-primary);
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  box-shadow: var(--brand-shadow-strong);
+  padding: 0.35rem;
+  animation: theme-fade-up 160ms ease-out;
+}
+
+.dropdown-item {
+  /* Set explicitly: menu items are anchors, and while styles.css survives its
+     Tailwind preflight resets `a { color: inherit }`. Being explicit keeps every
+     item the same colour regardless of visited state or load order. */
+  color: var(--brand-text);
+  border-radius: calc(var(--brand-radius) - 0.2rem);
+  transition: background-color var(--brand-transition), color var(--brand-transition);
+}
+
+/* Outline buttons follow the brand too — the compiled Bootstrap hardcodes its
+   own blue in per-component variables, so retinting --bs-primary is not enough. */
+.btn-outline-primary {
+  --bs-btn-color: var(--brand-primary);
+  --bs-btn-border-color: var(--brand-primary);
+  --bs-btn-hover-bg: var(--brand-primary);
+  --bs-btn-hover-border-color: var(--brand-primary);
+  --bs-btn-active-bg: var(--brand-primary-active);
+  --bs-btn-active-border-color: var(--brand-primary-active);
+  --bs-btn-focus-shadow-rgb: var(--brand-primary-rgb);
+  --bs-btn-disabled-color: var(--brand-primary);
+  --bs-btn-disabled-border-color: var(--brand-primary);
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: var(--brand-primary-tint);
+  color: var(--brand-primary-active);
+}
+
+/* ---------- Header ---------- */
+
+.base-header,
+header {
+  background-color: #fff;
+  border-bottom: 1px solid var(--brand-border);
+  box-shadow: none;
+}
+
+header img {
+  transition: opacity var(--brand-transition);
+}
+
+header a:hover img {
+  opacity: 0.75;
+}
+
+/* Header links: quiet by default, tinted pill on hover */
+.header-link {
+  color: var(--brand-secondary) !important;
+  font-weight: 600;
+  padding: 0.4rem 0.7rem;
+  border-radius: calc(var(--brand-radius) - 0.15rem);
+  transition: background-color var(--brand-transition), color var(--brand-transition);
+}
+
+.header-link:hover,
+.header-link:focus {
+  background-color: var(--brand-primary-tint);
+  color: var(--brand-primary-active) !important;
+  text-decoration: none;
+}
+
+/* Home shortcut: icon-only, so it needs its own sizing rather than the text
+   padding the other header links use. */
+.header-home {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem;
+}
+
+.header-home svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+header .dropdown-toggle {
+  transition: background-color var(--brand-transition), color var(--brand-transition);
+  border-radius: calc(var(--brand-radius) - 0.15rem);
+}
+
+header .dropdown-toggle:hover {
+  background-color: var(--brand-primary-tint);
+  color: var(--brand-primary-active) !important;
+}
+
+/* ---------- Menubar (nav.html) ---------- */
+
+.app-menubar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  width: 100%;
+  padding: 0.25rem 1rem;
+  background-color: #fff;
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.app-menubar .dropdown-toggle {
+  color: var(--brand-secondary);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: calc(var(--brand-radius) - 0.15rem);
+  transition: background-color var(--brand-transition), color var(--brand-transition);
+}
+
+.app-menubar .dropdown-toggle:hover,
+.app-menubar .dropdown-toggle:focus,
+.app-menubar .show > .dropdown-toggle,
+.app-menubar .dropdown-toggle.show {
+  background-color: var(--brand-primary-tint);
+  color: var(--brand-primary-active);
+}
+
+/* ---------- Patient search page ---------- */
+
+.patient-search-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5rem 1rem 2rem;
+}
+
+.patient-search-panel {
+  width: 100%;
+  max-width: 44rem;
+}
+
+.patient-search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #fff;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  padding: 0.65rem 0.9rem;
+  transition: border-color var(--brand-transition), box-shadow var(--brand-transition);
+}
+
+.patient-search-box:focus-within {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 0.25rem var(--brand-primary-tint-strong);
+}
+
+.patient-search-box input {
+  flex: 1;
+  border: none !important;
+  outline: none;
+  padding: 0;
+  background: transparent;
+  font-size: 1.05rem;
+  color: var(--brand-text);
+  box-shadow: none !important;
+}
+
+.patient-search-box input::placeholder {
+  color: var(--brand-text-muted);
+}
+
+.patient-search-box .search-icon {
+  display: flex;
+  align-items: center;
+  color: var(--brand-text-muted);
+  cursor: pointer;
+  transition: color var(--brand-transition);
+}
+
+.patient-search-box .search-icon:hover {
+  color: var(--brand-primary);
+}
+
+.patient-search-box .search-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.patient-search-results {
+  display: none;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-top: 0.5rem;
+  max-height: 16rem;
+  overflow-y: auto;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  padding: 0.35rem;
+  background-color: #fff;
+  animation: theme-fade-up 180ms ease-out;
+}
+
+.patient-search-results.is-open {
+  display: flex;
+}
+
+.patient-result-row {
+  display: grid;
+  grid-template-columns: 1.2fr 2fr 0.6fr 0.6fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-radius: calc(var(--brand-radius) - 0.2rem);
+  color: var(--brand-text);
+  transition: background-color var(--brand-transition), color var(--brand-transition);
+}
+
+.patient-result-row p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.patient-result-header {
+  font-weight: 700;
+  color: var(--brand-secondary);
+  border-bottom: 1px solid var(--brand-border);
+  border-radius: 0;
+}
+
+a .patient-result-row:hover {
+  background-color: var(--brand-primary-tint);
+  color: var(--brand-primary-active);
+}
+
+.patient-search-results a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.patient-search-empty {
+  padding: 1rem;
+  text-align: center;
+  color: var(--brand-text-muted);
+}
+
+.patient-search-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/*
+ * Collapsible attribute types on the lab test type page.
+ * Native <details>, so no script and no state to keep in sync.
+ */
+.lab-attrs {
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  background-color: #fff;
+  margin-top: 1rem;
+}
+
+.lab-attrs > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--brand-secondary);
+  list-style: none;
+  user-select: none;
+}
+
+/* Replace the default marker with one that points down when open. */
+.lab-attrs > summary::-webkit-details-marker {
+  display: none;
+}
+
+.lab-attrs > summary::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform var(--brand-transition);
+}
+
+.lab-attrs[open] > summary::before {
+  transform: rotate(45deg);
+}
+
+.lab-attrs > summary:hover {
+  background-color: var(--brand-surface, #f6f9fb);
+}
+
+.lab-attrs > p,
+.lab-attrs > form,
+.lab-attrs > .lab-attr-form {
+  margin: 0 1rem 1rem;
+}
+
+/*
+ * The attribute table needs more room than a form column: the page is widened
+ * here, while the test type form keeps its own centred .page-panel width.
+ */
+.loc-form-page.lab-type-page {
+  max-width: 64rem;
+}
+
+/* Search on the left, Save order and Add on the right, above the list. */
+.lab-attrs-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0 1rem 0.75rem;
+}
+
+.lab-attrs-toolbar .lab-attrs-filter {
+  flex: 1 1 14rem;
+  max-width: 22rem;
+  margin-right: auto;
+}
+
+.lab-attrs-toolbar .btn,
+.lab-attrs-toolbar .button-primary {
+  white-space: nowrap;
+}
+
+/*
+ * A test type can have 100+ attribute types: the list scrolls inside the panel
+ * with its header pinned, instead of stretching the page. overflow-x keeps a
+ * narrow window from pushing the table out of the panel.
+ */
+.lab-attr-scroll {
+  max-height: 65vh;
+  overflow: auto;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+}
+
+.lab-attr-table {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.lab-attr-table th,
+.lab-attr-table td {
+  padding: 0.45rem 0.6rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.lab-attr-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #eef5fb;
+  color: var(--brand-secondary);
+  white-space: nowrap;
+  font-size: 0.8rem;
+}
+
+.lab-attr-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.lab-attr-table tbody tr:hover {
+  background-color: var(--brand-primary-tint);
+}
+
+.lab-attr-name {
+  font-weight: 500;
+  min-width: 14rem;
+}
+
+.lab-attr-table .loc-badge {
+  white-space: nowrap;
+}
+
+/* Reordering is off while filtered (see the template's script). */
+.lab-attr-table.is-filtered tbody tr {
+  cursor: default;
+}
+
+.lab-attr-table.is-filtered .lab-attr-up,
+.lab-attr-table.is-filtered .lab-attr-down,
+.lab-attr-table.is-filtered .lab-attr-grip {
+  visibility: hidden;
+}
+
+/* Add/edit attribute form inside the panel. */
+.lab-attr-form {
+  padding-top: 0.25rem;
+}
+
+.lab-attr-form h2 {
+  font-size: 1.15rem;
+  margin: 0 0 1rem;
+  color: var(--brand-secondary);
+}
+
+.lab-attr-form .loc-field input[type="number"] {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ---------- Lab test type form ---------- */
+
+/*
+ * Paired fields. Deliberately not .loc-row - that is the location tree row and
+ * carries a hover tint, which looks wrong on a form.
+ */
+.lab-grid {
+  display: grid;
+  column-gap: 1.25rem;
+  align-items: start;
+}
+
+/* A name is a sentence; a short name is a few characters. */
+.lab-grid-name {
+  grid-template-columns: 2fr 1fr;
+}
+
+/* Select on the left, its yes/no on the right, both optically centred. */
+.lab-grid-group {
+  grid-template-columns: minmax(0, 16rem) 1fr;
+  align-items: center;
+}
+
+/* Pull the checkbox down to sit level with the select, not with its label. */
+.lab-check-field {
+  margin-top: 1.1rem;
+}
+
+/* Free-text fields do not need the full page width to be readable. */
+.lab-narrow {
+  max-width: 34rem;
+}
+
+/*
+ * Destructive button. Same shape as .button-primary so it sits level beside
+ * Save, red so it never reads as the ordinary action, and pushed to the far
+ * end of the row so it is not adjacent to the button people actually want.
+ */
+.button-danger {
+  padding: 0.5rem;
+  border-radius: var(--brand-radius);
+  background-color: #c0392b;
+  color: #fff;
+  border: 0;
+  margin-left: auto;
+  transition: background-color var(--brand-transition), box-shadow var(--brand-transition);
+}
+
+.button-danger:hover {
+  background-color: #a93226;
+  box-shadow: var(--brand-shadow);
+}
+
+.button-danger:active {
+  background-color: #96271a;
+}
+
+/* Destructive variant of .loc-linkbtn: red, so it never reads as a normal action. */
+.loc-linkbtn-danger {
+  color: #c0392b;
+}
+
+.loc-linkbtn-danger:hover {
+  color: #96271a;
+}
+
+/*
+ * Reference concept picker: the results hang below the field, so the panel
+ * needs a positioning context and the list needs to sit above what follows.
+ */
+.lab-concept {
+  position: relative;
+}
+
+.lab-concept #concept-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  max-height: 14rem;
+}
+
+.lab-concept #concept-results .loc-linkbtn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.4rem 0.6rem;
+}
+
+.lab-concept #concept-results .loc-linkbtn:hover {
+  background-color: var(--brand-surface, #f6f9fb);
+}
+
+/*
+ * Lab orders table on the patient dashboard: one white panel, and the
+ * collapsed details row under each order takes no space at all.
+ */
+.lab-dashboard-table {
+  background-color: #fff;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  overflow: hidden;
+}
+
+.lab-dashboard-table td {
+  background-color: #fff;
+  vertical-align: middle;
+}
+
+.lab-dashboard-table tr.lab-detail-row > td {
+  padding: 0;
+  border-bottom: 0;
+}
+
+.lab-dashboard-table tr.lab-detail-row .collapse.show {
+  border-bottom: 1px solid #e7edf1;
+  padding: 0 0.75rem;
+}
+
+/* Reorderable attribute rows. */
+.lab-attr-table tbody tr {
+  cursor: grab;
+}
+
+.lab-attr-table tbody tr.lab-attr-dragging {
+  opacity: 0.45;
+  cursor: grabbing;
+}
+
+.lab-attr-handle {
+  white-space: nowrap;
+  width: 1%;
+}
+
+.lab-attr-grip {
+  color: var(--brand-text-muted);
+  margin-right: 0.35rem;
+  letter-spacing: -0.15em;
+}
+
+.lab-attr-up,
+.lab-attr-down {
+  padding: 0 0.15rem;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+/*
+ * Loading spinner.
+ *
+ * Pure CSS on purpose. This replaced 36 <lord-icon> elements that each pulled a
+ * Lottie animation from cdn.lordicon.com, plus a 334 KB lordicon.js loaded on
+ * every page - so a clinic machine had to reach the public internet just to
+ * show "loading". Nothing here touches the network.
+ *
+ *   <div class="app-spinner"></div>                     50px, brand blue
+ *   <div class="app-spinner app-spinner--sm"></div>     28px
+ *   <div class="app-spinner app-spinner--light"></div>  for dark backgrounds
+ */
+.app-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--brand-border);
+  border-top-color: var(--brand-primary);
+  border-radius: 50%;
+  animation: app-spin 700ms linear infinite;
+}
+
+.app-spinner--sm {
+  width: 28px;
+  height: 28px;
+  border-width: 3px;
+}
+
+.app-spinner--light {
+  border-color: rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+}
+
+@keyframes app-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Respect the OS "reduce motion" setting: slow it right down rather than
+   freezing it, so it still reads as "working". */
+@media (prefers-reduced-motion: reduce) {
+  .app-spinner {
+    animation-duration: 2.4s;
+  }
+}
+
+.patient-create-new {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  color: var(--brand-text-muted);
+}
+
+/* ---------- Login page ---------- */
+
+.login-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.75rem;
+  padding: 4.5rem 1rem 2rem;
+}
+
+.login-page .login-logo {
+  width: 14rem;
+  object-fit: contain;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 26rem;
+  box-sizing: border-box;
+  background-color: #fff;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  box-shadow: var(--brand-shadow);
+  padding: 2rem;
+}
+
+.login-intro {
+  text-align: center;
+  color: var(--brand-text-muted);
+  margin: 0 0 1.5rem;
+}
+
+.login-field {
+  margin-bottom: 1.1rem;
+}
+
+.login-field label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  color: var(--brand-secondary);
+  margin-bottom: 0.35rem;
+}
+
+.login-field label svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.login-field input[type="text"] {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.login-pass-box {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #d5dde3;
+  border-radius: var(--brand-radius);
+  padding-right: 0.5rem;
+  transition: border-color var(--brand-transition), box-shadow var(--brand-transition);
+}
+
+.login-pass-box:focus-within {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 0.25rem var(--brand-primary-tint-strong);
+}
+
+.login-pass-box input {
+  flex: 1;
+  min-width: 0;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none;
+  background: transparent;
+}
+
+.login-pass-box svg {
+  width: 1.4rem;
+  height: 1.4rem;
+  flex-shrink: 0;
+  cursor: pointer;
+  color: var(--brand-text-muted);
+  transition: color var(--brand-transition);
+}
+
+.login-pass-box svg:hover {
+  color: var(--brand-primary);
+}
+
+.login-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+.login-submit svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+/* ---------- Shared page panel ----------
+   Full width below 840px, 75% above, but never wider than the label/field row
+   itself (14rem label + 1rem gap + 32rem field). max-width keeps the form a
+   centred column instead of a left-aligned block adrift in a 75%-wide panel,
+   and it holds that column steady as the window shrinks from fullscreen. */
+
+.page-panel {
+  width: 100%;
+  max-width: 47rem;
+  margin: 2rem auto;
+}
+
+@media screen and (min-width: 840px) {
+  .page-panel {
+    width: 75%;
+  }
+}
+
+/* Label/field rows. .input-label was width:100%, so in a flex row the label and
+   the control each stretched to half the viewport — that gulf is what made the
+   forms look so broad. Applied globally rather than only inside .page-panel:
+   32 pages use this row pattern with a different wrapper each, and one rule here
+   fixes them all without editing any markup.
+   No gap declared: .input-container already puts 1rem between its children. */
+
+.input-label {
+  flex: 0 0 14rem;
+}
+
+/*
+ * flex: 0 0 14rem above assumes a ROW flex container, where 14rem is a WIDTH.
+ * Several program-enrollment pages (enroll_in_dots.html, enroll_in_mdrtb.html,
+ * ...) toggle their #prefilledlocation wrapper from .input-container (row) to
+ * .flex-column-center (column) when the Location pencil is clicked, to stack
+ * the label above the country/region/district/facility picker. In that column
+ * context flex-basis is a HEIGHT, so the "Location" label was stretching to a
+ * blank 14rem (224px) tall box instead of hugging its own text height.
+ */
+.flex-column-center > .input-label {
+  flex: 0 0 auto;
+}
+
+.input-container > .input,
+.input-container > .form-control,
+.input-container > .input-container,
+.input-container > input,
+.input-container > select,
+.input-container > textarea {
+  flex: 1 1 auto;
+  min-width: 0;
+  /* Stops a single field growing to fill a 27" monitor. Label 14rem + field
+     32rem keeps a form readable without needing a wrapper on every page. */
+  max-width: 32rem;
+}
+
+@media screen and (max-width: 640px) {
+  /* Stack label above field on small screens rather than squeezing both. */
+  .input-container {
+    flex-wrap: wrap;
+  }
+
+  .input-label {
+    flex: 1 1 100%;
+  }
+}
+
+/* ---------- Location administration ---------- */
+
+.loc-page {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+.loc-form-page {
+  max-width: 44rem;
+}
+
+.loc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--brand-border);
+  margin-bottom: 1rem;
+}
+
+.loc-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.loc-subtitle {
+  margin: 0.15rem 0 0;
+  color: var(--brand-text-muted);
+  font-size: 0.9rem;
+}
+
+.loc-retired-note {
+  color: #b45309;
+}
+
+.loc-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.loc-voided-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  cursor: pointer;
+  color: var(--brand-text-muted);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.loc-voided-toggle input {
+  cursor: pointer;
+}
+
+.loc-readonly-note {
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--brand-border);
+  border-left: 3px solid var(--brand-primary);
+  border-radius: var(--brand-radius);
+  background-color: var(--brand-primary-tint);
+  color: var(--brand-secondary);
+  font-size: 0.9rem;
+}
+
+.loc-toolbar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.loc-linkbtn {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--brand-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color var(--brand-transition);
+}
+
+.loc-linkbtn:hover {
+  color: var(--brand-primary-active);
+  text-decoration: underline;
+}
+
+/* --- tree --- */
+
+.loc-tree,
+.loc-children {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.loc-children {
+  margin-left: 1.1rem;
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--brand-border);
+}
+
+.loc-node {
+  list-style: none;
+}
+
+/* "Show voided" is a CSS filter, not a server round trip. The tree always
+   contains every location; nodes marked voided-only (retired, with no live
+   descendant) are hidden until .show-voided is on. A retired node that still
+   has a live child is NOT marked, so live locations never disappear. */
+.loc-tree:not(.show-voided) [data-voided-only="true"] {
+  display: none;
+}
+
+.loc-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.4rem;
+  border-radius: calc(var(--brand-radius) - 0.2rem);
+  transition: background-color var(--brand-transition);
+}
+
+.loc-row:hover {
+  background-color: var(--brand-primary-tint);
+}
+
+.loc-toggle {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 1px solid var(--brand-border);
+  border-radius: 0.25rem;
+  color: var(--brand-text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color var(--brand-transition), color var(--brand-transition);
+}
+
+.loc-toggle:hover {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+}
+
+.loc-name {
+  color: var(--brand-text);
+  text-decoration: none;
+}
+
+.loc-name:hover {
+  color: var(--brand-primary-active);
+  text-decoration: underline;
+}
+
+/* Voided/retired locations, per the OpenMRS admin convention */
+.loc-retired {
+  text-decoration: line-through;
+  color: var(--brand-text-muted);
+}
+
+.loc-retired:hover {
+  text-decoration: line-through underline;
+}
+
+.loc-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.25rem;
+  background-color: var(--brand-primary-tint);
+  color: var(--brand-primary-active);
+}
+
+.loc-count {
+  font-size: 0.75rem;
+  color: var(--brand-text-muted);
+}
+
+.loc-count::before {
+  content: "(";
+}
+
+.loc-count::after {
+  content: ")";
+}
+
+.loc-detail {
+  margin-left: 1.75rem;
+}
+
+.loc-fields {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.15rem 1rem;
+  margin: 0.25rem 0 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  font-size: 0.85rem;
+}
+
+.loc-fields dt {
+  color: var(--brand-text-muted);
+  font-weight: 600;
+}
+
+.loc-fields dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.loc-empty {
+  color: var(--brand-text-muted);
+  padding: 2rem 0;
+  text-align: center;
+}
+
+/* --- form --- */
+
+.loc-form-page fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.loc-field {
+  margin-bottom: 1rem;
+}
+
+/* Paired fields: address1/address2, country/state, city/district.
+   Collapses to one column on narrow screens so labels never get squeezed. */
+.loc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 1.25rem;
+}
+
+@media (max-width: 40rem) {
+  .loc-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.loc-field label {
+  display: block;
+  font-weight: 600;
+  color: var(--brand-secondary);
+  margin-bottom: 0.3rem;
+}
+
+.loc-field input[type="text"],
+.loc-field textarea,
+.loc-field select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/*
+ * The native arrow ignores padding and sits against the right border, which
+ * looks misplaced once a select is stretched to the full field width. Drawn
+ * here instead, inset like the text, with room reserved so long options never
+ * run under it. Multi-line lists keep the native look - they have no arrow.
+ */
+.loc-field select:not([multiple]):not([size]) {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 0.75rem;
+  padding-right: 2.25rem;
+}
+
+.loc-field input:disabled {
+  background-color: #f4f7f9;
+  color: var(--brand-text-muted);
+  cursor: not-allowed;
+}
+
+.loc-hint {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--brand-text-muted);
+  font-size: 0.8rem;
+}
+
+.loc-section {
+  font-size: 1rem;
+  margin: 1.75rem 0 0.75rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.loc-tags {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.4rem 1.25rem;
+}
+
+@media (max-width: 40rem) {
+  .loc-tags {
+    grid-template-columns: 1fr;
+  }
+}
+
+.loc-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.loc-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-top: 1.75rem;
+}
+
+.loc-danger-zone {
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--brand-border);
+}
+
+.loc-danger-zone form {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.loc-danger-zone label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--brand-text-muted);
+  margin-bottom: 0.3rem;
+}
+
+.loc-danger-zone input {
+  min-width: 18rem;
+}
+
+/* ---------- User administration ---------- */
+
+.user-search {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+}
+
+.user-search .loc-field {
+  margin-bottom: 0;
+  min-width: 14rem;
+  flex: 1 1 14rem;
+}
+
+/* Inline checkbox with its label, used on admin forms. */
+.loc-check {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 0.4rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.user-table th {
+  text-align: left;
+}
+
+.user-table td {
+  vertical-align: top;
+}
+
+/* Disabled (retired) logins, matching the voided convention elsewhere */
+.user-disabled td:first-child a,
+.user-disabled td:nth-child(2) {
+  text-decoration: line-through;
+  color: var(--brand-text-muted);
+}
+
+.user-row-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.user-radio-row {
+  display: flex;
+  gap: 1.5rem;
+}
+
+/* Standalone label for a radio group, which has no single "for" target */
+.loc-field-label {
+  display: block;
+  font-weight: 600;
+  color: var(--brand-secondary);
+  margin-bottom: 0.3rem;
+}
+
+/* ---------- Manage Translations (the editing sheet) ---------- */
+
+.tr-page {
+  max-width: none;  /* a sheet wants the full width */
+}
+
+.tr-page .loc-actions {
+  gap: 0.75rem;
+}
+
+.tr-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tr-search input[type="search"] {
+  min-width: 22rem;
+}
+
+.tr-pager {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 0.75rem 0.25rem;
+  font-size: 0.9rem;
+}
+
+.tr-pager-info {
+  margin-right: auto;
+  color: var(--brand-text-muted);
+}
+
+.tr-pager-page {
+  color: var(--brand-secondary);
+  font-weight: 600;
+}
+
+.tr-pager .loc-linkbtn {
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--brand-border);
+  border-radius: calc(var(--brand-radius) - 0.2rem);
+}
+
+.tr-add {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  background-color: var(--brand-primary-tint);
+}
+
+.tr-add .loc-field {
+  margin-bottom: 0;
+  flex: 1 1 14rem;
+}
+
+.tr-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Header stays put while scrolling ~1,700 rows */
+.tr-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: #fff;
+  border-bottom: 2px solid var(--brand-border);
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+}
+
+.tr-table td {
+  padding: 0.2rem 0.6rem;
+  border-bottom: 1px solid var(--brand-border);
+  vertical-align: middle;
+}
+
+.tr-table tbody tr:hover {
+  background-color: var(--brand-primary-tint);
+}
+
+.tr-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+  color: var(--brand-secondary);
+  white-space: nowrap;
+  max-width: 26rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tr-table td input[type="text"] {
+  width: 100%;
+  max-width: none;
+  padding: 0.25rem 0.4rem;
+  font-size: 0.9rem;
+}
+
+/* An empty box means "not translated" — make that visible at a glance */
+.tr-table td input[type="text"]:placeholder-shown,
+.tr-table td input[type="text"]:not([value]):not(:focus),
+.tr-table td input[type="text"][value=""]:not(:focus) {
+  background-color: #fffaf0;
+}
+
+/* Icon-only add button: square, so the plus sits centred */
+.tr-add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  padding: 0;
+  flex: 0 0 auto;
+}
+
+.tr-add-btn svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  transition: transform var(--brand-transition);
+}
+
+/* The plus becomes a cross while the form is open */
+.tr-add-btn.is-open svg {
+  transform: rotate(45deg);
+}
+
+/* An edited row is marked, so it is obvious what is waiting to be saved */
+.tr-table tbody tr.is-dirty {
+  background-color: var(--brand-primary-tint);
+}
+
+/* Save is blue but faded until its row is edited */
+.tr-save:disabled {
+  opacity: 0.4;
+}
+
+/* Green add / red delete keep Bootstrap's semantic colours; only the shape and
+   transition are aligned with the rest of the theme. */
+.btn-success,
+.btn-danger {
+  border-radius: var(--brand-radius);
+}
+
+.tr-actions .btn {
+  border-radius: calc(var(--brand-radius) - 0.15rem);
+}
+
+.tr-actions {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.tr-actions form {
+  display: inline-block;
+  margin-left: 0.5rem;
+}
+
+/* ---------- Administration stub pages ---------- */
+
+.admin-stub-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5rem 1rem 2rem;
+  text-align: center;
+}
+
+.admin-stub-page p {
+  color: var(--brand-text-muted);
+}
+
+/* ---------- Legacy custom-class polish (pages not yet migrated) ---------- */
+
+/* --- Ported out of styles.css (the Tailwind build) ---
+   These four are the app's form primitives: ~730 uses across 40 templates.
+   They now live here in full, so the templates using them no longer depend on
+   styles.css. Geometry is reproduced exactly — only the colours move to the
+   brand palette. Do not re-add them to styles.css. */
+
+.button-primary {
+  padding: 0.5rem;
+  border-radius: var(--brand-radius);
+  background-color: var(--brand-primary);
+  color: #fff;
+  transition: background-color var(--brand-transition), box-shadow var(--brand-transition);
+}
+
+.button-primary:hover {
+  background-color: var(--brand-primary-hover);
+  box-shadow: var(--brand-shadow);
+}
+
+.button-primary:active {
+  background-color: var(--brand-primary-active);
+}
+
+.cancel-button {
+  padding: 0.5rem;
+  font-weight: 700;
+  color: var(--brand-secondary);
+  text-decoration: underline;
+  transition: color var(--brand-transition);
+}
+
+.cancel-button:hover {
+  color: var(--brand-primary-active);
+}
+
+/* Custom radio. float/negative margin are load-bearing: they position the
+   control in the existing markup across 21 templates. Reproduced verbatim.
+   The Tailwind original also drew a nearly invisible ripple via ::before and
+   --tw-* variables; that is dropped, the checked dot is what users see. */
+.radio-input {
+  position: relative;
+  float: left;
+  margin: 0.125rem 0.25rem 0 -1.5rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border: 2px solid rgba(0, 0, 0, 0.25);
+  border-radius: 50%;
+  background-color: #fff;
+  transition: border-color var(--brand-transition), box-shadow var(--brand-transition);
+}
+
+.radio-input:hover {
+  cursor: pointer;
+  border-color: var(--brand-primary);
+}
+
+.radio-input:checked {
+  border-color: var(--brand-primary);
+}
+
+.radio-input:checked::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background-color: var(--brand-primary);
+  transform: translate(-50%, -50%);
+}
+
+.radio-input:focus {
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem var(--brand-primary-tint-strong);
+}
+
+.nav-item {
+  transition: color var(--brand-transition);
+}
+
+.nav-item:hover {
+  color: var(--brand-primary-active) !important;
+  text-decoration: underline;
+}
+
+/* Ported out of styles.css. The original width:100% is deliberately NOT kept —
+   the flex-basis set in the label/field row rules above replaces it. */
+.input-label {
+  font-weight: 700;
+  color: var(--brand-secondary);
+}
+
+/* Un-classed element defaults, for pages/fields with no framework classes */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  border-radius: var(--brand-radius);
+  border: 1px solid #d5dde3;
+  padding: 0.5rem 0.65rem;
+  transition: border-color var(--brand-transition), box-shadow var(--brand-transition);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+  outline: 0;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 0.25rem var(--brand-primary-tint-strong);
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table th {
+  background-color: var(--brand-primary-tint);
+  color: var(--brand-secondary);
+  font-weight: 700;
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+}
+
+table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #e7edf1;
+}
+
+table tbody tr {
+  transition: background-color var(--brand-transition);
+}
+
+table tbody tr:hover {
+  background-color: var(--brand-primary-tint);
+}
+
+/* Month-range slider (reporting forms: patientlist, tb03, tb03u, form89, form8,
+   missing tb03/tb03u). Two overlapping <input type="range"> elements (month/month2)
+   share this markup; see app/components/month_range_script.html for the JS that
+   keeps them in sync and paints .month-range-selected. */
+.month-range-container {
+  width: 100%;
+  padding: 6px 0 0;
+}
+
+.month-slider-wrapper {
+  position: relative;
+  width: 100%;
+  height: 28px;
+}
+
+/* Base track */
+.month-range-track {
+  position: absolute;
+  top: 11px;
+  left: 9px;
+  right: 9px;
+  height: 6px;
+  background: var(--brand-border);
+  border-radius: 3px;
+}
+
+/* Selected range */
+.month-range-selected {
+  position: absolute;
+  top: 0;
+  height: 6px;
+  background: var(--brand-primary);
+  border-radius: 3px;
+}
+
+/* Invisible native slider */
+.month-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  /* Override the generic input:not(...) rule's border/radius (theme.css above)
+     so the two full-width overlapping range inputs don't paint a visible pill
+     outline around the whole slider. */
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  pointer-events: none;
+  outline: none;
+}
+
+/* The generic input:not(...):focus rule (theme.css above) would otherwise draw
+   a border-color + box-shadow halo across the full-width invisible input while
+   dragging; the custom thumb/track styling replaces that affordance. */
+.month-slider:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+/* Chrome / Edge / Safari */
+.month-slider::-webkit-slider-runnable-track {
+  height: 6px;
+  background: transparent;
+  border: none;
+}
+
+.month-slider::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -6px;
+  border: none;
+  border-radius: 50%;
+  background: var(--brand-primary);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* Firefox */
+.month-slider::-moz-range-track {
+  height: 6px;
+  background: transparent;
+  border: none;
+}
+
+.month-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: var(--brand-primary);
+
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/*
+ * Month labels align with the actual
+ * slider track rather than the full container.
+ */
+.month-labels {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+
+  margin-left: 9px;
+  margin-right: 9px;
+  margin-top: 5px;
+
+  font-size: 13px;
+  color: var(--brand-text-muted);
+}
+
+.month-label {
+  text-align: center;
+}
+
+/*
+ * Align first and last numbers exactly
+ * with the track edges.
+ */
+.month-label:first-child {
+  text-align: left;
+}
+
+.month-label:last-child {
+  text-align: right;
+}
+
+/* ---------- Patient enroll/edit form ---------- */
+
+/*
+ * enroll_patients.html / edit_patient.html are not yet migrated off the
+ * Tailwind classes in styles.css (see § UI THEME / STYLE MIGRATION in
+ * graph.md), so this section only overrides layout, not the underlying
+ * .enrollform-*, .input-container, .radio-container etc. class names.
+ *
+ * SCOPING: everything below is nested under .patient-form-page, a class
+ * added directly to the <div class="enrollform-sections-container"> wrapper
+ * in these two templates only (no other template has it). This is
+ * deliberate: .enrollform-section / .input-container / .radio-container /
+ * .checkbox-input / .collapsible-header are generic, reused class names —
+ * per graph.md they're very likely shared by the other TB forms (tb03,
+ * tb03u, form89, transferout, regimen, adverseevents, drugresistense, dots
+ * and mdrtb enrollment) which are not visible in this working set. Un-scoped
+ * rules here would silently reflow those pages too. Nesting under
+ * .patient-form-page makes every rule below inert everywhere except these
+ * two pages, regardless of what other templates happen to reuse.
+ *
+ * LAYOUT: the personal-info rows (Given/Family Name, Birthdate/Age, Gender)
+ * now use the exact same label-left / input-right, single-line pattern as
+ * the location box below them (Country/Region/District/Facility), which
+ * already comes from the "Address row" rule further down this section
+ * (label flex: 0 0 12rem). Reusing that same width keeps every label in
+ * both boxes lined up on the same left edge.
+ */
+
+/*
+ * The enroll form's <form> now carries .page-panel, which caps it to a
+ * centred ~47rem column. The inner container's old 4rem all-round margin
+ * (from styles.css) then just eats into that narrow column and pushes the
+ * fields off-centre as the window shrinks from fullscreen. Trim it to a
+ * vertical-only margin so the panel alone controls the horizontal size.
+ * Scoped to .page-panel so edit_patient.html (no panel yet) is untouched.
+ */
+.page-panel > .enrollform-sections-container.patient-form-page {
+  margin: 1.5rem 0;
+}
+
+.patient-form-page .enrollform-section {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
+  align-items: center;
+  width: 100%;
+}
+
+/*
+ * Neutralizes styles.css's Tailwind rule
+ *   .enrollform-section > :not([hidden]) ~ :not([hidden]) { margin-left: 1rem }
+ * which was intended for horizontal flex rows (sibling inputs sitting side-by-side)
+ * but now causes vertical offset when the layout is a grid column. Without this
+ * reset, the 2nd+ children of .enrollform-section get shoved right, creating the
+ * alternating left-alignment you see in the screenshot.
+ */
+.patient-form-page .enrollform-section > :not([hidden]) ~ :not([hidden]) {
+  margin-left: 0;
+}
+
+.patient-form-page .enrollform-section .input-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+/*
+ * Neutralizes styles.css's Tailwind rule
+ *   .input-container > :not([hidden]) ~ :not([hidden]) { margin-left: 1rem }
+ * which targets any 2nd-or-later child of .input-container regardless of
+ * this element's own flex-direction. Without this reset it silently stacks
+ * on top of the `gap: 1rem` above (doubling the label/input spacing to
+ * ~2rem), and it's the exact rule that caused the diagonal indentation bug
+ * when this section briefly used a column layout — a left margin doesn't
+ * go away just because the axis rotated, it just becomes visible as a
+ * vertical offset instead of a horizontal gap. Resetting it here means the
+ * gap is controlled by exactly one property, regardless of future layout
+ * changes to this container.
+ */
+.patient-form-page .enrollform-section .input-container > * {
+  margin-left: 0;
+}
+
+/* 12rem basis matches the location/address box below, so the fields in
+   both boxes start on the same edge and end up the same width. */
+.patient-form-page .enrollform-section .input-container > .input-label {
+  flex: 0 0 12rem;
+  width: auto;
+  white-space: nowrap;
+}
+
+.patient-form-page .enrollform-section .input-container input {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.patient-form-page .enrollform-section .radios-container {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex: 1 1 auto;
+}
+
+.patient-form-page .enrollform-section .radio-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/*
+ * .radio-input renders as an oval instead of a circle here — Bootstrap's
+ * base input reset / select2 load order (see graph.md load order note)
+ * leaves `appearance` and `border-radius` unset for this class in some
+ * contexts, so the browser falls back to its native (elongated) control
+ * shape. Forcing explicit square dimensions + 50% radius + appearance:none
+ * guarantees a true circle regardless of load order.
+ */
+.patient-form-page .enrollform-section .radio-container .radio-input {
+  float: none;
+  margin: 0;
+  flex: 0 0 auto;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1.15rem;
+  height: 1.15rem;
+  min-width: 1.15rem;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+/*
+ * Gender's .enrollform-section has only ONE .input-container child (its
+ * sibling — the DOTS identifier block — is commented out in the template).
+ * The 2-column grid still reserves that empty second column, producing a
+ * visible blank box to its right. A lone child spans the full row instead.
+ */
+.patient-form-page .enrollform-section .input-container:only-child {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 640px) {
+  .patient-form-page .enrollform-section {
+    grid-template-columns: 1fr;
+  }
+
+  .patient-form-page .enrollform-section .input-container > .input-label {
+    flex-basis: 8rem;
+  }
+}
+
+/* Address row + the Country/Region/District/Facility rows from
+   locations.html: label given a fixed basis so it stops fighting the input
+   for width and every row in this box lines up on the same left edge. The
+   location rows sit one level deeper (inside #locations-container) and
+   otherwise fall back to the global 14rem label basis, which left their
+   selects ~2rem narrower than the address input below them. */
+.patient-form-page .enroll_form_bg > .input-container,
+.patient-form-page .enroll_form_bg > #locations-container > .input-container {
+  align-items: center;
+  gap: 1rem;
+}
+
+.patient-form-page .enroll_form_bg > .input-container > .input-label,
+.patient-form-page .enroll_form_bg > #locations-container > .input-container > .input-label {
+  flex: 0 0 12rem;
+  width: auto;
+}
+
+/* styles.css adds margin-left:1rem to any 2nd+ child of .input-container;
+   combined with the gap above that double-spaced the controls and left the
+   location selects and the address input on slightly different edges.
+   Reset it so the 1rem gap is the only thing between label and control. */
+.patient-form-page .enroll_form_bg > .input-container > *,
+.patient-form-page .enroll_form_bg > #locations-container > .input-container > * {
+  margin-left: 0;
+}
+
+/*
+ * Suspect / Deceased collapsibles: both previously repeated the same
+ * message key as the section header AND as the checkbox's own <label>
+ * ("Suspect" / "Suspect", "Deceased" / "Deceased"). The <label for="...">
+ * is kept in the DOM for click-to-toggle and screen readers, but its
+ * visible text is swapped for a plain affirmation so the row reads as a
+ * real sentence instead of an echo of the header above it.
+ *
+ * Both enroll_patients.html and edit_patient.html now use a clickable
+ * .collapsible-header (body starts class="hidden", toggled open by the
+ * same $(...).click() + toggleClass('hidden') pattern in each template) so
+ * Suspect/Deceased stay collapsed until the user opts in. Header layout
+ * (flex row, chevron pinned right via justify-content: space-between) is
+ * shared here; the .collapsible-chevron rotation-on-open styles still live
+ * per-template (see each file's own <style> block) since the icon markup
+ * is inline in the header.
+ */
+
+.patient-form-page .collapsible-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  border-radius: var(--brand-radius);
+  transition: background-color var(--brand-transition);
+}
+
+.patient-form-page .collapsible-header:hover {
+  background-color: var(--brand-primary-tint);
+}
+
+.patient-form-page .collapsible-header .input-label {
+  font-weight: 700;
+  color: var(--brand-secondary);
+}
+
+.patient-form-page #suspect-container,
+.patient-form-page #deceased-fields {
+  padding: 0 1rem 1rem;
+}
+
+/* Drop the 1rem side padding on the suspect body so its label + Identifier
+   field sit on the same left edge (and take the same width) as the fields
+   in the boxes above, rather than being indented an extra 1rem. */
+.patient-form-page #suspect-container {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.patient-form-page #suspect-container > .input-container:first-child,
+.patient-form-page #deceased-fields > .input-container:first-child {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: nowrap;
+}
+
+.patient-form-page #suspect-container > .input-container:first-child .input-label,
+.patient-form-page #deceased-fields > .input-container:first-child .input-label {
+  order: 2;
+  white-space: nowrap;
+}
+
+.patient-form-page #suspect-container > .input-container:first-child input[type="checkbox"],
+.patient-form-page #deceased-fields > .input-container:first-child input[type="checkbox"] {
+  order: 1;
+}
+
+/*
+ * These checkboxes use the plain `.checkbox-input` rule from styles.css,
+ * which — like .radio-input above — is built for normal document flow
+ * (`position: relative; float: left; margin-left: -1.5rem;`). Same collision:
+ * once the row became a flex container the checkbox rendered as a thin
+ * misaligned strip instead of a proper square.
+ */
+.patient-form-page #suspect-container > .input-container:first-child input[type="checkbox"],
+.patient-form-page #deceased-fields > .input-container:first-child input[type="checkbox"] {
+  float: none;
+  margin: 0;
+  flex: 0 0 auto;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/*
+ * Suspect / Deceased checkbox labels: display the localized HTML text (from get_message
+ * filter) instead of hardcoded CSS ::after content. The get_message filter in the
+ * template dynamically inserts localized strings based on the user's current locale,
+ * which cannot be replicated in CSS. See enroll_patients.html and edit_patient.html.
+ */
+.patient-form-page #suspect-container > .input-container:first-child .input-label,
+.patient-form-page #deceased-fields > .input-container:first-child .input-label {
+  font-weight: 400;
+  color: var(--brand-text-muted);
+  font-size: 0.95rem;
+}
+
+.patient-form-page #suspect-container input[type="checkbox"],
+.patient-form-page #deceased-fields input[type="checkbox"] {
+  margin: 0;
+}
+
+/* Suspect identifier row: same 12rem label + 1rem gap as the boxes above,
+   so its field lines up with (and matches the width of) every other field
+   on the form. */
+.patient-form-page #suspect-container .input-container:last-child {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.patient-form-page #suspect-container .input-container:last-child > * {
+  margin-left: 0;
+}
+
+.patient-form-page #suspect-container .input-container:last-child > .input-label {
+  flex: 0 0 12rem;
+  width: auto;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--brand-secondary);
+}
+
+.patient-form-page #suspect-container .input-container:last-child input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Copy button next to the Identifier field. Fixed width so it doesn't get
+   squeezed by the input's flex-basis (from .input's width:100%). */
+.patient-form-page .copy-button {
+  flex: 0 0 auto;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--brand-primary);
+  border-radius: var(--brand-radius);
+  background-color: transparent;
+  color: var(--brand-primary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color var(--brand-transition), color var(--brand-transition);
+}
+
+.patient-form-page .copy-button:hover {
+  background-color: var(--brand-primary-tint);
+}
+
+.patient-form-page #deceased-container {
+  gap: 2rem;
+  margin-top: 0.75rem;
+}
+
+.patient-form-page #deceased-container .input-container {
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.patient-form-page #deceased-container .input-container label {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/*
+ * enroll_patients.html only: its deceased-container additionally carries a
+ * static `.flex-col` class (edit_patient.html's does not), so this overrides
+ * the side-by-side rules above to stack the Death Date / Cause of Death
+ * fields as two full-width rows — each a single label-left/input-right line,
+ * matching every other row on the form — instead of two side-by-side
+ * columns. Scoped to `.flex-col` so edit_patient.html's layout is untouched.
+ */
+.patient-form-page #deceased-container.flex-col {
+  gap: 0.85rem;
+}
+
+.patient-form-page #deceased-container.flex-col .input-container {
+  align-items: center;
+  gap: 1rem;
+}
+
+.patient-form-page #deceased-container.flex-col .input-container > * {
+  margin-left: 0;
+}
+
+.patient-form-page #deceased-container.flex-col .input-container label {
+  flex: 0 0 12rem;
+  width: auto;
+}
+
+.patient-form-page #deceased-container.flex-col .input-container input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+/* ---------- Lab order screen ----------
+   commonlab/laborder.html (Order | Sample | Results tabs), the Add Test Order
+   page and the Manage Lab Tests list. Self-contained on purpose: styles.css is a
+   pruned Tailwind build, so utility classes not already used elsewhere are
+   silently missing. */
+
+.lab-order {
+  max-width: 96rem;
+  margin: 0 auto 4rem;
+  padding: 0 2.5rem;
+}
+
+@media screen and (max-width: 640px) {
+  .lab-order {
+    padding: 0 1rem;
+  }
+}
+
+
+.lab-order__header {
+  margin-bottom: 1.5rem;
+}
+
+.lab-order__title {
+  font-size: 2.25rem;
+  margin: 0;
+}
+
+.lab-order__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 3.5rem;
+  margin: 1.25rem 0 0;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  background: var(--brand-primary-tint);
+}
+
+.lab-order__meta dt,
+.lab-details dt {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--brand-text-muted);
+}
+
+.lab-order__meta dd,
+.lab-details dd {
+  margin: 0.3rem 0 0;
+  font-size: 1.05rem;
+}
+
+/* Tabs */
+.lab-tabs {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--brand-border);
+  overflow-x: auto;
+}
+
+/* The three tabs share the width evenly. */
+.lab-tab {
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: none;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--brand-text-muted);
+  white-space: nowrap;
+  transition: color var(--brand-transition), border-color var(--brand-transition);
+}
+
+.lab-tab:hover:not(:disabled) {
+  color: var(--brand-secondary);
+}
+
+.lab-tab[aria-selected="true"] {
+  color: var(--brand-secondary);
+  border-bottom-color: var(--brand-primary);
+}
+
+.lab-tab:disabled {
+  color: #b6c0ca;
+  cursor: not-allowed;
+}
+
+.lab-tab:focus-visible,
+.lab-subtab:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+.lab-tab__count {
+  min-width: 1.4rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--brand-primary-tint-strong);
+  color: var(--brand-secondary);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.lab-tab__lock {
+  font-size: 0.8rem;
+}
+
+.lab-panel {
+  padding: 2rem 0;
+}
+
+/* A second titled group inside one form (the new-order form's Sample part). */
+.lab-form-section {
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--brand-border);
+}
+
+.lab-panel__heading.lab-section__heading {
+  margin-bottom: 1.25rem;
+}
+
+/* Accept / Reject under a sample that is waiting for a decision. */
+.lab-decision {
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid #fcd34d;
+  border-radius: var(--brand-radius);
+  background: #fffbeb;
+}
+
+.lab-earlier {
+  margin-top: 1rem;
+}
+
+/* The order's sample, below the order details on the Order tab. */
+.lab-section {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--brand-border);
+  scroll-margin-top: 1rem;
+}
+
+.lab-panel__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.lab-panel__heading {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+/* Read-only label/value grid */
+.lab-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  gap: 1.5rem 3rem;
+  margin: 0 0 2rem;
+}
+
+.lab-result-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lab-result-groups {
+  gap: 1.5rem;
+}
+
+.lab-result-group {
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  padding: 1.5rem 2rem 0.25rem;
+}
+
+.lab-result-group__title {
+  font-size: 1.15rem;
+  margin: 0 0 1.25rem;
+}
+
+/* Forms opened in place of a read-only view */
+.lab-inline-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem 2.5rem;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  background: #fff;
+  box-shadow: var(--brand-shadow);
+  margin-bottom: 1.5rem;
+}
+
+.lab-inline-form__title {
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+/* Form fields in two columns on wide screens, one on narrow ones. */
+.lab-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(32rem, 1fr));
+  gap: 1.25rem 3rem;
+  align-items: center;
+}
+
+.lab-fields[hidden] {
+  display: none;
+}
+
+.lab-fields > .input-container {
+  margin: 0;
+}
+
+/* Coded results with 2-3 answers: radios on one line instead of a dropdown.
+   They never wrap; laborder.html drops a group of fields to one column when
+   its radios don't fit in half the width (long answers, Russian names).
+   .radio-input floats with a negative margin for the report forms; undone here. */
+.lab-fields.lab-fields--single {
+  grid-template-columns: 1fr;
+}
+
+.lab-radio-group {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.lab-radio {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.lab-radio .radio-input {
+  float: none;
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+/* Phones: wrapping beats running off the screen. */
+@media screen and (max-width: 640px) {
+  .lab-radio-group {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .lab-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+.lab-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.lab-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.lab-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 7rem;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  border: 0;
+}
+
+a.lab-button:hover {
+  color: #fff;
+  text-decoration: none;
+}
+
+.lab-actions .button-danger {
+  margin-left: auto;
+}
+
+.lab-button--sm {
+  min-width: 0;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.lab-icon-button {
+  display: inline-flex;
+  padding: 0.35rem;
+  border: 0;
+  border-radius: var(--brand-radius);
+  background: none;
+  color: var(--brand-text);
+}
+
+.lab-icon-button:hover {
+  background: var(--brand-primary-tint);
+}
+
+/* Result group sub-tabs inside the results form */
+.lab-subtabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--brand-border);
+}
+
+.lab-subtab {
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--brand-border);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--brand-secondary);
+}
+
+.lab-subtab[aria-selected="true"] {
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: #fff;
+}
+
+
+/* Tables */
+.lab-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  margin-bottom: 1.5rem;
+}
+
+.lab-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+
+.lab-table th {
+  padding: 1rem 1.5rem;
+  background: var(--brand-primary-tint);
+  border-bottom: 1px solid var(--brand-border);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--brand-text-muted);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.lab-table td {
+  padding: 1.1rem 1.5rem;
+  border-bottom: 1px solid var(--brand-border);
+  vertical-align: middle;
+}
+
+.lab-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.lab-table--clickable tbody tr {
+  cursor: pointer;
+  transition: background-color var(--brand-transition);
+}
+
+.lab-table--clickable tbody tr:hover {
+  background: var(--brand-primary-tint);
+}
+
+.lab-table__action {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.lab-table__edit-row > td {
+  background: #f8fafc;
+}
+
+.lab-table__edit-row .lab-inline-form {
+  margin: 0.25rem 0;
+}
+
+.lab-row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.lab-lims {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--brand-border);
+}
+
+/* Status chips */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-chip--accepted,
+.status-chip--processed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-chip--collected {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-chip--rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-chip--none {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.lab-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid #fcd34d;
+  border-radius: var(--brand-radius);
+  background: #fffbeb;
+}
+
+.lab-notice p {
+  margin: 0;
+}
+
+.lab-empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--brand-text-muted);
+}
+
+.lab-muted {
+  color: var(--brand-text-muted);
+  font-size: 0.875rem;
+}
+
+/* Wrapper for a location <select> plus the translated name shown beneath it. */
+.location-field {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 32rem;
+}
+
+.location-field > select {
+  width: 100%;
+}
+
+.location-translation {
+  display: block;
+  margin-top: 0.25rem;
+  opacity: 0.75;
+}
+
+/* ---------- Manage Concepts ---------- */
+
+.concept-page .loc-section {
+  margin-top: 2rem;
+}
+
+/* Translation grid: one row per language */
+.concept-tr-table thead th {
+  position: static;
+}
+
+.concept-tr-table th[scope="row"] {
+  white-space: nowrap;
+  padding: 0.4rem 0.6rem;
+  vertical-align: top;
+  font-weight: 600;
+}
+
+.concept-tr-table td {
+  vertical-align: top;
+  padding: 0.35rem 0.4rem;
+}
+
+.concept-tr-table textarea {
+  width: 100%;
+  min-height: 2.4rem;
+  padding: 0.25rem 0.4rem;
+  font-size: 0.9rem;
+}
+
+.concept-answers {
+  margin: 0.5rem 0 0.75rem;
+  padding-left: 1.5rem;
+}
+
+.concept-answer-search {
+  display: flex;
+  gap: 0.5rem;
+  max-width: 32rem;
+}
+
+.concept-answer-search input[type="search"] {
+  flex: 1 1 auto;
+}
+
+.concept-answer-results {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  max-width: 32rem;
+}
+
+.concept-answer-results li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.concept-map-table {
+  margin-bottom: 1rem;
+}
+
+.concept-map-add {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+}
+
+.concept-map-add .loc-field {
+  margin-bottom: 0;
+  flex: 1 1 10rem;
+}

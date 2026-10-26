@@ -2,7 +2,7 @@
 # Django 4.1.1 frontend — communicates with OpenMRS via REST only, NO direct DB access.
 # Shared facts (domain model, concept/encounter-type/identifier UUIDs, topology): ../.agents/graph.md
 # Usage + notation legend + maintenance rules: ../.agents/instructions.md
-# Last updated: 2026-10-07 (new-patient form: "More options" box)
+# Last updated: 2026-10-26 (Administration -> Manage Concepts; corrected stale admin util names)
 
 ## § MODULE LAYOUT
 ```
@@ -20,9 +20,11 @@ utilities/locations_util.py         # ALL location logic (lu alias) — patient-
                                     # (cached) + administration (writes, busts that cache)
                                     # get_locations(req, include_retired=False) is the ONE list call
                                     # get_location(req, uuid) is the ONE single-location call
-utilities/users_admin_util.py       # User ADMIN screen (uau alias) — person+user+provider choreography
+utilities/users_util.py             # User ADMIN screen (uau alias) — person+user+provider choreography
+utilities/concepts_util.py          # Concept ADMIN screen (cau alias) — edit-only, see § CONCEPT ADMINISTRATION
 utilities/rest_admin.py             # SHARED admin REST: real error text + cap-aware paging (see § below)
-utilities/admin_auth.py             # is_system_developer() — single source for admin write permission
+                                    # is_system_developer() lives in metadata_util.py (mu) — single source
+                                    # for admin access; views call route_non_system_developer(req)
 utilities/common_utils.py           # Date utils, report name lookup
 resources/enums/mdrtbConcepts.py    # Concept UUID enum (full list)
 resources/enums/encounterType.py    # Encounter type UUID enum
@@ -39,6 +41,7 @@ views.py → pu (patient_utils)    # patient search, save, enroll, dashboard
 views.py → fu (forms_util)       # TB03/TB03U/Form89/etc CRUD
 views.py → clu (commonlab_util)  # lab order / sample / result CRUD
 views.py → mu (metadata_util)    # concept/location/privilege lookup + caching
+views.py → cau (concepts_util)   # Manage Concepts (edit existing concepts) → rest_admin
 views.py → lu (locations_util)   # location hierarchy queries
 views.py → common_utils          # date formatting, report name resolution
 metadata_util → redis            # concept/location cache
@@ -145,7 +148,12 @@ GET/POST /administration/users/<uuid>                      → render_edit_user 
 GET/POST /administration/users/<uuid>/password             → render_change_password           → uau
 POST     /administration/users/<uuid>/disable              → render_disable_user              → uau
 POST     /administration/users/<uuid>/enable               → render_enable_user               → uau
-GET      /administration/translations                      → render_manage_translations       # stub, menu item disabled
+GET      /administration/translations                      → render_manage_translations       → msg
+POST     /administration/translations/save                 → save_translation                 → msg
+POST     /administration/translations/delete               → delete_translation               → msg
+GET      /administration/concepts                          → render_manage_concepts           → cau  # search
+GET      /administration/concepts/search                   → search_concepts_json             → cau  # JSON, MUST precede <uuid>
+GET/POST /administration/concepts/<uuid>                   → render_edit_concept              → cau  # ONE form, ONE Save → cau.save_concept
 GET      /administration/defaults                          → render_set_defaults              # stub, menu item disabled
 # Config/Metadata endpoints
 GET      /profile                                          → render_user_profile
@@ -338,7 +346,7 @@ Prod static: Dockerfile runs collectstatic; repo static/ (STATIC_ROOT) may be st
 
 ## § LOCATION ADMINISTRATION (Administration → Manage Locations)
 ```
-Util:   utilities/locations_admin_util.py  (alias lau in views.py)
+Util:   utilities/locations_util.py  (alias lu in views.py; this section still says "lau" = lu)
         Separate from locations_util.py: admin must SEE retired locations and must
         BUST the "locations" metadata cache on every write, or the patient enrollment
         dropdowns keep serving pre-edit names for up to an hour.
@@ -399,8 +407,8 @@ Templates: app/admin/manage_locations.html, app/admin/_location_node.html (recur
 
 ## § USER ADMINISTRATION (Administration → Manage Users)
 ```
-Util:   utilities/users_admin_util.py (alias uau in views.py)
-Auth:   admin_auth.is_system_developer — WRITE is System Developer only, enforced in
+Util:   utilities/users_util.py (alias uau in views.py)
+Auth:   mu.is_system_developer — WRITE is System Developer only, enforced in
         every write view (not just hidden in the template). Read/search: any login.
 A login is THREE linked records; creation order matters:
         person  -> POST person   {names:[{givenName,middleName,familyName}], gender, birthdate}
@@ -485,4 +493,51 @@ Message files:
   resources/messages_ru.properties
   resources/openMRS_messages*.properties
   resources/commonlab_messages.properties
+```
+
+## § CONCEPT ADMINISTRATION (Administration -> Manage Concepts, added 2026-10-26)
+```
+Util:   utilities/concepts_util.py (alias cau). All REST via rest_admin (real OpenMRS error text).
+        Server: webservices.rest 2.51.0 on OpenMRS core 2.8.1 (openmrs.war). REST module endpoints ONLY.
+Auth:   route_non_system_developer (admin or System Developer = OpenMRS super user); JSON search 403s others.
+Scope:  EDIT ONLY. No create / retire / delete, no synonyms, no stats, no next/previous (requirement).
+Locales: cau.LOCALES = messages_util.SUPPORTED_LANGS = en|ru|tj = concept_name.locale values (confirmed by Owais).
+Search: GET concept?q=&lang=<each of en,ru,tj>&includeAll=true&limit=50, merged by uuid; UUID -> GET concept/{uuid}.
+        !! OpenMRS searches only the request locale + locale.allowed.list. Seed DB list is
+           "en, en_GB, es, fr, it, pt" - add ru, tj there or other-language matches can be missed.
+        Session's own language searched LAST: `lang` switches the OpenMRS session locale.
+        Result names: cau.localized_name(concept, session locale) - preferred name in that language ->
+        its full name -> English full name -> display. Needed because merged results carry the display of
+        whichever language matched first (was showing Russian). get_concept() also sends lang=<session>.
+Save:   cau.save_concept validates EVERY part first (any problem -> nothing written), then writes only changes in
+        order translations -> answers -> class/datatype -> new mapping (answers first so 'untick all + leave Coded'
+        works in one save). Mapping fields optional: added only when Source or Code is filled. A refused save
+        re-renders with everything typed (answers picked in the search carry add_answer_label_<uuid>).
+Translations (full name / short name / description per locale) - one REST call per CHANGED field:
+        name edit   POST concept/{c}/name/{n} {name}   -> core VOIDS old name, adds new (old kept as voided synonym)
+        name add    POST concept/{c}/name {name,locale,conceptNameType FULLY_SPECIFIED|SHORT}
+        short clear DELETE concept/{c}/name/{n}?reason=  (void)
+        existing FULL name can NOT be cleared (validator rejects a voided FSN)
+        description POST concept/{c}/description[/{d}] ; clearing = DELETE (descriptions are not voidable)
+        partial failure: earlier calls stay saved; error says how many.
+Class/datatype: POST concept/{c} {conceptClass, datatype} (only changed keys).
+        Datatype: core throws ConceptInUseException if any obs uses it as QUESTION (Boolean->Coded excepted).
+        We add: never to/from Numeric|Complex|Boolean (REST cannot add/remove the concept_numeric /
+        concept_complex row -> half-converted concept); never away from Coded while answers exist.
+        Class dropdown: only cau.ALLOWED_CLASSES (12 names, Owais 2026-10-26); a concept already in another
+        class still shows it (no silent change); any other class is refused server-side.
+        Class: NOT checked against obs - REST 2.51.0 cannot count obs without a patient.
+        Decision 2026-10-25 (Owais): rely on core, no class check.
+Answers (Coded only): POST concept/{c} {answers:[uuid...]} - WHOLE list; no answer subresource in 2.51.0.
+        REST setter compares against the QUESTION uuid, so every save deletes and re-creates the
+        concept_answer rows in the order sent (order kept, concept_answer uuids change, retired answers untouched).
+Mappings: ADD only. GET conceptreferenceterm?source=&codeOrName= (code re-compared: search also matches NAME),
+        else POST conceptreferenceterm {code,conceptSource}; then POST concept/{c}/mapping {conceptReferenceTerm,conceptMapType}.
+Cache:  after every write the view calls mu.refresh_cached_concept(req, uuid): in each "concepts_<locale>" list it
+        replaces the concept in its OWN shape (v=full entries from mu.get_concept vs CONCEPT_CACHE_REP entries from
+        get_all_concepts) and merges the new names into every question's answers. Unreadable language -> list dropped.
+Labels: mdrtb.concepts.* in resources/messages*.properties AND openmrs-module-mdrtb api bundles (activator seeds).
+Templates: app/admin/manage_concepts.html, app/admin/edit_concept.html (ONE form, ONE Save button - Owais 2026-10-26). CSS: theme.css § Manage Concepts.
+Tests:  utilities/test_concepts_util.py (in test_suite.py). NOTE: import utilities.restapi_utils BEFORE rest_admin -
+        rest_admin -> restapi_utils -> locations_util -> rest_admin is an existing circular import.
 ```

@@ -81,5 +81,12 @@ class Constants(enum.Enum):
     FULLY_SPECIFIED = "FULLY_SPECIFIED"
     SHORT = "SHORT"
 
+    CODED_DATATYPE = "Coded"
+    LOCKED_DATATYPES = ("Numeric", "Complex", "Boolean")
+    ALLOWED_CONCEPT_CLASSES = (
+        "ConvSet", "Diagnosis", "Drug", "Finding", "LabSet", "Misc", "Procedure",
+        "Question", "State", "Symptom/Finding", "Test", "Workflow",
+    )
+
     # Encounter role Unknown
     ENCOUNTER_ROLE_UNKNOWN = "a0b03050-c99b-11e0-9572-0800200c9a66"
