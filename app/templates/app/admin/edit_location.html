@@ -27,13 +27,6 @@
     {% csrf_token %}
     <fieldset>
 
-      {% if not is_new %}
-      <div class="loc-field">
-        <label for="uuid">{{'general.uuid'|get_message:locale|default:"en"}}</label>
-        <input type="text" id="uuid" value="{{ location.uuid }}" disabled>
-      </div>
-      {% endif %}
-
       <div class="loc-field">
         <label for="name" class="required">{{'general.name'|get_message:locale|default:"en"}}</label>
         <input type="text" id="name" name="name" required maxlength="255" value="{{ location.name|default:'' }}">

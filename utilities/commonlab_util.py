@@ -2,6 +2,7 @@ import requests
 from django.core.cache import cache
 from django.http import JsonResponse
 from . import restapi_utils as ru
+from .rest_admin import get_all_pages
 from . import common_utils as u
 import logging
 import utilities.metadata_util as mu
@@ -373,15 +374,24 @@ def _attribute_cache_key(uuid):
     return f"labtest_attrtypes_{uuid}"
 
 
+def _result_attribute_cache_key(uuid):
+    """
+    Cache key for one test type's Results-tab fields (attribute types with
+    their concept names and answers). Keyed on uuid for the same reason, and
+    so invalidate_labtest_attributes, which only has the uuid, can clear it.
+    """
+    return f"labtest_resultattrs_{uuid}"
+
+
 def invalidate_labtest_attributes(uuid):
     """
-    Drops the cached attribute types for one test type.
+    Drops the cached attribute types and Results-tab fields for one test type.
 
-    Must be called after adding, editing or retiring an attribute type. The
-    cache is written with timeout=None (never expires), so without this a newly
+    Must be called after adding, editing or retiring an attribute type. Both
+    caches are written with timeout=None (never expire), so without this a newly
     added attribute would stay invisible until Redis was cleared by hand.
     """
-    cache.delete(_attribute_cache_key(uuid))
+    cache.delete_many([_attribute_cache_key(uuid), _result_attribute_cache_key(uuid)])
 
 
 def get_attributes_of_labtest(req, lab_test_type):
@@ -403,24 +413,22 @@ def get_attributes_of_labtest(req, lab_test_type):
     compressed_attribute_types = cache.get(_attribute_cache_key(uuid))
     if compressed_attribute_types:
         return pickle.loads(zlib.decompress(compressed_attribute_types))
-    status, data = ru.get(
-        req,
-        "commonlab/labtestattributetype",
-        {"testTypeUuid": uuid, "v": "full"},
+    # Paged: OpenMRS returns 50 rows per call by default, and COMMON TEST has
+    # more attribute types than that, so a single call dropped every group
+    # past the first 50 (CULTURE, SMEAR, DST, XPERT ULTRA, ...).
+    attribute_types = sorted(
+        get_all_pages(
+            req, "commonlab/labtestattributetype", {"testTypeUuid": uuid, "v": "full"}
+        ),
+        key=lambda x: x.get("sortWeight") or 0,
     )
-    if status:
-        attribute_types = sorted(
-            data["results"], key=lambda x: x.get("sortWeight") or 0
-        )
-        compressed_attribute_types = zlib.compress(pickle.dumps(attribute_types))
-        cache.set(
-            _attribute_cache_key(uuid),
-            compressed_attribute_types,
-            timeout=None,
-        )
-        return attribute_types
-    else:
-        raise Exception(data["error"]["message"])
+    compressed_attribute_types = zlib.compress(pickle.dumps(attribute_types))
+    cache.set(
+        _attribute_cache_key(uuid),
+        compressed_attribute_types,
+        timeout=None,
+    )
+    return attribute_types
 
 
 def get_custom_attribute_for_labresults(
@@ -448,7 +456,7 @@ def get_custom_attribute_for_labresults(
         else:
             lab_test_type_name = lab_test_type["name"].replace(" ", "")
         custom_attributes_object = cache.get(
-            f"{lab_test_type_name}_custom_attribute_types"
+            _result_attribute_cache_key(lab_test_type["uuid"])
         )
         if custom_attributes_object:
             return pickle.loads(zlib.decompress(custom_attributes_object))
@@ -667,7 +675,7 @@ def get_custom_attribute_for_labresults(
                                 continue
         if attributes_to_get is None:
             cache.set(
-                f"{lab_test_type_name}_custom_attribute_types",
+                _result_attribute_cache_key(lab_test_type["uuid"]),
                 zlib.compress(pickle.dumps(attrs)),
                 timeout=None,
             )
@@ -718,6 +726,7 @@ def get_labtest_attributes(req, orderid, representation=None):
                 ):
                     attribute_type["uuid"] = attribute["uuid"]
                     attribute_type["valueReference"] = attribute["valueReference"]
+        add_unlisted_coded_answers(req, attribute_types)
         return attribute_types
     else:
         attributes_with_values = []
@@ -740,7 +749,52 @@ def get_labtest_attributes(req, orderid, representation=None):
                     attribute_type["uuid"] = attribute["uuid"]
                     attribute_type["valueReference"] = attribute["valueReference"]
                     attributes_with_values.append(attribute_type)
+        add_unlisted_coded_answers(req, attributes_with_values)
         return attributes_with_values
+
+
+def _concept_name(req, uuid):
+    """
+    A concept's name as the result dropdowns show their answers: the fully
+    specified name in the user's language, else whatever OpenMRS displays.
+    """
+    concept = mu.get_concept(req, uuid) or {}
+    for name in concept.get("names") or []:
+        if (
+                name.get("conceptNameType") == Constants.FULLY_SPECIFIED.value
+                and name.get("locale") == req.session["locale"]
+        ):
+            return name.get("name") or name.get("display")
+    return concept.get("display")
+
+
+def add_unlisted_coded_answers(req, attributes):
+    """
+    Makes a coded result saved with a concept that is not one of its question's
+    answers an answer of that result, named by fetching the concept.
+
+    Migrated DST results are saved as SUSCEPTIBLE / RESISTANT TO TUBERCULOSIS
+    DRUG, while each drug's question offers SUSCEPTIBLE / RESISTANT, so they
+    used to show as their uuid in the Results view, as an empty dropdown in the
+    Results form, and not at all in the summaries. A uuid is never shown: a
+    concept that cannot be fetched is left out, and the value with it.
+    """
+    names = {}
+    for attribute in attributes:
+        attribute_type = attribute["attributeType"]
+        answers = attribute_type.get("answers")
+        value = attribute.get("valueReference")
+        if answers is None or not value or any(a["uuid"] == value for a in answers):
+            continue
+        if value not in names:
+            try:
+                names[value] = _concept_name(req, value)
+            except Exception as e:
+                logger.warning(f"Could not fetch the concept of lab result value {value}: {e}")
+                names[value] = None
+        if names[value]:
+            # A new list: the answers may be shared with other results of this type.
+            attribute_type["answers"] = answers + [{"uuid": value, "display": names[value]}]
 
 
 # Attribute type codes: the raw English attribute name, not the localized display name.
@@ -902,7 +956,9 @@ def format_lab_attribute_value(attribute):
     A result attribute's value as the specialist should read it, or None when empty.
 
     Coded answers show their display name, dates come out as dd.mm.yyyy like the
-    rest of the app, and checkboxes (stored as "on") as a tick.
+    rest of the app, and checkboxes (stored as "on") as a tick. A coded value
+    with no answer to name it is None rather than its uuid; see
+    add_unlisted_coded_answers.
     """
     value = attribute.get("valueReference")
     if value in (None, ""):
@@ -912,7 +968,7 @@ def format_lab_attribute_value(attribute):
     if input_type == "select":
         return next(
             (a["display"] for a in attribute_type.get("answers") or [] if a["uuid"] == value),
-            value,
+            None,
         )
     if input_type == "checkbox":
         return "✓" if str(value).lower() in ("on", "true") else "✗"

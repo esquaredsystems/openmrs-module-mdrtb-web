@@ -3139,10 +3139,13 @@ def _sample_body(req, orderid, collection_date=None):
         "labTest": orderid,
         "specimenType": req.POST["specimentype"],
         "specimenSite": req.POST["specimensite"],
-        "sampleIdentifier": req.POST["specimenid"],
         "collectionDate": collection_date or req.POST["collectedon"],
         "collector": req.session["logged_user"]["currentProvider"]["uuid"],
     }
+    # Left empty, the stored identifier stays: a migrated sample's is a UUID,
+    # which the form never shows (see sample_fields.html).
+    if req.POST.get("specimenid"):
+        body["sampleIdentifier"] = req.POST["specimenid"]
     if req.POST.get("quantity"):
         body["quantity"] = req.POST["quantity"]
     if req.POST.get("units"):

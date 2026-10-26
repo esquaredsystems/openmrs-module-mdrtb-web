@@ -215,6 +215,65 @@ class FormatLabAttributeValueTest(TestCase):
     def test_text_is_unchanged(self):
         self.assertEqual(cu.format_lab_attribute_value(self._attribute("text", "3+")), "3+")
 
+    def test_coded_value_without_an_answer_is_none_not_its_uuid(self):
+        attribute = self._attribute("select", "31bb4a82-0370-102d-b0e3-001ec94a0cc1", answers=[
+            {"uuid": "a-1", "display": "Susceptible"}])
+        self.assertIsNone(cu.format_lab_attribute_value(attribute))
+
+
+class AddUnlistedCodedAnswersTest(TestCase):
+    SUSCEPTIBLE_TO_TB_DRUG = {
+        "display": "S",
+        "names": [
+            {"name": "S", "locale": "ru", "conceptNameType": "SHORT"},
+            {"name": "Чувствителен к препарату", "locale": "ru", "conceptNameType": "FULLY_SPECIFIED"},
+            {"name": "SUSCEPTIBLE TO TUBERCULOSIS DRUG", "locale": "en", "conceptNameType": "FULLY_SPECIFIED"},
+        ],
+    }
+
+    def _req(self):
+        request = RequestFactory().get("/")
+        request.session = {"locale": "ru"}
+        return request
+
+    def _attribute(self, value, answers):
+        return {"attributeType": {"inputType": "select", "answers": answers}, "valueReference": value}
+
+    def test_an_unlisted_value_becomes_an_answer_named_in_the_users_language(self):
+        answers = [{"uuid": "susceptible", "display": "Чувствителен"}]
+        attribute = self._attribute("susceptible-to-tb-drug", answers)
+        with patch.object(cu.mu, "get_concept", return_value=self.SUSCEPTIBLE_TO_TB_DRUG):
+            cu.add_unlisted_coded_answers(self._req(), [attribute])
+        self.assertEqual(
+            attribute["attributeType"]["answers"][-1],
+            {"uuid": "susceptible-to-tb-drug", "display": "Чувствителен к препарату"},
+        )
+        self.assertEqual(cu.format_lab_attribute_value(attribute), "Чувствителен к препарату")
+        # The type's own list is left alone; other results may share it.
+        self.assertEqual(len(answers), 1)
+
+    def test_each_concept_is_fetched_once(self):
+        attributes = [self._attribute("susceptible-to-tb-drug", []) for _ in range(3)]
+        with patch.object(cu.mu, "get_concept", return_value=self.SUSCEPTIBLE_TO_TB_DRUG) as get_concept:
+            cu.add_unlisted_coded_answers(self._req(), attributes)
+        get_concept.assert_called_once()
+
+    def test_listed_empty_and_uncoded_values_are_untouched(self):
+        listed = self._attribute("susceptible", [{"uuid": "susceptible", "display": "Чувствителен"}])
+        empty = self._attribute(None, [])
+        text = {"attributeType": {"inputType": "text"}, "valueReference": "3+"}
+        with patch.object(cu.mu, "get_concept") as get_concept:
+            cu.add_unlisted_coded_answers(self._req(), [listed, empty, text])
+        get_concept.assert_not_called()
+        self.assertEqual(len(listed["attributeType"]["answers"]), 1)
+
+    def test_a_concept_that_cannot_be_fetched_shows_nothing(self):
+        attribute = self._attribute("susceptible-to-tb-drug", [])
+        with patch.object(cu.mu, "get_concept", side_effect=Exception("down")):
+            cu.add_unlisted_coded_answers(self._req(), [attribute])
+        self.assertEqual(attribute["attributeType"]["answers"], [])
+        self.assertIsNone(cu.format_lab_attribute_value(attribute))
+
 
 class GroupLabResultAttributesTest(TestCase):
     def test_splits_common_from_grouped_keeping_order(self):

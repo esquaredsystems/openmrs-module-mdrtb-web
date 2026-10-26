@@ -4,6 +4,8 @@ new-order page (addlabtest.html) and the Order tab (laborder.html). Pass
 `sample` to edit it; without it a new sample starts on default_specimen_type /
 default_specimen_site (sputum, induced). The collection date is left out
 unless with_collection_date is set: the sample takes the order's own date.
+A stored identifier that is only a UUID (migrated samples) is never shown: the
+field starts empty and optional, and left empty it keeps what is stored.
 {% endcomment %}
 <div class="lab-fields">
   <div class="input-container">
@@ -38,9 +40,14 @@ unless with_collection_date is set: the sample takes the order's own date.
     </select>
   </div>
   <div class="input-container">
+    {% if sample.sampleIdentifier and not sample.display_identifier %}
+    <label class="input-label">{{'commonlabtest.labtestsample.sampleIdentifier'|get_message:locale|default:"en"}}</label>
+    <input class="input form-control" type="text" name="specimenid" value="">
+    {% else %}
     <label class="input-label required">{{'commonlabtest.labtestsample.sampleIdentifier'|get_message:locale|default:"en"}}</label>
     <input required class="input form-control" type="text" name="specimenid"
-      value="{% if sample.sampleIdentifier %}{{ sample.sampleIdentifier }}{% else %}{{'placeholder'|get_specimem_identifier}}{% endif %}">
+      value="{% if sample.display_identifier %}{{ sample.display_identifier }}{% else %}{{'placeholder'|get_specimem_identifier}}{% endif %}">
+    {% endif %}
   </div>
   {% if with_collection_date %}
   <div class="input-container">
