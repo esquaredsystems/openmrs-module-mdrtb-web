@@ -26,7 +26,8 @@ hides the actual message.
             {% endif %}
         </div>
         <div class="font-bold">
-            <div>{{patient.name}}</div>
+            {% comment %} fullName = first, last, patronymic (patient_utils.get_patient); name is the fallback for a patient cached in the session before fullName existed. {% endcomment %}
+            <div>{{patient.fullName|default:patient.name}}</div>
             <div class="flex items-center gap-1">
                 {% if show_gender_icon %}
                 {% comment %}

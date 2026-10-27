@@ -2,7 +2,7 @@
 # Django 4.1.1 frontend — communicates with OpenMRS via REST only, NO direct DB access.
 # Shared facts (domain model, concept/encounter-type/identifier UUIDs, topology): ../.agents/graph.md
 # Usage + notation legend + maintenance rules: ../.agents/instructions.md
-# Last updated: 2026-10-26 (§ TB FORM SUBMISSION; Form 89 multi-select method of detection)
+# Last updated: 2026-10-27 (Form 89 method of detection 3-column grid; patient full name with patronymic)
 
 ## § MODULE LAYOUT
 ```
@@ -63,7 +63,15 @@ MULTI-VALUED ANSWERS (2026-10-26): both encoders iterate fu._post_items(data), N
   A multi-select posts its key once per option and QueryDict.items() keeps only the LAST value,
   which silently reduced a multi-select to one obs. _post_items() uses .lists() and yields every
   value; get_obs_list_from_encounter() pairs them with the existing obs on edit.
-  Only methodOfDetection is multi-valued today (<select multiple> in form89.html).
+  Only methodOfDetection is multi-valued today (checkboxes class .methodOfDetection in form89.html,
+  full-width row, .method-of-detection-list 3-column grid in theme.css; OTHER rendered last; ticking OTHER
+  enables #otherMethodOfDetection, unticking disables + empties it).
+
+PATIENT NAME (2026-10-27): OpenMRS person.display = first + middle + last only (no familyName2).
+  Patronymic lives in familyName2 (enrolled via this app: form field patronymicname -> familyName2) OR middleName (migrated from old JSP system).
+  Shown as "first last patronymic" (middleName, plus familyName2 if different) in:
+    pu.get_patient -> patient["fullName"]  -> components/patient_banner.html (falls back to patient.name)
+    search_patients.html JS (same rule, built from person.preferredName of /search?q=, v=full)
 
 CLEARING DOES NOT DELETE: a blank/deselected answer is simply left out of the POST, and nothing
   voids the obs already stored, so the old value survives. Affects every TB form, not just 89.

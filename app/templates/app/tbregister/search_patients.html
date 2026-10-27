@@ -131,11 +131,24 @@
             }
 
             const person = patient.person || {}
+            // First name, last name, patronymic. person.display leaves the patronymic out.
+            // Same rule as fullName in patient_utils.get_patient: patronymic is familyName2
+            // (enrolled here) or middleName (migrated from the old system), both if they differ.
+            const pn = person.preferredName || {}
+            const middle = (pn.middleName || "").trim()
+            const family2 = (pn.familyName2 || "").trim()
+            const nameParts = [
+              (pn.givenName || "").trim(),
+              (pn.familyName || "").trim(),
+              middle,
+              family2 !== middle ? family2 : "",
+            ].filter(Boolean)
+            const nameToShow = nameParts.length ? nameParts.join(" ") : (person.display || "")
             $('#search-results').append(
               `<a href="${path}">
                     <div class="patient-result-row">
                       <p>${identifierToShow}</p>
-                      <p>${person.display || ""}</p>
+                      <p>${nameToShow}</p>
                       <p>${person.age != null ? person.age : ""}</p>
                       <p>${genderCell(person.gender)}</p>
                   </div>

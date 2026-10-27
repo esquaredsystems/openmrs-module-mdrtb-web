@@ -250,31 +250,61 @@
           </div>
           <div class="input-container"></div>
         </div>
+        <!-- Method of detection gets a full-width row so its checkboxes can sit in several columns;
+             "Other Method of Detection" is on the next row. -->
         <div class="flex items-center justify-between space-x-6">
-          <div class="input-container">
+          <div class="input-container method-of-detection-row">
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.methodOfDetection'|get_message:locale|default:"en"}}</label>
             <!-- Multi-select: each chosen method is posted separately and stored as its own obs. -->
             <!-- Checkboxes rather than <select multiple>: every option and every tick is visible
                  without ctrl-clicking, and the browser posts the name once per checked box, which
                  is exactly the repeated key the encoder turns into one obs each. -->
-            <div class="input form-control w-full max-h-32 overflow-y-auto flex flex-col space-y-1 py-2">
+            <!-- Three columns; OTHER always goes last (checked or not) so it sits just above its free-text field.
+                 Already chosen methods come first (from the saved form), then the rest of the answers. -->
+            {% with other_uuid='OTHER'|get_concept %}
+            <div class="input form-control w-full method-of-detection-list">
               {% for concept in form.methodOfDetection %}
-                <label class="flex items-center space-x-2 font-normal cursor-pointer">
-                  <input checked type="checkbox" class="radio-input methodOfDetection"
+                {% if concept.uuid != other_uuid %}
+                <label class="method-of-detection-option">
+                  <input checked type="checkbox" class="form-check-input methodOfDetection"
                     name="{{'METHOD_OF_DETECTION' | get_concept }}" value="{{concept.uuid}}" />
                   <span>{{concept.display}}</span>
                 </label>
+                {% endif %}
               {% endfor %}
               {% for concept in concepts.methodofdetection %}
-                <label class="flex items-center space-x-2 font-normal cursor-pointer">
-                  <input type="checkbox" class="radio-input methodOfDetection"
+                {% if concept.uuid != other_uuid %}
+                <label class="method-of-detection-option">
+                  <input type="checkbox" class="form-check-input methodOfDetection"
                     name="{{'METHOD_OF_DETECTION' | get_concept }}" value="{{concept.uuid}}" />
                   <span>{{concept.name}}</span>
                 </label>
+                {% endif %}
+              {% endfor %}
+              {% for concept in form.methodOfDetection %}
+                {% if concept.uuid == other_uuid %}
+                <label class="method-of-detection-option">
+                  <input checked type="checkbox" class="form-check-input methodOfDetection"
+                    name="{{'METHOD_OF_DETECTION' | get_concept }}" value="{{concept.uuid}}" />
+                  <span>{{concept.display}}</span>
+                </label>
+                {% endif %}
+              {% endfor %}
+              {% for concept in concepts.methodofdetection %}
+                {% if concept.uuid == other_uuid %}
+                <label class="method-of-detection-option">
+                  <input type="checkbox" class="form-check-input methodOfDetection"
+                    name="{{'METHOD_OF_DETECTION' | get_concept }}" value="{{concept.uuid}}" />
+                  <span>{{concept.name}}</span>
+                </label>
+                {% endif %}
               {% endfor %}
             </div>
+            {% endwith %}
           </div>
+        </div>
+        <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.otherMethodOfDetection'|get_message:locale|default:"en"}}</label>
@@ -286,6 +316,7 @@
               type="text" class="input form-control" />
             {% endif %}
           </div>
+          <div class="input-container"></div>
         </div>
         <div class="flex items-center justify-between space-x-6">
           <div class="input-container">
@@ -336,7 +367,7 @@
           <div class="input-container">
             <label
               class="tb03-form-label w-full">{{'mdrtb.form89.presenceOfDecay'|get_message:locale|default:"en"}}</label>
-            <div class="flex-center space-x-4">
+            <div class="flex-center space-x-4 w-full">
               <div class="flex-center space-x-2">
                 <label>{{'mdrtb.yes'|get_message:locale|default:"en"}}</label>
                 {% if state == 'edit' %}
@@ -999,13 +1030,18 @@
     let otherChosen = $('.methodOfDetection:checked').filter(function () {
       return this.value === OTHER_METHOD
     }).length > 0
-    if (!otherChosen) {
-      $('#otherMethodOfDetection').val('')
-    }
     $('#otherMethodOfDetection').prop('disabled', !otherChosen || formLocked)
+    return otherChosen
   }
 
-  $('#methodOfDetection').change(syncOtherMethodOfDetection)
+  // Each method is its own checkbox, so listen on the class, not an id.
+  // The text is cleared only when the user unticks OTHER, never on page load,
+  // so a saved form always shows what is stored.
+  $('.methodOfDetection').change(function () {
+    if (!syncOtherMethodOfDetection()) {
+      $('#otherMethodOfDetection').val('')
+    }
+  })
 
   // Run once on load so an existing form that already has OTHER selected opens
   // with the free-text field live, instead of waiting for a change that never comes.

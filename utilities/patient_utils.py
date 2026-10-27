@@ -58,10 +58,25 @@ def get_patient(req, uuid):
     if status:
         patient["uuid"] = uuid
         patient["name"] = patient_data["person"]["display"]
+        # fullName (patient banner): first name, last name, patronymic. OpenMRS "display" leaves the patronymic out.
+        # Enrollment here saves the patronymic as familyName2; patients migrated from the old system have it as
+        # middleName. Both are shown when both are filled and differ, so no patient loses it.
+        patient["fullName"] = patient["name"]
         if patient_data["person"]["preferredName"]:
             patient["givenName"] = patient_data["person"]["preferredName"]["givenName"]
             patient["familyName"] = patient_data["person"]["preferredName"]["familyName"]
             patient["middleName"] = patient_data["person"]["preferredName"]["middleName"]
+            middle = (patient["middleName"] or "").strip()
+            family2 = (patient_data["person"]["preferredName"].get("familyName2") or "").strip()
+            parts = [
+                (patient["givenName"] or "").strip(),
+                (patient["familyName"] or "").strip(),
+                middle,
+                family2 if family2 != middle else "",
+            ]
+            parts = [part for part in parts if part]
+            if parts:
+                patient["fullName"] = " ".join(parts)
         patient["age"] = patient_data["person"]["age"]
         patient["dob"] = patient_data["person"]["birthdate"]
         dob_datetime = datetime.strptime(patient["dob"], '%Y-%m-%dT%H:%M:%S.%f%z')
