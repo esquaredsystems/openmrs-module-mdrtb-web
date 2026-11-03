@@ -310,7 +310,7 @@ def remove_tb03_duplicates(concepts, form_data):
         "causeofdeath": "causeOfDeath",
         "resistancetype": "resistanceType",
         "resultofhivtest": "hivStatus",
-        "anatomicalSite": "anatomicalSite",
+        "siteoftbdisease": "anatomicalSite",
         "tuberculosispatientcategory": "patientCategory",
         "tuberculosistreatmentoutcome": "treatmentOutcome",
     }

@@ -323,7 +323,7 @@
               {% if form.anatomicalSite %}
                 <option selected value="{{form.anatomicalSite.uuid}}">{{form.anatomicalSite.display}}</option>
               {% elif tb03.anatomicalSite %}
-                <option selected value="{{form.tb03.anatomicalSite.uuid}}">{{tb03.anatomicalSite.display}}</option>
+                <option selected value="{{tb03.anatomicalSite.uuid}}">{{tb03.anatomicalSite.display}}</option>
               {% endif %}
               <!--
               {% for concept in concepts.siteoftbdisease %}
@@ -975,6 +975,7 @@
     $('#canceleditbtn').prop('hidden', false)
     formLocked = false
     syncOtherMethodOfDetection()
+    syncTbLocationList()
   })
   $('#canceleditbtn').click(function () {
     $('input').prop('disabled', true)
@@ -983,6 +984,7 @@
     $('#canceleditbtn').prop('hidden', true)
     formLocked = true
     syncOtherMethodOfDetection()
+    syncTbLocationList()
   })
   $('#populationCat').change((e) => {
     let val = e.target.value;
@@ -1003,21 +1005,17 @@
     }
   })
 
-  $('#siteOfDisease').change((e) => {
-    let val = e.target.value;
-    let pulmonary = "{{ 'PULMONARY_TB' | get_concept }}";
-    if (val === pulmonary) {
-      $('#ptbLocation').prop('disabled', false)
-      $('#eptbLocation').prop('disabled', true)
-      $('#ptbLocation').prop('hidden', false)
-      $('#eptbLocation').prop('hidden', true)
-    } else {
-      $('#ptbLocation').prop('disabled', true)
-      $('#eptbLocation').prop('disabled', false)
-      $('#ptbLocation').prop('hidden', true)
-      $('#eptbLocation').prop('hidden', false)
-    }
-  });
+  // Site of disease is read-only (copied from TB03), so it never fires "change":
+  // pick the location list from its value on load too. Extra-pulmonary shows the
+  // EPTB list, anything else the PTB one. The hidden list stays disabled so only
+  // the shown one is posted, and neither is enabled while the form is locked.
+  function syncTbLocationList() {
+    const extraPulmonary = $('#siteOfDisease').val() === "{{ 'EXTRA_PULMONARY_TB' | get_concept }}"
+    $('#ptbLocation').prop('hidden', extraPulmonary).prop('disabled', extraPulmonary || formLocked)
+    $('#eptbLocation').prop('hidden', !extraPulmonary).prop('disabled', !extraPulmonary || formLocked)
+  }
+  $('#siteOfDisease').change(syncTbLocationList)
+  syncTbLocationList()
 
   // "Other Method of Detection" is only answerable when OTHER is among the
   // selected methods. Kept disabled rather than hidden so it stays out of the
