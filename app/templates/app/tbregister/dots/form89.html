@@ -107,7 +107,7 @@
             <span class="font-bold">
               {{'mdrtb.form89.registrationDate'|get_message:locale|default:"en"}}:
             </span>
-            <span class="tb03-form-label w-full"> {{identifiers.dots.created_at | iso_to_normal_date }} </span>
+            <span class="tb03-form-label w-full"> {{current_patient_program_flow.current_program.dateEnrolled | iso_to_normal_date }} </span>
           </div>
 
           <div class="space-x-3">

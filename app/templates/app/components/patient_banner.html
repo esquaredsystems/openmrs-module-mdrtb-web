@@ -44,9 +44,12 @@ hides the actual message.
         </div>
     </div>
     <div class="space-y-2 flex flex-col justify-center font-bold text-base">
-        {% for identifier in patient.identifiers %}
+        {# Only the first (preferred) identifier, the same one the edit form shows #}
+        {% with identifier=patient.identifiers.0 %}
+        {% if identifier %}
         <span>{{identifier.identifierType.display}}: {{identifier.identifier}}</span>
-        {% endfor %}
+        {% endif %}
+        {% endwith %}
     </div>
 </div>
 {% endif %}
