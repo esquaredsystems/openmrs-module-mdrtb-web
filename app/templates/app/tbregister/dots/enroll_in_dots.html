@@ -283,47 +283,9 @@
       }
     })
 
-    // Walks the region -> district -> facility tree (locationByUuids, built by
-    // base.html) to find which region/district/facility a given location uuid
-    // belongs to, so the cascading selects can be pre-set to the location the
-    // patient/program already has instead of resetting to "Choose" every time
-    // the Location pencil is clicked.
-    const findLocationPath = (targetUuid) => {
-      if (!targetUuid || !locationByUuids) return null
-      for (const region of Object.values(locationByUuids)) {
-        if (region.uuid === targetUuid) return { region: region.uuid }
-        for (const district of (region.children || [])) {
-          if (district.uuid === targetUuid) return { region: region.uuid, district: district.uuid }
-          for (const facility of (district.children || [])) {
-            if (facility.uuid === targetUuid) return { region: region.uuid, district: district.uuid, facility: facility.uuid }
-          }
-        }
-      }
-      return null
-    }
-
-    // locationByUuids is filled by an async AJAX call in base.html, so it may
-    // not be ready yet the first time someone clicks the pencil right after
-    // the page loads. Retry briefly instead of silently giving up.
-    const prefillLocationSelects = (targetUuid, attempt = 0) => {
-      if (!targetUuid) return
-      if (!locationByUuids) {
-        if (attempt < 20) setTimeout(() => prefillLocationSelects(targetUuid, attempt + 1), 150)
-        return
-      }
-      const path = findLocationPath(targetUuid)
-      if (!path) return
-      if (path.region) {
-        $('#region-select').val(path.region).trigger('change')
-      }
-      if (path.district) {
-        $('#district-select').val(path.district).trigger('change')
-      }
-      if (path.facility) {
-        $('#facility-select').val(path.facility)
-      }
-    }
-
+    // prefillLocationSelects (base.html) pre-sets the cascading selects to the
+    // location the patient/program already has instead of resetting to "Choose"
+    // every time the Location pencil is clicked.
     $("#changeLocation").click(() => {
       const $prefilled = $('#prefilledlocation')
       if ($('#locations').prop('hidden')) {

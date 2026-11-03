@@ -242,7 +242,11 @@ def render_edit_patient(req, uuid):
         mu.add_url_to_breadcrumb(req, context["title"])
         context["patient"] = pu.get_patient(req, uuid)
         if context["patient"]["identifiers"]:
-            context["patient"]["dotsidentifier"] = context["patient"]["identifiers"][0]["identifier"]
+            identifier = context["patient"]["identifiers"][0]
+            context["patient"]["dotsidentifier"] = identifier["identifier"]
+            context["patient"]["identifierUuid"] = identifier["uuid"]
+            # The address keeps no facility; enrollment registers the identifier at it
+            context["patient"]["facilityUuid"] = (identifier.get("location") or {}).get("uuid")
 
         return render(req, "app/tbregister/edit_patient.html", context=context)
 

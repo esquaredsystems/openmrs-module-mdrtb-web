@@ -124,6 +124,8 @@ def save_patient(req, data, uuid=None):
         data (dict): The data for creating or updating the patient:
             - patientidentifier (str): The patient's identifier. Falls back to a
               generated timestamp if blank.
+            - patientidentifieruuid (str, update only): The identifier being edited.
+            - originalpatientidentifier (str, update only): Its value when the form opened.
             - suspect (str): "on" if the patient is a suspect; controls the identifier type.
             - district (str): The location of the patient (district or facility).
             - givenname (str): The patient's given name.
@@ -196,6 +198,20 @@ def save_patient(req, data, uuid=None):
     try:
         if uuid:  # If UUID provided, it's an update
             status, response = ru.post(req, f"patient/{uuid}", patient_info)
+            # Identifiers are a sub-resource. Only send one the user changed: re-posting
+            # an untouched migrated value could fail format validation and block the save.
+            identifier = (data.get("patientidentifier") or "").strip()
+            if (
+                status
+                and data.get("patientidentifieruuid")
+                and identifier
+                and identifier != data.get("originalpatientidentifier")
+            ):
+                ru.post(
+                    req,
+                    f"patient/{uuid}/identifier/{data['patientidentifieruuid']}",
+                    {"identifier": identifier},
+                )
         else:  # Otherwise, create a new record
             identifier_type = Constants.DOTS_IDENTIFIER.value
             # See if the patient is a Suspect or not; this only controls the

@@ -22,10 +22,13 @@
     <div class="enroll_form_bg">
       <div class="input-container">
         <label class="input-label required"
-          for="patientidentifiertype">{{'mdrtb.dotsIdentifier'|get_message:locale|default:"en"}}</label>
+          for="patientidentifier">{{'mdrtb.dotsIdentifier'|get_message:locale|default:"en"}}</label>
         <input hidden required class="input form-control" type="text" value="{{'DOTS_IDENTIFIER' | get_constant }}"
           name="patientidentifiertype" id="patientidentifiertype" />
-        <input disabled class="input form-control" type="text" name="patientidentifier" value="{{patient.dotsidentifier}}"/>
+        <input type="hidden" name="patientidentifieruuid" value="{{patient.identifierUuid}}"/>
+        <input type="hidden" name="originalpatientidentifier" value="{{patient.dotsidentifier}}"/>
+        <input required class="input form-control" type="text" name="patientidentifier" id="patientidentifier"
+          value="{{patient.dotsidentifier}}"/>
       </div>
     </div>
     {% endif %}
@@ -192,31 +195,40 @@
   };
   toggleCollapsible('deceased-toggle', 'deceased-fields', 'deceased-chevron');
 
-  $(window).on("load", function() {
-      // Set locations as per the data
-      const country = "{{ patient.country }}";
-      setSelectValueByText("#country-select", country.trim());
-      const region = "{{ patient.stateProvince }}".trim();
-      setSelectValueByText("#region-select", region);
-      // .val() doesn't fire "change", so district/facility stayed disabled
-      // and got dropped from the POST entirely - trigger it explicitly.
-      $("#region-select").trigger("change");
-      const district = "{{ patient.countyDistrict }}";
-      setSelectValueByText("#district-select", district);
-      $("#district-select").trigger("change");
-      const facility = "{{ patient.facility }}".trim();
-      if (facility) {
-          setSelectValueByText("#facility-select", facility);
+  // Set locations as per the data. The region options arrive by AJAX after
+  // window "load", so wait for locationsLoaded (base.html) or nothing matches.
+  $(() => locationsLoaded.then(() => {
+      setSelectValueByText("#country-select", "{{ patient.country|default:''|escapejs }}".trim());
+      // The address stores location names. .val() doesn't fire "change", which is
+      // what fills the next select's options, so trigger it after each match -
+      // and only on a match, as the handlers throw on an empty value.
+      const savedLocations = [
+          ["#region-select", "{{ patient.stateProvince|default:''|escapejs }}"],
+          ["#subregion-select", "{{ patient.cityVillage|default:''|escapejs }}"],
+          ["#district-select", "{{ patient.countyDistrict|default:''|escapejs }}"],
+      ];
+      for (const [selectId, name] of savedLocations) {
+          if (setSelectValueByText(selectId, name.trim())) {
+              $(selectId).trigger("change");
+          }
       }
-  });
+      // The address has no facility; the identifier is registered at the one picked at enrollment.
+      const facility = "{{ patient.facilityUuid|default:''|escapejs }}";
+      if (facility && $(`#facility-select option[value="${facility}"]`).length) {
+          $("#facility-select").val(facility).trigger("change");
+      }
+  }));
 
   function setSelectValueByText(selectId, text) {
+      let matched = false;
       $(selectId + " option").each(function() {
-          if ($(this).text().trim() === text) {
+          if (text && $(this).val() && $(this).text().trim() === text) {
               $(selectId).val($(this).val());
+              matched = true;
               return false; // Break the loop
           }
       });
+      return matched;
   }
 </script>
 

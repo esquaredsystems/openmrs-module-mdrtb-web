@@ -20,6 +20,18 @@
             {{'mdrtb.enrollNewPatient'|get_message:locale|default:"en"}}
         </h1>
         <div class="enroll_form_bg">
+            <div class="input-container">
+                <label class="input-label required"
+                       for="patientidentifier">{{'mdrtb.dotsIdentifier'|get_message:locale|default:"en"}}</label>
+                <input required class="input form-control" type="text" name="patientidentifier"
+                       id="patientidentifier"/>
+                <button type="button" id="copy-identifier-btn" class="copy-button"
+                        title="{{'general.copy'|get_message:locale|default:'Copy'}}">
+                    {{'general.copy'|get_message:locale|default:"Copy"}}
+                </button>
+            </div>
+        </div>
+        <div class="enroll_form_bg">
             <div class="enrollform-section">
                 <div class="input-container">
                     <label class="input-label w-full required"
@@ -110,16 +122,6 @@
                     <label class="input-label"
                            for="suspect">{{'mdrtb.suspect'|get_message:locale|default:"Suspect"}}</label>
                 </div>
-                <div class="input-container" id="identifier-row" style="display: none;">
-                    <label class="input-label"
-                           for="patientidentifier">{{'mdrtb.Identifier'|get_message:locale|default:"Identifier"}}</label>
-                    <input required class="input form-control" type="text" name="patientidentifier"
-                           id="patientidentifier"/>
-                    <button type="button" id="copy-identifier-btn" class="copy-button"
-                            title="{{'general.copy'|get_message:locale|default:'Copy'}}">
-                        {{'general.copy'|get_message:locale|default:"Copy"}}
-                    </button>
-                </div>
             </div>
             <div id="deceased-fields">
                 <div class="input-container">
@@ -206,16 +208,6 @@
             $("#dob").prop("disabled", false);
         }
     });
-    // Identifier row is only shown for suspects. The value is still submitted when the row
-    // is hidden (it is pre-filled above, and the backend falls back to a timestamp anyway);
-    // "required" only applies while the field is visible so a hidden field can't block submit.
-    const syncIdentifierRow = () => {
-        const isSuspect = $("#suspect").prop("checked");
-        $("#identifier-row").toggle(isSuspect);
-        $("#patientidentifier").prop("required", isSuspect);
-    };
-    $("#suspect").change(syncIdentifierRow);
-    syncIdentifierRow();
     $("#deceased").change(function () {
         if ($("#deceased").prop("checked")) {
             $("#deceased-container").removeClass("hidden");
@@ -256,11 +248,7 @@
     .collapsible-chevron-open {
         transform: rotate(90deg);
     }
-    /* Identifier label: same size as the field labels above (theme.css sets 0.85rem). */
-    .patient-form-page #more-options-body #suspect-container .input-container:last-child > .input-label {
-        font-size: 1rem;
-    }
-    /* Divider between the Suspect/Identifier block and the Deceased block. */
+    /* Divider between the Suspect block and the Deceased block. */
     .patient-form-page #more-options-body #deceased-fields {
         margin-top: 1rem;
         padding-top: 1rem;

@@ -183,11 +183,15 @@
 				}
 			)
 		}
+		// Resolves once the region options are in. Forms that pre-select a saved
+		// location must wait on it: window "load" does not wait for this AJAX call,
+		// so selecting earlier finds no options and leaves every field blank.
+		let locationsLoaded = Promise.resolve()
 		if ($("#locations-container").length > 0) {
 			try {
 				$("#region-select").prop("disabled", true);
 				$("#region-select").prop("title", "Fetching Locations");
-				getLocations()
+				locationsLoaded = getLocations()
 			} catch (error) {
 				console.log(error)
 			}
@@ -269,6 +273,38 @@
 			clearDistrictsAndFacilities()
 			insertchildren(selectedSubRegion.target.value, '#district-select', 'district')
 		})
+		// Finds where a location uuid sits in the tree as {region, subregion, district, facility},
+		// keyed by each ancestor's LEVEL, so a district under a subregion lands in the district select.
+		const findLocationPath = (targetUuid) => {
+			if (!targetUuid || !locationByUuids) return null
+			const walk = (nodes, path) => {
+				for (const node of nodes || []) {
+					const nodePath = node.level ? { ...path, [node.level.toLowerCase()]: node.uuid } : path
+					if (node.uuid === targetUuid) return nodePath
+					const found = walk(node.children, nodePath)
+					if (found) return found
+				}
+				return null
+			}
+			return walk(Object.values(locationByUuids), {})
+		}
+		// Selects each level top-down; "change" fills the next select's options before it is set.
+		const selectLocationPath = (path) => {
+			for (const level of ['region', 'subregion', 'district', 'facility']) {
+				const select = $(`#${level}-select`)
+				if (path[level] && select.find(`option[value="${path[level]}"]`).length) {
+					select.val(path[level]).trigger('change')
+				}
+			}
+		}
+		// Pre-sets the cascading selects to a saved location, once the options have loaded.
+		const prefillLocationSelects = (targetUuid) => {
+			if (!targetUuid) return
+			locationsLoaded.then(() => {
+				const path = findLocationPath(targetUuid)
+				if (path) selectLocationPath(path)
+			})
+		}
 	</script>
 
 </body>
