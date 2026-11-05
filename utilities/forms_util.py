@@ -574,7 +574,7 @@ def remove_form89_duplicates(concepts, form_data):
         "methodofdetection": "methodOfDetection",
         "placeofdetection": "placeOfDetection",
         "populationcategory": "populationCategory",
-        "prescribedtreatment": "prescribedTreatment",
+        "tuberculosispatientcategory": "prescribedTreatment",
         "profession": "profession",
         "anatomicalsite": "anatomicalSite",
         "contactwithatbpatient": "contactWithTbPatient",

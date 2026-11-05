@@ -47,7 +47,8 @@ hides the actual message.
         {# Only the first (preferred) identifier, the same one the edit form shows #}
         {% with identifier=patient.identifiers.0 %}
         {% if identifier %}
-        <span>{{identifier.identifierType.display}}: {{identifier.identifier}}</span>
+        {# The DOTS identifier type's name is one untranslated string in OpenMRS, so it gets the TB03 label instead #}
+        <span>{% if identifier.identifierType.uuid == 'DOTS_IDENTIFIER'|get_constant %}{{'mdrtb.tb03.tb03RegistrationNumber'|get_message:locale|default:"en"}}{% else %}{{identifier.identifierType.display}}{% endif %}: {{identifier.identifier}}</span>
         {% endif %}
         {% endwith %}
     </div>

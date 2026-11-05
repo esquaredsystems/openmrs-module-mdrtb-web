@@ -518,7 +518,14 @@
               <option value="{{ constants.NO }}" {% if form.pregnant.uuid == constants.NO %}selected{% endif %}>{{'mdrtb.no'|get_message:locale|default:"en"}}</option>
             </select>
           </div>
-          <div class="input-container"></div>
+          <div class="input-container">
+            <label class="tb03-form-label w-full">{{'mdrtb.form89.afterBirth'|get_message:locale|default:"en"}}</label>
+            <select name="{{'AFTER_BIRTH' | get_concept }}" class="input form-control">
+              <option value="" {% if not form.afterBirth %}selected{% endif %}>{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+              <option value="{{ constants.YES }}" {% if form.afterBirth.uuid == constants.YES %}selected{% endif %}>{{'mdrtb.yes'|get_message:locale|default:"en"}}</option>
+              <option value="{{ constants.NO }}" {% if form.afterBirth.uuid == constants.NO %}selected{% endif %}>{{'mdrtb.no'|get_message:locale|default:"en"}}</option>
+            </select>
+          </div>
         {% endif %}
         </div>
         <div class="bg-[#9e9e9e28] shadow-md p-4 my-4 flex flex-col justify-center space-y-6">
@@ -913,7 +920,7 @@
               {% else %}
                 <option selected value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
               {% endif %}
-              {% for concept in concepts.prescribedtreatment %}
+              {% for concept in concepts.tuberculosispatientcategory %}
                 <option value="{{concept.uuid}}">{{concept.name}}</option>
               {% endfor %}
             </select>

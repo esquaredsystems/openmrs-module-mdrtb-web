@@ -119,3 +119,46 @@ class TestMetaDataUtil(unittest.TestCase):
     def test_commonlab_get_message_with_invalid_locale_falls_back_to_english(self):
         value = mu.get_global_msgs("commonlabtest.labtestsample.manage", locale="zy", source="commonlab")
         self.assertEqual("Manage Test Samples", value)
+
+
+class ConceptCacheExpiryTest(unittest.TestCase):
+    """A cached concept list starts over from OpenMRS every CONCEPT_CACHE_MAX_AGE, however often it is rewritten."""
+
+    def setUp(self):
+        self.redis = {}
+        self.now = 1000 * mu.CONCEPT_CACHE_MAX_AGE  # the start of an hour
+        self.names = {"c1": "Излечен", "c2": "Умер"}
+        self.req = mock.Mock()
+        self.req.session = {"locale": "ru"}
+
+        def fake_get(req, endpoint, params):
+            uuid = endpoint.split("/")[1]
+            return True, {"uuid": uuid, "display": self.names[uuid]}
+
+        for patcher in (
+            mock.patch.object(mu.metadata_cache, "get", lambda key: self.redis.get(key)),
+            mock.patch.object(mu.metadata_cache, "set", lambda key, value: self.redis.__setitem__(key, value)),
+            mock.patch.object(mu.metadata_cache, "delete_many", lambda keys: [self.redis.pop(k, None) for k in keys]),
+            mock.patch.object(mu, "time", mock.Mock(time=lambda: self.now)),
+            mock.patch.object(mu.ru, "get", fake_get),
+        ):
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
+    def test_rewrites_do_not_keep_a_list_past_the_hour(self):
+        self.assertEqual(mu.get_concept(self.req, "c1")["display"], "Излечен")
+        self.names["c1"] = "ИЗЛЕЧЕН"  # renamed in OpenMRS, e.g. by the ETL
+        self.now += mu.CONCEPT_CACHE_MAX_AGE - 60
+        mu.get_concept(self.req, "c2")  # a miss rewrites the list; this used to restart its hour
+        self.assertEqual(mu.get_concept(self.req, "c1")["display"], "Излечен")
+        self.now += 60
+        self.assertEqual(mu.get_concept(self.req, "c1")["display"], "ИЗЛЕЧЕН")
+
+    def test_clear_concept_cache_drops_every_language(self):
+        for locale in ("ru", "tj"):
+            self.req.session["locale"] = locale
+            mu.get_concept(self.req, "c1")
+        self.names["c1"] = "ИЗЛЕЧЕН"
+        mu.clear_concept_cache()
+        self.assertEqual(self.redis, {})
+        self.assertEqual(mu.get_concept(self.req, "c1")["display"], "ИЗЛЕЧЕН")

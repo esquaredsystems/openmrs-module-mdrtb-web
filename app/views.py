@@ -1176,7 +1176,8 @@ def render_form_89(req, uuid):
             Concepts.ANATOMICAL_SITE_OF_TB.value,
             Concepts.LOCATION_OF_EPTB.value,
             Concepts.LOCATION_OF_PTB.value,
-            Concepts.PRESCRIBED_TREATMENT.value,
+            # Prescribed treatment offers TB03's regimen list (patient category)
+            Concepts.TUBERCULOSIS_PATIENT_CATEGORY.value,
             Concepts.PLACE_OF_CENTRAL_COMMISSION.value,
             Concepts.CONTACT_WITH_TB_PATIENT.value,
             Concepts.LABOR_MIGRATION.value,
@@ -1242,7 +1243,8 @@ def render_edit_form_89(req, uuid, formid):
             Concepts.ANATOMICAL_SITE_OF_TB.value,
             Concepts.LOCATION_OF_PTB.value,
             Concepts.LOCATION_OF_EPTB.value,
-            Concepts.PRESCRIBED_TREATMENT.value,
+            # Prescribed treatment offers TB03's regimen list (patient category)
+            Concepts.TUBERCULOSIS_PATIENT_CATEGORY.value,
             Concepts.PLACE_OF_CENTRAL_COMMISSION.value,
             Concepts.CONTACT_WITH_TB_PATIENT.value,
             Concepts.LABOR_MIGRATION.value,
@@ -4074,6 +4076,24 @@ def render_manage_concepts(req):
     except Exception as e:
         log_and_show_error(e, req)
     return render(req, "app/admin/manage_concepts.html", context=context)
+
+
+def clear_concept_cache(req):
+    """Drop the cached concept lists, e.g. after a data load changed names in OpenMRS. System Developer only."""
+    blocked = route_non_system_developer(req)
+    if blocked:
+        return blocked
+    if not check_if_session_alive(req):
+        return redirect("login")
+    if req.method == "POST":
+        try:
+            mu.clear_concept_cache()
+            messages.success(
+                req, mu.get_global_msgs("mdrtb.concepts.cacheCleared", locale=util.get_locale(req, "ru"))
+            )
+        except Exception as e:
+            log_and_show_error(e, req)
+    return redirect("manageConcepts")
 
 
 def search_concepts_json(req):
