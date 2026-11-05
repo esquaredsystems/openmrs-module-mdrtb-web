@@ -681,8 +681,15 @@ def get_patient_dashboard_info(
             }
         else:
             forms = {
-                "tb03s": fu.get_encounters_by_patient_and_type(
-                    req, patientuuid, EncounterType.TB03.value
+                "tb03s": add_enrollment_dates(
+                    req,
+                    patientuuid,
+                    fu.get_encounters_by_patient_and_type(
+                        req,
+                        patientuuid,
+                        EncounterType.TB03.value,
+                        params="custom:(uuid,location,encounterDatetime,obs:(concept:(uuid),value))",
+                    ),
                 ),
                 "form89s": fu.get_encounters_by_patient_and_type(
                     req, patientuuid, EncounterType.FROM_89.value
@@ -691,6 +698,37 @@ def get_patient_dashboard_info(
         return (patient, program, treatment_outcome, transfer_out, forms, lab_results)
     except Exception as e:
         raise Exception(str(e))
+
+
+def add_enrollment_dates(req, patient_uuid, encounters):
+    """
+    Sets "dateEnrolled" on each form encounter to the enrollment date of the
+    program it was filled for. encounterDatetime is only when the form was
+    entered into the system, not the patient's registration date.
+
+    A form names its enrollment in a PATIENT_PROGRAM_ID obs holding the
+    enrollment's internal id, so the encounters must be fetched with their obs.
+    A patient can have forms from several enrollments, so each one is matched
+    on its own link, not on the program the dashboard is open on. A form with
+    no link is left without a dateEnrolled.
+    """
+    if not encounters:
+        return encounters
+    try:
+        _, response = ru.get(
+            req,
+            "programenrollment",
+            {"patient": patient_uuid, "v": "custom:(patientProgramId,dateEnrolled)"},
+        )
+        dates = {p["patientProgramId"]: p["dateEnrolled"] for p in response["results"]}
+    except Exception as e:
+        logger.warning(f"Could not look up enrollment dates for patient {patient_uuid}: {e}")
+        return encounters
+    for encounter in encounters:
+        link = fu.get_obs_from_encounter(encounter.get("obs") or [], Concepts.PATIENT_PROGRAM_ID.value)
+        if link and link.get("value") is not None:
+            encounter["dateEnrolled"] = dates.get(int(link["value"]))
+    return encounters
 
 
 def get_patient_program_enrollments(req, patient_uuid):

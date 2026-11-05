@@ -184,3 +184,54 @@ class TestGetPatientProgramEnrollments(TestCase):
                 self._req(), "patient-uuid"
             )
         self.assertEqual(result, [])
+
+
+def _tb03(uuid, program_id=None):
+    obs = [{"concept": {"uuid": "some-other-question"}, "value": 5}]
+    if program_id is not None:
+        obs.append({"concept": {"uuid": pu.Concepts.PATIENT_PROGRAM_ID.value}, "value": program_id})
+    return {"uuid": uuid, "encounterDatetime": "2026-10-28T10:00:00.000+0000", "obs": obs}
+
+
+class TestAddEnrollmentDates(TestCase):
+    ENROLLMENTS = {
+        "results": [
+            {"patientProgramId": 11, "dateEnrolled": "2026-03-01T00:00:00.000+0000"},
+            {"patientProgramId": 22, "dateEnrolled": "2024-11-19T00:00:00.000+0000"},
+        ]
+    }
+
+    def setUp(self):
+        self.request = RequestFactory().get("/")
+
+    def test_each_form_gets_its_own_enrollment_date(self):
+        forms = [_tb03("tb03-a", 11), _tb03("tb03-b", 22.0)]
+        with mock.patch.object(ru, "get", return_value=(True, self.ENROLLMENTS)):
+            pu.add_enrollment_dates(self.request, "patient-uuid", forms)
+        self.assertEqual(forms[0]["dateEnrolled"], "2026-03-01T00:00:00.000+0000")
+        self.assertEqual(forms[1]["dateEnrolled"], "2024-11-19T00:00:00.000+0000")
+
+    def test_form_without_a_program_link_gets_no_date(self):
+        forms = [_tb03("tb03-a")]
+        with mock.patch.object(ru, "get", return_value=(True, self.ENROLLMENTS)):
+            pu.add_enrollment_dates(self.request, "patient-uuid", forms)
+        self.assertNotIn("dateEnrolled", forms[0])
+
+    def test_link_to_an_unknown_enrollment_gets_no_date(self):
+        forms = [_tb03("tb03-a", 99)]
+        with mock.patch.object(ru, "get", return_value=(True, self.ENROLLMENTS)):
+            pu.add_enrollment_dates(self.request, "patient-uuid", forms)
+        self.assertIsNone(forms[0]["dateEnrolled"])
+
+    def test_forms_are_left_as_they_are_when_the_lookup_fails(self):
+        forms = [_tb03("tb03-a", 11)]
+        with mock.patch.object(ru, "get", side_effect=Exception("boom")):
+            result = pu.add_enrollment_dates(self.request, "patient-uuid", forms)
+        self.assertIs(result, forms)
+        self.assertNotIn("dateEnrolled", forms[0])
+
+    def test_no_forms_makes_no_call(self):
+        with mock.patch.object(ru, "get") as get:
+            self.assertIsNone(pu.add_enrollment_dates(self.request, "patient-uuid", None))
+            self.assertEqual(pu.add_enrollment_dates(self.request, "patient-uuid", []), [])
+        get.assert_not_called()

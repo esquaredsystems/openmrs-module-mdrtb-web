@@ -84,11 +84,18 @@ def change_locale(req, locale):
         logged_in_user_uuid = req.session["logged_user"]["user"]["uuid"]
         user_properties = req.session["logged_user"]["user"]["userProperties"]
         user_properties["defaultLocale"] = locale
-        _, _ = ru.post(
-            req,
-            f"user/{logged_in_user_uuid}",
-            {"userProperties": user_properties},
-        )
+        try:
+            _, _ = ru.post(
+                req,
+                f"user/{logged_in_user_uuid}",
+                {"userProperties": user_properties},
+            )
+        except Exception as e:
+            # OpenMRS re-validates the whole user (person included) on save, so
+            # a user with no gender (the built-in admin) is refused. The
+            # language has already switched for this session; only remembering
+            # it for the next login failed, which is no reason to show an error.
+            logger.warning(f"Could not save default locale for user {logged_in_user_uuid}: {e}")
         return redirect(req.session["redirect_url"])
     except Exception as e:
         log_and_show_error(e, req)
@@ -524,7 +531,7 @@ def render_patient_dashboard(req, uuid, mdrtb=None):
         )
         # Remove Hospitalization Workflow
         if program_info.get("states"):
-            program_info["states"] = [item for item in program_info["states"] if item['concept'] != 'Hospitalization Workflow']
+            program_info["states"] = [item for item in program_info["states"] if item['uuid'] != Concepts.HOSPITALIZATION_WORKFLOW.value]
         req.session["current_patient_program_flow"] = {
             "current_patient": patient,
             "current_program": program_info,

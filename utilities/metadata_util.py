@@ -445,11 +445,14 @@ def add_url_to_breadcrumb(req, name, query_params=None):
             url += "?" + urlencode(query_params)
         index = None
         for i, bc in enumerate(breadcrumbs):
-            if bc["name"] == name:
+            # The name is already translated, so after a language switch the
+            # same page arrives under a new name; its path still matches.
+            if bc["name"] == name or bc["url"].split("?")[0] == req.path_info:
                 index = i
                 break
         if index is not None:
             breadcrumbs = breadcrumbs[: index + 1]
+            breadcrumbs[index]["name"] = name
         else:
             breadcrumbs.append({"name": name, "url": url})
         req.session["breadcrumbs"] = breadcrumbs

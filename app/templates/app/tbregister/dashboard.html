@@ -38,7 +38,7 @@
   <div class="bg-[#9e9e9e28] shadow-md p-4 flex flex-col justify-center space-y-4 m-4">
     <div class="flex items-center space-x-4">
       <h2 class="text-[#2D9CDB] text-3xl font-bold">
-        {% if program.program.name|lower == 'dots program' %}
+        {% if program.program.uuid == 'DOTS_PROGRAM'|get_constant %}
             {{'mdrtb.program.dots'|get_message:locale|default:"en"}}
         {% else %}
             {{'mdrtb.program.mdrtb'|get_message:locale|default:"en"}}
@@ -221,7 +221,7 @@
           class="tb03-form-label underline" href="{% if edit_encounters_privilege %}
           {% url 'edittb03' uuid=uuid formid=tb03.uuid %}
           {% else %} # {% endif %}">
-          {{tb03.encounterDatetime | iso_to_normal_date}}
+          {{tb03.dateEnrolled|default:tb03.encounterDatetime | iso_to_normal_date}}
           {{'mdrtb.at'|get_message:locale|default:"en"}}
           {{tb03.location.name}}</a>
       </div>

@@ -50,6 +50,8 @@
                 <th class="normal" rowspan="2">
                     <div><span>{{"mdrtb.form89.profession"|get_message:locale|default:"en"}}</span></div>
                 </th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.placeOfWorkOrStudy"|get_message:locale|default:"en"}}</th>
+                <th class="normal" rowspan="2">{{"mdrtb.form89.position"|get_message:locale|default:"en"}}</th>
                 <th class="normal" rowspan="2" rowspan="2">
                     {{"mdrtb.form89.populationCategory"|get_message:locale|default:"en"}}</th>
                 <th class="normal" rowspan="2">{{"mdrtb.form89.countryOfOrigin"|get_message:locale|default:"en"}}
@@ -156,6 +158,8 @@
                 <td>{{ row.pregnant.display }}</td>
                 <td>{{ row.locationType.display }}</td>
                 <td>{{ row.profession.display }}</td>
+                <td>{{ row.placeOfWorkOrStudy|default:'' }}</td>
+                <td>{{ row.position|default:'' }}</td>
                 <td>{{ row.populationCategory.display }}</td>
                 <td>{{ row.countryOfOrigin }}</td>
                 <td>{{ row.placeOfDetection.display }}</td>
