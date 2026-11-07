@@ -4078,24 +4078,6 @@ def render_manage_concepts(req):
     return render(req, "app/admin/manage_concepts.html", context=context)
 
 
-def clear_concept_cache(req):
-    """Drop the cached concept lists, e.g. after a data load changed names in OpenMRS. System Developer only."""
-    blocked = route_non_system_developer(req)
-    if blocked:
-        return blocked
-    if not check_if_session_alive(req):
-        return redirect("login")
-    if req.method == "POST":
-        try:
-            mu.clear_concept_cache()
-            messages.success(
-                req, mu.get_global_msgs("mdrtb.concepts.cacheCleared", locale=util.get_locale(req, "ru"))
-            )
-        except Exception as e:
-            log_and_show_error(e, req)
-    return redirect("manageConcepts")
-
-
 def search_concepts_json(req):
     """The 'Add answer' picker on the edit page. JSON, System Developer only."""
     if not req.session.get("session_id"):

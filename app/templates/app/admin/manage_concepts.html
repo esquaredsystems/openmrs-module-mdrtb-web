@@ -15,12 +15,6 @@
       <p class="loc-subtitle">{{ concepts|length }}</p>
       {% endif %}
     </div>
-    {# The forms read concepts from a cached copy (metadata_util.clear_concept_cache); this drops it. #}
-    <form method="post" action="{% url 'clearConceptCache' %}" class="loc-actions">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-outline-secondary btn-sm">
-        {{'mdrtb.concepts.clearCache'|get_message:locale|default:"en"}}</button>
-    </form>
   </div>
 
   {# Search only: concepts are never created or deleted from this app. #}

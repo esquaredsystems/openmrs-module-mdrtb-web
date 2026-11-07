@@ -293,14 +293,13 @@ class RefreshCachedConceptTest(unittest.TestCase):
         self.req = mock.Mock()
         self.req.session = {"locale": "ru"}
         for name, fake in (
-            ("_concepts_cache_key", lambda locale: locale),
             ("_get_cached_concepts", lambda locale: self.store.get(locale)),
             ("_set_cached_concepts", lambda locale, concepts: self.store.__setitem__(locale, concepts)),
         ):
             patcher = mock.patch.object(mu, name, fake)
             patcher.start()
             self.addCleanup(patcher.stop)
-        patcher = mock.patch.object(mu.metadata_cache, "delete", lambda key: self.store.pop(key, None))
+        patcher = mock.patch.object(mu.metadata_cache, "delete", lambda key: self.store.pop(key.split("_", 1)[1], None))
         patcher.start()
         self.addCleanup(patcher.stop)
 

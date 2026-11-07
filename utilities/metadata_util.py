@@ -3,7 +3,6 @@ from utilities import messages_util as msg
 from django.core.cache import caches
 from urllib.parse import urlencode
 import logging
-import time
 import zlib
 import pickle
 
@@ -17,12 +16,8 @@ SYSTEM_DEVELOPER_ROLE = "System Developer"
 # Shape of every concept in the cached concept lists (get_all_concepts, refresh_cached_concept).
 CONCEPT_CACHE_REP = "custom:(uuid,display,name:(display,uuid,locale,conceptNameType),names:(display,name,uuid,locale,conceptNameType),answers:(uuid,display,name:(display,uuid,locale,conceptNameType),names:(display,uuid,locale,conceptNameType)))"
 
-# Languages that can have a cached concept list ("concepts_<locale>_<hour>").
+# Languages that can have a cached concept list ("concepts_<locale>").
 CONCEPT_CACHE_LOCALES = ("en", "en_GB", "ru", "tj")
-
-# Longest a cached concept list is used, in seconds. OpenMRS does not tell this app when a concept changes (the ETL
-# writes names straight into its database), so this is how late a changed name can appear on the forms.
-CONCEPT_CACHE_MAX_AGE = 60 * 60
 
 
 def get_global_msgs(message_code, locale=None, default=None, source=None):
@@ -45,11 +40,7 @@ def get_global_msgs(message_code, locale=None, default=None, source=None):
 
 
 def _concepts_cache_key(locale):
-    # The key changes every CONCEPT_CACHE_MAX_AGE seconds, so each list starts over from OpenMRS at least that often.
-    # The cache's own one-hour TIMEOUT could not do this: every get_concept() miss rewrites the whole list and each
-    # write restarted the hour, so on a server in use the list never expired - after the 2026-10-27 ETL the Russian
-    # TB03 form still showed the old Treatment Outcome names on 2026-11-05.
-    return f"concepts_{locale}_{int(time.time()) // CONCEPT_CACHE_MAX_AGE}"
+    return f"concepts_{locale}"
 
 
 def _get_cached_concepts(locale):
@@ -142,15 +133,6 @@ def refresh_cached_concept(req, uuid):
                 ]
             updated.append(concept)
         _set_cached_concepts(locale, updated)
-
-
-def clear_concept_cache():
-    """
-    Administration -> Manage Concepts -> Clear concept cache. Drops the concept list of every language, so the forms
-    read concepts from OpenMRS again now rather than within CONCEPT_CACHE_MAX_AGE - for after concepts were changed
-    outside this app (a data load). The lists fill again as pages ask for concepts.
-    """
-    metadata_cache.delete_many([_concepts_cache_key(locale) for locale in CONCEPT_CACHE_LOCALES])
 
 
 def get_concept_from_cache(locale, uuid=None, name=None):
