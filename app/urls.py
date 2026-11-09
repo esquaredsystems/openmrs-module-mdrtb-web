@@ -136,6 +136,7 @@ urlpatterns = [
     # Reporting Urls
     path("reportform/<str:target>", views.render_report_form, name="reportform"),
     path("patientlist", views.render_patient_list, name="patientlist"),
+    path("patientview", views.render_patient_view, name="patientView"),
     path("tb03results", views.render_tb03_report, name="tb03Results"),
     path(
         "tb03singleresults", views.render_tb03_single_report, name="tb03singleResults"

@@ -1528,6 +1528,59 @@ def render_report_form(req, target):
     return render(req, "app/reporting/report_form_base.html", context)
 
 
+def render_patient_view(req):
+    """
+    General -> Patient View. READ-ONLY: one patient's records close to how
+    OpenMRS stores them (voided ones struck through), to find discrepancies and
+    troubleshoot a record. GET only; nothing on this page writes.
+
+    The search is the home page's live search (components/patient_search.html):
+    matches appear while typing, so an identifier shared by several patients
+    lists all of them. Choosing one opens:
+    ?patient=<uuid>  the patient to show.
+    ?voided=1        "Show voided" ticked when the page opens.
+
+    Errors are shown on this page; it never redirects to itself (see
+    redirect_after_error for why).
+    """
+    if not check_if_session_alive(req):
+        return redirect("login")
+    locale = req.session.get("locale", "en")
+    context = {"title": mu.get_global_msgs("mdrtb.patientView", locale=locale)}
+    context.update(
+        check_privileges(
+            req,
+            [Privileges.GET_PATIENTS, Privileges.VIEW_ENCOUNTERS, Privileges.VIEW_LABTEST_RESULTS],
+        )
+    )
+    patient_uuid = (req.GET.get("patient") or "").strip()
+    # Only decides whether voided rows start visible; they are always on the page (CSS filter).
+    context["show_voided"] = req.GET.get("voided") == "1"
+    if not (context["get_patients_privilege"] and context["view_encounters_privilege"]):
+        return render(req, "app/tbregister/patient_view.html", context=context)
+    # Same setting the home page search uses. If it cannot be read the search still works
+    # with 2, and the patient below must still load, so this failure is only logged.
+    try:
+        context["minSearchCharacters"] = mu.get_global_properties(req, "minSearchCharacters")
+    except Exception as e:
+        logger.warning(f"Could not read minSearchCharacters, using 2: {e}")
+        context["minSearchCharacters"] = 2
+    try:
+        if patient_uuid:
+            context.update(
+                pu.get_patient_raw_view(
+                    req,
+                    patient_uuid,
+                    include_lab_tests=context["view_labtest_results_privilege"],
+                )
+            )
+    except lu.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+    return render(req, "app/tbregister/patient_view.html", context=context)
+
+
 def render_patient_list(req):
     if not check_if_session_alive(req):
         return redirect("login")

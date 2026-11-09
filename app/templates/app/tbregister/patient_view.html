@@ -1,0 +1,471 @@
+{% extends 'app/base/base.html' %}
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+{% block content %}
+{% include 'app/components/nav.html' %}
+
+{% comment %}
+General -> Patient View. READ-ONLY: this page has no forms that write, on purpose.
+Shows one patient's records close to how OpenMRS stores them, to find discrepancies
+and troubleshoot a record. Data: views.render_patient_view -> pu.get_patient_raw_view.
+
+Struck-through rows (.pv-voided) are voided (deleted) records. They are hidden until
+"Show voided" is ticked (.pv-page.show-voided, a CSS filter; ?voided=1 keeps it in the URL). The REST API only
+returns voided identifiers, names, program states and observations; voided
+encounters, enrollments, addresses, attributes, lab tests and samples never come
+back, which the legend at the top says.
+
+Sections and encounters/lab tests are <details>: they collapse without script and
+work with the keyboard. Small grey text under a column header is the OpenMRS field
+name, so a value can be matched with the database or the REST response.
+{% endcomment %}
+
+<div class="loc-page pv-page{% if show_voided %} show-voided{% endif %}" id="pv-page">
+  <div class="loc-header">
+    <div>
+      <h1>{{'mdrtb.patientView'|get_message:locale|default:"en"}}</h1>
+    </div>
+  </div>
+
+  {% if not get_patients_privilege or not view_encounters_privilege %}
+  {% include 'app/components/authorization_error.html' %}
+  {% else %}
+
+  {# Same live search as the home page: matches appear while typing, so a shared identifier shows every patient. #}
+  <div class="pv-search">
+    {% url 'patientView' as patient_view_url %}
+    {% include 'app/components/patient_search.html' with result_url=patient_view_url|add:'?patient=__uuid__' %}
+  </div>
+
+  <script>
+    // Keep "Show voided" when another patient is opened from the search results.
+    document.getElementById('search-results').addEventListener('click', function (e) {
+      var link = e.target.closest('a');
+      var toggle = document.getElementById('pv-show-voided');
+      var on = toggle ? toggle.checked : {{ show_voided|yesno:"true,false" }};
+      if (link && on && link.href.indexOf('voided=1') === -1) { link.href += '&voided=1'; }
+    });
+  </script>
+
+  {% if patient %}
+  <div class="pv-toolbar">
+    <p class="pv-legend">
+      <span class="pv-voided-sample">{{'general.voided'|get_message:locale|default:"en"}}</span>
+      {{'mdrtb.patientView.voidedLegend'|get_message:locale|default:"en"}}
+      {{'mdrtb.patientView.notReturned'|get_message:locale|default:"en"}}
+    </p>
+    <div class="pv-toolbar-actions">
+      <label class="loc-voided-toggle" for="pv-show-voided">
+        <input type="checkbox" id="pv-show-voided"{% if show_voided %} checked{% endif %}>
+        <span>{{'mdrtb.locations.showVoided'|get_message:locale|default:"en"}}</span>
+      </label>
+      <button type="button" class="loc-linkbtn" id="pv-expand-all">+ {{'mdrtb.locations.expandAll'|get_message:locale|default:"en"}}</button>
+      <button type="button" class="loc-linkbtn" id="pv-collapse-all">&minus; {{'mdrtb.locations.collapseAll'|get_message:locale|default:"en"}}</button>
+    </div>
+  </div>
+
+  {% if patient.voided %}
+  <div class="alert alert-warning">{{'mdrtb.patientView.patientVoided'|get_message:locale|default:"en"}}</div>
+  {% endif %}
+
+  {% comment %}
+  Two columns: patient details and lab tests on the left, encounters (the longest
+  section) on the right. Below 1100px wide they stack (theme.css § Patient View).
+  {% endcomment %}
+  <div class="pv-columns">
+  <div class="pv-col">
+
+  {# ================= 1. Demographics, programs, identifiers ================= #}
+  <details class="lab-attrs pv-section" open>
+    <summary><span>{{'mdrtb.patientView.demographics'|get_message:locale|default:"en"}}</span></summary>
+    <div class="pv-body">
+
+      <dl class="pv-facts">
+        <dt>{{'mdrtb.name'|get_message:locale|default:"en"}}</dt><dd>{{ patient.display|default:"—" }}</dd>
+        <dt>{{'mdrtb.gender'|get_message:locale|default:"en"}}</dt><dd>{{ patient.gender|get_gender_message:locale }} <span class="pv-raw">{{ patient.gender }}</span></dd>
+        <dt>{{'Person.birthdate'|get_message:locale|default:"en"}}</dt>
+        <dd>{{ patient.birthdate|format_iso_date|default:"—" }}{% if patient.birthdateEstimated %} ({{'mdrtb.estimated'|get_message:locale|default:"en"}}){% endif %}</dd>
+        <dt>{{'mdrtb.age'|get_message:locale|default:"en"}}</dt><dd>{{ patient.age|default_if_none:"—" }}</dd>
+        <dt>{{'mdrtb.deceased'|get_message:locale|default:"en"}}</dt>
+        <dd>{% if patient.dead %}✓ {{ patient.deathDate|format_iso_date }} {{ patient.causeOfDeath|default:"" }}{% else %}—{% endif %}</dd>
+        <dt>{{'general.dateCreated'|get_message:locale|default:"en"}}</dt>
+        <dd>{{ patient.auditInfo.dateCreated|format_iso_date:"time" }} {{ patient.auditInfo.creator.display|default:"" }}</dd>
+        <dt>{{'general.uuid'|get_message:locale|default:"en"}}</dt><dd><code>{{ patient.uuid }}</code></dd>
+      </dl>
+
+      {# ---- Identifiers ---- #}
+      <h3 class="pv-subtitle">{{'mdrtb.patientView.identifiers'|get_message:locale|default:"en"}}</h3>
+      {% if errors.identifiers %}<div class="alert alert-danger">{{ errors.identifiers }}</div>{% endif %}
+      <table class="user-table pv-table">
+        <thead>
+          <tr>
+            <th>{{'mdrtb.Identifier'|get_message:locale|default:"en"}}</th>
+            <th>{{'mdrtb.patientidentifiertype'|get_message:locale|default:"en"}}</th>
+            <th>{{'mdrtb.location'|get_message:locale|default:"en"}}</th>
+            <th>{{'mdrtb.patientView.preferred'|get_message:locale|default:"en"}}</th>
+            <th>{{'general.dateCreated'|get_message:locale|default:"en"}}</th>
+            <th>{{'general.createdBy'|get_message:locale|default:"en"}}</th>
+            <th>{{'general.voided'|get_message:locale|default:"en"}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for id in identifiers %}
+          <tr{% if id.voided %} class="pv-voided"{% endif %}>
+            <td>{{ id.identifier }}</td>
+            <td>{{ id.identifierType.display }}</td>
+            <td>{{ id.location.display|default:"—" }}</td>
+            <td>{% if id.preferred %}✓{% endif %}</td>
+            <td>{{ id.auditInfo.dateCreated|format_iso_date:"time" }}</td>
+            <td>{{ id.auditInfo.creator.display|default:"" }}</td>
+            <td class="pv-void-info">{% if id.voided %}{{ id.auditInfo.dateVoided|format_iso_date:"time" }} {{ id.auditInfo.voidReason|default:"" }}{% endif %}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7">{{'mdrtb.none'|get_message:locale|default:"en"}}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {# ---- Names ---- #}
+      <h3 class="pv-subtitle">{{'mdrtb.patientView.names'|get_message:locale|default:"en"}}</h3>
+      {% if errors.names %}<div class="alert alert-danger">{{ errors.names }}</div>{% endif %}
+      <table class="user-table pv-table">
+        <thead>
+          <tr>
+            <th>{{'mdrtb.givenname'|get_message:locale|default:"en"}}<span class="pv-raw">givenName</span></th>
+            <th>{{'mdrtb.familyname'|get_message:locale|default:"en"}}<span class="pv-raw">familyName</span></th>
+            <th>{{'PersonName.middleName'|get_message:locale|default:"en"}}<span class="pv-raw">middleName</span></th>
+            <th>{{'mdrtb.patronymicName'|get_message:locale|default:"en"}}<span class="pv-raw">familyName2</span></th>
+            <th>{{'mdrtb.patientView.preferred'|get_message:locale|default:"en"}}</th>
+            <th>{{'general.dateCreated'|get_message:locale|default:"en"}}</th>
+            <th>{{'general.createdBy'|get_message:locale|default:"en"}}</th>
+            <th>{{'general.voided'|get_message:locale|default:"en"}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for name in names %}
+          <tr{% if name.voided %} class="pv-voided"{% endif %}>
+            <td>{{ name.givenName|default:"" }}</td>
+            <td>{{ name.familyName|default:"" }}</td>
+            <td>{{ name.middleName|default:"" }}</td>
+            <td>{{ name.familyName2|default:"" }}</td>
+            <td>{% if name.preferred %}✓{% endif %}</td>
+            <td>{{ name.auditInfo.dateCreated|format_iso_date:"time" }}</td>
+            <td>{{ name.auditInfo.creator.display|default:"" }}</td>
+            <td class="pv-void-info">{% if name.voided %}{{ name.auditInfo.dateVoided|format_iso_date:"time" }} {{ name.auditInfo.voidReason|default:"" }}{% endif %}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="8">{{'mdrtb.none'|get_message:locale|default:"en"}}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {# ---- Addresses (live only: the API never returns voided ones) ---- #}
+      <h3 class="pv-subtitle">{{'mdrtb.address'|get_message:locale|default:"en"}}</h3>
+      <table class="user-table pv-table">
+        <thead>
+          <tr>
+            <th>{{'mdrtb.region'|get_message:locale|default:"en"}}<span class="pv-raw">stateProvince</span></th>
+            <th>{{'mdrtb.district'|get_message:locale|default:"en"}}<span class="pv-raw">countyDistrict</span></th>
+            <th>{{'Location.cityVillage'|get_message:locale|default:"en"}}<span class="pv-raw">cityVillage</span></th>
+            <th>{{'mdrtb.address1'|get_message:locale|default:"en"}}<span class="pv-raw">address1</span></th>
+            <th>{{'mdrtb.address2'|get_message:locale|default:"en"}}<span class="pv-raw">address2</span></th>
+            <th>{{'mdrtb.patientView.preferred'|get_message:locale|default:"en"}}</th>
+            <th>{{'general.dateCreated'|get_message:locale|default:"en"}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for address in addresses %}
+          <tr>
+            <td>{{ address.stateProvince|default:"" }}</td>
+            <td>{{ address.countyDistrict|default:"" }}</td>
+            <td>{{ address.cityVillage|default:"" }}</td>
+            <td>{{ address.address1|default:"" }}</td>
+            <td>{{ address.address2|default:"" }}</td>
+            <td>{% if address.preferred %}✓{% endif %}</td>
+            <td>{{ address.auditInfo.dateCreated|format_iso_date:"time" }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7">{{'mdrtb.none'|get_message:locale|default:"en"}}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {# ---- Person attributes (live only) ---- #}
+      {% if attributes %}
+      <h3 class="pv-subtitle">{{'mdrtb.locations.attributes'|get_message:locale|default:"en"}}</h3>
+      <table class="user-table pv-table">
+        <thead>
+          <tr>
+            <th>{{'general.name'|get_message:locale|default:"en"}}</th>
+            <th>{{'general.value'|get_message:locale|default:"en"}}</th>
+            <th>{{'general.dateCreated'|get_message:locale|default:"en"}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for attribute in attributes %}
+          <tr>
+            <td>{{ attribute.type }}</td>
+            <td>{{ attribute.value|default:"" }}</td>
+            <td>{{ attribute.auditInfo.dateCreated|format_iso_date:"time" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+
+      {# ---- Programs (enrollments) with their states ---- #}
+      <h3 class="pv-subtitle">{{'Program.header'|get_message:locale|default:"en"}}</h3>
+      {% if errors.programs %}<div class="alert alert-danger">{{ errors.programs }}</div>{% endif %}
+      <table class="user-table pv-table">
+        <thead>
+          <tr>
+            <th>{{'Program.program'|get_message:locale|default:"en"}}</th>
+            <th>{{'mdrtb.patientView.programId'|get_message:locale|default:"en"}}<span class="pv-raw">patientProgramId</span></th>
+            <th>{{'mdrtb.location'|get_message:locale|default:"en"}}</th>
+            <th>{{'Program.dateEnrolled'|get_message:locale|default:"en"}}</th>
+            <th>{{'Program.dateCompleted'|get_message:locale|default:"en"}}</th>
+            <th>{{'mdrtb.outcome'|get_message:locale|default:"en"}}</th>
+            <th>{{'general.dateCreated'|get_message:locale|default:"en"}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for program in programs %}
+          <tr class="pv-program-row{% if program.voided %} pv-voided{% endif %}">
+            <td>{{ program.name }}</td>
+            <td>{{ program.patientProgramId }}</td>
+            <td>{{ program.location.display|default:"—" }}</td>
+            <td>{{ program.dateEnrolled|format_iso_date }}</td>
+            <td>{{ program.dateCompleted|format_iso_date|default:"—" }}</td>
+            <td>{{ program.outcome.display|default:"—" }}</td>
+            <td>{{ program.auditInfo.dateCreated|format_iso_date:"time" }} {{ program.auditInfo.creator.display|default:"" }}</td>
+          </tr>
+          {% if program.states %}
+          <tr class="pv-states-row">
+            <td colspan="7">
+              <table class="pv-table pv-subtable">
+                <thead>
+                  <tr>
+                    <th>{{'Program.states'|get_message:locale|default:"en"}}</th>
+                    <th>{{'general.value'|get_message:locale|default:"en"}}</th>
+                    <th>{{'mdrtb.startdate'|get_message:locale|default:"en"}}</th>
+                    <th>{{'mdrtb.enddate'|get_message:locale|default:"en"}}</th>
+                    <th>{{'general.dateCreated'|get_message:locale|default:"en"}}</th>
+                    <th>{{'general.voided'|get_message:locale|default:"en"}}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for state in program.states %}
+                  <tr{% if state.voided %} class="pv-voided"{% endif %}>
+                    <td>{{ state.workflow|default:"—" }}</td>
+                    <td>{{ state.name|default:"" }}</td>
+                    <td>{{ state.startDate|format_iso_date }}</td>
+                    <td>{{ state.endDate|format_iso_date|default:"—" }}</td>
+                    <td>{{ state.auditInfo.dateCreated|format_iso_date:"time" }}</td>
+                    <td class="pv-void-info">{% if state.voided %}{{ state.auditInfo.dateVoided|format_iso_date:"time" }} {{ state.auditInfo.voidReason|default:"" }}{% endif %}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          {% endif %}
+          {% empty %}
+          <tr><td colspan="7">{{'mdrtb.none'|get_message:locale|default:"en"}}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  {# ================= 3. Lab tests ================= #}
+  <details class="lab-attrs pv-section" open>
+    <summary>
+      <span>{{'mdrtb.labResults'|get_message:locale|default:"en"}}</span>
+      <span class="loc-badge">{{ lab_tests|length }}</span>
+    </summary>
+    <div class="pv-body">
+      {% if not view_labtest_results_privilege %}
+      {% include 'app/components/authorization_error.html' %}
+      {% endif %}
+      {% if errors.lab_tests %}<div class="alert alert-danger">{{ errors.lab_tests }}</div>{% endif %}
+      {% for test in lab_tests %}
+      <details class="pv-item">
+        <summary>
+          <span class="pv-item-date">{{ test.orderDate|format_iso_date }}</span>
+          <span class="pv-item-title">{{ test.labTestType.display }}</span>
+          <span>{{ test.labReferenceNumber|default:"" }}</span>
+          {% if test.patientProgramId %}
+          <span class="loc-badge" title="{{'mdrtb.patientView.programId'|get_message:locale|default:'en'}}">#{{ test.patientProgramId }}</span>
+          {% endif %}
+        </summary>
+        <dl class="pv-facts pv-facts-inline">
+          <dt>{{'mdrtb.dateOrdered'|get_message:locale|default:"en"}}<span class="pv-raw">dateActivated</span></dt>
+          <dd>{{ test.orderDate|format_iso_date:"time" }}</dd>
+          <dt>{{'commonlabtest.order.labReferenceNo'|get_message:locale|default:"en"}}</dt><dd>{{ test.labReferenceNumber|default:"—" }}</dd>
+          <dt>{{'commonlabtest.order.id'|get_message:locale|default:"en"}}</dt><dd>{{ test.orderNumber|default:"—" }}</dd>
+          <dt>{{'mdrtb.patientView.programId'|get_message:locale|default:"en"}}<span class="pv-raw">patient_program_id</span></dt><dd>{{ test.patientProgramId|default:"—" }}</dd>
+          <dt>{{'general.encounter'|get_message:locale|default:"en"}}</dt>
+          <dd>{% if test.encounter %}{{ test.encounter.encounterDatetime|format_iso_date:"time" }} {{ test.encounter.encounterType.display }}{% else %}—{% endif %}</dd>
+          <dt>{{'general.dateCreated'|get_message:locale|default:"en"}}</dt>
+          <dd>{{ test.auditInfo.dateCreated|format_iso_date:"time" }} {{ test.auditInfo.creator.display|default:"" }}</dd>
+          <dt>{{'general.uuid'|get_message:locale|default:"en"}}</dt><dd><code>{{ test.uuid }}</code></dd>
+        </dl>
+
+        <h4 class="pv-subtitle">{{'mdrtb.specimens'|get_message:locale|default:"en"}}</h4>
+        <table class="user-table pv-table">
+          <thead>
+            <tr>
+              <th>{{'commonlabtest.labtestsample.sampleIdentifier'|get_message:locale|default:"en"}}</th>
+              <th>{{'general.specimenType'|get_message:locale|default:"en"}}</th>
+              <th>{{'general.specimenSite'|get_message:locale|default:"en"}}</th>
+              <th>{{'labtest.status'|get_message:locale|default:"en"}}</th>
+              <th>{{'commonlabtest.labtestsample.collectionDate'|get_message:locale|default:"en"}}</th>
+              <th>{{'mdrtb.comments'|get_message:locale|default:"en"}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for sample in test.samples %}
+            <tr>
+              <td>{{ sample.sampleIdentifier|default:"" }}</td>
+              <td>{{ sample.specimenType.display|default:"" }}</td>
+              <td>{{ sample.specimenSite.display|default:"" }}</td>
+              <td>{{ sample.status|default:"" }}</td>
+              <td>{{ sample.collectionDate|format_iso_date:"time" }}</td>
+              <td>{{ sample.comments|default:"" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">{{'mdrtb.none'|get_message:locale|default:"en"}}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <h4 class="pv-subtitle">{{'mdrtb.result'|get_message:locale|default:"en"}}</h4>
+        <table class="user-table pv-table">
+          <thead>
+            <tr>
+              <th>{{'commonlabtest.labtestattributetype.groupName'|get_message:locale|default:"en"}}<span class="pv-raw">groupName</span></th>
+              <th>{{'general.name'|get_message:locale|default:"en"}}</th>
+              <th>{{'general.value'|get_message:locale|default:"en"}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for attribute in test.result_attributes %}
+            <tr>
+              <td>{{ attribute.group }}</td>
+              <td>{{ attribute.name }}</td>
+              <td title="{{ attribute.raw|default:'' }}">{{ attribute.value }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">{{'mdrtb.none'|get_message:locale|default:"en"}}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </details>
+      {% empty %}
+      {% if view_labtest_results_privilege and not errors.lab_tests %}<p>{{'mdrtb.none'|get_message:locale|default:"en"}}</p>{% endif %}
+      {% endfor %}
+    </div>
+  </details>
+
+  </div>{# left column #}
+
+  <div class="pv-col">
+  {# ================= 2. Encounters ================= #}
+  <details class="lab-attrs pv-section" open>
+    <summary>
+      <span>{{'mdrtb.visits'|get_message:locale|default:"en"}}</span>
+      <span class="loc-badge">{{ encounters|length }}</span>
+    </summary>
+    <div class="pv-body">
+      {% if errors.encounters %}<div class="alert alert-danger">{{ errors.encounters }}</div>{% endif %}
+      {% for encounter in encounters %}
+      {# Open by default: the observations are what this column is for. #}
+      <details class="pv-item" open>
+        <summary>
+          <span class="pv-item-date">{{ encounter.encounterDatetime|format_iso_date:"time" }}</span>
+          <span class="pv-item-title">{{ encounter.encounterType.display }}</span>
+          <span>{{ encounter.location.display|default:"" }}</span>
+          {% if encounter.patientProgramId %}
+          <span class="loc-badge" title="{{'mdrtb.patientView.programId'|get_message:locale|default:'en'}}">#{{ encounter.patientProgramId }}</span>
+          {% endif %}
+          <span class="pv-item-count">{{ encounter.obs_count }}{% if encounter.voided_obs_count %} ({{'general.voided'|get_message:locale|default:"en"}}: {{ encounter.voided_obs_count }}){% endif %}</span>
+        </summary>
+        <dl class="pv-facts pv-facts-inline">
+          <dt>{{'general.dateCreated'|get_message:locale|default:"en"}}</dt>
+          <dd>{{ encounter.auditInfo.dateCreated|format_iso_date:"time" }} {{ encounter.auditInfo.creator.display|default:"" }}</dd>
+          {% if encounter.auditInfo.dateChanged %}
+          <dt>{{'general.dateChanged'|get_message:locale|default:"en"}}</dt>
+          <dd>{{ encounter.auditInfo.dateChanged|format_iso_date:"time" }} {{ encounter.auditInfo.changedBy.display|default:"" }}</dd>
+          {% endif %}
+          <dt>{{'mdrtb.patientView.programId'|get_message:locale|default:"en"}}</dt><dd>{{ encounter.patientProgramId|default:"—" }}</dd>
+          <dt>{{'general.uuid'|get_message:locale|default:"en"}}</dt><dd><code>{{ encounter.uuid }}</code></dd>
+        </dl>
+        <table class="user-table pv-table">
+          <thead>
+            <tr>
+              <th>{{'mdrtb.patientView.concept'|get_message:locale|default:"en"}}</th>
+              <th>{{'general.value'|get_message:locale|default:"en"}}</th>
+              <th>{{'mdrtb.date'|get_message:locale|default:"en"}}<span class="pv-raw">obsDatetime</span></th>
+              <th>{{'general.dateCreated'|get_message:locale|default:"en"}}</th>
+              <th>{{'general.createdBy'|get_message:locale|default:"en"}}</th>
+              <th>{{'general.voided'|get_message:locale|default:"en"}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for obs in encounter.observations %}
+            <tr{% if obs.voided %} class="pv-voided"{% endif %}>
+              <td class="pv-depth-{{ obs.depth }}" title="{{ obs.concept.uuid }}">{{ obs.concept.display }}</td>
+              <td>{{ obs.value_text }}{% if obs.comment %} <span class="pv-raw">{{ obs.comment }}</span>{% endif %}</td>
+              <td>{{ obs.obsDatetime|format_iso_date:"time" }}</td>
+              <td>{{ obs.auditInfo.dateCreated|format_iso_date:"time" }}</td>
+              <td>{{ obs.auditInfo.creator.display|default:"" }}</td>
+              <td class="pv-void-info">{% if obs.voided %}{{ obs.auditInfo.dateVoided|format_iso_date:"time" }} {{ obs.auditInfo.voidReason|default:"" }}{% endif %}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">{{'mdrtb.none'|get_message:locale|default:"en"}}</td></tr>
+            {% endfor %}
+            {# All of this encounter's observations are voided: say "none" while they are hidden. #}
+            {% if encounter.obs_count and encounter.obs_count == encounter.voided_obs_count %}
+            <tr class="pv-only-voided"><td colspan="6">{{'mdrtb.none'|get_message:locale|default:"en"}}</td></tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </details>
+      {% empty %}
+      {% if not errors.encounters %}<p>{{'mdrtb.none'|get_message:locale|default:"en"}}</p>{% endif %}
+      {% endfor %}
+    </div>
+  </details>
+
+  </div>{# right column #}
+  </div>{# .pv-columns #}
+
+  <script>
+    // Expand / collapse every section, encounter and lab test at once.
+    (function () {
+      // "Show voided" is a CSS filter, not a server round trip: the page already holds the
+      // voided rows (see the comment at the top). The URL keeps ?voided=1 in step without
+      // reloading, so the view can be bookmarked; a patient opened from the search keeps it too.
+      var page = document.getElementById('pv-page');
+      document.getElementById('pv-show-voided').addEventListener('change', function (e) {
+        page.classList.toggle('show-voided', e.target.checked);
+        var url = new URL(window.location.href);
+        if (e.target.checked) { url.searchParams.set('voided', '1'); }
+        else { url.searchParams.delete('voided'); }
+        window.history.replaceState({}, '', url);
+      });
+
+      function setAll(open) {
+        document.querySelectorAll('.pv-page details').forEach(function (d) { d.open = open; });
+      }
+      document.getElementById('pv-expand-all').addEventListener('click', function () { setAll(true); });
+      document.getElementById('pv-collapse-all').addEventListener('click', function () { setAll(false); });
+    })();
+  </script>
+  {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

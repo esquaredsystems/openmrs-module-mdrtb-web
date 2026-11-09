@@ -4,6 +4,7 @@ from utilities import metadata_util as mu
 from utilities import forms_util as fu
 from utilities import commonlab_util as cu
 from utilities import locations_util as lu
+from utilities.rest_admin import get_all_pages, SessionExpired
 from resources.enums.constants import Constants
 from resources.enums.mdrtbConcepts import Concepts
 from resources.enums.encounterType import EncounterType
@@ -690,6 +691,7 @@ def get_patient_dashboard_info(
                         EncounterType.TB03.value,
                         params="custom:(uuid,location,encounterDatetime,obs:(concept:(uuid),value))",
                     ),
+                    program_uuid=programuuid,
                 ),
                 "form89s": fu.get_encounters_by_patient_and_type(
                     req, patientuuid, EncounterType.FROM_89.value
@@ -700,17 +702,11 @@ def get_patient_dashboard_info(
         raise Exception(str(e))
 
 
-def add_enrollment_dates(req, patient_uuid, encounters):
+def add_enrollment_dates(req, patient_uuid, encounters, program_uuid=None):
     """
     Sets "dateEnrolled" on each form encounter to the enrollment date of the
     program it was filled for. encounterDatetime is only when the form was
     entered into the system, not the patient's registration date.
-
-    A form names its enrollment in a PATIENT_PROGRAM_ID obs holding the
-    enrollment's internal id, so the encounters must be fetched with their obs.
-    A patient can have forms from several enrollments, so each one is matched
-    on its own link, not on the program the dashboard is open on. A form with
-    no link is left without a dateEnrolled.
     """
     if not encounters:
         return encounters
@@ -718,17 +714,36 @@ def add_enrollment_dates(req, patient_uuid, encounters):
         _, response = ru.get(
             req,
             "programenrollment",
-            {"patient": patient_uuid, "v": "custom:(patientProgramId,dateEnrolled)"},
+            {
+                "patient": patient_uuid,
+                "v": "custom:(uuid,patientProgramId,dateEnrolled)",
+            },
         )
         dates = {p["patientProgramId"]: p["dateEnrolled"] for p in response["results"]}
+        current_id = None
+        if program_uuid:
+            current_id = next(
+                (p["patientProgramId"] for p in response["results"] if p.get("uuid") == program_uuid),
+                None,
+            )
+            if current_id is None:
+                logger.warning(
+                    f"Enrollment {program_uuid} not found for patient {patient_uuid}; "
+                    "showing forms from every enrollment"
+                )
     except Exception as e:
         logger.warning(f"Could not look up enrollment dates for patient {patient_uuid}: {e}")
         return encounters
+    kept = []
     for encounter in encounters:
         link = fu.get_obs_from_encounter(encounter.get("obs") or [], Concepts.PATIENT_PROGRAM_ID.value)
         if link and link.get("value") is not None:
-            encounter["dateEnrolled"] = dates.get(int(link["value"]))
-    return encounters
+            linked_id = int(link["value"])
+            if current_id is not None and linked_id != current_id:
+                continue
+            encounter["dateEnrolled"] = dates.get(linked_id)
+        kept.append(encounter)
+    return kept
 
 
 def get_patient_program_enrollments(req, patient_uuid):
@@ -739,17 +754,11 @@ def get_patient_program_enrollments(req, patient_uuid):
 
     A lab order may legitimately be entered against an already-completed
     enrolment as a historical event, so completed enrolments are included
-    here too; callers that need to guard against backdating past the
-    enrolment's close use the date_completed field.
+    here too.
 
     Kept separate from get_enrolled_programs_by_patient: that one pulls the full
     workflow/state tree and assumes every enrolment has a location (old records
-    often don't). Here a failure just means "no programs to attach" - the lab
-    order is still allowed through, to be backfilled later.
-
-    program_name is resolved through _localized_program_name (same as
-    get_enrolled_programs_by_patient) rather than the raw Program.name column,
-    since that column has no locale variants of its own.
+    often don't).
 
     Returns:
         list[dict]: each with uuid (the patientProgram uuid), program_name,
@@ -846,3 +855,285 @@ def get_patient_treatment_outcome(req, patientuuid, concept):
             return response["results"][0]["value"]["display"]
     except Exception:
         return None
+
+
+def get_patient_raw_view(req, patient_uuid, include_lab_tests=True):
+    """
+    Everything stored for one patient, close to how OpenMRS holds it, for
+    General -> Patient View. Read-only; used to find discrepancies and to
+    troubleshoot a record.
+
+    Voided (deleted) records are included wherever the REST API can return
+    them, with "voided": True so the page strikes them through:
+        identifiers   patient/{uuid}/identifier?includeAll=true
+        names         person/{uuid}/name (returns voided names as well)
+        program states  the states of each enrollment
+        observations  obs?encounter={uuid}&includeAll=true, one call per encounter
+    The API never returns voided encounters, enrollments, addresses, person
+    attributes, lab tests or samples (it filters them out on the server, whatever
+    is asked), so those lists are live records only. The page says so.
+
+    Each section is fetched on its own: if one fails, the others are still shown
+    and the failure is reported in that section ("errors"). Only the patient
+    record itself is required.
+
+    Returns a dict: patient, names, identifiers, addresses, attributes, programs,
+    encounters, lab_tests, errors {section: message}.
+    """
+    errors = {}
+    view = {"errors": errors}
+
+    # The patient record. Without it there is nothing to show, so this one raises.
+    _, patient = ru.get(req, f"patient/{patient_uuid}", {"v": "full"})
+    person = patient.get("person") or {}
+    view["patient"] = {
+        "uuid": patient.get("uuid"),
+        "voided": patient.get("voided"),
+        "display": person.get("display"),
+        "gender": person.get("gender"),
+        "age": person.get("age"),
+        "birthdate": person.get("birthdate"),
+        "birthdateEstimated": person.get("birthdateEstimated"),
+        "dead": person.get("dead"),
+        "deathDate": person.get("deathDate"),
+        "causeOfDeath": (person.get("causeOfDeath") or {}).get("display"),
+        "auditInfo": patient.get("auditInfo") or {},
+    }
+    view["addresses"] = sorted(
+        person.get("addresses") or [], key=lambda a: not a.get("preferred")
+    )
+    view["attributes"] = [
+        {
+            "type": (a.get("attributeType") or {}).get("display"),
+            # Concept and location attributes come back as an object, the rest as text.
+            "value": a["value"].get("display") if isinstance(a.get("value"), dict) else a.get("value"),
+            "auditInfo": a.get("auditInfo") or {},
+        }
+        for a in person.get("attributes") or []
+    ]
+
+    try:
+        names = get_all_pages(req, f"person/{patient_uuid}/name", {"v": "full"})
+        # Preferred first, voided last.
+        view["names"] = sorted(names, key=lambda n: (bool(n.get("voided")), not n.get("preferred")))
+    except SessionExpired:
+        raise
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        view["names"] = []
+        errors["names"] = str(e)
+
+    try:
+        identifiers = get_all_pages(
+            req, f"patient/{patient_uuid}/identifier", {"v": "full", "includeAll": "true"}
+        )
+        view["identifiers"] = sorted(
+            identifiers, key=lambda i: (bool(i.get("voided")), not i.get("preferred"))
+        )
+    except SessionExpired:
+        raise
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        view["identifiers"] = []
+        errors["identifiers"] = str(e)
+
+    # Enrollments. patientProgramId is the number the forms store in their
+    # PATIENT PROGRAM ID observation, so it is shown next to each enrollment and
+    # each encounter: a form linked to the wrong enrollment is visible at a glance.
+    program_ids = {}
+    try:
+        programs = get_all_pages(
+            req,
+            "programenrollment",
+            {
+                "patient": patient_uuid,
+                "v": (
+                    "custom:(uuid,patientProgramId,voided,dateEnrolled,dateCompleted,"
+                    "location:(display),outcome:(display),"
+                    "program:(name,concept:(uuid,names:(name,locale)),"
+                    "allWorkflows:(concept:(display),states:(uuid))),"
+                    "states:(uuid,startDate,endDate,voided,state:(uuid,concept:(display)),auditInfo),"
+                    "auditInfo)"
+                ),
+            },
+        )
+        for program in programs:
+            program_ids[program.get("uuid")] = program.get("patientProgramId")
+            program["name"] = _localized_program_name(req, program.get("program") or {})
+            # A state only names its own concept; its workflow comes from the program.
+            # A retired state is not listed under its workflow, so its workflow stays blank.
+            workflow_of_state = {
+                state["uuid"]: (workflow.get("concept") or {}).get("display")
+                for workflow in (program.get("program") or {}).get("allWorkflows") or []
+                for state in workflow.get("states") or []
+            }
+            states = program.get("states") or []
+            for state in states:
+                state_uuid = (state.get("state") or {}).get("uuid")
+                state["workflow"] = workflow_of_state.get(state_uuid)
+                state["name"] = ((state.get("state") or {}).get("concept") or {}).get("display")
+            program["states"] = sorted(
+                states, key=lambda s: (s.get("workflow") or "", s.get("startDate") or "")
+            )
+        view["programs"] = sorted(programs, key=lambda p: p.get("dateEnrolled") or "", reverse=True)
+    except SessionExpired:
+        raise
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        view["programs"] = []
+        errors["programs"] = str(e)
+
+    # Encounters, newest first, each with all of its observations (voided included).
+    # Group members are listed under their group with depth > 0.
+    encounters_by_uuid = {}
+    try:
+        encounters = get_all_pages(
+            req,
+            "encounter",
+            {
+                "patient": patient_uuid,
+                "v": (
+                    "custom:(uuid,encounterDatetime,voided,encounterType:(display),"
+                    "location:(display),form:(display),auditInfo)"
+                ),
+            },
+        )
+        for encounter in encounters:
+            encounters_by_uuid[encounter["uuid"]] = encounter
+            all_obs = get_all_pages(
+                req,
+                "obs",
+                {
+                    "encounter": encounter["uuid"],
+                    "includeAll": "true",
+                    "v": (
+                        "custom:(uuid,obsDatetime,voided,value,comment,"
+                        "concept:(uuid,display,datatype:(display)),obsGroup:(uuid),auditInfo)"
+                    ),
+                },
+            )
+            members = {}
+            for obs in all_obs:
+                concept = obs.get("concept") or {}
+                obs["datatype"] = (concept.get("datatype") or {}).get("display")
+                value = obs.get("value")
+                if isinstance(value, dict):
+                    obs["value_text"] = value.get("display")
+                elif obs["datatype"] == "Date":
+                    obs["value_text"] = u.format_iso_date(value)
+                elif obs["datatype"] == "Datetime":
+                    obs["value_text"] = u.format_iso_date(value, with_time=True)
+                else:
+                    obs["value_text"] = "" if value is None else str(value)
+                parent = (obs.get("obsGroup") or {}).get("uuid")
+                members.setdefault(parent, []).append(obs)
+                if (
+                    concept.get("uuid") == Concepts.PATIENT_PROGRAM_ID.value
+                    and not obs.get("voided")
+                    and value is not None
+                ):
+                    try:
+                        encounter["patientProgramId"] = int(float(value))
+                    except (TypeError, ValueError):
+                        encounter["patientProgramId"] = value
+            # Alphabetical by question, voided after the live one, members right under their group.
+            rows = []
+            stack = [(obs, 0) for obs in reversed(
+                sorted(members.get(None, []), key=lambda o: ((o["concept"].get("display") or ""), bool(o.get("voided"))))
+            )]
+            while stack:
+                obs, depth = stack.pop()
+                obs["depth"] = depth
+                rows.append(obs)
+                children = sorted(
+                    members.get(obs["uuid"], []),
+                    key=lambda o: ((o["concept"].get("display") or ""), bool(o.get("voided"))),
+                )
+                stack.extend((child, depth + 1) for child in reversed(children))
+            # An obs whose group is not in this encounter would otherwise be lost: list it at the end.
+            listed = {obs["uuid"] for obs in rows}
+            rows.extend(
+                dict(obs, depth=0) for obs in all_obs if obs["uuid"] not in listed
+            )
+            encounter["observations"] = rows
+            encounter["obs_count"] = len(rows)
+            encounter["voided_obs_count"] = sum(1 for obs in rows if obs.get("voided"))
+        view["encounters"] = sorted(
+            encounters, key=lambda e: e.get("encounterDatetime") or "", reverse=True
+        )
+    except SessionExpired:
+        raise
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        view["encounters"] = []
+        errors["encounters"] = str(e)
+
+    # Lab tests. Samples and result attributes are only filled in when a lab
+    # test is fetched on its own (LabTestOrderResourceController.getByUniqueId),
+    # so the search gives the uuids and each test is fetched separately.
+    view["lab_tests"] = []
+    if include_lab_tests:
+        try:
+            found = get_all_pages(
+                req, "commonlab/labtestorder", {"patient": patient_uuid, "v": "custom:(uuid)"}
+            )
+            for item in found:
+                _, lab_test = ru.get(
+                    req,
+                    f"commonlab/labtestorder/{item['uuid']}",
+                    {
+                        "v": (
+                            "custom:(uuid,labReferenceNumber,labTestType,patientProgram,"
+                            "order,labTestSamples,attributes,auditInfo)"
+                        )
+                    },
+                )
+                order = lab_test.get("order") or {}
+                lab_test["orderDate"] = order.get("dateActivated")
+                lab_test["orderNumber"] = order.get("orderNumber")
+                lab_test["encounter"] = encounters_by_uuid.get((order.get("encounter") or {}).get("uuid"))
+                program_uuid = (lab_test.get("patientProgram") or {}).get("uuid")
+                lab_test["patientProgramId"] = program_ids.get(program_uuid, program_uuid)
+                lab_test["samples"] = sorted(
+                    lab_test.get("labTestSamples") or [],
+                    key=lambda s: s.get("collectionDate") or "",
+                )
+                attributes = []
+                for attribute in lab_test.get("attributes") or []:
+                    attribute_type = attribute.get("attributeType") or {}
+                    datatype = attribute_type.get("datatypeClassname") or ""
+                    value = attribute.get("valueReference")
+                    if value in (None, ""):
+                        text = ""
+                    elif datatype.endswith("ConceptDatatype"):
+                        # Stored as the answer concept's uuid. If the concept cannot be
+                        # named, the uuid itself is shown: in this view a value is never hidden.
+                        try:
+                            text = cu._concept_name(req, value) or value
+                        except Exception as e:
+                            logger.warning(f"Could not name lab result concept {value}: {e}")
+                            text = value
+                    elif datatype.endswith("DateDatatype"):
+                        text = u.format_iso_date(value)
+                    else:
+                        text = value
+                    attributes.append(
+                        {
+                            "group": attribute_type.get("groupName") or "",
+                            "sortWeight": attribute_type.get("sortWeight") or 0,
+                            "name": attribute_type.get("name") or attribute_type.get("display"),
+                            "value": text,
+                            "raw": value,
+                        }
+                    )
+                lab_test["result_attributes"] = sorted(
+                    attributes, key=lambda a: (a["group"], a["sortWeight"], a["name"] or "")
+                )
+                view["lab_tests"].append(lab_test)
+            view["lab_tests"].sort(key=lambda t: t.get("orderDate") or "", reverse=True)
+        except SessionExpired:
+            raise
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            errors["lab_tests"] = str(e)
+    return view

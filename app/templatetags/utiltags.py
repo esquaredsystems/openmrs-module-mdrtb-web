@@ -2,6 +2,7 @@ from django.template.defaulttags import register
 from datetime import datetime
 from dateutil import parser
 import re
+from utilities.common_utils import format_iso_date as _format_iso_date
 
 
 @register.filter
@@ -101,3 +102,12 @@ def get_report_date(date):
         return " ".join([normal_date, time])
     else:
         return None
+
+
+@register.filter
+def format_iso_date(date, mode=None):
+    """
+    {{ value|format_iso_date }} -> dd.mm.yyyy, {{ value|format_iso_date:"time" }} -> dd.mm.yyyy HH:MM.
+    Never raises: see common_utils.format_iso_date.
+    """
+    return _format_iso_date(date, with_time=(mode == "time"))

@@ -2797,3 +2797,198 @@ a.lab-button:hover {
   margin-bottom: 0;
   flex: 1 1 10rem;
 }
+
+/* ---------- Patient View (General -> Patient View, read-only) ----------
+ * Sections reuse .lab-attrs (<details> with a chevron). Tables reuse .user-table.
+ */
+
+.loc-page.pv-page {
+  max-width: none;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* Left: patient details + lab tests. Right: encounters. Stacked on narrow screens. */
+.pv-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.pv-col > .pv-section:first-child {
+  margin-top: 1rem;
+}
+
+@media (max-width: 1100px) {
+  .pv-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* The live search (components/patient_search.html) at the width it has on the home page. */
+.pv-search {
+  max-width: 44rem;
+  margin-bottom: 1rem;
+}
+
+.pv-toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pv-toolbar-actions {
+  display: flex;
+  gap: 0.75rem;
+  white-space: nowrap;
+}
+
+.pv-legend {
+  margin: 0;
+  color: var(--brand-text-muted);
+  font-size: 0.85rem;
+  max-width: 60rem;
+}
+
+.pv-voided-sample {
+  text-decoration: line-through;
+  margin-right: 0.35rem;
+}
+
+.pv-body {
+  margin: 0 1rem 1rem;
+  overflow-x: auto;
+}
+
+.pv-subtitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.pv-table {
+  font-size: 0.875rem;
+}
+
+.pv-table th,
+.pv-table td {
+  padding: 0.3rem 0.5rem;
+  border-bottom: 1px solid var(--brand-border);
+}
+
+/* The OpenMRS field name under a column header, or a raw value next to a translated one. */
+.pv-raw {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--brand-text-muted);
+}
+
+td .pv-raw,
+dd .pv-raw {
+  display: inline;
+}
+
+/* Voided (deleted) records: struck through, per the convention elsewhere (.loc-retired). */
+.pv-voided td {
+  text-decoration: line-through;
+  color: var(--brand-text-muted);
+}
+
+/* "Show voided" (unticked by default): voided rows are on the page but hidden. Pure CSS
+   filter, like the location tree, because the rows are already loaded. */
+.pv-page:not(.show-voided) .pv-voided {
+  display: none;
+}
+
+/* "None" row for an encounter whose observations are all voided: only while they are hidden. */
+.pv-page.show-voided .pv-only-voided {
+  display: none;
+}
+
+/* ...except the cell that says when and why it was voided, which has to stay readable. */
+.pv-voided td.pv-void-info {
+  text-decoration: none;
+}
+
+.pv-void-info {
+  font-size: 0.8rem;
+  color: var(--brand-text-muted);
+}
+
+/* Observations inside an obs group are indented under it. */
+.pv-depth-1 { padding-left: 1.5rem !important; }
+.pv-depth-2 { padding-left: 2.5rem !important; }
+.pv-depth-3 { padding-left: 3.5rem !important; }
+
+.pv-states-row > td {
+  padding-left: 2rem;
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.pv-subtable {
+  width: 100%;
+  font-size: 0.8rem;
+}
+
+.pv-facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+  margin: 0.75rem 0;
+}
+
+.pv-facts dt {
+  font-weight: 600;
+}
+
+.pv-facts dd {
+  margin: 0;
+}
+
+.pv-facts-inline {
+  font-size: 0.85rem;
+}
+
+/* One encounter or lab test: a smaller <details> inside a section. */
+.pv-item {
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  margin: 0.5rem 0;
+  padding: 0 0.75rem;
+}
+
+.pv-item > summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  cursor: pointer;
+}
+
+.pv-item[open] > summary {
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.pv-item > table {
+  margin-bottom: 0.75rem;
+}
+
+.pv-item-date {
+  font-variant-numeric: tabular-nums;
+  min-width: 8.5rem;
+}
+
+.pv-item-title {
+  font-weight: 600;
+}
+
+.pv-item-count {
+  margin-left: auto;
+  color: var(--brand-text-muted);
+  font-size: 0.85rem;
+}

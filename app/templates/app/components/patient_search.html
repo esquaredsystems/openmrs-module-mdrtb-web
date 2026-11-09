@@ -1,0 +1,182 @@
+{% comment %}
+Live patient search: results appear as you type (name or identifier, via the
+"search" view -> GET patient?q=&v=full). Shared by the home page (search_patients.html)
+and General -> Patient View (patient_view.html), so both search the same way.
+
+Include with:
+  result_url           where a result row links to; "__uuid__" in it is replaced by
+                       the patient's uuid, e.g. {% url 'enrolledprograms' uuid='__uuid__' %}
+  minSearchCharacters  (from the view's context) characters before searching
+
+Uses the ids #search-input and #search-results, so include it once per page.
+Styles: theme.css § Patient search page (.patient-search-* / .patient-result-*).
+{% endcomment %}
+    <div class="patient-search-box">
+      <input type="text" id="search-input" name="search" autocomplete="off" autofocus
+        placeholder="{{'mdrtb.search.instructions' | get_message:locale|default:"en" }}"
+        title="Enter 2 or more characters" />
+      <span class="search-icon" onclick="handleSearch($('#search-input').val())">
+        <svg id="search-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+        </svg>
+      </span>
+    </div>
+
+
+    <div id="search-results" class="patient-search-results">
+
+    </div>
+
+    {% comment %}
+    Gender icons for the result rows, which are built in JS. Rendered from the same
+    component as the patient banner so both places always show the identical icon.
+    data-label is the translated word (Male/Female...) used as tooltip + accessible name.
+    {% endcomment %}
+    <template id="gender-icon-M" data-label="{{ 'M'|get_gender_message:locale }}">{% include 'app/components/gender_avatar.html' with gender='M' css_class='w-5 h-5' %}</template>
+    <template id="gender-icon-F" data-label="{{ 'F'|get_gender_message:locale }}">{% include 'app/components/gender_avatar.html' with gender='F' css_class='w-5 h-5' %}</template>
+
+  <script>
+    // "{{minSearchCharacters}}" arrives as a string; compare numbers, not text.
+    const minSearchCharacters = Number("{{minSearchCharacters}}") || 2
+
+    // Where a result row links to; __uuid__ is replaced by the patient's uuid.
+    const resultUrl = "{{ result_url|escapejs }}"
+
+    // Same male/female icon as the patient banner. Anything else (missing/other) shows as before.
+    const genderCell = (gender) => {
+      const tpl = document.getElementById('gender-icon-' + gender)
+      if (!tpl) return gender || ""
+      const label = tpl.dataset.label || gender
+      return `<span title="${label}" role="img" aria-label="${label}">${tpl.innerHTML}</span>`
+    }
+
+    const handleSearch = (searchQuery) => {
+      if (searchQuery.length < minSearchCharacters) {
+        $('#search-results').removeClass('is-open')
+        $('#search-results').html("")
+        return
+      }
+
+      console.log('[search] query=%s (min %d chars)', searchQuery, minSearchCharacters)
+
+      $('#search-results').html(`
+        <div class="patient-search-loader">
+          <div class="app-spinner" role="status" aria-label="Loading"></div>
+        </div>`)
+      $('#search-results').addClass('is-open')
+
+      $.ajax({
+        url: "{% url 'search'%}?q=" + encodeURIComponent(searchQuery),
+        method: 'GET',
+        success: function (data) {
+          console.log('[search] raw response:', data)
+
+          if (data && data.error) {
+            console.error('[search] server reported:', data.error)
+            $('#search-results').html(
+              `<div class="patient-search-empty">
+                  <h3>
+                    {{'mdrtb.error.PatientNotFound'|get_message:locale|default:"en"}}
+                  </h3>
+                </div>`)
+            return
+          }
+
+          // Guard the shape: anything unexpected must show a message, not
+          // throw halfway through and leave an empty box behind.
+          const results = (data && Array.isArray(data.results)) ? data.results : []
+          console.log('[search] %d result(s):', results.length, results)
+
+          if (results.length === 0) {
+            $('#search-results').html(
+              `<div class="patient-search-empty">
+                  <h3>
+                    {{'mdrtb.error.PatientNotFound'|get_message:locale|default:"en"}}
+                  </h3>
+              </div>`)
+            return
+          }
+
+          $('#search-results').html(
+            `<div class="patient-result-row patient-result-header">
+                  <p>{{'mdrtb.Identifier'|get_message:locale|default:"en"}}</p>
+                  <p>{{'mdrtb.givenname'|get_message:locale|default:"en"}}</p>
+                  <p>{{'mdrtb.age'|get_message:locale|default:"en"}}</p>
+                  <p>{{'mdrtb.gender'|get_message:locale|default:"en"}}</p>
+                </div>`)
+
+          results.forEach(function (patient, i) {
+            const path = resultUrl.replace('__uuid__', patient.uuid)
+            const identifiers = patient.identifiers || []
+
+            // A patient with no identifier used to throw here on identifiers[0],
+            // which aborted the loop and left the whole list blank.
+            let identifierToShow = identifiers.length ? identifiers[0].identifier : ""
+            identifiers.forEach(function (identifier) {
+              if (identifier.identifier === searchQuery) {
+                identifierToShow = identifier.identifier
+              }
+            })
+            if (!identifiers.length) {
+              console.warn('[search] result %d (%s) has no identifiers', i, patient.uuid)
+            }
+
+            const person = patient.person || {}
+            // First name, last name, patronymic. person.display leaves the patronymic out.
+            // Same rule as fullName in patient_utils.get_patient: patronymic is familyName2
+            // (enrolled here) or middleName (migrated from the old system), both if they differ.
+            const pn = person.preferredName || {}
+            const middle = (pn.middleName || "").trim()
+            const family2 = (pn.familyName2 || "").trim()
+            const nameParts = [
+              (pn.givenName || "").trim(),
+              (pn.familyName || "").trim(),
+              middle,
+              family2 !== middle ? family2 : "",
+            ].filter(Boolean)
+            const nameToShow = nameParts.length ? nameParts.join(" ") : (person.display || "")
+            $('#search-results').append(
+              `<a href="${path}">
+                    <div class="patient-result-row">
+                      <p>${identifierToShow}</p>
+                      <p>${nameToShow}</p>
+                      <p>${person.age != null ? person.age : ""}</p>
+                      <p>${genderCell(person.gender)}</p>
+                  </div>
+                  </a>`)
+          })
+
+          console.log('[search] rendered %d row(s)', results.length)
+        },
+        error: function (xhr, textStatus, errorThrown) {
+          // Without this the spinner span forever on a 401/500 and the console
+          // stayed silent, so a dead session looked like "no results".
+          console.error('[search] request failed: status=%s (%s) %s',
+            xhr.status, textStatus, errorThrown)
+          console.error('[search] response body:', xhr.responseText)
+          $('#search-results').html(
+            `<div class="patient-search-empty">
+                  <h3>
+                    {{'mdrtb.error.PatientNotFound'|get_message:locale|default:"en"}}
+                  </h3>
+                </div>`)
+        }
+      })
+    }
+
+    var searchTimeout; // Declare a variable to hold the timeout ID
+
+    $('#search-input').keyup(function (e) {
+      clearTimeout(searchTimeout); // Clear the previous timeout
+
+      if (e.target.value.length >= minSearchCharacters) {
+        searchTimeout = setTimeout(function () {
+          handleSearch(e.target.value);
+        }, 500);
+      } else {
+        $('#search-results').removeClass('is-open');
+      }
+    });
+  </script>

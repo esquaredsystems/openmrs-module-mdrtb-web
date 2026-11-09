@@ -2,7 +2,7 @@
 # Django 4.1.1 frontend — communicates with OpenMRS via REST only, NO direct DB access.
 # Shared facts (domain model, concept/encounter-type/identifier UUIDs, topology): ../.agents/graph.md
 # Usage + notation legend + maintenance rules: ../.agents/instructions.md
-# Last updated: 2026-10-27 (Form 89 method of detection 3-column grid; patient full name with patronymic)
+# Last updated: 2026-11-09 (General -> Patient View: read-only raw patient record)
 
 ## § MODULE LAYOUT
 ```
@@ -77,6 +77,55 @@ CLEARING DOES NOT DELETE: a blank/deselected answer is simply left out of the PO
   voids the obs already stored, so the old value survives. Affects every TB form, not just 89.
 ```
 
+## § DASHBOARD FORMS vs PROGRAM ENROLLMENT
+```
+A TB03 (and other program forms) is tied to ONE enrollment by a PATIENT_PROGRAM_ID obs whose value is the
+enrollment's internal id (patientProgramId, an int) - NOT the enrollment uuid the dashboard URL carries.
+patient_utils.add_enrollment_dates(req, patient, encounters, program_uuid=None):
+  - sets form["dateEnrolled"] from that link
+  - with program_uuid: DROPS forms linked to a different enrollment (a 2024 TB03 no longer shows on the 2026
+    dashboard). Forms with NO link are KEPT (cannot be attributed; hiding a clinical form is worse). Lookup
+    failure / unknown program_uuid -> nothing dropped (logged as warning).
+  - one REST call: GET programenrollment?patient=..&v=custom:(uuid,patientProgramId,dateEnrolled)
+Applied to DOTS "tb03s" only. NOT yet applied: form89s, tb03us, regimens, aes, drug_resistance_forms,
+transfer_out - they still list every enrollment's forms (same bug class).
+```
+
+## § PATIENT VIEW (General -> Patient View, READ-ONLY)
+```
+Purpose: one patient's records close to how OpenMRS stores them, for finding discrepancies /
+troubleshooting. Nothing on the page writes. Template app/tbregister/patient_view.html, CSS theme.css § Patient View.
+Layout: two columns (.pv-columns) - left: demographics/identifiers/names/addresses/programs + lab tests;
+        right: encounters, each open by default with its observations. Stacked below 1100px.
+Show voided: checkbox, unticked by default. Voided rows are ALWAYS rendered (.pv-voided, struck through)
+        and hidden by CSS (.pv-page:not(.show-voided)) - no reload. ?voided=1 opens it ticked and is carried into
+        the next search. Label reuses mdrtb.locations.showVoided.
+Search: components/patient_search.html - the home page's live search, SHARED by search_patients.html
+        and patient_view.html (include with result_url containing __uuid__). Matches while typing
+        (GET /search -> patient?q=&v=full), so a shared identifier lists every patient. A result opens
+        /patientview?patient=<uuid> (+&voided=1 if "Show voided" is ticked).
+Data:   pu.get_patient_raw_view(req, uuid, include_lab_tests) - each section in its own try,
+        a failure shows in that section (errors{}) and the rest still renders. SessionExpired re-raised.
+  patient/{uuid}?v=full                                  demographics, addresses, person attributes
+  person/{uuid}/name?v=full                              ALL names, voided included
+  patient/{uuid}/identifier?v=full&includeAll=true       ALL identifiers, voided included
+  programenrollment?patient=&v=custom:(...patientProgramId,states:(...voided)...)  states incl. voided
+  encounter?patient=&v=custom:(...)                      then PER ENCOUNTER:
+  obs?encounter={uuid}&includeAll=true                   ALL obs incl. voided (ObsResource.doSearch ->
+                                                         Encounter.getAllObs(includeAll)); flat list,
+                                                         re-nested by obsGroup -> depth
+  commonlab/labtestorder?patient= (uuids) then GET commonlab/labtestorder/{uuid} per test
+                                                         (samples/attributes only filled by getByUniqueId)
+  All lists via rest_admin.get_all_pages (page cap). Cost: 1 + 2 per encounter + 1 per lab test calls.
+!! What webservices.rest 2.51 CANNOT return (filtered server-side, includeAll ignored):
+   voided encounters, enrollments, addresses, person attributes, lab tests, lab samples.
+   The page states this in its legend. Showing them needs a new Java endpoint.
+Program ID (patientProgramId) is shown on enrollments, on each encounter (its live PATIENT_PROGRAM_ID
+obs) and on each lab test (labtest_test.patient_program_id) so a mislinked record is visible.
+Dates: common_utils.format_iso_date + utiltags filter |format_iso_date[:"time"] - no tz conversion,
+never raises (a non-date value is shown unchanged).
+```
+
 ## § REST ROUTES (Django — METHOD path → view_function [→ utility alias])
 ```
 # Auth
@@ -126,6 +175,7 @@ POST     /adverseevents/<formid>                           → render_delete_adv
 # Reports
 GET/POST /reportform/<target>                              → render_report_form
 GET      /patientlist                                      → render_patient_list
+GET      /patientview[?patient=uuid][&voided=1]             → render_patient_view              → pu.get_patient_raw_view  # General menu, READ-ONLY
 GET      /tb03results                                      → render_tb03_report
 GET      /tb03singleresults                                → render_tb03_single_report
 GET      /tb03uresults                                     → render_tb03u_report

@@ -2694,7 +2694,25 @@ a.lab-button:hover {
   position: static;
 }
 
-.concept-tr-table th[scope="row"] {
+/* Fixed layout so the 60/40 split holds whatever the text length. The language column is fixed; the browser
+   shares the rest 60/40 (calc() on <col> widths is ignored by browsers, so plain percentages are used). */
+.concept-tr-table {
+  table-layout: fixed;
+}
+
+.concept-col-lang {
+  width: 9rem;
+}
+
+.concept-col-full {
+  width: 60%;
+}
+
+.concept-col-short {
+  width: 40%;
+}
+
+.concept-tr-table th[scope="rowgroup"] {
   white-space: nowrap;
   padding: 0.4rem 0.6rem;
   vertical-align: top;
@@ -2704,6 +2722,23 @@ a.lab-button:hover {
 .concept-tr-table td {
   vertical-align: top;
   padding: 0.35rem 0.4rem;
+}
+
+/* Each language is its own block: no line between its names row and its description row */
+.concept-tr-table .concept-tr-lang tr:first-child td {
+  border-bottom: none;
+}
+
+.concept-tr-table .concept-tr-lang tr:last-child td,
+.concept-tr-table .concept-tr-lang th {
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.concept-desc-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--brand-text-muted);
+  margin-bottom: 0.15rem;
 }
 
 .concept-tr-table textarea {
@@ -2763,42 +2798,197 @@ a.lab-button:hover {
   flex: 1 1 10rem;
 }
 
-/* Form 89 "Method of detection": square checkboxes in three columns.
-   Uses Bootstrap's own .form-check-input (outside a .form-check it is not
-   floated), so none of the .radio-input float/negative-margin tricks apply.
-   The row is full width; its label is sized to line up with the labels of the
-   two-field rows around it (a quarter of the row, less the gaps between fields). */
-.method-of-detection-row > label {
-  flex: 0 0 calc(25% - 1.25rem);
+/* ---------- Patient View (General -> Patient View, read-only) ----------
+ * Sections reuse .lab-attrs (<details> with a chevron). Tables reuse .user-table.
+ */
+
+.loc-page.pv-page {
+  max-width: none;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 
-.method-of-detection-row > .method-of-detection-list {
-  flex: 1 1 0;
-  min-width: 0;
-  /* The 32rem cap on single fields would squeeze three columns; 3 x 16rem still keeps the form bounded. */
-  max-width: 48rem;
-}
-
-.method-of-detection-list {
+/* Left: patient details + lab tests. Right: encounters. Stacked on narrow screens. */
+.pv-columns {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.375rem 1rem;
-  height: auto;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
 }
 
-.method-of-detection-option {
+.pv-col > .pv-section:first-child {
+  margin-top: 1rem;
+}
+
+@media (max-width: 1100px) {
+  .pv-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* The live search (components/patient_search.html) at the width it has on the home page. */
+.pv-search {
+  max-width: 44rem;
+  margin-bottom: 1rem;
+}
+
+.pv-toolbar {
   display: flex;
   align-items: flex-start;
-  gap: 0.5rem;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pv-toolbar-actions {
+  display: flex;
+  gap: 0.75rem;
+  white-space: nowrap;
+}
+
+.pv-legend {
   margin: 0;
-  font-weight: normal;
+  color: var(--brand-text-muted);
+  font-size: 0.85rem;
+  max-width: 60rem;
+}
+
+.pv-voided-sample {
+  text-decoration: line-through;
+  margin-right: 0.35rem;
+}
+
+.pv-body {
+  margin: 0 1rem 1rem;
+  overflow-x: auto;
+}
+
+.pv-subtitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.pv-table {
+  font-size: 0.875rem;
+}
+
+.pv-table th,
+.pv-table td {
+  padding: 0.3rem 0.5rem;
+  border-bottom: 1px solid var(--brand-border);
+}
+
+/* The OpenMRS field name under a column header, or a raw value next to a translated one. */
+.pv-raw {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--brand-text-muted);
+}
+
+td .pv-raw,
+dd .pv-raw {
+  display: inline;
+}
+
+/* Voided (deleted) records: struck through, per the convention elsewhere (.loc-retired). */
+.pv-voided td {
+  text-decoration: line-through;
+  color: var(--brand-text-muted);
+}
+
+/* "Show voided" (unticked by default): voided rows are on the page but hidden. Pure CSS
+   filter, like the location tree, because the rows are already loaded. */
+.pv-page:not(.show-voided) .pv-voided {
+  display: none;
+}
+
+/* "None" row for an encounter whose observations are all voided: only while they are hidden. */
+.pv-page.show-voided .pv-only-voided {
+  display: none;
+}
+
+/* ...except the cell that says when and why it was voided, which has to stay readable. */
+.pv-voided td.pv-void-info {
+  text-decoration: none;
+}
+
+.pv-void-info {
+  font-size: 0.8rem;
+  color: var(--brand-text-muted);
+}
+
+/* Observations inside an obs group are indented under it. */
+.pv-depth-1 { padding-left: 1.5rem !important; }
+.pv-depth-2 { padding-left: 2.5rem !important; }
+.pv-depth-3 { padding-left: 3.5rem !important; }
+
+.pv-states-row > td {
+  padding-left: 2rem;
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.pv-subtable {
+  width: 100%;
+  font-size: 0.8rem;
+}
+
+.pv-facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+  margin: 0.75rem 0;
+}
+
+.pv-facts dt {
+  font-weight: 600;
+}
+
+.pv-facts dd {
+  margin: 0;
+}
+
+.pv-facts-inline {
+  font-size: 0.85rem;
+}
+
+/* One encounter or lab test: a smaller <details> inside a section. */
+.pv-item {
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  margin: 0.5rem 0;
+  padding: 0 0.75rem;
+}
+
+.pv-item > summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
   cursor: pointer;
 }
 
-.method-of-detection-option .form-check-input {
-  flex-shrink: 0;
-  margin-top: 0.2em;
-  cursor: pointer;
+.pv-item[open] > summary {
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.pv-item > table {
+  margin-bottom: 0.75rem;
+}
+
+.pv-item-date {
+  font-variant-numeric: tabular-nums;
+  min-width: 8.5rem;
+}
+
+.pv-item-title {
+  font-weight: 600;
+}
+
+.pv-item-count {
+  margin-left: auto;
+  color: var(--brand-text-muted);
+  font-size: 0.85rem;
 }

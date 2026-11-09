@@ -8,6 +8,30 @@ import re
 
 date_regex = re.compile(r'\b(?:\d{8}|\d{4}-\d{2}-\d{2}|\d{2}-\d{2}-\d{4}|\d{2}/\d{2}/\d{4}|\d{2}/\d{2}/\d{2})\b')
 uuid_regex = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+# Starts like an ISO date (2024-12-21, 2024-12-21T10:00:00.000+0500, 2018-01-10 00:00:00).
+iso_date_start_regex = re.compile(r"^\d{4}-\d{2}-\d{2}")
+
+
+def format_iso_date(value, with_time=False):
+    """
+    dd.mm.yyyy, or dd.mm.yyyy HH:MM with with_time, from a date as OpenMRS sends it
+    (2024-12-21T10:00:00.000+0500, or 2018-01-10 00:00:00 for lab attributes).
+
+    The date and time are shown as OpenMRS sent them, with no time-zone
+    conversion, so a date never moves to the day before or after.
+    Empty gives "". A value that is not a date is returned unchanged, so a bad
+    value is still visible instead of breaking the page.
+    """
+    if value in (None, ""):
+        return ""
+    text = str(value)
+    if not iso_date_start_regex.match(text):
+        return text
+    try:
+        parsed = parser.parse(text)
+    except (ValueError, OverflowError):
+        return text
+    return parsed.strftime("%d.%m.%Y %H:%M" if with_time else "%d.%m.%Y")
 
 
 def get_locale(request, default='en'):
