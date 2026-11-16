@@ -112,6 +112,19 @@
         border-left: 1px black solid;
     }
 
+    /* all column headings centered, horizontally and vertically (the Excel export does the same) */
+    table.resultsTable th {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    /* heading rows made of <td> cells (TB07, TB07u, TB08, Form8): bold and centered like a <th> */
+    tr.headrow td {
+        font-weight: bold;
+        text-align: center;
+        vertical-align: middle;
+    }
+
     /* td,
     th {
         padding: 1rem;
@@ -123,17 +136,130 @@
 	<script type="text/javascript" src="{% static 'app/js/jquery.js' %}"></script>
 	<script type="text/javascript" src="{% static 'app/js/FileSaver.min.js' %}"></script>
 	<script type="text/javascript" src="{% static 'app/js/html2pdf.bundle.js' %}"></script>
-    <script type="text/javascript" src="{% static 'app/js/xlsx.full.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'app/js/xlsx-js-style.bundle.js' %}"></script>
 
     <script type="text/javascript">
         function printForm() {
             window.print();
         }
 
+        // "#D3D3D3" (bgcolor attribute) or "rgb(211, 211, 211)" (inline style) -> "D3D3D3", or null when the row has no colour.
+        // Colour names that the HTML reports use (e.g. bgcolor="yellow" in TB07), as the RGB values Excel understands.
+        var namedFillColors = { yellow: 'FFFF00', white: 'FFFFFF', lightgray: 'D3D3D3', lightgrey: 'D3D3D3', gray: '808080', grey: '808080' };
+
+        function rowFillColor(tr) {
+            var color = tr.getAttribute('bgcolor') || tr.style.backgroundColor;
+            if (!color) return null;
+            color = color.trim().toLowerCase();
+            if (namedFillColors[color]) return namedFillColors[color];
+            var rgb = color.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+            if (rgb) {
+                color = rgb.slice(1).map(function (n) { return ('0' + Number(n).toString(16)).slice(-2); }).join('');
+            }
+            color = color.replace('#', '').toUpperCase();
+            return /^[0-9A-F]{6}$/.test(color) ? color : null;
+        }
+
+        // Merges one piece of style (fill, font, alignment) into a cell, creating the cell if the sheet has none there.
+        function addCellStyle(ws, address, style) {
+            if (!ws[address]) ws[address] = { t: 's', v: '' };
+            ws[address].s = Object.assign({}, ws[address].s, style);
+        }
+
+        // SheetJS turns each <tr> into one sheet row and ignores its colour, so the alternating gray of the HTML view
+        // would be lost in Excel. Copy the colour of every coloured row onto all cells of that row.
+        // Writing styles needs the xlsx-js-style build of SheetJS (static/app/js/xlsx-js-style.bundle.js).
+        function shadeRows(element, ws) {
+            var range = XLSX.utils.decode_range(ws['!ref']);
+            Array.prototype.forEach.call(element.getElementsByTagName('tr'), function (tr, r) {
+                var color = rowFillColor(tr);
+                if (!color) return;
+                for (var c = range.s.c; c <= range.e.c; c++) {
+                    addCellStyle(ws, XLSX.utils.encode_cell({ r: r, c: c }), { fill: { patternType: 'solid', fgColor: { rgb: color } } });
+                }
+            });
+        }
+
+        // The HTML shows every <th> in bold, and turns th/td cells with class "rotate" or "subrotate" 90 degrees
+        // counter clockwise (CSS rotate(270deg)). Repeat both in Excel. The "rotate" cells also get the row height
+        // the page CSS gives them (shared over the rows they span), otherwise Excel would cut the text.
+        function styleHeaders(element, ws) {
+            var rotatedHeightPx = { TH: 450, TD: 150 };   // heights from the page CSS; Excel row heights are in points, 1px = 0.75pt
+            var rows = ws['!rows'] || [];
+            var taken = {};
+            Array.prototype.forEach.call(element.getElementsByTagName('tr'), function (tr, r) {
+                var c = 0;
+                Array.prototype.forEach.call(tr.cells, function (cell) {
+                    while (taken[r + ',' + c]) c++;
+                    var rowSpan = cell.rowSpan || 1, colSpan = cell.colSpan || 1;
+                    for (var i = 0; i < rowSpan; i++) {
+                        for (var j = 0; j < colSpan; j++) taken[(r + i) + ',' + (c + j)] = true;
+                    }
+                    var style = {};
+                    if (cell.tagName === 'TH' || tr.classList.contains('headrow')) {
+                        style.font = { bold: true };
+                        style.alignment = { horizontal: 'center', vertical: 'center', wrapText: true };
+                    }
+                    if (cell.classList.contains('rotate') || cell.classList.contains('subrotate')) {
+                        style.alignment = { textRotation: 90, horizontal: 'center', vertical: 'center', wrapText: true };
+                    }
+                    if (cell.classList.contains('rotate')) {
+                        for (var k = 0; k < rowSpan; k++) {
+                            var row = rows[r + k] || {};
+                            row.hpt = Math.max(row.hpt || 0, Math.ceil(rotatedHeightPx[cell.tagName] * 0.75 / rowSpan));
+                            rows[r + k] = row;
+                        }
+                    }
+                    if (Object.keys(style).length) addCellStyle(ws, XLSX.utils.encode_cell({ r: r, c: c }), style);
+                    c += colSpan;
+                });
+            });
+            if (rows.length) ws['!rows'] = rows;
+        }
+
+        // Rotated column headings longer than 40 characters are split into lines of at most 40 characters (at spaces), so
+        // they stay inside the table. The <br> also becomes a line break in the Excel export.
+        var MAX_HEADING_LENGTH = 40;
+
+        function splitHeading(text) {
+            var lines = [], line = '';
+            text.split(' ').forEach(function (word) {
+                if (line && (line + ' ' + word).length > MAX_HEADING_LENGTH) {
+                    lines.push(line);
+                    line = word;
+                } else {
+                    line = line ? line + ' ' + word : word;
+                }
+            });
+            if (line) lines.push(line);
+            return lines;
+        }
+
+        function breakLongHeadings() {
+            Array.prototype.forEach.call(document.querySelectorAll('th.rotate, th.subrotate'), function (th) {
+                var holder = th.querySelector('span') || th.querySelector('div') || th;
+                var text = holder.textContent.replace(/\s+/g, ' ').trim();
+                if (text.length <= MAX_HEADING_LENGTH) return;
+                holder.textContent = '';
+                splitHeading(text).forEach(function (line, i) {
+                    if (i > 0) holder.appendChild(document.createElement('br'));
+                    holder.appendChild(document.createTextNode(line));
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', breakLongHeadings);
+
+        function applyHtmlStyles(element, ws) {
+            shadeRows(element, ws);
+            styleHeaders(element, ws);
+        }
+
         function tableToExcel(table, name) {
-            // Implement Excel export logic using SheetJS (xlsx)
+            // Implement Excel export logic using SheetJS (xlsx-js-style)
             var element = document.getElementById(table);
             var ws = XLSX.utils.table_to_sheet(element);
+            applyHtmlStyles(element, ws);
             var wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
             XLSX.writeFile(wb, name + '.xlsx');

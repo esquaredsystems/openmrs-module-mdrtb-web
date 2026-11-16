@@ -496,23 +496,23 @@
                 <td>{{ row.cultureLab }}</td>
                 <td>{{ row.dstCollectionDate }}</td>
                 <td>{{ row.dstResultDate }}</td>
-                <td align="center">{{ row.dstR }}</td>
-                <td align="center">{{ row.dstH }}</td>
-                <td align="center">{{ row.dstE }}</td>
-                <td align="center">{{ row.dstS }}</td>
-                <td align="center">{{ row.dstZ }}</td>
-                <td align="center">{{ row.dstKm }}</td>
-                <td align="center">{{ row.dstAm }}</td>
-                <td align="center">{{ row.dstCm }}</td>
-                <td align="center">{{ row.dstOfx }}</td>
-                <td align="center">{{ row.dstMfx }}</td>
-                <td align="center">{{ row.dstPto }}</td>
-                <td align="center">{{ row.dstCs }}</td>
-                <td align="center">{{ row.dstPAS }}</td>
-                <td align="center">{{ row.dstLzd }}</td>
-                <td align="center">{{ row.dstCfz }}</td>
-                <td align="center">{{ row.dstBdq }}</td>
-                <td align="center">{{ row.dstDlm }}</td>
+                <td align="center">{{ 'R RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td align="center">{{ 'INH RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td align="center">{{ 'E RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td align="center">{{ 'S RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td align="center">{{ 'Z RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td align="center">{{ 'KM RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td align="center">{{ 'AM RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td align="center">{{ 'CM RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td align="center">{{ 'LFX RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td align="center">{{ 'MFX RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td align="center">{{ 'PTO RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td align="center">{{ 'CS RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td align="center">{{ 'PAS RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td align="center">{{ 'LZD RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td align="center">{{ 'CFZ RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td align="center">{{ 'BDQ RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
+                <td align="center">{{ 'DLM RESISTANCE' |get_dict_item_by_key:row.dstResults }}</td>
                 <td>{{ row.drugResistance }}</td>
                 {% if row.reg1New %}
                 {% if row.month2SmearResult or row.month3SmearResult %}
@@ -568,7 +568,7 @@
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 {% endif %}
-                {% for i in '012345678' %}
+                {% for i in '9'|get_range %}
                 <td align="center">
                     {% if row.tb03TreatmentOutcome == i %}{{ row.tb03TreatmentOutcomeDate }}{% endif %}
                 </td>
