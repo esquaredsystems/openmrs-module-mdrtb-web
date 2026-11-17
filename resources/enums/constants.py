@@ -16,6 +16,9 @@ class Constants(enum.Enum):
     EOT_XRAY_MONTH_FIELD = "xray_month"
     EOT_XRAY_DATE_FIELD = "xray_date"
     EOT_XRAY_RESULT_FIELD = "xray_result"
+    # End of Treatment report: "type" parameter of /mdrtb/endoftreatmentreport
+    EOT_REPORT_DOTS = "dots"
+    EOT_REPORT_MDR = "mdr"
 
     # Programs
     DOTS_PROGRAM = "e80fec43-f2b5-45b0-aec1-eaf74be26ff9"

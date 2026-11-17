@@ -57,6 +57,10 @@
         <a class="dropdown-item"
           href="{% url 'reportform' target='missingtb03results' %}">{{'mdrtb.dq.missingtb03'|get_message:locale|default:"en"}}</a>
       </li>
+      <li>
+        <a class="dropdown-item"
+          href="{% url 'reportform' target='eotresults' %}">{{'mdrtb.eot.reportDots'|get_message:locale|default:"en"}}</a>
+      </li>
     </ul>
   </div>
 
@@ -96,6 +100,10 @@
       <li>
         <a class="dropdown-item"
           href="{% url 'reportform' target='missingtb03uresults' %}">{{'mdrtb.dq.missingtb03u'|get_message:locale|default:"en"}}</a>
+      </li>
+      <li>
+        <a class="dropdown-item"
+          href="{% url 'reportform' target='eoturesults' %}">{{'mdrtb.eot.reportMdr'|get_message:locale|default:"en"}}</a>
       </li>
     </ul>
   </div>

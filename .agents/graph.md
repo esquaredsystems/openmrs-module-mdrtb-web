@@ -210,6 +210,12 @@ GET      /tb08results                                      → render_tb08_repor
 GET      /tb08uresults                                     → render_tb08u_report
 GET      /missingtb03results                               → render_missing_tb03_report
 GET      /missingtb03uresults                              → render_missing_tb03u_report
+GET      /eotresults  (report_type dots)                   → render_end_of_treatment_report → mdrtb/endoftreatmentreport?type=dots
+GET      /eoturesults (report_type mdr)                    → render_end_of_treatment_report → mdrtb/endoftreatmentreport?type=mdr
+         # End of Treatment report = TB03 / TB03u register back page. Template reporting/end_of_treatment_report.html.
+         # Rows read with ra.get_all_pages (every page; ru.get returns only the first page).
+         # X-rays / lab tests are lists inside one cell. No Save/close button (not a closed-report type).
+         # Menu: DOTS reports + MDR reports (nav.html); titles mdrtb.eot.reportDots / mdrtb.eot.reportMdr.
 GET      /form8results                                     → render_form8_report
 GET      /dotsdqresults                                    → render_dotsdq_report
 GET      /mdrdqresults                                     → render_mdrdq_report

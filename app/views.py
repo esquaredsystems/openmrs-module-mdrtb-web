@@ -19,6 +19,7 @@ import utilities.patient_utils as pu
 import utilities.forms_util as fu
 import utilities.common_utils as util
 import utilities.locations_util as lu
+import utilities.rest_admin as ra
 import utilities.users_util as uau
 import utilities.concepts_util as cau
 import utilities.messages_util as msg
@@ -2063,6 +2064,64 @@ def render_form8_report(req):
     except Exception as e:
         log_and_show_error(e, req)
         return redirect(req.session["redirect_url"])
+
+
+def render_end_of_treatment_report(req, report_type):
+    """
+    End of Treatment report: the back page of the TB03 (report_type "dots") or
+    TB03u (report_type "mdr") register. Same patients as the TB03 / TB03u report
+    for the chosen location and period; the End of Treatment columns are empty
+    for a patient program that has no End of Treatment form yet.
+
+    Every page of the REST result is read (ra.get_all_pages): the server returns
+    at most one page per call, and a register must never lose rows silently.
+    """
+    if not check_if_session_alive(req):
+        return redirect("login")
+    locale = req.session.get("locale", "en")
+    title_key = (
+        "mdrtb.eot.reportDots"
+        if report_type == Constants.EOT_REPORT_DOTS.value
+        else "mdrtb.eot.reportMdr"
+    )
+    context = {
+        "title": mu.get_global_msgs(title_key, locale=locale),
+        "report_type": report_type,
+    }
+    try:
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER")
+        month = req.GET.get("month")
+        end_month = req.GET.get("month2")
+        quarter = req.GET.get("quarter")
+        location = req.GET.get("location")
+        year = req.GET.get("year")
+        params = {"type": report_type, "year": year}
+        if location:
+            params["location"] = location
+        if month:
+            params["month"] = month
+            params["month2"] = end_month
+        elif quarter:
+            params["quarter"] = quarter
+        rows = ra.get_all_pages(req, "mdrtb/endoftreatmentreport", params)
+        # Top-level None would print as "None"; the X-ray and lab lists keep
+        # their None values and the template blanks them.
+        context["patientSet"] = [
+            {key: value if value is not None else "" for key, value in row.items()}
+            for row in rows
+        ]
+        context["location"] = None
+        if location:
+            context["location"] = lu.get_single_location_hierarchy(
+                mu.get_location(req, uuid=location, representation="FULL")
+            )
+        context["report_date"] = util.get_date_time_now()
+        return render(req, "app/reporting/end_of_treatment_report.html", context)
+    except lu.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+        return redirect_after_error(req)
 
 
 def render_missing_tb03_report(req):

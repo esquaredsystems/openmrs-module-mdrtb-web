@@ -408,6 +408,8 @@ def get_report_name(key, locale):
             "mdrtb.dq.missingtb03u", locale=locale
         ),
         "form8results": mu.get_global_msgs("mdrtb.form8Parameters", locale=locale),
+        "eotresults": mu.get_global_msgs("mdrtb.eot.reportDots", locale=locale),
+        "eoturesults": mu.get_global_msgs("mdrtb.eot.reportMdr", locale=locale),
         "dotsdqresults": mu.get_global_msgs("mdrtb.dotsdq.title", locale=locale),
         "mdrdqresults": mu.get_global_msgs("mdrtb.dq.title", locale=locale),
         "adverseeventsregister": mu.get_global_msgs(

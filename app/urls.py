@@ -2,6 +2,7 @@ from django.urls import path
 from django.templatetags.static import static
 from django.views.generic.base import RedirectView
 from . import views
+from resources.enums.constants import Constants
 
 urlpatterns = [
     path(
@@ -172,6 +173,18 @@ urlpatterns = [
         name="missingtb03uresults",
     ),
     path("form8results", views.render_form8_report, name="form8Results"),
+    path(
+        "eotresults",
+        views.render_end_of_treatment_report,
+        {"report_type": Constants.EOT_REPORT_DOTS.value},
+        name="eotresults",
+    ),
+    path(
+        "eoturesults",
+        views.render_end_of_treatment_report,
+        {"report_type": Constants.EOT_REPORT_MDR.value},
+        name="eoturesults",
+    ),
     path("tb07results", views.render_tb07_report, name="tb07results"),
     path("tb03uresults", views.render_tb03u_report, name="tb03uResults"),
     path("form89results", views.render_form89_report, name="form89results"),
