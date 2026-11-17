@@ -679,6 +679,7 @@ def get_patient_dashboard_info(
                 "drug_resistance_forms": fu.get_encounters_by_patient_and_type(
                     req, patientuuid, EncounterType.RESISTANCE_DURING_TREATMENT.value
                 ),
+                "end_of_treatment": fu.get_end_of_treatment_for_program(req, patientuuid, programuuid),
             }
         else:
             forms = {
@@ -696,6 +697,7 @@ def get_patient_dashboard_info(
                 "form89s": fu.get_encounters_by_patient_and_type(
                     req, patientuuid, EncounterType.FROM_89.value
                 ),
+                "end_of_treatment": fu.get_end_of_treatment_for_program(req, patientuuid, programuuid),
             }
         return (patient, program, treatment_outcome, transfer_out, forms, lab_results)
     except Exception as e:

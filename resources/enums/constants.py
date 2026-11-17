@@ -12,6 +12,11 @@ class Constants(enum.Enum):
     DATETIME_FORMAT_RU = "dd.MM.yyyy hh:mm:ss"
     DATETIME_FORMAT_SQL = "yyyy-MM-dd hh:mm:ss"
 
+    # End of Treatment form: names of the repeated X-ray inputs (one value per X-ray row)
+    EOT_XRAY_MONTH_FIELD = "xray_month"
+    EOT_XRAY_DATE_FIELD = "xray_date"
+    EOT_XRAY_RESULT_FIELD = "xray_result"
+
     # Programs
     DOTS_PROGRAM = "e80fec43-f2b5-45b0-aec1-eaf74be26ff9"
     MDRTB_PROGRAM = "34198d48-0370-102d-b0e3-001ec94a0cc1"

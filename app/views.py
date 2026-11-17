@@ -1046,6 +1046,98 @@ def render_delete_drug_resistence_form(req, formid):
         return redirect(req.session.get("redirect_url"), permanent=True)
 
 
+END_OF_TREATMENT_CONCEPTS = [
+    Concepts.DISPENSARY_REGISTRATION_GROUP.value,
+    Concepts.FOLLOWUP_XRAY_RESULT.value,
+    Concepts.REASON_FOR_TRANSFER_TO_DISPENSARY_GROUP_3.value,
+]
+
+
+def render_end_of_treatment_form(req, uuid):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    form = None
+    if req.method == "POST":
+        try:
+            if fu.create_update_end_of_treatment(req, uuid, req.POST):
+                messages.success(req, "Form created successfully")
+                return redirect(req.session["redirect_url"])
+        except Exception as e:
+            log_and_show_error(e, req)
+            # Show the form again with what was entered (a redirect would empty it)
+            form = fu.build_end_of_treatment_prefill(req.POST)
+    try:
+        if form is None:
+            req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+        title = mu.get_global_msgs("mdrtb.endOfTreatment", locale=req.session["locale"])
+        context = {
+            "title": title,
+            "uuid": uuid,
+            "concepts": fu.get_form_concepts(END_OF_TREATMENT_CONCEPTS, req),
+            "form": form,
+            "resubmitted": form is not None,
+        }
+        mu.add_url_to_breadcrumb(req, context["title"])
+        return render(req, "app/tbregister/end_of_treatment.html", context=context)
+    except Exception as e:
+        log_and_show_error(e, req)
+        return redirect_after_error(req)
+
+
+def render_edit_end_of_treatment_form(req, uuid, formid):
+    privileges_required = [Privileges.DELETE_ENCOUNTERS]
+    if not check_if_session_alive(req):
+        return redirect("login")
+    prefill = None
+    if req.method == "POST":
+        try:
+            if fu.create_update_end_of_treatment(req, uuid, req.POST, formid=formid):
+                messages.success(req, "Form updated successfully")
+                return redirect(req.session["redirect_url"])
+        except Exception as e:
+            log_and_show_error(e, req)
+            prefill = fu.build_end_of_treatment_prefill(req.POST)
+    try:
+        form = fu.get_end_of_treatment_by_uuid(req, formid)
+        if prefill is None:
+            req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+        elif form:
+            # What was entered, plus what only the saved form has (its uuid and the lab results)
+            prefill["uuid"] = form["uuid"]
+            prefill["followupLabTests"] = form.get("followupLabTests")
+            form = prefill
+        title = (
+            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+            + " "
+            + mu.get_global_msgs("mdrtb.endOfTreatment", locale=req.session["locale"])
+        )
+        context = {
+            "title": title,
+            "uuid": uuid,
+            "state": "edit",
+            "form": form,
+            "concepts": fu.get_form_concepts(END_OF_TREATMENT_CONCEPTS, req),
+            "resubmitted": prefill is not None,
+        }
+        context.update(check_privileges(req, privileges_required))
+        mu.add_url_to_breadcrumb(req, context["title"])
+        return render(req, "app/tbregister/end_of_treatment.html", context=context)
+    except Exception as e:
+        log_and_show_error(e, req)
+        return redirect_after_error(req)
+
+
+def render_delete_end_of_treatment_form(req, formid):
+    try:
+        status, _ = ru.delete(req, f"mdrtb/endoftreatment/{formid}")
+        if status:
+            messages.success(req, "Form deleted successfully")
+    except Exception as e:
+        log_and_show_error(e, req)
+    finally:
+        return redirect(req.session.get("redirect_url"), permanent=True)
+
+
 def render_regimen_form(req, patientid):
     if not check_if_session_alive(req):
         return redirect("login")

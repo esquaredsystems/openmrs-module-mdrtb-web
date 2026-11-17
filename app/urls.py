@@ -87,6 +87,21 @@ urlpatterns = [
         views.render_delete_drug_resistence_form,
         name="deletedrugresistanse",
     ),
+    path(
+        "patient/<str:uuid>/endoftreatment",
+        views.render_end_of_treatment_form,
+        name="endoftreatment",
+    ),
+    path(
+        "patient/<str:uuid>/endoftreatment/<str:formid>",
+        views.render_edit_end_of_treatment_form,
+        name="editendoftreatment",
+    ),
+    path(
+        "endoftreatment/<str:formid>",
+        views.render_delete_end_of_treatment_form,
+        name="deleteendoftreatment",
+    ),
     path("profile", views.render_user_profile, name="profile"),
     path("patient/<str:uuid>/tb03", views.render_tb03_form, name="tb03"),
     path(

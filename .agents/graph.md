@@ -2,7 +2,7 @@
 # Django 4.1.1 frontend — communicates with OpenMRS via REST only, NO direct DB access.
 # Shared facts (domain model, concept/encounter-type/identifier UUIDs, topology): ../.agents/graph.md
 # Usage + notation legend + maintenance rules: ../.agents/instructions.md
-# Last updated: 2026-11-09 (General -> Patient View: read-only raw patient record)
+# Last updated: 2026-11-17 (End of Treatment form: routes, obs groups, clearing, dashboard)
 
 ## § MODULE LAYOUT
 ```
@@ -74,7 +74,22 @@ PATIENT NAME (2026-10-27): OpenMRS person.display = first + middle + last only (
     search_patients.html JS (same rule, built from person.preferredName of /search?q=, v=full)
 
 CLEARING DOES NOT DELETE: a blank/deselected answer is simply left out of the POST, and nothing
-  voids the obs already stored, so the old value survives. Affects every TB form, not just 89.
+  voids the obs already stored, so the old value survives. Affects every TB form, not just 89
+  - EXCEPT End of Treatment, which voids emptied fields itself (below).
+  WHY: EncounterResource setObs() replaces the encounter's obs collection with the posted list; obs
+  left out stay in the DB, live. The module's process* methods therefore only SEE the posted obs.
+
+END OF TREATMENT (2026-11-17) fu.create_update_end_of_treatment - the only form with OBS GROUPS:
+  X-ray rows = repeated inputs Constants.EOT_XRAY_MONTH/DATE/RESULT_FIELD (one value per row) ->
+  one group per row: FOLLOWUP_XRAY_CONSTRUCT {MONTH_OF_TREATMENT, XRAY_DATE, FOLLOWUP_XRAY_RESULT},
+  posted inline with "groupMembers". Month required, one X-ray per month (checked here AND in module).
+  EDIT: GET obs?encounter=<form>&v=custom:(uuid,concept,value,obsGroup) -> compare per month:
+    unchanged -> not posted, untouched | changed -> new group posted | gone -> old group voided
+    emptied single-answer field (fu.END_OF_TREATMENT_FIELDS) -> its obs voided
+  Voiding (DELETE obs/<uuid>, members first) happens only AFTER the save succeeds: a refused save
+  loses nothing. A refused save re-renders the page with what was entered (build_end_of_treatment_prefill).
+  Lab tests during follow-up are READ ONLY (module followupLabTests: smears of months 1, 3, 5).
+  TESTS: utilities/test_forms_util.py (14, mocked REST).
 ```
 
 ## § DASHBOARD FORMS vs PROGRAM ENROLLMENT
@@ -89,6 +104,10 @@ patient_utils.add_enrollment_dates(req, patient, encounters, program_uuid=None):
   - one REST call: GET programenrollment?patient=..&v=custom:(uuid,patientProgramId,dateEnrolled)
 Applied to DOTS "tb03s" only. NOT yet applied: form89s, tb03us, regimens, aes, drug_resistance_forms,
 transfer_out - they still list every enrollment's forms (same bug class).
+forms["end_of_treatment"] (DOTS and MDR-TB) is per enrollment by construction:
+  fu.get_end_of_treatment_for_program -> GET mdrtb/endoftreatment?q=<patient>&v=full, keeps the one whose
+  patientProgramUuid is this enrollment. "Add new" offers it only when a TB03 / TB03u exists and no
+  End of Treatment form does. A failed lookup is logged and the dashboard still renders.
 ```
 
 ## § PATIENT VIEW (General -> Patient View, READ-ONLY)
@@ -156,6 +175,10 @@ POST     /tb03u/<formid>                                   → render_delete_tb0
 GET/POST /patient/<uuid>/form89                            → render_form_89
 GET/POST /patient/<uuid>/form89/<formid>                   → render_edit_form_89
 POST     /form89/<formid>                                  → render_delete_form_89
+# End of Treatment (one per program, DOTS and MDR-TB; template tbregister/end_of_treatment.html)
+GET/POST /patient/<uuid>/endoftreatment                    → render_end_of_treatment_form     → fu.create_update_end_of_treatment
+GET/POST /patient/<uuid>/endoftreatment/<formid>           → render_edit_end_of_treatment_form
+GET      /endoftreatment/<formid>                          → render_delete_end_of_treatment_form  → DELETE mdrtb/endoftreatment
 # Transfer Out
 GET/POST /patient/<patientuuid>/transferout                → render_transferout_form
 GET/POST /patient/<patientuuid>/transferout/<formid>       → render_edit_transferout_form

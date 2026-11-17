@@ -3,6 +3,7 @@ import enum
 
 class EncounterType(enum.Enum):
     ADVERSE_EVENT = "bfa6ef9f-a8fe-4bd3-ab8c-ec6bbfc85457"
+    END_OF_TREATMENT = "6159db06-cb90-11f1-b723-57d5294d0531"
     FROM_89 = "44539237-5401-424c-84d7-6694436ed2a0"
     LAB_RESULT = "d8194104-04af-455f-a623-4d9302f38ea3"
     PV_REGIMEN = "99f4f9d8-b23f-4406-bb03-03e1237634aa"
