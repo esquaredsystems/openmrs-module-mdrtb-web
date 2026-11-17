@@ -19,6 +19,7 @@ import utilities.patient_utils as pu
 import utilities.forms_util as fu
 import utilities.common_utils as util
 import utilities.locations_util as lu
+import utilities.rest_admin as ra
 import utilities.users_util as uau
 import utilities.concepts_util as cau
 import utilities.messages_util as msg
@@ -1046,6 +1047,98 @@ def render_delete_drug_resistence_form(req, formid):
         return redirect(req.session.get("redirect_url"), permanent=True)
 
 
+END_OF_TREATMENT_CONCEPTS = [
+    Concepts.DISPENSARY_REGISTRATION_GROUP.value,
+    Concepts.FOLLOWUP_XRAY_RESULT.value,
+    Concepts.REASON_FOR_TRANSFER_TO_DISPENSARY_GROUP_3.value,
+]
+
+
+def render_end_of_treatment_form(req, uuid):
+    if not check_if_session_alive(req):
+        return redirect("login")
+    form = None
+    if req.method == "POST":
+        try:
+            if fu.create_update_end_of_treatment(req, uuid, req.POST):
+                messages.success(req, "Form created successfully")
+                return redirect(req.session["redirect_url"])
+        except Exception as e:
+            log_and_show_error(e, req)
+            # Show the form again with what was entered (a redirect would empty it)
+            form = fu.build_end_of_treatment_prefill(req.POST)
+    try:
+        if form is None:
+            req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+        title = mu.get_global_msgs("mdrtb.endOfTreatment", locale=req.session["locale"])
+        context = {
+            "title": title,
+            "uuid": uuid,
+            "concepts": fu.get_form_concepts(END_OF_TREATMENT_CONCEPTS, req),
+            "form": form,
+            "resubmitted": form is not None,
+        }
+        mu.add_url_to_breadcrumb(req, context["title"])
+        return render(req, "app/tbregister/end_of_treatment.html", context=context)
+    except Exception as e:
+        log_and_show_error(e, req)
+        return redirect_after_error(req)
+
+
+def render_edit_end_of_treatment_form(req, uuid, formid):
+    privileges_required = [Privileges.DELETE_ENCOUNTERS]
+    if not check_if_session_alive(req):
+        return redirect("login")
+    prefill = None
+    if req.method == "POST":
+        try:
+            if fu.create_update_end_of_treatment(req, uuid, req.POST, formid=formid):
+                messages.success(req, "Form updated successfully")
+                return redirect(req.session["redirect_url"])
+        except Exception as e:
+            log_and_show_error(e, req)
+            prefill = fu.build_end_of_treatment_prefill(req.POST)
+    try:
+        form = fu.get_end_of_treatment_by_uuid(req, formid)
+        if prefill is None:
+            req.session["redirect_url"] = req.META.get("HTTP_REFERER", "/")
+        elif form:
+            # What was entered, plus what only the saved form has (its uuid and the lab results)
+            prefill["uuid"] = form["uuid"]
+            prefill["followupLabTests"] = form.get("followupLabTests")
+            form = prefill
+        title = (
+            mu.get_global_msgs("mdrtb.edit", locale=req.session["locale"])
+            + " "
+            + mu.get_global_msgs("mdrtb.endOfTreatment", locale=req.session["locale"])
+        )
+        context = {
+            "title": title,
+            "uuid": uuid,
+            "state": "edit",
+            "form": form,
+            "concepts": fu.get_form_concepts(END_OF_TREATMENT_CONCEPTS, req),
+            "resubmitted": prefill is not None,
+        }
+        context.update(check_privileges(req, privileges_required))
+        mu.add_url_to_breadcrumb(req, context["title"])
+        return render(req, "app/tbregister/end_of_treatment.html", context=context)
+    except Exception as e:
+        log_and_show_error(e, req)
+        return redirect_after_error(req)
+
+
+def render_delete_end_of_treatment_form(req, formid):
+    try:
+        status, _ = ru.delete(req, f"mdrtb/endoftreatment/{formid}")
+        if status:
+            messages.success(req, "Form deleted successfully")
+    except Exception as e:
+        log_and_show_error(e, req)
+    finally:
+        return redirect(req.session.get("redirect_url"), permanent=True)
+
+
 def render_regimen_form(req, patientid):
     if not check_if_session_alive(req):
         return redirect("login")
@@ -1971,6 +2064,64 @@ def render_form8_report(req):
     except Exception as e:
         log_and_show_error(e, req)
         return redirect(req.session["redirect_url"])
+
+
+def render_end_of_treatment_report(req, report_type):
+    """
+    End of Treatment report: the back page of the TB03 (report_type "dots") or
+    TB03u (report_type "mdr") register. Same patients as the TB03 / TB03u report
+    for the chosen location and period; the End of Treatment columns are empty
+    for a patient program that has no End of Treatment form yet.
+
+    Every page of the REST result is read (ra.get_all_pages): the server returns
+    at most one page per call, and a register must never lose rows silently.
+    """
+    if not check_if_session_alive(req):
+        return redirect("login")
+    locale = req.session.get("locale", "en")
+    title_key = (
+        "mdrtb.eot.reportDots"
+        if report_type == Constants.EOT_REPORT_DOTS.value
+        else "mdrtb.eot.reportMdr"
+    )
+    context = {
+        "title": mu.get_global_msgs(title_key, locale=locale),
+        "report_type": report_type,
+    }
+    try:
+        req.session["redirect_url"] = req.META.get("HTTP_REFERER")
+        month = req.GET.get("month")
+        end_month = req.GET.get("month2")
+        quarter = req.GET.get("quarter")
+        location = req.GET.get("location")
+        year = req.GET.get("year")
+        params = {"type": report_type, "year": year}
+        if location:
+            params["location"] = location
+        if month:
+            params["month"] = month
+            params["month2"] = end_month
+        elif quarter:
+            params["quarter"] = quarter
+        rows = ra.get_all_pages(req, "mdrtb/endoftreatmentreport", params)
+        # Top-level None would print as "None"; the X-ray and lab lists keep
+        # their None values and the template blanks them.
+        context["patientSet"] = [
+            {key: value if value is not None else "" for key, value in row.items()}
+            for row in rows
+        ]
+        context["location"] = None
+        if location:
+            context["location"] = lu.get_single_location_hierarchy(
+                mu.get_location(req, uuid=location, representation="FULL")
+            )
+        context["report_date"] = util.get_date_time_now()
+        return render(req, "app/reporting/end_of_treatment_report.html", context)
+    except lu.SessionExpired:
+        return redirect("login")
+    except Exception as e:
+        log_and_show_error(e, req)
+        return redirect_after_error(req)
 
 
 def render_missing_tb03_report(req):

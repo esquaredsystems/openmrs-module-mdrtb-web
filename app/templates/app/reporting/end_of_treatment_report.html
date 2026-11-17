@@ -1,0 +1,118 @@
+{% extends 'app/base/report_base.html' %}
+
+{% comment %}
+End of Treatment report (back page of the TB03 / TB03u register).
+Rendered by views.render_end_of_treatment_report; one row per TB03 (report_type "dots")
+or TB03u (report_type "mdr") form of the chosen location and period.
+followupXrays and followupLabTests are lists shown inside one cell, one line per entry.
+The End of Treatment cells are empty when the program has no End of Treatment form yet.
+{% endcomment %}
+
+{% block content %}
+<div>
+    <style>
+        td, th {
+            width: fit-content;
+        }
+        table {
+            width: fit-content;
+        }
+        td.list {
+            white-space: nowrap;
+        }
+    </style>
+    <div id="eot">
+        <table class="resultsTable" border="1" cellspacing="0">
+            <tr>
+                <th colspan="2">{{ title }}</th>
+            </tr>
+            <tr>
+                <td>{{"mdrtb.oblast"|get_message:locale|default:"en"}}</td>
+                <td>{{ location.region.name }}</td>
+            </tr>
+            <tr>
+                <td>{{"mdrtb.district"|get_message:locale|default:"en"}}</td>
+                <td>{{ location.district.name }}</td>
+            </tr>
+            <tr>
+                <td>{{"mdrtb.facility"|get_message:locale|default:"en"}}</td>
+                <td>{{ location.facility.name }}</td>
+            </tr>
+            <tr>
+                <td>{{"mdrtb.year"|get_message:locale|default:"en"}}</td>
+                <td align="center">{{ request.GET.year }}</td>
+            </tr>
+            <tr>
+                <td>{{"mdrtb.quarter"|get_message:locale|default:"en"}}</td>
+                <td align="center">{{ request.GET.quarter }}</td>
+            </tr>
+            <tr>
+                <td>{{"mdrtb.month"|get_message:locale|default:"en"}}</td>
+                <td align="center">{{ request.GET.month }}{% if request.GET.month2 and request.GET.month2 != request.GET.month %} - {{ request.GET.month2 }}{% endif %}</td>
+            </tr>
+            <tr>
+                <td>{{"mdrtb.dq.numberOfPatients"|get_message:locale|default:"en"}}</td>
+                <td align="center">{{ patientSet|length }}</td>
+            </tr>
+            <tr>
+                <td>{{"mdrtb.pv.reportDate"|get_message:locale|default:"en"}}</td>
+                <td align="center">{{ report_date|get_report_date }}</td>
+            </tr>
+        </table>
+        <br/>
+        <table id="resultsTable" class="resultsTable" border="1" cellspacing="0">
+            <tr>
+                <th rowspan="2">{{'mdrtb.tb03.registrationNumber'|get_message:locale|default:"en"}}</th>
+                <th rowspan="2">{{'mdrtb.tb03.dateOfRegistration'|get_message:locale|default:"en"}}</th>
+                <th rowspan="2">{{'mdrtb.tb03.fullName'|get_message:locale|default:"en"}}</th>
+                <th rowspan="2">{{'mdrtb.tb03.gender'|get_message:locale|default:"en"}}</th>
+                <th rowspan="2">{{'mdrtb.tb03.dateOfBirth'|get_message:locale|default:"en"}}</th>
+                <th rowspan="2">{{'mdrtb.tb03.address'|get_message:locale|default:"en"}}</th>
+                <th colspan="2">{{'mdrtb.tb03.treatmentOutcome'|get_message:locale|default:"en"}}</th>
+                <th rowspan="2">{{'mdrtb.eot.dispensaryGroup'|get_message:locale|default:"en"}}</th>
+                <th rowspan="2">{{'mdrtb.eot.followupXrays'|get_message:locale|default:"en"}}<br/>
+                    <small>({{'mdrtb.monthOfTreatment'|get_message:locale|default:"en"}}: {{'mdrtb.date'|get_message:locale|default:"en"}}, {{'mdrtb.result'|get_message:locale|default:"en"}})</small>
+                </th>
+                <th rowspan="2">{{'mdrtb.eot.labTests'|get_message:locale|default:"en"}}<br/>
+                    <small>({{'mdrtb.monthOfTreatment'|get_message:locale|default:"en"}}: {{'mdrtb.date'|get_message:locale|default:"en"}}, {{'mdrtb.result'|get_message:locale|default:"en"}}, {{'mdrtb.eot.testNumber'|get_message:locale|default:"en"}}, {{'mdrtb.lab'|get_message:locale|default:"en"}})</small>
+                </th>
+                <th rowspan="2">{{'mdrtb.eot.transferToGroup2Date'|get_message:locale|default:"en"}}</th>
+                <th rowspan="2">{{'mdrtb.eot.transferToGroup3Date'|get_message:locale|default:"en"}}</th>
+                <th rowspan="2">{{'mdrtb.eot.transferToGroup3Reason'|get_message:locale|default:"en"}}</th>
+                <th colspan="2">{{'mdrtb.eot.removedFromObservation'|get_message:locale|default:"en"}}</th>
+            </tr>
+            <tr>
+                <th>{{'mdrtb.outcome'|get_message:locale|default:"en"}}</th>
+                <th>{{'mdrtb.date'|get_message:locale|default:"en"}}</th>
+                <th>{{'mdrtb.date'|get_message:locale|default:"en"}}</th>
+                <th>{{'mdrtb.eot.reason'|get_message:locale|default:"en"}}</th>
+            </tr>
+            {% for row in patientSet %}
+            <tr {% if forloop.counter|divisibleby:2 %} bgcolor="#D3D3D3" {% endif %}>
+                <td>{{ row.identifier }}</td>
+                <td>{{ row.registrationDate }}</td>
+                <td>{{ row.personName.familyName|default_if_none:"" }} {{ row.personName.givenName|default_if_none:"" }}</td>
+                <td align="center">{% if row.gender == 'M' %}{{ 'mdrtb.tb03.gender.male'|get_message:locale }}{% elif row.gender == 'F' %}{{ 'mdrtb.tb03.gender.female'|get_message:locale }}{% endif %}</td>
+                <td>{{ row.dateOfBirth }}</td>
+                <td>{{ row.personAddress.display|default_if_none:"" }}</td>
+                <td>{{ row.treatmentOutcome }}</td>
+                <td>{{ row.treatmentOutcomeDate }}</td>
+                <td>{{ row.dispensaryGroup }}</td>
+                <td class="list">{% for xray in row.followupXrays %}{% if not forloop.first %}<br/>{% endif %}{{ xray.monthOfTreatment|default_if_none:"" }}: {{ xray.date|default_if_none:"" }}{% if xray.result %}, {{ xray.result }}{% endif %}{% endfor %}</td>
+                <td class="list">{% for test in row.followupLabTests %}{% if not forloop.first %}<br/>{% endif %}{{ test.monthOfTreatment|default_if_none:"" }}: {{ test.date|default_if_none:"" }}{% if test.result %}, {{ test.result }}{% endif %}{% if test.testNumber %}, {{ test.testNumber }}{% endif %}{% if test.lab %}, {{ test.lab }}{% endif %}{% endfor %}</td>
+                <td>{{ row.transferToGroup2Date }}</td>
+                <td>{{ row.transferToGroup3Date }}</td>
+                <td>{{ row.transferToGroup3Reason }}</td>
+                <td>{{ row.removalFromObservationDate }}</td>
+                <td>{{ row.removalFromObservationReason }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <input id="exportButton" type="button" onclick="tableToExcel('eot', '{{ title|escapejs }}')"
+           value="{{'mdrtb.exportToExcelBtn'|get_message:locale|default:"en"}}" />
+    <input id="printButton" type="button" onclick="printForm()"
+           value="{{'mdrtb.print'|get_message:locale|default:"en"}}" />
+    <a href="/" type="button" id="back" name="back">{{'mdrtb.back'|get_message:locale|default:"en"}}</a>
+</div>
+{% endblock %}

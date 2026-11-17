@@ -6,6 +6,8 @@ from datetime import datetime, timezone
 from resources.enums.mdrtbConcepts import Concepts
 from resources.enums.encounterType import EncounterType
 import utilities.common_utils as cu
+import utilities.rest_admin as ra
+from resources.enums.constants import Constants
 
 logger = logging.getLogger("django")
 
@@ -871,5 +873,201 @@ def create_specimen_encounter(req, data, patient_uuid):
         # status, _ = ru.post(req, url, encounter)
         # if status:
         #     return True
+    except Exception as e:
+        raise Exception(str(e))
+
+
+# The single-answer questions of the End of Treatment form. The follow-up X-rays are obs groups
+# and the follow-up lab tests are read from the lab results, so neither is in this list.
+END_OF_TREATMENT_FIELDS = [
+    Concepts.DISPENSARY_REGISTRATION_GROUP.value,
+    Concepts.DATE_OF_TRANSFER_TO_DISPENSARY_GROUP_2.value,
+    Concepts.DATE_OF_TRANSFER_TO_DISPENSARY_GROUP_3.value,
+    Concepts.REASON_FOR_TRANSFER_TO_DISPENSARY_GROUP_3.value,
+    Concepts.DATE_OF_REMOVAL_FROM_DISPENSARY_OBSERVATION.value,
+    Concepts.REASON_FOR_REMOVAL_FROM_DISPENSARY_OBSERVATION.value,
+]
+
+
+def get_end_of_treatment_by_uuid(req, uuid):
+    """
+    The End of Treatment form (mdrtb/endoftreatment, v=full) or None. Besides the fields it carries
+    followupXrays [{monthOfTreatment, date, result}] and the read-only followupLabTests
+    [{monthOfTreatment, date, result, testNumber, lab}] that the module takes from the lab results.
+    """
+    try:
+        status, response = ru.get(req, f"mdrtb/endoftreatment/{uuid}", {"v": "full"})
+        return response if status else None
+    except Exception as e:
+        raise Exception(str(e))
+
+
+def get_end_of_treatment_for_program(req, patient_uuid, program_uuid):
+    """
+    The End of Treatment form of this program enrollment, or None. The module allows one per
+    program, so the first match is the form. A failed lookup is logged and returns None, so the
+    rest of the dashboard still shows.
+    """
+    try:
+        status, response = ru.get(req, "mdrtb/endoftreatment", {"q": patient_uuid, "v": "full"})
+        if status:
+            for form in response.get("results", []):
+                if form.get("patientProgramUuid") == program_uuid:
+                    return form
+    except Exception as e:
+        logger.warning(f"Could not load the End of Treatment form of patient {patient_uuid}: {e}")
+    return None
+
+
+def build_end_of_treatment_prefill(data):
+    """
+    What the user posted, in the shape get_end_of_treatment_by_uuid() returns, so a rejected save
+    shows the form again with everything that was entered instead of an empty form.
+    """
+    posted = dict(_post_items(data))
+
+    def first(concept):
+        values = [v for v in posted.get(concept.value, []) if v]
+        return values[0] if values else None
+
+    def coded(concept):
+        value = first(concept)
+        return {"uuid": value} if value else None
+
+    months = posted.get(Constants.EOT_XRAY_MONTH_FIELD.value, [])
+    dates = posted.get(Constants.EOT_XRAY_DATE_FIELD.value, [])
+    results = posted.get(Constants.EOT_XRAY_RESULT_FIELD.value, [])
+    xrays = []
+    for index, month in enumerate(months):
+        date = dates[index] if index < len(dates) else ""
+        result = results[index] if index < len(results) else ""
+        if month or date or result:
+            xrays.append({"monthOfTreatment": month, "date": date, "result": {"uuid": result} if result else None})
+    encounter_date = (posted.get("encounterDateTime") or [""])[0]
+    return {
+        "encounter": {"encounterDatetime": encounter_date},
+        "dispensaryGroup": coded(Concepts.DISPENSARY_REGISTRATION_GROUP),
+        "followupXrays": xrays,
+        "transferToGroup2Date": first(Concepts.DATE_OF_TRANSFER_TO_DISPENSARY_GROUP_2),
+        "transferToGroup3Date": first(Concepts.DATE_OF_TRANSFER_TO_DISPENSARY_GROUP_3),
+        "transferToGroup3Reason": coded(Concepts.REASON_FOR_TRANSFER_TO_DISPENSARY_GROUP_3),
+        "removalFromObservationDate": first(Concepts.DATE_OF_REMOVAL_FROM_DISPENSARY_OBSERVATION),
+        "removalFromObservationReason": first(Concepts.REASON_FOR_REMOVAL_FROM_DISPENSARY_OBSERVATION),
+    }
+
+
+def create_update_end_of_treatment(req, patientuuid, data, formid=None):
+    """
+    Creates or updates the End of Treatment form of the current program (one per program).
+
+    Single-answer fields are inputs named by concept uuid, like every TB form. Follow-up X-rays come
+    as repeated inputs (Constants.EOT_XRAY_*_FIELD), one value per row; each row is saved as an obs
+    group FOLLOWUP_XRAY_CONSTRUCT {MONTH_OF_TREATMENT, XRAY_DATE, FOLLOWUP_XRAY_RESULT}.
+
+    EDIT: only new and changed X-rays are posted (an unchanged one is left alone). Saving an
+    encounter keeps every obs that is not posted, so AFTER a successful save this voids
+      - the old group of each X-ray that was changed or removed, and
+      - the obs of each single-answer field that was emptied
+    (otherwise the old value would stay live). If the save is refused, nothing is voided and nothing
+    is lost. The module checks the form rules (dates, one X-ray per month, group III reason, ...).
+    """
+    posted = dict(_post_items(data))
+    obs_datetime = _utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    # X-ray rows: {month: (date, result uuid)}. A row with nothing but a month records nothing.
+    months = posted.get(Constants.EOT_XRAY_MONTH_FIELD.value, [])
+    dates = posted.get(Constants.EOT_XRAY_DATE_FIELD.value, [])
+    results = posted.get(Constants.EOT_XRAY_RESULT_FIELD.value, [])
+    xrays = {}
+    for index, month in enumerate(months):
+        month = (month or "").strip()
+        date = (dates[index] if index < len(dates) else "") or ""
+        result = (results[index] if index < len(results) else "") or ""
+        if not date and not result:
+            continue
+        if not month.isdigit():
+            raise Exception(mu.get_global_msgs("mdrtb.error.missingTreatmentMonth", locale=req.session["locale"]))
+        if int(month) in xrays:
+            raise Exception(mu.get_global_msgs("mdrtb.eot.duplicateXrayMonth", locale=req.session["locale"]))
+        xrays[int(month)] = (date, result)
+
+    def xray_group(month, date, result):
+        members = [{"person": patientuuid, "obsDatetime": obs_datetime,
+                    "concept": Concepts.MONTH_OF_TREATMENT.value, "value": month}]
+        if date:
+            members.append({"person": patientuuid, "obsDatetime": obs_datetime,
+                            "concept": Concepts.XRAY_DATE.value, "value": cu.date_to_sql_datetime(date)})
+        if result:
+            members.append({"person": patientuuid, "obsDatetime": obs_datetime,
+                            "concept": Concepts.FOLLOWUP_XRAY_RESULT.value, "value": result})
+        return {"person": patientuuid, "obsDatetime": obs_datetime,
+                "concept": Concepts.FOLLOWUP_XRAY_CONSTRUCT.value, "groupMembers": members}
+
+    try:
+        if not formid:
+            keys_to_ignore = ["csrfmiddlewaretoken", "encounterDateTime", Constants.EOT_XRAY_MONTH_FIELD.value,
+                              Constants.EOT_XRAY_DATE_FIELD.value, Constants.EOT_XRAY_RESULT_FIELD.value]
+            form = create_new_form(req, data, EncounterType.END_OF_TREATMENT.value, patientuuid, keys_to_ignore)
+            form["encounter"]["obs"].extend(xray_group(m, d, r) for m, (d, r) in sorted(xrays.items()))
+            status, _ = ru.post(req, "mdrtb/endoftreatment", form)
+            return bool(status)
+
+        form = update_existing_form(req, data, formid, patientuuid)
+        if data.get("encounterDateTime"):
+            form["encounter"]["encounterDatetime"] = cu.date_to_sql_datetime(data.get("encounterDateTime"))
+        # Live obs of this form, flat (group members included), to compare with what was posted
+        saved = ra.get_all_pages(
+            req, "obs", {"encounter": formid, "v": "custom:(uuid,concept:(uuid),value,obsGroup:(uuid))"}
+        )
+        groups = {o["uuid"]: {"members": []} for o in saved
+                  if o["concept"]["uuid"] == Concepts.FOLLOWUP_XRAY_CONSTRUCT.value}
+        for o in saved:
+            group_uuid = (o.get("obsGroup") or {}).get("uuid")
+            if group_uuid not in groups:
+                continue
+            group = groups[group_uuid]
+            group["members"].append(o["uuid"])
+            concept = o["concept"]["uuid"]
+            if concept == Concepts.MONTH_OF_TREATMENT.value and o.get("value") is not None:
+                group["month"] = int(float(o["value"]))
+            elif concept == Concepts.XRAY_DATE.value:
+                group["date"] = str(o.get("value") or "")[:10]
+            elif concept == Concepts.FOLLOWUP_XRAY_RESULT.value:
+                group["result"] = (o.get("value") or {}).get("uuid", "")
+        # Compare each saved X-ray with the posted row of the same month:
+        #   same date and result -> unchanged, keep it and post nothing for that month
+        #   different, or month no longer posted -> void the saved group (after the save)
+        to_void = []
+        kept_months = set()
+        for group_uuid, group in groups.items():
+            month = group.get("month")
+            if month in xrays and month not in kept_months \
+                    and xrays[month] == (group.get("date", ""), group.get("result", "")):
+                kept_months.add(month)
+            else:
+                to_void.append((group_uuid, group["members"]))
+        for month, (date, result) in sorted(xrays.items()):
+            if month not in kept_months:
+                form["encounter"]["obs"].append(xray_group(month, date, result))
+        # Single-answer fields that were emptied
+        emptied = [c for c in END_OF_TREATMENT_FIELDS if not any(v for v in posted.get(c, []))]
+        for o in saved:
+            if not o.get("obsGroup") and o["concept"]["uuid"] in emptied:
+                to_void.append((o["uuid"], []))
+
+        status, _ = ru.post(req, f"mdrtb/endoftreatment/{formid}", form)
+        if not status:
+            return False
+        failed = []
+        for obs_uuid, members in to_void:
+            for member_uuid in members + [obs_uuid]:  # members first, then the group itself
+                try:
+                    ru.delete(req, f"obs/{member_uuid}")
+                except Exception as e:
+                    logger.error(f"End of Treatment {formid}: could not void obs {member_uuid}: {e}")
+                    failed.append(member_uuid)
+        if failed:
+            raise Exception(f"The form was saved, but {len(failed)} old value(s) could not be removed: {', '.join(failed)}")
+        return True
     except Exception as e:
         raise Exception(str(e))

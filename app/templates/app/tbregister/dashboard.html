@@ -164,7 +164,7 @@
       {% if add_encounters_privilege %}
       <div class="dropdown">
         {% if not mdrtb %}
-        {% if not forms.tb03s or not forms.form89s %}
+        {% if not forms.tb03s or not forms.form89s or not forms.end_of_treatment %}
         <button class="btn btn-primary btn-sm dropdown-toggle" type="button"
           id="dropdownDotsReports" data-bs-toggle="dropdown" aria-expanded="false">
           {{'mdrtb.add'|get_message:locale|default:"en"}} {{'mdrtb.new'|get_message:locale|default:"en"}}
@@ -190,6 +190,12 @@
               href="{% url 'form89' uuid=uuid %}">{{'mdrtb.form89'|get_message:locale|default:"en"}}</a>
           </li>
           {% endif %}
+          {% if forms.tb03s and not forms.end_of_treatment %}
+          <li>
+            <a class="dropdown-item"
+              href="{% url 'endoftreatment' uuid=uuid %}">{{'mdrtb.endOfTreatment'|get_message:locale|default:"en"}}</a>
+          </li>
+          {% endif %}
 
         </ul>
         {% else %}
@@ -205,6 +211,12 @@
             <a class="dropdown-item" href="{% url 'drugresistanse' patientid=uuid  %}">
               {{'mdrtb.drdt'|get_message:locale|default:"en"}}</a>
           </li>
+          {% if forms.tb03us and not forms.end_of_treatment %}
+          <li>
+            <a class="dropdown-item" href="{% url 'endoftreatment' uuid=uuid %}">
+              {{'mdrtb.endOfTreatment'|get_message:locale|default:"en"}}</a>
+          </li>
+          {% endif %}
 
 
 
@@ -236,6 +248,16 @@
           {{form89.location.name}}</a>
       </div>
       {% endfor %}
+      {% if forms.end_of_treatment %}
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.endOfTreatment'|get_message:locale|default:"en"}}: </span><a
+          class="tb03-form-label underline"
+          href="{% if edit_encounters_privilege %}{% url 'editendoftreatment' uuid=uuid formid=forms.end_of_treatment.uuid %}{% else %} # {% endif %}">
+          {{forms.end_of_treatment.encounter.encounterDatetime | iso_to_normal_date}}
+          {{'mdrtb.at'|get_message:locale|default:"en"}}
+          {{forms.end_of_treatment.encounter.location.display}}</a>
+      </div>
+      {% endif %}
     </div>
     {% else %}
     <div class="ml-4 grid grid-cols-2 gap-3">
@@ -259,6 +281,16 @@
           {{drug_res.location.name}}</a>
       </div>
       {% endfor %}
+      {% if forms.end_of_treatment %}
+      <div class="space-x-3">
+        <span class="font-bold">{{'mdrtb.endOfTreatment'|get_message:locale|default:"en"}}: </span><a
+          class="tb03-form-label underline"
+          href="{% if edit_encounters_privilege %}{% url 'editendoftreatment' uuid=uuid formid=forms.end_of_treatment.uuid %}{% else %} # {% endif %}">
+          {{forms.end_of_treatment.encounter.encounterDatetime | iso_to_normal_date}}
+          {{'mdrtb.at'|get_message:locale|default:"en"}}
+          {{forms.end_of_treatment.encounter.location.display}}</a>
+      </div>
+      {% endif %}
     </div>
     {% endif %}
   </div>

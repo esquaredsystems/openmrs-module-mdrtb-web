@@ -1,0 +1,256 @@
+{% extends 'app/base/base.html' %}
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+{% block content %}
+{% comment %}
+End of Treatment form (dispensary observation after treatment), one per program, DOTS and MDR-TB.
+`form` is the module's mdrtb/endoftreatment resource (v=full) when editing, or what the user posted
+when a save was refused (`resubmitted`), built by forms_util.build_end_of_treatment_prefill.
+Single-answer inputs are named by concept uuid. The X-ray rows are repeated inputs named by
+Constants.EOT_XRAY_*_FIELD; forms_util turns each row into an obs group.
+The laboratory tests are read only: the module takes them from the program's smear results of
+months 1, 3 and 5 (MONTH OF TREATMENT attribute), so they exist only once the form is saved.
+{% endcomment %}
+
+{% include 'app/components/patient_banner.html' with patient=patient|default:flow_patient show_gender_icon=True %}
+
+{% include 'app/components/breadcrumbs.html'%}
+<div class="m-16 mx-auto w-1/2">
+
+  {% if state == 'edit' %}
+  <div id="form-info" class="flex-center space-x-4">
+    <h1 class="text-[#2D9CDB] text-3xl font-bold">
+      {{'mdrtb.edit'|get_message:locale|default:"en"}}
+      {{'mdrtb.endOfTreatment'|get_message:locale|default:"en"}}
+    </h1>
+    <button type="button" id="editbtn" title="{{'general.edit'|get_message:locale|default:"en"}}" aria-label="{{'general.edit'|get_message:locale|default:"en"}}">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+      </svg>
+    </button>
+    <button hidden type="button" id="canceleditbtn" class="cancel-button">{{'general.cancel'|get_message:locale|default:"en"}}</button>
+    {% if delete_encounters_privilege and form.uuid %}
+    <a href="{% url 'deleteendoftreatment' formid=form.uuid %}" type="button" id="deleteform" title="{{'general.delete'|get_message:locale|default:"en"}}" aria-label="{{'general.delete'|get_message:locale|default:"en"}}">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+      </svg>
+    </a>
+    {% endif %}
+  </div>
+  {% else %}
+  <h1 class="text-[#2D9CDB] text-3xl font-bold">
+    {{'mdrtb.endOfTreatment'|get_message:locale|default:"en"}}
+  </h1>
+  {% endif %}
+
+  <form onsubmit="disableSubmit()"
+    action="{% if state == 'edit' %}{% url 'editendoftreatment' uuid=uuid formid=form.uuid %}{% else %}{% url 'endoftreatment' uuid=uuid %}{% endif %}"
+    method="post" class="flex flex-col">
+    {% csrf_token %}
+
+    <div class="pt-4 flex flex-col justify-center space-y-4">
+      <div class="input-container">
+        <label class="font-bold text-[#9E9E9E] w-1/5" for="encounterDateTime">{{'mdrtb.date'|get_message:locale|default:"en"}}</label>
+        <input class="input form-control" type="date" name="encounterDateTime" id="encounterDateTime"
+          value="{{form.encounter.encounterDatetime|iso_to_input_date}}" />
+      </div>
+
+      <div class="input-container">
+        <label class="font-bold text-[#9E9E9E] w-1/5" for="dispensaryGroup">{{'mdrtb.eot.dispensaryGroup'|get_message:locale|default:"en"}}</label>
+        <select id="dispensaryGroup" name="{{'DISPENSARY_REGISTRATION_GROUP'|get_concept}}" class="input form-control">
+          <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+          {% for answer in concepts.dispensaryregistrationgroup %}
+          <option value="{{answer.uuid}}" {% if answer.uuid == form.dispensaryGroup.uuid %}selected{% endif %}>{{answer.name}}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Follow-up X-rays: one row per X-ray, at most one per month of treatment -->
+      <div class="flex flex-col space-y-2">
+        <div class="flex items-center space-x-3">
+          <h2 class="font-bold text-[#9E9E9E]">{{'mdrtb.eot.followupXrays'|get_message:locale|default:"en"}}</h2>
+          <button type="button" id="addXray" class="btn btn-success btn-sm">{{'mdrtb.add'|get_message:locale|default:"en"}}</button>
+        </div>
+        <table class="table table-sm" id="xrayTable">
+          <thead>
+            <tr>
+              <th>{{'mdrtb.monthOfTreatment'|get_message:locale|default:"en"}}</th>
+              <th>{{'mdrtb.date'|get_message:locale|default:"en"}}</th>
+              <th>{{'mdrtb.result'|get_message:locale|default:"en"}}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="xrayRows">
+            {% for xray in form.followupXrays %}
+            <tr class="xray-row">
+              <td><input class="form-control" type="number" min="0" step="1" required name="{{'EOT_XRAY_MONTH_FIELD'|get_constant}}" value="{{xray.monthOfTreatment|default_if_none:''}}" /></td>
+              <td><input class="form-control" type="date" name="{{'EOT_XRAY_DATE_FIELD'|get_constant}}" value="{{xray.date|iso_to_input_date}}" /></td>
+              <td>
+                <select class="form-control" name="{{'EOT_XRAY_RESULT_FIELD'|get_constant}}">
+                  <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+                  {% for answer in concepts.followupxrayresult %}
+                  <option value="{{answer.uuid}}" {% if answer.uuid == xray.result.uuid %}selected{% endif %}>{{answer.name}}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td><button type="button" class="btn btn-danger btn-sm remove-xray">{{'mdrtb.remove'|get_message:locale|default:"en"}}</button></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <template id="xrayRowTemplate">
+          <tr class="xray-row">
+            <td><input class="form-control" type="number" min="0" step="1" required name="{{'EOT_XRAY_MONTH_FIELD'|get_constant}}" /></td>
+            <td><input class="form-control" type="date" name="{{'EOT_XRAY_DATE_FIELD'|get_constant}}" /></td>
+            <td>
+              <select class="form-control" name="{{'EOT_XRAY_RESULT_FIELD'|get_constant}}">
+                <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+                {% for answer in concepts.followupxrayresult %}
+                <option value="{{answer.uuid}}">{{answer.name}}</option>
+                {% endfor %}
+              </select>
+            </td>
+            <td><button type="button" class="btn btn-danger btn-sm remove-xray">{{'mdrtb.remove'|get_message:locale|default:"en"}}</button></td>
+          </tr>
+        </template>
+      </div>
+
+      <!-- Laboratory tests during follow-up: read only, from the program's smear results -->
+      <div class="flex flex-col space-y-2">
+        <h2 class="font-bold text-[#9E9E9E]">{{'mdrtb.eot.labTests'|get_message:locale|default:"en"}}</h2>
+        {% if form.uuid %}
+        {% if form.followupLabTests %}
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th>{{'mdrtb.monthOfTreatment'|get_message:locale|default:"en"}}</th>
+              <th>{{'mdrtb.date'|get_message:locale|default:"en"}}</th>
+              <th>{{'mdrtb.result'|get_message:locale|default:"en"}}</th>
+              <th>{{'mdrtb.eot.testNumber'|get_message:locale|default:"en"}}</th>
+              <th>{{'mdrtb.lab'|get_message:locale|default:"en"}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for test in form.followupLabTests %}
+            <tr>
+              <td>{{test.monthOfTreatment|default_if_none:''}}</td>
+              <td>{{test.date|iso_to_normal_date|default_if_none:''}}</td>
+              <td>{{test.result.display|default_if_none:''}}</td>
+              <td>{{test.testNumber|default_if_none:''}}</td>
+              <td>{{test.lab|default_if_none:''}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p>{{'mdrtb.none'|get_message:locale|default:"en"}}</p>
+        {% endif %}
+        {% else %}
+        <p>{{'mdrtb.eot.labTestsAfterSave'|get_message:locale|default:"en"}}</p>
+        {% endif %}
+      </div>
+
+      <div class="input-container">
+        <label class="font-bold text-[#9E9E9E] w-1/5" for="group2Date">{{'mdrtb.eot.transferToGroup2Date'|get_message:locale|default:"en"}}</label>
+        <input class="input form-control" type="date" id="group2Date" name="{{'DATE_OF_TRANSFER_TO_DISPENSARY_GROUP_2'|get_concept}}"
+          value="{{form.transferToGroup2Date|iso_to_input_date}}" />
+      </div>
+      <div class="input-container">
+        <label class="font-bold text-[#9E9E9E] w-1/5" for="group3Date">{{'mdrtb.eot.transferToGroup3Date'|get_message:locale|default:"en"}}</label>
+        <input class="input form-control" type="date" id="group3Date" name="{{'DATE_OF_TRANSFER_TO_DISPENSARY_GROUP_3'|get_concept}}"
+          value="{{form.transferToGroup3Date|iso_to_input_date}}" />
+      </div>
+      <div class="input-container">
+        <label class="font-bold text-[#9E9E9E] w-1/5" for="group3Reason">{{'mdrtb.eot.transferToGroup3Reason'|get_message:locale|default:"en"}}</label>
+        <select id="group3Reason" name="{{'REASON_FOR_TRANSFER_TO_DISPENSARY_GROUP_3'|get_concept}}" class="input form-control">
+          <option value="">{{'mdrtb.selectOption'|get_message:locale|default:"en"}}</option>
+          {% for answer in concepts.reasonfortransfertogroupiii %}
+          <option value="{{answer.uuid}}" {% if answer.uuid == form.transferToGroup3Reason.uuid %}selected{% endif %}>{{answer.name}}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <h2 class="font-bold text-[#9E9E9E]">{{'mdrtb.eot.removedFromObservation'|get_message:locale|default:"en"}}</h2>
+      <div class="input-container">
+        <label class="font-bold text-[#9E9E9E] w-1/5" for="removalDate">{{'mdrtb.date'|get_message:locale|default:"en"}}</label>
+        <input class="input form-control" type="date" id="removalDate" name="{{'DATE_OF_REMOVAL_FROM_DISPENSARY_OBSERVATION'|get_concept}}"
+          value="{{form.removalFromObservationDate|iso_to_input_date}}" />
+      </div>
+      <div class="input-container">
+        <label class="font-bold text-[#9E9E9E] w-1/5" for="removalReason">{{'mdrtb.eot.reason'|get_message:locale|default:"en"}}</label>
+        <input class="input form-control" type="text" id="removalReason" name="{{'REASON_FOR_REMOVAL_FROM_DISPENSARY_OBSERVATION'|get_concept}}"
+          value="{{form.removalFromObservationReason|default_if_none:''}}" />
+      </div>
+    </div>
+
+    <div class="pt-4 flex items-center space-x-4">
+      <button type="submit" id="submitBtn" class="button-primary w-1/5">
+        {{'general.save'|get_message:locale|default:"en"}}
+      </button>
+      <a href="javascript:history.go(-1)" class="cancel-button">
+        {{'general.cancel'|get_message:locale|default:"en"}}
+      </a>
+    </div>
+  </form>
+
+  <script>
+    const disableSubmit = () => {
+      $('#submitBtn').prop('disabled', true)
+      $('#submitBtn').removeClass('button-primary')
+      $('#submitBtn').html(`
+        <div class="app-spinner" role="status" aria-label="Loading"></div>`)
+    }
+
+    // Dates of this form cannot be in the future (the module checks it too)
+    const today = new Date().toISOString().substring(0, 10)
+    const setMaxDates = () => $('input[type="date"]').prop('max', today)
+
+    // Reason for group III goes with the date of transfer to group III: required with it,
+    // not allowed (and cleared) without it - the module applies the same rule.
+    const syncGroup3Reason = () => {
+      const hasDate = $('#group3Date').val() !== ''
+      if (!hasDate) {
+        $('#group3Reason').val('')
+      }
+      $('#group3Reason').prop('disabled', !hasDate || $('#group3Date').prop('disabled')).prop('required', hasDate)
+    }
+    $('#group3Date').on('change input', syncGroup3Reason)
+
+    $('#addXray').click(function () {
+      const row = document.getElementById('xrayRowTemplate').content.cloneNode(true)
+      document.getElementById('xrayRows').appendChild(row)
+      setMaxDates()
+    })
+    $('#xrayRows').on('click', '.remove-xray', function () {
+      $(this).closest('tr').remove()
+    })
+
+    const setReadOnly = (readOnly) => {
+      $('input, select, textarea').prop('disabled', readOnly)
+      $('input[name=csrfmiddlewaretoken]').prop('disabled', false)
+      $('#addXray, .remove-xray').prop('disabled', readOnly)
+      $('#canceleditbtn').prop('hidden', readOnly)
+      syncGroup3Reason()
+    }
+
+    const state = '{{state|escapejs}}'
+    const resubmitted = '{{resubmitted|yesno:"true,false"}}' === 'true'
+    if (state === 'edit' && !resubmitted) {
+      setReadOnly(true)
+    } else {
+      syncGroup3Reason()
+    }
+    $('#editbtn').click(() => setReadOnly(false))
+    $('#canceleditbtn').click(() => setReadOnly(true))
+    setMaxDates()
+  </script>
+</div>
+
+{% endblock %}
